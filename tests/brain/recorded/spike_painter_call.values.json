@@ -1,6 +1,6 @@
 {
  "fixture": "spike_painter_call",
- "recorded_at": "2026-11-21T17:08:37+00:00",
+ "recorded_at": "2026-11-21T18:03:52+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "value:work@5": {
@@ -77,6 +77,14 @@
    "readings": null
   },
   "ambiguous:dates@28": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@3": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:late_or_unfinished@26": {
    "ambiguous": false,
    "readings": null
   }

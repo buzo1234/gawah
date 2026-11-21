@@ -1,6 +1,6 @@
 {
  "fixture": "dry_run_call",
- "recorded_at": "2026-11-21T17:08:36+00:00",
+ "recorded_at": "2026-11-21T18:03:55+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "names:-@1": {
@@ -84,6 +84,22 @@
     "start tomorrow, finish Friday",
     "start next Monday, finish Friday"
    ]
+  },
+  "ambiguous:work@3": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@11": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@13": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:balance@19": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }

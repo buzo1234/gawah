@@ -16,20 +16,7 @@ ALL = CALLS + [Path("tests/brain/spike_painter_call.json")]
 MODES = ["live", "wrapup"]
 modes = pytest.mark.parametrize("mode", MODES)
 
-# Two bugs in the memory stream (app/memory/normalise.py) that the brain cannot work around.
-# strict: once memory is fixed these pass, and the marks must go.
-MEMORY_BUGS = {
-    "dry_run_call": "memory reads 'बाईस हज़ार, पाँच एडवांस' (22,000, then 5 advance) as 22,005 and raises a "
-                    "false contradiction at line 24, where the wrap-up question should be",
-    "demo_script_call": "memory's _tokens does not split on the danda, so 'ठीक है।' is not heard as a yes: "
-                        "the late-work term is never agreed and the read-back at line 16 never comes",
-}
-both = pytest.mark.parametrize(
-    "path",
-    [pytest.param(p, marks=pytest.mark.xfail(reason=MEMORY_BUGS[p.stem], strict=True)) if p.stem in MEMORY_BUGS else p for p in CALLS],
-    ids=lambda p: p.stem,
-)
-both_clean = pytest.mark.parametrize("path", CALLS, ids=lambda p: p.stem)
+both = pytest.mark.parametrize("path", CALLS, ids=lambda p: p.stem)
 
 
 @both
@@ -55,7 +42,7 @@ async def test_judge_speaks_when_expected_and_only_then(bus, path, mode):
     assert run.values.missing == []
 
 
-@both_clean
+@both
 @modes
 async def test_judge_stays_polite(bus, path, mode):
     run = await run_call(bus, path, mode)
@@ -82,7 +69,7 @@ async def test_judge_stays_polite(bus, path, mode):
     assert all(count <= tuning.MAX_ASKS_PER_ITEM for count in asked.values())
 
 
-@both_clean
+@both
 async def test_checklist_always_carries_all_six_items(bus, path):
     run = await run_call(bus, path, "live")
     assert run.checklists
@@ -128,17 +115,17 @@ async def test_two_amounts_the_14000_is_a_contradiction_of_the_13000_agreed(bus)
     assert 'Ramesh said: "Theek hai madam, kaam dekh ke hi dena. To total 14 hazaar' in first.instruction
     assert "Do not say which one is right." in first.instruction
     assert first.instruction.count("Says 14,000 rupees") == 1
-    # Wrap-up: the contradiction is still open, and the balance and the late term were only
-    # ever stated by one side (the Scribe heard no yes), so all go into one turn.
+    # Wrap-up: only the contradiction is still open. Both agreed everything else: the balance
+    # ("Theek hai madam, kaam dekh ke hi dena", line 19) and the 300 a day ("Chalo theek hai.
+    # To Wednesday...", line 30, a yes that opens a line and goes on).
     assert (wrap.after_line, wrap.reason, wrap.item, wrap.to) == (31, "wrapping_up", "amount", "both")
-    assert wrap.instruction.startswith("They are about to hang up. Raise these in one short turn. (1) Ramesh said:")
-    # Nothing is taken from the line that contradicted the record (its "11,000" balance).
-    assert '(2) Ask Sunita and Ramesh to confirm the balance: "remaining payment after completion and inspection", as Sunita said.' in wrap.instruction
-    assert "(3) Ask Sunita and Ramesh to confirm what happens if the work is late or unfinished:" in wrap.instruction
-    assert "300 rupees per day" in wrap.instruction and "11,000" not in wrap.instruction
+    assert wrap.instruction.startswith("They are about to hang up. Ramesh said:")
+    assert "Says 14,000 rupees" in wrap.instruction and "(2)" not in wrap.instruction
+    assert final["balance"].state is ItemState.AGREED and final["late_or_unfinished"].state is ItemState.AGREED
+    assert "300 rupees per day" in final["late_or_unfinished"].value
 
 
-@both_clean
+@both
 @modes
 async def test_same_call_gives_the_same_events_every_time(path, mode):
     runs = []
@@ -266,7 +253,7 @@ async def test_a_second_call_replayed_keeps_the_checklist_and_catches_the_contra
     end_of_one = {i.key: (i.state, i.value) for i in first.checklists[-1].items}
     assert {i.key: (i.state, i.value) for i in second.checklists[0].items} == end_of_one, "not restarted"
     agreed = {k for k, (state, _) in end_of_one.items() if state is ItemState.AGREED}
-    assert agreed == {ItemKey.WORK, ItemKey.AMOUNT, ItemKey.ADVANCE, ItemKey.DATES}
+    assert agreed == set(ItemKey)
 
     [conflict] = second.conflicts
     contradiction, wrap = second.speaks
@@ -277,11 +264,8 @@ async def test_a_second_call_replayed_keeps_the_checklist_and_catches_the_contra
     assert 'Ramesh said: "Achha madam, ek baat. Labour ka total 14 hazaar tay hua tha na?"' in contradiction.instruction
     assert "the amount was agreed at 13,000 rupees by both" in contradiction.instruction
     # Nothing agreed on call 1 is asked again. What wrap-up raises: the contradiction, still
-    # unconfirmed, and the two terms the facts never had agreed. No read-back of the whole deal.
+    # unconfirmed, and nothing else. No read-back of the whole deal.
     assert all(s.reason != "term_unclear" for s in second.speaks)
     assert (wrap.after_line, wrap.reason, wrap.item) == (8, "wrapping_up", "amount")
-    asked = wrap.instruction.split("(1)")[1]
-    for label in ("the work", "the advance", "the dates"):
-        assert f"Ask Sunita and Ramesh to confirm {label}" not in asked and f"what {label}" not in asked
-    assert "(2) Ask Sunita and Ramesh to confirm the balance" in wrap.instruction
+    assert "Says 14,000 rupees" in wrap.instruction and "Ask Sunita and Ramesh to confirm" not in wrap.instruction
     assert second.values.missing == [] and first.values.missing == []
