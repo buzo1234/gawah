@@ -200,8 +200,8 @@ Stretch:
 
 ## Not verified
 
-- LiveKit's free plan limits. Sources disagree (one says 1,000 agent minutes and 5,000 call minutes a month). Check the LiveKit dashboard.
-- Whether an agent running on our own laptop counts against LiveKit's agent minutes.
+- Whether our agent, running on the laptop, counts as a participant against LiveKit's 5,000 call minutes. The pages do not say. Assume it does.
+- How much of this month's LiveKit allowance is already used. It is shared across all free projects on the account. Check the LiveKit dashboard.
 - Whether the call page's mic works when the link is opened inside WhatsApp.
 - Whether our server can receive and reply to sandbox messages. Joining works on the trial (see below); the webhook is untested until the server exists.
 - Whether Sage2 handles Hindi or Hinglish text, its free-plan rate limits, and whether the key works. Sage2's speed figures are the vendor's own.
@@ -213,6 +213,7 @@ Confirmed on 21 Nov:
 - OpenAI key: `gpt-realtime-2.1`, `gpt-realtime-2.1-mini`, and `gpt-transcribe` are all available. Also available and worth a look: `gpt-4o-transcribe-diarize`, `gpt-live-1.1`, `gpt-live-transcribe`.
 - AWS keys work; S3 bucket created and written to.
 - LiveKit keys work.
+- LiveKit free plan ("Build"), from its pricing and limits pages: 5,000 call minutes a month, counted per person connected; 100 connections at once; 60 minutes of its recording service. It is a hard cap - once used up, new calls fail, with no charges. It resets on the 1st of each month. The 1,000 "agent session minutes" are for agents hosted on LiveKit's cloud; ours runs on the laptop, and the docs treat that as self-hosted. A 10-minute call with two people and the agent is about 30 minutes of allowance, so roughly 160 such calls a month.
 - Twilio keys work; the account is a trial with no phone number and no verified phones.
 - WhatsApp sandbox joined from our phone on the trial account: the join message arrived and Twilio's reply was delivered and read.
 
@@ -229,6 +230,7 @@ Confirmed on 21 Nov:
 - [LiveKit: request for multi-participant sessions](https://github.com/livekit/agents/issues/6795)
 - [LiveKit: multi-participant transcription issue](https://github.com/livekit/agents/issues/3657)
 - [LiveKit: pricing](https://livekit.com/pricing)
+- [LiveKit: quotas and limits](https://docs.livekit.io/deploy/admin/quotas-and-limits/)
 - [Twilio: WhatsApp sandbox](https://www.twilio.com/docs/whatsapp/sandbox.md)
 - [Twilio: free trial account](https://www.twilio.com/docs/usage/tutorials/how-to-use-your-free-trial-account)
 - [OpenAI: models](https://developers.openai.com/api/docs/models)
