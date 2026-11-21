@@ -214,7 +214,8 @@ async def test_a_change_asked_by_voice_note_holds_only_once_the_other_person_say
         ChangeStatus.CONFIRMED_ONE, amount.id, "25,000 rupees", "worker", ["worker"])
     assert heard.texts_to(SUNITA)[-1] == (
         f'Ramesh ji ne voice note mein kaha: "{note_words(CHANGE)}". Isse deal mein kul paisa ₹13,000 se badal kar '
-        "₹25,000 ho jayega. Kya aap maante hain? Haan ya nahi likhiye.")
+        f"₹25,000 ho jayega. Pehle wali shart {heard.bot.sentinel.when(amount)} tay hui thi. "
+        f"Wo pal yahan suniye: {BASE + clip_path(amount.id)} Kya aap maante hain? Haan ya nahi likhiye.")
     assert heard.texts_to(RAMESH)[-1] == "Yeh badlav tabhi hoga jab Sunita ji bhi haan kahenge. Unse pooch raha hoon."
     assert amount.value_rupees == 13000  # nothing changes on one person's word
 
@@ -225,7 +226,7 @@ async def test_a_change_asked_by_voice_note_holds_only_once_the_other_person_say
     now = (await heard.memory.get_term(deal_id, ItemKey.AMOUNT)).current
     assert (now.value_rupees, now.status, now.replaces, now.source) == (25000, FactStatus.CONFIRMED, amount.id, FactSource.VOICE_NOTE)
     assert heard.memory.book.deal(deal_id).latest[amount.id].status is FactStatus.SUPERSEDED
-    assert heard.texts_to(RAMESH)[-1] == "Sunita ji ne haan kaha. Deal mein kul paisa ab 25,000 rupees hai."
+    assert heard.texts_to(RAMESH)[-1] == "Sunita ji ne haan kaha. Deal mein kul paisa ab ₹25,000 hai."
 
 
 async def test_a_no_to_a_voice_note_change_leaves_the_term_as_it_was(heard):

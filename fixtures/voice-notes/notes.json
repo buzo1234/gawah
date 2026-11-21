@@ -26,5 +26,19 @@
     "seconds": 6.3,
     "said": "Paanch hazaar advance main kal GPay kar dungi. UPI pe aapka yahi number hai na?",
     "use": "an advance of 5,000: a record, the worker is asked"
+  },
+  "tts-paid-3000.ogg": {
+    "from": "made with gpt-4o-mini-tts (no recording in fixtures/audio says money was paid)",
+    "speaker": "hirer",
+    "seconds": 5.3,
+    "said": "Ramesh ji, maine aaj subah teen hazaar advance GPay kar diya hai.",
+    "use": "a payment of the 3,000 advance: a record, the worker is asked"
+  },
+  "paint-24.ogg": {
+    "from": "fixtures/audio/paint-24.wav",
+    "speaker": "hirer",
+    "seconds": 8.94,
+    "said": "Toh final: total baees hazaar, paanch advance, saat beech mein, aur das kaam ke baad. Somvaar ko milte hain.",
+    "use": "says the total is 22,000: contradicts the 13,000 agreed"
   }
 }

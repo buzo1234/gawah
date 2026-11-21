@@ -52,7 +52,7 @@ function factNode(state, f, amended, stands) {
   return h("div", { class: `fact ${f.status} kind-${f.kind}${stands ? " stands" : ""}`, id: `fact-${f.id}`, title: f.quote ? `“${f.quote}”` : f.text },
     h("div", { class: "status" }, line(label(f, stands), who(state, f))),
     h("div", { class: "value" }, f.value || f.text),
-    amended && h("div", { class: "aside" }, "Changed by voice, both said yes"),
+    amended && h("div", { class: "aside" }, f.source === "voice_note" ? "Changed by voice note, both said yes" : "Changed by voice, both said yes"),
     h("div", { class: "src" },
       hasClip(f) && clipButton(f.id),
       h("span", {}, source(f)),

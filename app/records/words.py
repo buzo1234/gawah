@@ -1,6 +1,7 @@
 """What Gawah says on WhatsApp about records. Short, plain Hinglish in Roman script.
 Gawah never gives an opinion, so none of these do."""
 
+import re
 from datetime import date
 
 from app.contracts import ItemKey, Person, Record, RecordKind, Role
@@ -163,9 +164,18 @@ def contradicted(speaker: Person, said: str, item: ItemKey | None, value: str, w
     return line
 
 
-def change_question(speaker: Person, said: str, item: ItemKey | None, old: str, new: str) -> str:
-    return (f'{who(speaker)} ne voice note mein kaha: "{_short(said)}". Isse deal mein {term_name(item)} '
-            f"{old} se badal kar {new} ho jayega. Kya aap maante hain? Haan ya nahi likhiye.")
+def change_question(
+    speaker: Person, said: str, item: ItemKey | None, old: str | None, new: str | None,
+    when: str | None = None, clip: str | None = None,
+) -> str:
+    """old and new are figures (₹13,000) for a money term; for any other term the voice note's
+    own words say what is added, so none are given. when and clip: where the term was agreed."""
+    what = f"{term_name(item)} {old} se badal kar {new} ho jayega" if old and new else f"{term_name(item)} mein yeh jud jayega"
+    agreed = f" Pehle wali shart {when} tay hui thi." if when else ""
+    if clip:
+        agreed += f" Wo pal yahan suniye: {clip}"
+    return (f'{who(speaker)} ne voice note mein kaha: "{_short(said)}". Isse deal mein {what}.{agreed} '
+            "Kya aap maante hain? Haan ya nahi likhiye.")
 
 
 def change_asked(other: Person) -> str:
@@ -174,5 +184,8 @@ def change_asked(other: Person) -> str:
 
 def change_answered(answerer: Person, item: ItemKey | None, new: str, confirmed: bool) -> str:
     if confirmed:
-        return f"{who(answerer)} ne haan kaha. Deal mein {term_name(item)} ab {new} hai."
+        figure = re.fullmatch(r"([\d,]+) rupees", new.strip())
+        if figure:
+            return f"{who(answerer)} ne haan kaha. Deal mein {term_name(item)} ab ₹{figure.group(1)} hai."
+        return f"{who(answerer)} ne haan kaha. Deal ke {term_name(item)} mein yeh jud gaya."
     return f"{who(answerer)} ne nahi kaha. Deal mein {term_name(item)} pehle jaisa hi hai."

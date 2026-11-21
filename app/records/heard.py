@@ -53,8 +53,11 @@ async def put_change(s: "Sentinel", fact: Fact) -> None:
         deal_id=fact.deal_id, fact_id=current.id, new_value=new, item=fact.item, proposed_by=fact.said_by,
         confirmed_by=[fact.said_by], status=ChangeStatus.CONFIRMED_ONE, said=fact.quote,
     )
-    shown = words.rupees(fact.value_rupees) if money else new
-    s.ask_change(change, sender, other, words.change_question(sender, fact.quote or fact.text, fact.item, old, shown))
+    shown = (old, words.rupees(fact.value_rupees)) if money else (None, None)
+    question = words.change_question(
+        sender, fact.quote or fact.text, fact.item, *shown, when=s.when(current), clip=await s._clip(current),
+    )
+    s.ask_change(change, sender, other, question)
     s._note(fact.deal_id, f"change to the {fact.item.value} asked by voice note ({new}): "
             f"asked the {other.role.value} to confirm", fact)
 
