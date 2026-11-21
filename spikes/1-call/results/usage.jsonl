@@ -1,0 +1,6 @@
+{"room": "spike-p1-3400dd", "label": "p1", "participant_minutes": 2.6, "seconds": {"gawah": 41.4, "recorder": 40.0, "ramesh": 37.4, "sunita": 37.4}}
+{"room": "spike-p1-672015", "label": "p1", "participant_minutes": 6.95, "seconds": {"gawah": 106.7, "recorder": 105.0, "ramesh": 101.5, "sunita": 103.7}}
+{"room": "spike-p2-9626bd", "label": "p2", "participant_minutes": 3.94, "seconds": {"gawah": 118.9, "recorder": 117.5}}
+{"room": "spike-p2b-c5b860", "label": "p2b", "participant_minutes": 2.27, "seconds": {"gawah": 68.9, "recorder": 67.4}}
+{"room": "spike-p3-382374", "label": "p3", "participant_minutes": 6.75, "seconds": {"gawah": 104.7, "recorder": 103.5, "sunita": 98.3, "ramesh": 98.2}}
+{"room": "spike-human-47dd2f", "label": "human", "participant_minutes": 0.02, "seconds": {"gawah": 1.2}}

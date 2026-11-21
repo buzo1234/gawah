@@ -1,0 +1,529 @@
+{
+ "runs": [
+  {
+   "model": "gpt-realtime-2.1",
+   "effort": "default",
+   "instruction": "Ask Sunita when the balance will be paid.",
+   "said_per_model": "Sunita, balance kab diya jayega?",
+   "status": "completed",
+   "ms_trigger_to_response_created": 357,
+   "ms_trigger_to_first_audio_from_openai": 1117,
+   "ms_trigger_to_first_frame_published": 1118,
+   "ms_trigger_to_heard_in_room": 1206,
+   "speech_ms": 2650,
+   "ms_heard_after_playout_end": -343,
+   "gpt_transcribe_of_room_recording": "सुनिता, बैलेंस कब दिया जाएगा?",
+   "sample": "samples/gawah-2.1-1.wav"
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "effort": "default",
+   "instruction": "Ask Ramesh on which date the work will be finished.",
+   "said_per_model": "Ramesh, kaam kis date tak khatam ho jayega?",
+   "status": "completed",
+   "ms_trigger_to_response_created": 292,
+   "ms_trigger_to_first_audio_from_openai": 1074,
+   "ms_trigger_to_first_frame_published": 1078,
+   "ms_trigger_to_heard_in_room": 1191,
+   "speech_ms": 3400,
+   "ms_heard_after_playout_end": -278,
+   "gpt_transcribe_of_room_recording": "रमेश, काम किस डेट तक खत्म हो जाएगा?",
+   "sample": "samples/gawah-2.1-2.wav"
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "effort": "default",
+   "instruction": "Two different totals were said, 22 thousand and 25 thousand. Ask both of them which one is final.",
+   "said_per_model": "आप दोनों अलग-अलग टोटल बता रहे हैं, 22 हजार और 25 हजार। कृपया बताइए इनमें से कौन सा final है?",
+   "status": "completed",
+   "ms_trigger_to_response_created": 276,
+   "ms_trigger_to_first_audio_from_openai": 967,
+   "ms_trigger_to_first_frame_published": 969,
+   "ms_trigger_to_heard_in_room": 1095,
+   "speech_ms": 8000,
+   "ms_heard_after_playout_end": -153,
+   "gpt_transcribe_of_room_recording": "आप दोनों अलग-अलग टोटल बता रहे हैं, 22,000 और 25,000। कृपया बताइए, इनमें से कौन सा फाइनल है?"
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "effort": "default",
+   "instruction": "Ask Sunita how much advance she will give.",
+   "said_per_model": "Sunita, aap kitna advance dengi?",
+   "status": "completed",
+   "ms_trigger_to_response_created": 296,
+   "ms_trigger_to_first_audio_from_openai": 1252,
+   "ms_trigger_to_first_frame_published": 1257,
+   "ms_trigger_to_heard_in_room": 1409,
+   "speech_ms": 2800,
+   "ms_heard_after_playout_end": -188,
+   "gpt_transcribe_of_room_recording": "सुनिता, आप कितना एडवांस देंगी?"
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "effort": "default",
+   "instruction": "Ask Ramesh what happens if the work is not finished on time.",
+   "said_per_model": "Ramesh, agar kaam time par poora nahi hota, toh uss halat mein kya hota hai?",
+   "status": "completed",
+   "ms_trigger_to_response_created": 279,
+   "ms_trigger_to_first_audio_from_openai": 966,
+   "ms_trigger_to_first_frame_published": 970,
+   "ms_trigger_to_heard_in_room": 1185,
+   "speech_ms": 5700,
+   "ms_heard_after_playout_end": -266,
+   "gpt_transcribe_of_room_recording": "रमेश, अगर काम टाइम पर पूरा नहीं होता, तो उस हालत में क्या होता है?"
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "effort": "default",
+   "instruction": "Ask Sunita when the balance will be paid.",
+   "said_per_model": "सुनिता, बैलेंस कब पे किया जाएगा?",
+   "status": "completed",
+   "ms_trigger_to_response_created": 303,
+   "ms_trigger_to_first_audio_from_openai": 975,
+   "ms_trigger_to_first_frame_published": 978,
+   "ms_trigger_to_heard_in_room": 1164,
+   "speech_ms": 2600,
+   "ms_heard_after_playout_end": -194,
+   "gpt_transcribe_of_room_recording": "सुनीता, बैलेंस कब तक किया जाएगा?",
+   "sample": "samples/gawah-2.1-mini-1.wav"
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "effort": "default",
+   "instruction": "Ask Ramesh on which date the work will be finished.",
+   "said_per_model": "Ramesh, kaam kis date tak finish hoga?",
+   "status": "completed",
+   "ms_trigger_to_response_created": 604,
+   "ms_trigger_to_first_audio_from_openai": 1145,
+   "ms_trigger_to_first_frame_published": 1148,
+   "ms_trigger_to_heard_in_room": 1366,
+   "speech_ms": 3050,
+   "ms_heard_after_playout_end": 757,
+   "gpt_transcribe_of_room_recording": "मेश, काम किस डेट तक फिनिश होगा?",
+   "sample": "samples/gawah-2.1-mini-2.wav"
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "effort": "default",
+   "instruction": "Two different totals were said, 22 thousand and 25 thousand. Ask both of them which one is final.",
+   "said_per_model": "22 हजार और 25 हजार, दो अलग-अलग कुल अभी बताए गए हैं। कृपया बताइए कौन सा एक फाइनल है।",
+   "status": "completed",
+   "ms_trigger_to_response_created": 307,
+   "ms_trigger_to_first_audio_from_openai": 975,
+   "ms_trigger_to_first_frame_published": 975,
+   "ms_trigger_to_heard_in_room": 1781,
+   "speech_ms": 6250,
+   "ms_heard_after_playout_end": 493,
+   "gpt_transcribe_of_room_recording": "बाईस हज़ार और पच्चीस हज़ार दो अलग-अलग कुल अभी बताए गए हैं। कृपया बताइए कौन सा एक फाइनल है?"
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "effort": "default",
+   "instruction": "Ask Sunita how much advance she will give.",
+   "said_per_model": "Sunita, आप कितना advance देंगी?",
+   "status": "completed",
+   "ms_trigger_to_response_created": 291,
+   "ms_trigger_to_first_audio_from_openai": 1099,
+   "ms_trigger_to_first_frame_published": 1101,
+   "ms_trigger_to_heard_in_room": 1759,
+   "speech_ms": 2450,
+   "ms_heard_after_playout_end": 277,
+   "gpt_transcribe_of_room_recording": "सुनीता, आप कितना एडवांस देंगी?"
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "effort": "default",
+   "instruction": "Ask Ramesh what happens if the work is not finished on time.",
+   "said_per_model": "रमेश, अगर काम समय पर पूरा नहीं होता, तो क्या होगा? क्या कोई प्रक्रिया या कदम होगा?",
+   "status": "completed",
+   "ms_trigger_to_response_created": 292,
+   "ms_trigger_to_first_audio_from_openai": 1093,
+   "ms_trigger_to_first_frame_published": 1093,
+   "ms_trigger_to_heard_in_room": 1631,
+   "speech_ms": 6050,
+   "ms_heard_after_playout_end": 87,
+   "gpt_transcribe_of_room_recording": "रमेश, अगर काम समय पर पूरा नहीं होता, तो क्या होगा? क्या कोई प्रक्रिया या कदम होगा?"
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "effort": "minimal",
+   "instruction": "Ask Sunita when the balance will be paid.",
+   "said_per_model": "Sunita, balance kab tak pay ho jaega?",
+   "status": "completed",
+   "ms_trigger_to_response_created": 261,
+   "ms_trigger_to_first_audio_from_openai": 899,
+   "ms_trigger_to_first_frame_published": 901,
+   "ms_trigger_to_heard_in_room": 1171,
+   "speech_ms": 2950,
+   "ms_heard_after_playout_end": -162,
+   "gpt_transcribe_of_room_recording": "सुनीता, डालेंस कब तक पे हो जाएगा?"
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "effort": "minimal",
+   "instruction": "Ask Ramesh on which date the work will be finished.",
+   "said_per_model": "Ramesh, kaam kis date tak khatam ho jayega?",
+   "status": "completed",
+   "ms_trigger_to_response_created": 273,
+   "ms_trigger_to_first_audio_from_openai": 788,
+   "ms_trigger_to_first_frame_published": 788,
+   "ms_trigger_to_heard_in_room": 1023,
+   "speech_ms": 3550,
+   "ms_heard_after_playout_end": -345,
+   "gpt_transcribe_of_room_recording": "तमेश, काम किस डेट तक खत्म हो जाएगा?"
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "effort": "minimal",
+   "instruction": "Two different totals were said, 22 thousand and 25 thousand. Ask both of them which one is final.",
+   "said_per_model": "आप दोनों ने अलग-अलग टोटल बताए, 22 हजार और 25 हजार. कृपया बताएं, फाइनल कौन सा है?",
+   "status": "completed",
+   "ms_trigger_to_response_created": 257,
+   "ms_trigger_to_first_audio_from_openai": 947,
+   "ms_trigger_to_first_frame_published": 952,
+   "ms_trigger_to_heard_in_room": 1186,
+   "speech_ms": 7800,
+   "ms_heard_after_playout_end": -186,
+   "gpt_transcribe_of_room_recording": "आप दोनों अलग-अलग टोटल बताएं, बाईस हज़ार और पच्चीस हज़ार। कृपया बताएं, फाइनल कौन सा है?"
+  }
+ ],
+ "model_errors": {
+  "gpt-realtime-2.1/None": [],
+  "gpt-realtime-2.1-mini/None": [],
+  "gpt-realtime-2.1/minimal": []
+ },
+ "unsolicited": {
+  "gpt-realtime-2.1/None": 0,
+  "gpt-realtime-2.1-mini/None": 0,
+  "gpt-realtime-2.1/minimal": 0
+ },
+ "usage": [
+  {
+   "model": "gpt-realtime-2.1",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 265,
+    "input_tokens": 150,
+    "output_tokens": 115,
+    "input_token_details": {
+     "text_tokens": 150,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 0,
+     "cached_tokens_details": {
+      "text_tokens": 0,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 62,
+     "audio_tokens": 53,
+     "reasoning_tokens": 41
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 283,
+    "input_tokens": 153,
+    "output_tokens": 130,
+    "input_token_details": {
+     "text_tokens": 153,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 0,
+     "cached_tokens_details": {
+      "text_tokens": 0,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 62,
+     "audio_tokens": 68,
+     "reasoning_tokens": 32
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 418,
+    "input_tokens": 163,
+    "output_tokens": 255,
+    "input_token_details": {
+     "text_tokens": 163,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 128,
+     "cached_tokens_details": {
+      "text_tokens": 128,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 95,
+     "audio_tokens": 160,
+     "reasoning_tokens": 44
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 269,
+    "input_tokens": 150,
+    "output_tokens": 119,
+    "input_token_details": {
+     "text_tokens": 150,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 128,
+     "cached_tokens_details": {
+      "text_tokens": 128,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 63,
+     "audio_tokens": 56,
+     "reasoning_tokens": 38
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 354,
+    "input_tokens": 155,
+    "output_tokens": 199,
+    "input_token_details": {
+     "text_tokens": 155,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 128,
+     "cached_tokens_details": {
+      "text_tokens": 128,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 85,
+     "audio_tokens": 114,
+     "reasoning_tokens": 43
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 265,
+    "input_tokens": 150,
+    "output_tokens": 115,
+    "input_token_details": {
+     "text_tokens": 150,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 0,
+     "cached_tokens_details": {
+      "text_tokens": 0,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 63,
+     "audio_tokens": 52,
+     "reasoning_tokens": 37
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 316,
+    "input_tokens": 153,
+    "output_tokens": 163,
+    "input_token_details": {
+     "text_tokens": 153,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 0,
+     "cached_tokens_details": {
+      "text_tokens": 0,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 102,
+     "audio_tokens": 61,
+     "reasoning_tokens": 75
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 383,
+    "input_tokens": 163,
+    "output_tokens": 220,
+    "input_token_details": {
+     "text_tokens": 163,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 0,
+     "cached_tokens_details": {
+      "text_tokens": 0,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 95,
+     "audio_tokens": 125,
+     "reasoning_tokens": 48
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 292,
+    "input_tokens": 150,
+    "output_tokens": 142,
+    "input_token_details": {
+     "text_tokens": 150,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 128,
+     "cached_tokens_details": {
+      "text_tokens": 128,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 93,
+     "audio_tokens": 49,
+     "reasoning_tokens": 72
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 354,
+    "input_tokens": 155,
+    "output_tokens": 199,
+    "input_token_details": {
+     "text_tokens": 155,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 128,
+     "cached_tokens_details": {
+      "text_tokens": 128,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 78,
+     "audio_tokens": 121,
+     "reasoning_tokens": 39
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 252,
+    "input_tokens": 150,
+    "output_tokens": 102,
+    "input_token_details": {
+     "text_tokens": 150,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 0,
+     "cached_tokens_details": {
+      "text_tokens": 0,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 43,
+     "audio_tokens": 59,
+     "reasoning_tokens": 18
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 266,
+    "input_tokens": 153,
+    "output_tokens": 113,
+    "input_token_details": {
+     "text_tokens": 153,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 128,
+     "cached_tokens_details": {
+      "text_tokens": 128,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 42,
+     "audio_tokens": 71,
+     "reasoning_tokens": 12
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 400,
+    "input_tokens": 163,
+    "output_tokens": 237,
+    "input_token_details": {
+     "text_tokens": 163,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 128,
+     "cached_tokens_details": {
+      "text_tokens": 128,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 81,
+     "audio_tokens": 156,
+     "reasoning_tokens": 32
+    }
+   }
+  }
+ ],
+ "participant_minutes": 3.94,
+ "transcribe_calls": 13
+}

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gawah call</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; padding: 24px; background: #111; color: #eee; text-align: center; }
+  button { font-size: 22px; padding: 18px 28px; border-radius: 12px; border: 0; background: #2e9e5b; color: #fff; width: 100%; max-width: 340px; }
+  button.leave { background: #b33; margin-top: 16px; }
+  #status { margin: 20px 0; font-size: 18px; min-height: 48px; }
+  #log { text-align: left; font: 12px/1.4 ui-monospace, monospace; color: #9a9; white-space: pre-wrap; margin-top: 24px; }
+  .hint { color: #fc6; font-size: 15px; }
+</style>
+</head>
+<body>
+<h2>Gawah call</h2>
+<p id="who"></p>
+<button id="join">Call join karein</button>
+<button id="leave" class="leave" hidden>Call chhodein</button>
+<div id="status">Button dabaiye aur microphone ki permission dijiye.</div>
+<p id="hint" class="hint" hidden>Microphone nahi mila. Upar ⋮ menu se "Open in Chrome / browser" chuniye aur dobara try kijiye.</p>
+<div id="log"></div>
+<!-- Spike only: the real build should serve this file from our own server. -->
+<script src="https://cdn.jsdelivr.net/npm/livekit-client@2.25.0/dist/livekit-client.umd.min.js"></script>
+<script>
+const q = new URLSearchParams(location.search);
+const roomName = q.get('room'), identity = q.get('name');
+const $ = (id) => document.getElementById(id);
+$('who').textContent = identity ? `Aap: ${identity}` : '';
+const lines = [];
+function log(msg) { lines.push(`${new Date().toISOString().slice(11, 23)} ${msg}`); $('log').textContent = lines.slice(-14).join('\n'); }
+function status(msg) { $('status').textContent = msg; log(msg); }
+let room = null, timer = null, micError = null;
+const remoteTracks = new Map();  // identity -> RemoteAudioTrack
+
+async function hearing() {
+  const out = {};
+  for (const [who, track] of remoteTracks) {
+    const entry = { packets: 0, bytes: 0, energy: 0, level: 0, seconds: 0, lost: 0 };
+    const report = track.receiver ? await track.receiver.getStats() : [];
+    report.forEach((s) => {
+      if (s.type === 'inbound-rtp' && s.kind === 'audio') {
+        entry.packets = s.packetsReceived; entry.bytes = s.bytesReceived; entry.lost = s.packetsLost;
+        entry.energy = s.totalAudioEnergy; entry.level = s.audioLevel; entry.seconds = s.totalSamplesDuration;
+        entry.codec = (report.get && report.get(s.codecId) || {}).mimeType;
+      }
+    });
+    out[who] = entry;
+  }
+  return out;
+}
+
+async function report() {
+  const body = {
+    room: roomName, identity, state: room ? room.state : 'none', micError,
+    ua: navigator.userAgent, secure: window.isSecureContext,
+    mic: room && room.localParticipant ? room.localParticipant.isMicrophoneEnabled : false,
+    hears: await hearing(),
+  };
+  try {
+    const res = await fetch('report', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    const cmd = await res.json();
+    if (cmd.leave) leave();
+  } catch (e) { /* server gone */ }
+}
+
+async function join() {
+  $('join').disabled = true;
+  status('Jud rahe hain...');
+  try {
+    const res = await fetch(`token?room=${encodeURIComponent(roomName)}&identity=${encodeURIComponent(identity)}`);
+    if (!res.ok) throw new Error(`token ${res.status}`);
+    const { url, token } = await res.json();
+    const LK = LivekitClient;
+    room = new LK.Room({ adaptiveStream: false, dynacast: false });
+    room.on(LK.RoomEvent.TrackSubscribed, (track, pub, participant) => {
+      if (track.kind !== 'audio') return;
+      const el = track.attach(); el.autoplay = true; document.body.appendChild(el);
+      remoteTracks.set(participant.identity, track);
+      log(`sun rahe hain: ${participant.identity}`);
+    });
+    room.on(LK.RoomEvent.TrackUnsubscribed, (track, pub, participant) => { track.detach().forEach((el) => el.remove()); remoteTracks.delete(participant.identity); });
+    room.on(LK.RoomEvent.ParticipantConnected, (p) => log(`aaye: ${p.identity}`));
+    room.on(LK.RoomEvent.ParticipantDisconnected, (p) => log(`gaye: ${p.identity}`));
+    room.on(LK.RoomEvent.Disconnected, (reason) => { status(`Call khatam (${reason}).`); $('leave').hidden = true; $('join').hidden = false; $('join').disabled = false; });
+    room.on(LK.RoomEvent.Reconnecting, () => status('Network dheema hai, dobara jud rahe hain...'));
+    room.on(LK.RoomEvent.Reconnected, () => status('Wapas jud gaye.'));
+    room.on(LK.RoomEvent.AudioPlaybackStatusChanged, () => { if (!room.canPlaybackAudio) status('Awaaz ke liye screen par ek baar tap kijiye.'); });
+    document.body.addEventListener('click', () => room && room.startAudio(), { once: false });
+    await room.connect(url, token);
+    await room.startAudio();
+    try {
+      await room.localParticipant.setMicrophoneEnabled(true);
+      status('Call chalu hai. Mic on hai.');
+    } catch (e) {
+      micError = `${e.name}: ${e.message}`;
+      status(`Call chalu hai, lekin mic nahi chala: ${micError}`);
+      $('hint').hidden = false;
+    }
+    $('join').hidden = true; $('leave').hidden = false;
+    timer = setInterval(report, 2000);
+    report();
+  } catch (e) {
+    status(`Jud nahi paaye: ${e.name}: ${e.message}`);
+    micError = micError || `${e.name}: ${e.message}`;
+    $('join').disabled = false;
+    report();
+  }
+}
+
+async function leave() {
+  clearInterval(timer);
+  if (room) await room.disconnect();
+}
+
+$('join').onclick = join;
+$('leave').onclick = leave;
+if (!roomName || !identity) status('Link adhoora hai (room ya name nahi hai).');
+else if (q.get('auto') === '1') join();
+</script>
+</body>
+</html>
