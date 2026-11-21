@@ -8,15 +8,21 @@ recordings go.
 1. call_missing_balance to line 17, then the shot: mid-call.
    The user's recorded lines (fixtures/audio) are laid out as the call's two recordings,
    at the times of the call's lines, so a clip button plays real audio from memory.
-1b. The brain's own spike call to line 23, where Sunita asks Gawah: the page shows the
-   question the brain sent in judge.speak, then Gawah's answer under it.
 2. call_two_amounts to line 21: memory's contradiction on line 19, then the shot.
 3. The first call finished, an advance paid on WhatsApp, and the amount changed by both:
    payments, what they count towards, and a superseded version, then the shot.
 
-After each shot: the page is checked against memory's own answers (/memory/state, terms,
-owed, /memory/chain), and a reload must rebuild exactly the same page. Last, one past
-fact is altered inside memory, and the chain must name the link that broke.
+After each shot: the graph is checked against memory's own answers (/memory/state, terms,
+owed, /memory/chain), the checklist against the brain's, and a reload must rebuild exactly
+the same page. Then one past fact is altered inside memory, and the chain must name the
+link that broke.
+
+5. The second phone on its own page, at phone size: a message typed and sent goes through
+   the webhook and comes back in the chat. The actor's endpoints are stood in for here
+   (they belong to another stream): answering 404, the "AI plays this person" toggle is
+   hidden; answering, with the toggle on, a call link that arrives starts the actor with
+   the link's deal, role and kind. On the board, a call link tapped in the frame opens the
+   call page in the frame (nothing is joined: the join button is not pressed).
 """
 
 import argparse
@@ -31,29 +37,73 @@ import httpx
 import uvicorn
 from browser import Chrome
 
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
 from app.contracts import (
-    Audience, CallEnded, CallStarted, ChangeStatus, FactChanged, ItemKey, JudgeSpoke, Person, Record,
-    RecordKind, RecordReceived, Role, SpeakReason, TranscriptLine, new_id,
+    CallEnded, CallKind, CallStarted, ChangeStatus, Direction, FactChanged, ItemKey, Person, Record,
+    RecordKind, RecordReceived, Role, TranscriptLine, WhatsAppMessage, new_id,
 )
 from fakes.replayer import load
 from tests.offline import offline_app
 
-PANELS = ["top", "flow", "items", "decisions", "graph", "chain", "lanes", "records"]
+PANELS = ["items", "settled-count", "graph", "graph-count", "chain"]
 SNAPSHOT = """JSON.stringify({
   text: Object.fromEntries(%r.map((id) => [id, document.getElementById(id).textContent])),
   links: [...document.querySelectorAll('#graph path.link')].map((p) => p.getAttribute('class')).sort(),
 })""" % PANELS
-LOADED = "document.getElementById('conn').textContent === 'live' && !!document.querySelector('#deal-picker option')"
-VERIFIED = "document.getElementById('chain').textContent.includes('Verified') && !document.getElementById('chain').textContent.includes('new')"
+LOADED = "document.body.dataset.conn === 'live' && document.body.dataset.loaded === 'true'"
+VERIFIED = "document.getElementById('chain').textContent.includes('verified') && !document.getElementById('chain').textContent.includes('new')"
 GRAPH = """JSON.stringify([...document.querySelectorAll('#graph .fact[id^="fact-"]')].map((el) => ({
   id: el.id.slice(5), status: [...el.classList].find((c) => ['said','agreed','confirmed','disputed','superseded'].includes(c)),
-  stands: el.classList.contains('stands'), row: el.closest('.term-row').querySelector('.term-label').firstChild.textContent,
+  stands: el.classList.contains('stands'), row: el.closest('.lane').querySelector('.lane-label').textContent,
   below: !!el.closest('.track.below'),
 })))"""
-OWED = "JSON.stringify([...document.querySelectorAll('#graph .owed')].map((el) => [el.closest('.term-label').firstChild.textContent, el.textContent]))"
+OWED = "JSON.stringify([...document.querySelectorAll('#graph .owed')].map((el) => [el.closest('.lane').dataset.item, el.textContent]))"
+CHECKLIST = """JSON.stringify(Object.fromEntries([...document.querySelectorAll('#items .item')].map((el) => [el.dataset.item, {
+  state: el.querySelector('.state').textContent, value: el.querySelector('.value').textContent,
+  when: el.querySelector('.when')?.textContent || '', contradicted: el.querySelector('.contradicted')?.textContent || '',
+}])))"""
+GONE = ["flow", "decisions", "records", "lanes", "real-chat", "deal-picker", "conn", "people", "status"]
 IN_VIEW = """(() => { const el = document.querySelector('%s'), g = document.getElementById('graph').getBoundingClientRect();
   const r = el.getBoundingClientRect(); return r.top >= g.top && r.bottom <= g.bottom; })()"""
 AUDIO = Path("fixtures/audio")
+FRAME = "document.getElementById('phone-frame').contentWindow"
+PROBE = "/actor/status"  # the phone asks once whether the actor is there; its 404 is the answer "not yet"
+
+
+def errors(browser) -> list[str]:
+    return [e for e in browser.errors if not (PROBE in e and "404" in e)]
+
+
+def stand_in_actor(app) -> dict:
+    """The actor's three endpoints, as another stream will serve them: 404 until switched on."""
+    actor = {"on": False, "started": [], "stopped": [], "active": None}
+
+    async def status(request: Request):
+        if not actor["on"]:
+            return JSONResponse({"detail": "Not Found"}, 404)
+        a = actor["active"]
+        return {"active": bool(a), "role": a and a["role"], "kind": a and a["kind"]}
+
+    async def start(request: Request):
+        if not actor["on"]:
+            return JSONResponse({"detail": "Not Found"}, 404)
+        actor["active"] = await request.json()
+        actor["started"].append(actor["active"])
+        return {"ok": True}
+
+    async def stop(request: Request):
+        if not actor["on"]:
+            return JSONResponse({"detail": "Not Found"}, 404)
+        actor["stopped"].append(await request.json())
+        actor["active"] = None
+        return {"ok": True}
+
+    app.add_api_route("/actor/status", status, methods=["GET"])
+    app.add_api_route("/actor/start", start, methods=["POST"])
+    app.add_api_route("/actor/stop", stop, methods=["POST"])
+    return actor
 
 
 def lay_recordings(folder: Path, fixture: dict) -> list[int]:
@@ -86,6 +136,7 @@ def lay_recordings(folder: Path, fixture: dict) -> list[int]:
 async def main(port: int, out: Path) -> None:
     home = Path(tempfile.mkdtemp(prefix="gawah-live-shots-"))
     app = offline_app(home / "gawah.db")
+    actor = stand_in_actor(app)
     server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning"))
     serving = asyncio.create_task(server.serve())
     url = f"http://127.0.0.1:{port}"
@@ -150,12 +201,32 @@ async def main(port: int, out: Path) -> None:
                         check(shown[i]["below"], f"{f['kind']} {f['value']} sits under the {target['item']} term it counts towards")
                 owed = {r["item"]: r for r in memory["owed"]}
                 for label, text in json.loads(await chrome.js(OWED)):
-                    r = owed[label.lower()]
-                    want = f"Paid ₹{r['paid_rupees']}₹{r['owed_rupees']} left"
+                    r = owed[label]
+                    want = f"Paid ₹{r['paid_rupees']} · ₹{r['owed_rupees']} left"
                     check(text.replace(",", "") == want, f"{label}: {text!r} is memory's owed ({r['paid_rupees']} paid, {r['owed_rupees']} owed)")
                 chain = (await http.get(f"/memory/chain/{deal}")).json()
                 text = await chrome.js("document.getElementById('chain').textContent")
-                check(chain["verified"] and f"Verified, {chain['links']} links" in text and chain["head"][:8] in text, f"chain: {text!r}")
+                title = await chrome.js("document.getElementById('chain').title")
+                check(chain["verified"] and text == f"Witness chain verified · {chain['links']} links" and chain["head"] in title, f"chain: {text!r}")
+                await checklist_matches(deal)
+
+            async def checklist_matches(deal: str) -> dict:
+                """Each term as the brain's latest checklist has it: agreed with its value, or pending."""
+                events = (await http.get("/dashboard/state", params={"deal": deal})).json()["events"]
+                latest = next((e for e in reversed(events) if e["name"] == "checklist.updated"), None)
+                rows = json.loads(await chrome.js(CHECKLIST))
+                changed = {e["item"] for e in events if e["name"] == "fact.changed" and e["status"] == "confirmed_both"}
+                for item in (latest or {}).get("items", []):
+                    row = rows[item["key"]]
+                    if item["key"] in changed:
+                        continue
+                    want = ("Agreed", item["value"]) if item["state"] == "agreed" else ("Pending", "Not agreed yet")
+                    check((row["state"], row["value"]) == want, f"checklist {item['key']}: {row['state']} {row['value']!r}")
+                    if item["state"] == "agreed":
+                        check(row["when"].startswith("Call 1 · "), f"checklist {item['key']}: settled at {row['when']!r}")
+                gone = await chrome.js(f"JSON.stringify({GONE!r}.filter((id) => document.getElementById(id)))")
+                check(gone == "[]", f"nothing else on the board: {gone}")
+                return rows
 
             async def reload_check(label: str) -> None:
                 before = await chrome.js(SNAPSHOT)
@@ -163,7 +234,6 @@ async def main(port: int, out: Path) -> None:
                 await chrome.wait_for(LOADED)
                 await chrome.wait_for(VERIFIED)
                 await asyncio.sleep(0.8)
-                await chrome.js("document.getElementById('tab-graph').click()")
                 after = await chrome.js(SNAPSHOT)
                 check(before == after, f"reload rebuilds the same page ({label}, {len(before)} characters)")
                 if before != after:
@@ -207,30 +277,6 @@ async def main(port: int, out: Path) -> None:
             check(not await chrome.js(f"{button}.contains('missing')"), f"the clip played to its end ({seconds:.1f} s) and stopped by itself")
             await reload_check("mid-call")
 
-            # ---------- 1b. a question put to Gawah, asked of the real brain ----------
-            print("1b. spike_painter_call to line 23: the brain's own question")
-            sp = load("tests/brain/spike_painter_call.json")
-            deal_sp = f"live-sp-{new_id()[:4]}"
-            await chrome.goto(f"{url}/dashboard?deal={deal_sp}")
-            await chrome.wait_for(LOADED)
-            await play(deal_sp, sp, range(1, 24))
-            await settle(deal_sp)
-            events = (await http.get("/dashboard/state", params={"deal": deal_sp})).json()["events"]
-            speak = next((e for e in events if e["name"] == "judge.speak" and e["reason"] == "addressed_directly"), None)
-            check(speak is not None and speak["after_line"] == 23, f"the brain spoke to a question at line 23: {speak and speak['after_line']}")
-            check(bool(speak and speak.get("question")), f"the brain filled judge.speak.question: {speak and speak.get('question')!r}")
-            if speak and speak.get("question"):
-                why = await chrome.js("document.querySelector('#decisions .decision').textContent")
-                check(f"AskedSunita: “{speak['question']}”Answer" in why and "(not said yet)" in why, f"asked, before Gawah answers: {why[:140]!r}")
-                await publish(JudgeSpoke(
-                    deal_id=deal_sp, text="Haan Sunita ji, sab note kar liya hai.", speak_id=speak["event_id"],
-                    to=Audience.HIRER, reason=SpeakReason.ADDRESSED_DIRECTLY, start=123.0, end=125.0,
-                ))
-                await asyncio.sleep(0.5)
-                why = await chrome.js("document.querySelector('#decisions .decision').textContent")
-                check(f"AskedSunita: “{speak['question']}”Answer“Haan Sunita ji, sab note kar liya hai.”" in why, f"asked and answered: {why[:140]!r}")
-                await chrome.shot(out / "1b-asked-gawah.png")
-
             # ---------- 2. the contradiction on call_two_amounts ----------
             print("2. call_two_amounts, the contradiction")
             ta = load("fixtures/call_two_amounts.json")
@@ -243,6 +289,9 @@ async def main(port: int, out: Path) -> None:
             check("14,000" in conflict and "13,000" in conflict, f"contradiction card: {conflict[:140]!r}")
             check(await chrome.js("!!document.querySelector('#graph path.link.conflict')"), "the contradiction points at the agreed 13,000")
             check(await chrome.js(IN_VIEW % "#graph div.conflict"), "the contradiction is in view in the graph")
+            rows = json.loads(await chrome.js(CHECKLIST))
+            check(rows["amount"]["contradicted"].startswith("Contradicted · Call 1 · "), f"the checklist marks the amount: {rows['amount']}")
+            await asyncio.sleep(1.2)  # the contradiction's red wash, part faded: as the room sees it a second on
             await chrome.shot(out / "2-contradiction.png")
             await reload_check("contradiction")
 
@@ -259,11 +308,12 @@ async def main(port: int, out: Path) -> None:
                                  proposed_by=Role.HIRER, status=ChangeStatus.CONFIRMED_BOTH, confirmed_by=[Role.WORKER, Role.HIRER])
             await publish(change)
             await settle(deal)
-            await chrome.js("document.getElementById('tab-graph').click()")
             await matches_memory(deal)
             check(await chrome.js(f"document.getElementById('fact-{amount['id']}').classList.contains('superseded')"), "the old amount shows as replaced")
             check(len(json.loads(await chrome.js(OWED))) == 3, "paid and owed shown on the amount, the advance and the balance")
-            await chrome.js("document.querySelector('#graph .owed')?.closest('.term-row').scrollIntoView()")
+            rows = json.loads(await chrome.js(CHECKLIST))
+            check((rows["amount"]["state"], rows["amount"]["value"]) == ("Changed", "26,000 rupees, with the balcony"), f"the checklist shows the change: {rows['amount']}")
+            await chrome.js("document.getElementById('graph').scrollTop = 0")
             await asyncio.sleep(0.5)
             await chrome.shot(out / "3-payments-and-change.png")
             await reload_check("payments and change")
@@ -274,11 +324,70 @@ async def main(port: int, out: Path) -> None:
             versions[4] = versions[4].model_copy(update={"value": "99,000 rupees"})
             await chrome.reload()
             await chrome.wait_for(LOADED)
-            await chrome.wait_for("document.getElementById('chain').textContent.includes('Broken')")
+            await chrome.wait_for("document.getElementById('chain').textContent.includes('broken')")
             text = await chrome.js("document.getElementById('chain').textContent")
-            check(text == "Witness chainBroken at link 5 (Work, call 1 line 5)", f"chain: {text!r}")
+            check(text == "Witness chain broken at link 5 (Work, call 1 line 5)", f"chain: {text!r}")
             await chrome.shot(out / "4-chain-broken.png")
-            check(not chrome.errors, f"no errors in the page: {chrome.errors}")
+
+            # ---------- 5. the second phone on its own page ----------
+            print("5. /dashboard/phone at phone size")
+            ramesh = next(p for p in mb["people"] if p["role"] == "worker")
+            async with Chrome(port=port + 1001, width=390, height=844) as phone:
+                await phone.goto(f"{url}/dashboard/phone?deal={deal}")
+                await phone.wait_for("document.body.dataset.loaded === 'true'")
+                await asyncio.sleep(0.5)
+                check(await phone.js("document.getElementById('actor').hidden"), "the actor's endpoints answer 404: no toggle")
+                check(await phone.js("document.getElementById('number').value") == ramesh["phone"], "it plays Ramesh's number")
+                before = await phone.js("document.querySelectorAll('.bubble').length")
+                await phone.js("document.getElementById('text').value = 'Namaste ji'; document.getElementById('composer').requestSubmit()")
+                await phone.wait_for("document.getElementById('send-status').textContent === 'Delivered to Gawah'")
+                await phone.wait_for("[...document.querySelectorAll('.bubble.in')].some((b) => b.textContent.includes('Namaste ji'))")
+                check(True, "a message sent from the page went through the webhook and came back as whatsapp.message")
+                try:
+                    await phone.wait_for(f"document.querySelectorAll('.bubble').length > {before + 1}", timeout=8)
+                    check(True, "Gawah's answer is in the chat")
+                except TimeoutError:
+                    check(False, "Gawah's answer is in the chat")
+                await asyncio.sleep(0.4)
+                await phone.shot(out / "5-phone.png")
+
+                actor["on"] = True
+                await phone.reload()
+                await phone.wait_for("document.body.dataset.loaded === 'true' && !document.getElementById('actor').hidden")
+                await phone.js("document.getElementById('actor-on').click()")
+                await publish(WhatsAppMessage(deal_id=deal, direction=Direction.OUT, phone=ramesh["phone"], role=Role.WORKER, simulated=True,
+                                              text=f"Ramesh ji, terms sun ke haan boliye: {url}/callback/{deal}/worker"))
+                await phone.wait_for("document.getElementById('call-state').textContent.includes('joining')")
+                check(actor["started"] == [{"deal_id": deal, "role": "worker", "kind": "callback"}], f"a call link arriving started the actor: {actor['started']}")
+                await publish(CallStarted(deal_id=deal, people=[Person(**ramesh)], room=f"replay-{deal}-callback", kind=CallKind.CALLBACK))
+                await phone.wait_for("document.getElementById('call-state').textContent === 'The AI is on the call-backStop'")
+                check(True, "the frame shows the AI on the call-back")
+                await asyncio.sleep(0.4)
+                await phone.shot(out / "5b-phone-ai-plays.png")
+                await phone.js("document.querySelector('#call-state button').click()")
+                await asyncio.sleep(0.3)
+                check(actor["stopped"] == [{"deal_id": deal, "role": "worker"}], f"Stop stopped the actor: {actor['stopped']}")
+                check(not errors(phone), f"no errors in the phone page: {errors(phone)}")
+
+            # ---------- 6. a call link tapped in the board's frame opens there ----------
+            print("6. the board's phone frame: a call link opens inside it")
+            await chrome.goto(f"{url}/dashboard?deal={deal}")
+            await chrome.wait_for(LOADED)
+            await chrome.wait_for(f"{FRAME}.document.body.dataset.loaded === 'true'")
+            check(await chrome.js("document.getElementById('phone-frame').getAttribute('allow')") == "microphone *; autoplay *", "the frame allows the microphone and autoplay")
+            await publish(WhatsAppMessage(deal_id=deal, direction=Direction.OUT, phone=ramesh["phone"], role=Role.WORKER, simulated=True,
+                                          text=f"Phir se baat karne ke liye: {url}/call/{deal}/worker"))
+            await chrome.wait_for(f"!!{FRAME}.document.querySelector('a.call-link[href=\"/call/{deal}/worker\"]')")
+            await chrome.js(f"{FRAME}.document.querySelector('a.call-link[href=\"/call/{deal}/worker\"]').click()")
+            await chrome.wait_for(f"{FRAME}.location.pathname === '/call/{deal}/worker'")
+            await chrome.wait_for("!document.getElementById('phone-back').hidden")
+            check(True, "the call page opened inside the frame, with a way back to the chat")
+            await asyncio.sleep(1.0)
+            await chrome.shot(out / "6-call-in-frame.png")
+            await chrome.js("document.getElementById('phone-back').click()")
+            await chrome.wait_for(f"{FRAME}.location.pathname === '/dashboard/phone'")
+            check(True, "back to the chat")
+            check(not errors(chrome), f"no errors in the page: {errors(chrome)}")
 
     server.should_exit = True
     await serving
@@ -289,6 +398,6 @@ async def main(port: int, out: Path) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--port", type=int, default=8021)
-    parser.add_argument("--out", type=Path, default=Path("fixtures/dashboard-shots/live"))
+    parser.add_argument("--out", type=Path, default=Path("fixtures/dashboard-shots/minimal"))
     args = parser.parse_args()
     asyncio.run(main(args.port, args.out))
