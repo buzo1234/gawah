@@ -129,18 +129,20 @@ What each stream needs from the others:
 
 ## Worktrees and agents
 
-One worktree per stream, next to the main folder:
+One worktree per stream, created with `workmux`. Each gets its own branch, its own tmux session, and its own agent:
 
 ```
-git worktree add ../gawah-bridge    -b bridge
-git worktree add ../gawah-brain     -b brain
-git worktree add ../gawah-mouth     -b mouth
-git worktree add ../gawah-whatsapp  -b whatsapp
-git worktree add ../gawah-contract  -b contract
-git worktree add ../gawah-dashboard -b dashboard
+workmux add bridge    -b -P <brief file>
+workmux add brain     -b -P <brief file>
+workmux add mouth     -b -P <brief file>
+workmux add whatsapp  -b -P <brief file>
+workmux add contract  -b -P <brief file>
+workmux add dashboard -b -P <brief file>
 ```
 
-Each worktree gets its own copy of `.env`.
+`.workmux.yaml` does the setup: it branches from `main`, copies `.env` into the new worktree, installs dependencies, and runs the tests before any merge. Worktrees live in `.worktrees/<stream>`.
+
+One orchestrator session writes the briefs, starts the agents, watches them, reviews each stream's work, and tells the agent when to merge. The orchestrator does not write code.
 
 The full rules for agents are in `AGENTS.md`, and the working routines (briefing a stream, running a spike, merging, handing off, checking the demo) are skills in `.claude/skills/`.
 
@@ -153,7 +155,7 @@ Rules every agent is given:
 - Rebase on `main` before asking for a merge. Tests pass before merge.
 - Never commit keys.
 
-The brief for each agent is five lines: the goal, the folders it owns, the events it listens to and sends, the "done when" from the table above, and the rules. A human reviews every merge into `main`. Keep merges small - several a day per stream, not one big one at the end.
+The brief for each agent is five lines: the goal, the folders it owns, the events it listens to and sends, the "done when" from the table above, and the rules. The orchestrator reviews every stream before it merges into `main`. Keep merges small - several a day per stream, not one big one at the end.
 
 ## Checkpoints
 

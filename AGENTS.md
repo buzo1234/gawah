@@ -82,10 +82,12 @@ We are not chasing coverage. These are required:
 
 - One branch and one worktree per stream. Names are in `PLAN.md`.
 - Commit messages follow the existing log: `<area>: <what changed>`, lower case.
-- Small commits. Rebase on `main` before asking for a merge. A human reviews every merge.
+- Small commits. Rebase on `main` before asking for a merge.
+- Do not merge on your own. When your work is ready, report and stop. The orchestrator reviews it and tells you when to run `/merge`.
 
 ## Working in parallel
 
+- Worktrees are made with `workmux`, which copies `.env` in and installs dependencies. They live in `.worktrees/<stream>`.
 - One agent per worktree. An agent's brief is five lines: goal, folders it owns, events in and out, done-when, rules. Use the `stream-brief` skill.
 - For a retry, start a fresh agent with the original brief and the last report. Resume the old one only if it holds state you need, such as uncommitted work or a running process.
 - If you stop before you are done, leave a note with the `handoff` skill.

@@ -27,7 +27,7 @@ Events: <any event this stream now sends or listens to for the first time>
 Still missing: <what the stream's done-when still needs>
 ```
 
-A human reviews and merges. Do not merge into `main` yourself.
+Report and stop. The orchestrator reviews the work and tells you when to run `/merge`. Do not merge into `main` before that. The tests run again automatically before the merge, and a failure stops it.
 
 ## Conflicts
 

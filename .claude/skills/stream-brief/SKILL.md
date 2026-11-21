@@ -9,12 +9,15 @@ Each stream runs in its own worktree with its own agent. The brief is the only c
 
 ## Set up the worktree
 
+Write the brief to a file first, then:
+
 ```
-git worktree add ../gawah-<stream> -b <stream>
-cp .env ../gawah-<stream>/.env
+workmux add <stream> -b -P <brief file>
 ```
 
-Check `git worktree list` first. If the worktree exists, reuse it.
+`.workmux.yaml` branches from `main`, copies `.env` in, and installs dependencies. The worktree lands in `.worktrees/<stream>`.
+
+Check `workmux list` first. If the worktree exists, reuse it: `workmux send <stream> -f <follow-up file>` if its agent is running, or `workmux open <stream> --continue -P <follow-up file>` if its window is closed.
 
 ## Write the brief
 

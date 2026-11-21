@@ -1,0 +1,21 @@
+# Gawah - workmux project config
+# Global settings (worktree_dir, mode, panes, merge strategy) come from ~/.config/workmux/config.yaml
+
+# Every stream branches from main, wherever workmux is run from.
+main_branch: main
+base_branch: main
+
+# Copied into each new worktree. .env holds the keys and is never committed.
+files:
+  copy:
+    - .env
+
+# Runs in the new worktree before its window opens. Keep it short.
+post_create:
+  - "<global>"
+  - 'if [ -f pyproject.toml ]; then uv sync --quiet; fi'
+
+# Runs before a merge. A failing test stops the merge.
+pre_merge:
+  - "<global>"
+  - 'cd "$WM_WORKTREE_PATH" && if [ -f pyproject.toml ]; then uv run pytest -q; fi'
