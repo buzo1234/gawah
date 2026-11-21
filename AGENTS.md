@@ -7,6 +7,7 @@ Read before you start:
 - `idea.md` - what we are building and why
 - `tech-feasibility.md` - which services we use and what is unverified
 - `PLAN.md` - folder layout, events, streams, checkpoints, the demo
+- `.plans/` - parked ideas (`ideas.md`) and known gaps (`open-items.md`). A record, not a to-do list: do not act on anything there unless told to. When the user asks for an idea to be kept, add it to `ideas.md`.
 
 ## How to work here
 
