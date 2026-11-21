@@ -1,0 +1,519 @@
+{
+ "runs": [
+  {
+   "model": "gpt-realtime-2.1",
+   "instruction": "Ask Sunita when the balance will be paid.",
+   "said_per_model": "Sunita, balance कब तक पेमेंट होगा?",
+   "ms_trigger_to_first_audio_from_openai": 1389,
+   "ms_trigger_to_heard_in_room": 1520,
+   "speech_ms": 2800,
+   "ms_openai_took_to_send_all_audio": 586,
+   "first_chunk_ms_of_audio": 400,
+   "worst_lead_over_realtime_ms": 400,
+   "starved_ms": 0,
+   "heard_span_ms": 2382,
+   "chunks": [
+    [
+     1389,
+     400
+    ],
+    [
+     1576,
+     800
+    ],
+    [
+     1684,
+     1200
+    ],
+    [
+     1880,
+     1600
+    ],
+    [
+     1880,
+     2000
+    ],
+    [
+     1975,
+     2400
+    ]
+   ]
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "instruction": "Ask Sunita when the balance will be paid.",
+   "said_per_model": "सुनिता, कब तक आपका बैलेंस पे किया जाएगा? क्या आप बता सकते हैं कि आज या फिर कल तक ये चुकता हो जाएगा?",
+   "ms_trigger_to_first_audio_from_openai": 833,
+   "ms_trigger_to_heard_in_room": 978,
+   "speech_ms": 7650,
+   "ms_openai_took_to_send_all_audio": 696,
+   "first_chunk_ms_of_audio": 400,
+   "worst_lead_over_realtime_ms": 400,
+   "starved_ms": 0,
+   "heard_span_ms": 7480,
+   "chunks": [
+    [
+     833,
+     400
+    ],
+    [
+     970,
+     800
+    ],
+    [
+     1017,
+     1200
+    ],
+    [
+     1077,
+     1600
+    ],
+    [
+     1129,
+     2000
+    ],
+    [
+     1196,
+     2400
+    ]
+   ]
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "instruction": "Ask Ramesh on which date the work will be finished.",
+   "said_per_model": "Ramesh, kaam kis date ko khatam hoga?",
+   "ms_trigger_to_first_audio_from_openai": 1688,
+   "ms_trigger_to_heard_in_room": 1891,
+   "speech_ms": 3350,
+   "ms_openai_took_to_send_all_audio": 773,
+   "first_chunk_ms_of_audio": 400,
+   "worst_lead_over_realtime_ms": 291,
+   "starved_ms": 275,
+   "heard_span_ms": 2929,
+   "chunks": [
+    [
+     1688,
+     400
+    ],
+    [
+     2197,
+     800
+    ],
+    [
+     2239,
+     1200
+    ],
+    [
+     2269,
+     1600
+    ],
+    [
+     2289,
+     2000
+    ],
+    [
+     2302,
+     2400
+    ]
+   ]
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "instruction": "Ask Ramesh on which date the work will be finished.",
+   "said_per_model": "Ramesh, kaun si date tak kaam khatam hoga, batao? Theek hai, batao.",
+   "ms_trigger_to_first_audio_from_openai": 843,
+   "ms_trigger_to_heard_in_room": 1032,
+   "speech_ms": 4600,
+   "ms_openai_took_to_send_all_audio": 610,
+   "first_chunk_ms_of_audio": 400,
+   "worst_lead_over_realtime_ms": 400,
+   "starved_ms": 130,
+   "heard_span_ms": 4539,
+   "chunks": [
+    [
+     843,
+     400
+    ],
+    [
+     1187,
+     800
+    ],
+    [
+     1396,
+     1200
+    ],
+    [
+     1401,
+     1600
+    ],
+    [
+     1409,
+     2000
+    ],
+    [
+     1417,
+     2400
+    ]
+   ]
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "instruction": "Two different totals were said, 22 thousand and 25 thousand. Ask both of them which one is final.",
+   "said_per_model": "Aap dono ne alag total bataya—22 hazaar aur 25 hazaar. Bataiye, final total kaun sa hai?",
+   "ms_trigger_to_first_audio_from_openai": 1146,
+   "ms_trigger_to_heard_in_room": 1333,
+   "speech_ms": 6450,
+   "ms_openai_took_to_send_all_audio": 1388,
+   "first_chunk_ms_of_audio": 400,
+   "worst_lead_over_realtime_ms": 302,
+   "starved_ms": 220,
+   "heard_span_ms": 6250,
+   "chunks": [
+    [
+     1146,
+     400
+    ],
+    [
+     1644,
+     800
+    ],
+    [
+     1676,
+     1200
+    ],
+    [
+     1678,
+     1600
+    ],
+    [
+     1696,
+     2000
+    ],
+    [
+     1716,
+     2400
+    ]
+   ]
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "instruction": "Two different totals were said, 22 thousand and 25 thousand. Ask both of them which one is final.",
+   "said_per_model": "22 हजार और 25 हजार की दो अलग-अलग रकम कही गई। कौन सी रकम अंतिम है, 22 हजार या 25 हजार, बताइए।",
+   "ms_trigger_to_first_audio_from_openai": 805,
+   "ms_trigger_to_heard_in_room": 967,
+   "speech_ms": 9050,
+   "ms_openai_took_to_send_all_audio": 925,
+   "first_chunk_ms_of_audio": 400,
+   "worst_lead_over_realtime_ms": 400,
+   "starved_ms": 0,
+   "heard_span_ms": 8990,
+   "chunks": [
+    [
+     805,
+     400
+    ],
+    [
+     850,
+     800
+    ],
+    [
+     863,
+     1200
+    ],
+    [
+     925,
+     1600
+    ],
+    [
+     994,
+     2000
+    ],
+    [
+     1025,
+     2400
+    ]
+   ]
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "instruction": "Ask Sunita how much advance she will give.",
+   "said_per_model": "Sunita, aap kitna advance dengi?",
+   "ms_trigger_to_first_audio_from_openai": 1149,
+   "ms_trigger_to_heard_in_room": 1389,
+   "speech_ms": 2900,
+   "ms_openai_took_to_send_all_audio": 567,
+   "first_chunk_ms_of_audio": 400,
+   "worst_lead_over_realtime_ms": 317,
+   "starved_ms": 270,
+   "heard_span_ms": 2529,
+   "chunks": [
+    [
+     1149,
+     400
+    ],
+    [
+     1632,
+     800
+    ],
+    [
+     1642,
+     1200
+    ],
+    [
+     1664,
+     1600
+    ],
+    [
+     1672,
+     2000
+    ],
+    [
+     1684,
+     2400
+    ]
+   ]
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "instruction": "Ask Sunita how much advance she will give.",
+   "said_per_model": "मैं आपसे पूछ रहा हूँ, Sunita, आप कितना advance देंगी?",
+   "ms_trigger_to_first_audio_from_openai": 695,
+   "ms_trigger_to_heard_in_room": 1255,
+   "speech_ms": 4400,
+   "ms_openai_took_to_send_all_audio": 543,
+   "first_chunk_ms_of_audio": 400,
+   "worst_lead_over_realtime_ms": 400,
+   "starved_ms": 0,
+   "heard_span_ms": 3540,
+   "chunks": [
+    [
+     695,
+     400
+    ],
+    [
+     780,
+     800
+    ],
+    [
+     780,
+     1200
+    ],
+    [
+     1194,
+     1600
+    ],
+    [
+     1198,
+     2000
+    ],
+    [
+     1201,
+     2400
+    ]
+   ]
+  }
+ ],
+ "usage": [
+  {
+   "model": "gpt-realtime-2.1",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 281,
+    "input_tokens": 150,
+    "output_tokens": 131,
+    "input_token_details": {
+     "text_tokens": 150,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 0,
+     "cached_tokens_details": {
+      "text_tokens": 0,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 75,
+     "audio_tokens": 56,
+     "reasoning_tokens": 49
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 351,
+    "input_tokens": 153,
+    "output_tokens": 198,
+    "input_token_details": {
+     "text_tokens": 153,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 128,
+     "cached_tokens_details": {
+      "text_tokens": 128,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 131,
+     "audio_tokens": 67,
+     "reasoning_tokens": 102
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 374,
+    "input_tokens": 163,
+    "output_tokens": 211,
+    "input_token_details": {
+     "text_tokens": 163,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 128,
+     "cached_tokens_details": {
+      "text_tokens": 128,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 82,
+     "audio_tokens": 129,
+     "reasoning_tokens": 37
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 272,
+    "input_tokens": 150,
+    "output_tokens": 122,
+    "input_token_details": {
+     "text_tokens": 150,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 128,
+     "cached_tokens_details": {
+      "text_tokens": 128,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 64,
+     "audio_tokens": 58,
+     "reasoning_tokens": 39
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 396,
+    "input_tokens": 150,
+    "output_tokens": 246,
+    "input_token_details": {
+     "text_tokens": 150,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 0,
+     "cached_tokens_details": {
+      "text_tokens": 0,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 93,
+     "audio_tokens": 153,
+     "reasoning_tokens": 43
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 362,
+    "input_tokens": 153,
+    "output_tokens": 209,
+    "input_token_details": {
+     "text_tokens": 153,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 128,
+     "cached_tokens_details": {
+      "text_tokens": 128,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 117,
+     "audio_tokens": 92,
+     "reasoning_tokens": 74
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 461,
+    "input_tokens": 163,
+    "output_tokens": 298,
+    "input_token_details": {
+     "text_tokens": 163,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 128,
+     "cached_tokens_details": {
+      "text_tokens": 128,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 117,
+     "audio_tokens": 181,
+     "reasoning_tokens": 64
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 306,
+    "input_tokens": 150,
+    "output_tokens": 156,
+    "input_token_details": {
+     "text_tokens": 150,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 0,
+     "cached_tokens_details": {
+      "text_tokens": 0,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 68,
+     "audio_tokens": 88,
+     "reasoning_tokens": 38
+    }
+   }
+  }
+ ],
+ "participant_minutes": 2.27
+}

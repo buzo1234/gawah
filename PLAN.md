@@ -196,14 +196,22 @@ Keep the safety switch from `tech-feasibility.md`: one setting that makes the Ju
 
 Fill in at hour 3.
 
-1. Call:
+1. Call: YES, machine-checked. The human check with a real phone is still to do. Use LiveKit with its low-level Python client (`livekit`, `livekit-api`), not the agent framework's session.
+   - Measured: two headless Chrome browsers, each playing our Hinglish recordings as its microphone, heard each other. The agent got each person as a separate track tied to the right identity, checked by transcribing each track. Audio arrives as 16-bit mono PCM at the rate we ask for.
+   - Catches: a person who drops without leaving is only reported gone after 22 seconds, and their track is silence until then. A rejoin gives a new participant id and a new track id. A room has no maximum-length setting.
+   - For the bridge stream: key everything on the participant's identity, start a new recording file on each rejoin, and close the room with our own 10-minute timer. The pattern, settings and event order are in `spikes/1-call.md`.
+   - Still to do: a real phone, the link opened inside WhatsApp, real microphones. The checklist is `spikes/1-call/HUMAN-CHECK.md`.
 2. Ears: PARTLY. Use OpenAI `gpt-transcribe`; Amazon Transcribe is not needed.
    - Use `gpt-transcribe` with a short prompt (the speakers' names, the kind of words to expect) and Hindi plus English language hints, one stream per person. Our own end-of-speech detection decides when a line ends. Send each line as a file upload; the text is back in about 0.9 seconds.
    - Right: 36 to 40 of the 42 amounts, dates, names and brands in 24 recorded Hinglish lines, against 30 to 34 without the prompt. "Haan theek hai" and "pakka" came back right every time. Text is always Devanagari. The contract values `gpt-5.4-mini` pulled from the transcript matched the ones from the script.
    - Wrong: "seventeen thousand" came back as "seventy thousand" in 42 of 43 runs and was never right. "Bees mein" came back as "please". With OpenAI's own end-of-speech detection, a "haan" or "Hindi" that nobody said was added to 5 of 24 lines.
    - For the build: an amount said only once cannot be trusted. The brain checks figures against each other, and the read-back and the separate confirmation are what protect the contract. The bridge does not use OpenAI's end-of-speech detection. Tests must not expect exact transcript text; it changes from run to run.
    - For the bridge stream: the calling pattern, what to expect to go wrong, and every transcript are in `spikes/2-ears.md` and `spikes/2-results/`.
-3. Mouth:
+3. Mouth: YES, machine-checked. The human check is still to do: nobody has listened to it on a real call. Use `gpt-realtime-2.1`, not the mini, on one connection held open for the whole call.
+   - Measured: silent for 65 seconds while two people talked. On a trigger, heard in the room after 1.1-1.9 seconds (median 1.3), asking only what the instruction said, in Hindi, 13 times of 13. Talked over, it went silent in the room 139-158 ms after the person's first sound, 5 times of 5.
+   - Catches: the mini is 0.1-0.2 seconds quicker but added words in 4 of 9 questions and once suggested a term. Talking-over is detected by loudness, tested only against a silent fake microphone. Playback ran dry for 130-275 ms early in half the timed runs. A cut-off reply is paid for in full.
+   - For the mouth stream: automatic replies off, never send the model the room's audio, one reply per text instruction with the persona in it, and stop by dropping our buffer and clearing the LiveKit audio source. The pattern and settings are in `spikes/3-mouth.md`; samples to listen to are in `spikes/1-call/samples/`.
+   - Still to do: how it sounds to a person, real room noise, and whether Gawah's own voice coming out of a loudspeaker cuts it off (echo). Same checklist as item 1.
 4. WhatsApp:
 5. Sage2: PARTLY. Use it for the live yes/no decisions; do not use its extract call.
    - Decisions were right on 286 of 286 answers on a 30-line Hinglish call, 285 of 286 in Devanagari, and 147 of 150 on a second, unseen call. About half a second per update from India.

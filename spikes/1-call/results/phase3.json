@@ -1,0 +1,199 @@
+{
+ "trials": [
+  {
+   "model": "gpt-realtime-2.1",
+   "what": "short, in the gap: must finish untouched",
+   "status": "completed",
+   "stop_reason": null,
+   "speech_generated_ms": 3150,
+   "speech_played_ms": 3160,
+   "said_per_model": "Sunita, balance कब तक दिया जाएगा?"
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "what": "long: Sunita talks over it",
+   "status": "cancelled",
+   "stop_reason": "barge-in by sunita",
+   "speech_generated_ms": 24150,
+   "speech_played_ms": 7800,
+   "said_per_model": "पहला, इंदिरापुरम के दो बीएचके फ्लैट की पेंटिंग, जिसमें बालकनी की ग्रिल भी शामिल है; दूसरा, ट्रैक्टर इमल्शन के दो कोट, साथ में पुट्टी टच-अप; तीसरा, सारा सामान पेंटर का; चौथा, कुल बाईस हजार रुपए; पाँचवां, कल पाँच हजार एडवांस यूपीआई से; छठा, काम आधा होने पर स",
+   "who": "sunita",
+   "ms_agent_detect_to_stop_sent": 0,
+   "ms_person_onset_in_room_to_agent_detect": 41,
+   "ms_person_onset_in_room_to_gawah_silent_in_room": 139,
+   "ms_agent_detect_to_gawah_silent_in_room": 98
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "what": "long: Sunita talks over it",
+   "status": "cancelled",
+   "stop_reason": "barge-in by sunita",
+   "speech_generated_ms": 25600,
+   "speech_played_ms": 6260,
+   "said_per_model": "सहमति के अनुसार, धीरे-धीरे सुनिए: इंदिरापुरम में दो बीएचके फ्लैट की पेंटिंग, जिसमें बालकनी की ग्रिल भी शामिल है; ट्रैक्टर इमल्शन, दो कोट, और पुट्टी टच-अप; सारा मटीरियल पेंटर का होगा; कुल बाइस हजार रुपये; पाँच हजार एडवांस कल UPI से; सात हजार काम आधा होने पर; दस हजार काम पूरा होने पर; काम अगले सोमवार सुबह 9 बजे शुरू होगा; और शुक्रवार तक",
+   "who": "sunita",
+   "ms_agent_detect_to_stop_sent": 0,
+   "ms_person_onset_in_room_to_agent_detect": 60,
+   "ms_person_onset_in_room_to_gawah_silent_in_room": 158,
+   "ms_agent_detect_to_gawah_silent_in_room": 99
+  },
+  {
+   "model": "gpt-realtime-2.1",
+   "what": "long: Sunita talks over it",
+   "status": "cancelled",
+   "stop_reason": "barge-in by sunita",
+   "speech_generated_ms": 28000,
+   "speech_played_ms": 7140,
+   "said_per_model": "पहले, इंदिरापुरम में दो बीएचके फ्लैट की पेंटिंग, जिसमें बालकनी की ग्रिल भी शामिल है। फिर, ट्रैक्टर इमल्शन के दो कोट, साथ में पुट्टी का टच-अप। मटीरियल पेंटर का होगा। कुल रकम बाइस हजार रुपये है। पाँच हजार एडवांस कल UPI से, सात हजार काम आधा होने पर, और दस हजार काम पूरा होने पर। काम अगले सोमवार सुबह 9 बजे शुरू होगा और शुक्रवार तक खत्म होगा। क्या ये सब सही है, दोनों कृपया बताएं?",
+   "who": "sunita",
+   "ms_agent_detect_to_stop_sent": 0,
+   "ms_person_onset_in_room_to_agent_detect": 60,
+   "ms_person_onset_in_room_to_gawah_silent_in_room": 151,
+   "ms_agent_detect_to_gawah_silent_in_room": 90
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "what": "long: Sunita talks over it",
+   "status": "completed",
+   "stop_reason": "barge-in by sunita",
+   "speech_generated_ms": 29450,
+   "speech_played_ms": 7400,
+   "said_per_model": "Main dheere dheere sab tay kiye hue terms ek-ek karke aapko sunata hoon: painting of a two BHK flat in Indirapuram including the balcony grill; Tractor Emulsion, two coats, with putty touch-up; material is the painter's; total 22 thousand rupees; 5 thousand advance tomorrow by UPI; 7 thousand when half the work is done; 10 thousand on completion; work starts next Monday at 9 in the morning; finished by Friday. Kya yeh sab sahi hai?",
+   "who": "sunita",
+   "ms_agent_detect_to_stop_sent": 0,
+   "ms_person_onset_in_room_to_agent_detect": 59,
+   "ms_person_onset_in_room_to_gawah_silent_in_room": 158,
+   "ms_agent_detect_to_gawah_silent_in_room": 99
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "what": "long: Sunita talks over it",
+   "status": "completed",
+   "stop_reason": "barge-in by sunita",
+   "speech_generated_ms": 27350,
+   "speech_played_ms": 6360,
+   "said_per_model": "ये सभी agreed terms धीर-धीरे, एक-एक करके सुनिए: दो बीएचके फ्लैट का पेंटिंग इंदिरापुरम में, बालकनी की ग्रिल सहित; ट्रैक्टर इमल्शन, दो लेयर, पुट्टी टच-अप के साथ; सामान पेंटर का होगा; कुल 22 हजार रुपये; 5 हजार एडवांस कल UPI से; 7 हजार जब आधा काम हो जाएगा; 10 हजार पूरा होने पर; काम अगले सोमवार सुबह 9 बजे शुरू, और शुक्रवार तक पूरा होगा। क्या ये सभी सही हैं?",
+   "who": "sunita",
+   "ms_agent_detect_to_stop_sent": 0,
+   "ms_person_onset_in_room_to_agent_detect": 41,
+   "ms_person_onset_in_room_to_gawah_silent_in_room": 150,
+   "ms_agent_detect_to_gawah_silent_in_room": 110
+  }
+ ],
+ "page_stats": {
+  "sunita": {
+   "room": "spike-p3-382374",
+   "identity": "sunita",
+   "state": "connected",
+   "micError": null,
+   "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+   "secure": true,
+   "mic": true,
+   "hears": {
+    "gawah": {
+     "packets": 2132,
+     "bytes": 461179,
+     "energy": 1.9757253699397963,
+     "level": 0.26917325357829525,
+     "seconds": 96.13000000001227,
+     "lost": 0,
+     "codec": "audio/opus"
+    },
+    "ramesh": {
+     "packets": 464,
+     "bytes": 14148,
+     "energy": 1.117189615053717e-07,
+     "level": 3.051850947599719e-05,
+     "seconds": 95.96000000001219,
+     "lost": 1,
+     "codec": "audio/opus"
+    }
+   },
+   "t": 103.1563
+  },
+  "ramesh": {
+   "room": "spike-p3-382374",
+   "identity": "ramesh",
+   "state": "connected",
+   "micError": null,
+   "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+   "secure": true,
+   "mic": true,
+   "hears": {
+    "gawah": {
+     "packets": 2130,
+     "bytes": 461121,
+     "energy": 1.9805235052835375,
+     "level": 0.26917325357829525,
+     "seconds": 96.12000000001227,
+     "lost": 2,
+     "codec": "audio/opus"
+    },
+    "sunita": {
+     "packets": 2451,
+     "bytes": 542629,
+     "energy": 2.208718687369933,
+     "level": 3.051850947599719e-05,
+     "seconds": 95.96000000001219,
+     "lost": 4,
+     "codec": "audio/opus"
+    }
+   },
+   "t": 103.1561
+  }
+ },
+ "model_errors": [],
+ "usage": [
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 1132,
+    "input_tokens": 247,
+    "output_tokens": 885,
+    "input_token_details": {
+     "text_tokens": 247,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 128,
+     "cached_tokens_details": {
+      "text_tokens": 128,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 296,
+     "audio_tokens": 589,
+     "reasoning_tokens": 143
+    }
+   }
+  },
+  {
+   "model": "gpt-realtime-2.1-mini",
+   "status": "completed",
+   "usage": {
+    "total_tokens": 1347,
+    "input_tokens": 247,
+    "output_tokens": 1100,
+    "input_token_details": {
+     "text_tokens": 247,
+     "audio_tokens": 0,
+     "image_tokens": 0,
+     "cached_tokens": 0,
+     "cached_tokens_details": {
+      "text_tokens": 0,
+      "audio_tokens": 0,
+      "image_tokens": 0
+     }
+    },
+    "output_token_details": {
+     "text_tokens": 553,
+     "audio_tokens": 547,
+     "reasoning_tokens": 389
+    }
+   }
+  }
+ ],
+ "participant_minutes": 6.75
+}

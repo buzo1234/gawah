@@ -1,0 +1,466 @@
+{
+ "both_tracks_subscribed_after_s": 1.58,
+ "silence_test": {
+  "seconds": 65.0,
+  "people_speech_starts": {
+   "recorder": 0,
+   "ramesh": 5,
+   "sunita": 6
+  },
+  "responses_without_trigger": 0,
+  "model_events_seen": {
+   "session.updated": 1
+  },
+  "model_errors": [],
+  "gawah_track_frames_at_recorder": 6658,
+  "gawah_track_loudest_db": -90.3,
+  "gawah_frames_louder_than_-80db": 0
+ },
+ "page_stats_before_drop": {
+  "ramesh": {
+   "room": "spike-p1-672015",
+   "identity": "ramesh",
+   "state": "connected",
+   "micError": null,
+   "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+   "secure": true,
+   "mic": true,
+   "hears": {
+    "gawah": {
+     "packets": 301,
+     "bytes": 8810,
+     "energy": 7.271279136910388e-08,
+     "level": 3.051850947599719e-05,
+     "seconds": 64.08999999999588,
+     "lost": 3,
+     "codec": "audio/opus"
+    },
+    "sunita": {
+     "packets": 1799,
+     "bytes": 404131,
+     "energy": 1.3951310814129716,
+     "level": 3.051850947599719e-05,
+     "seconds": 63.86999999999586,
+     "lost": 18,
+     "codec": "audio/opus"
+    }
+   },
+   "t": 70.2487
+  },
+  "sunita": {
+   "room": "spike-p1-672015",
+   "identity": "sunita",
+   "state": "connected",
+   "micError": null,
+   "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+   "secure": true,
+   "mic": true,
+   "hears": {
+    "gawah": {
+     "packets": 304,
+     "bytes": 8816,
+     "energy": 7.311328451997797e-08,
+     "level": 3.051850947599719e-05,
+     "seconds": 64.07999999999588,
+     "lost": 0,
+     "codec": "audio/opus"
+    },
+    "ramesh": {
+     "packets": 1585,
+     "bytes": 347867,
+     "energy": 0.737416038131372,
+     "level": 0.07318338572344127,
+     "seconds": 64.00999999999584,
+     "lost": 4,
+     "codec": "audio/opus"
+    }
+   },
+   "t": 70.335
+  }
+ },
+ "agent_receives": {
+  "ramesh": {
+   "sample_rate": 24000,
+   "channels": 1,
+   "samples_per_frame": 480,
+   "sample_format": "int16 PCM"
+  },
+  "sunita": {
+   "sample_rate": 24000,
+   "channels": 1,
+   "samples_per_frame": 480,
+   "sample_format": "int16 PCM"
+  }
+ },
+ "recorder_receives_sdk_default": {
+  "gawah": {
+   "sample_rate": 48000,
+   "channels": 1,
+   "samples_per_frame": 480
+  },
+  "ramesh": {
+   "sample_rate": 48000,
+   "channels": 1,
+   "samples_per_frame": 480
+  },
+  "sunita": {
+   "sample_rate": 48000,
+   "channels": 1,
+   "samples_per_frame": 480
+  }
+ },
+ "hard_drop_noticed_after_s": 21.8,
+ "rejoin_audio_after_s": 1.15,
+ "second_sunita_audio_after_s": 1.41,
+ "page_stats_after_rejoin": {
+  "ramesh": {
+   "room": "spike-p1-672015",
+   "identity": "ramesh",
+   "state": "connected",
+   "micError": null,
+   "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+   "secure": true,
+   "mic": true,
+   "hears": {
+    "gawah": {
+     "packets": 56,
+     "bytes": 1624,
+     "energy": 1.3523629187642296e-08,
+     "level": 6.103701895199438e-05,
+     "seconds": 12.089999999999787,
+     "lost": 0,
+     "codec": "audio/opus"
+    },
+    "sunita": {
+     "packets": 229,
+     "bytes": 55769,
+     "energy": 0.30568211535683804,
+     "level": 0.018066957609790338,
+     "seconds": 4.569999999999947,
+     "lost": 0,
+     "codec": "audio/opus"
+    }
+   },
+   "t": 106.4538
+  },
+  "sunita": {
+   "room": "spike-p1-672015",
+   "identity": "sunita",
+   "state": "connected",
+   "micError": null,
+   "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+   "secure": true,
+   "mic": true,
+   "hears": {
+    "gawah": {
+     "packets": 30,
+     "bytes": 870,
+     "energy": 5.5789627296127876e-09,
+     "level": 3.051850947599719e-05,
+     "seconds": 6.089999999999915,
+     "lost": 0,
+     "codec": "audio/opus"
+    },
+    "ramesh": {
+     "packets": 240,
+     "bytes": 56042,
+     "energy": 0.19172138040015926,
+     "level": 3.051850947599719e-05,
+     "seconds": 6.089999999999915,
+     "lost": 4,
+     "codec": "audio/opus"
+    }
+   },
+   "t": 107.8528
+  }
+ },
+ "clean_leave_noticed_after_s": 1.97,
+ "events": [
+  {
+   "t": 3.3009,
+   "event": "agent_connected",
+   "ms": 422,
+   "already_here": []
+  },
+  {
+   "t": 3.3015,
+   "event": "connection_state_changed",
+   "state": "CONN_CONNECTED"
+  },
+  {
+   "t": 4.6657,
+   "event": "mouth_connected",
+   "model": "gpt-realtime-2.1",
+   "ms": 1298
+  },
+  {
+   "t": 4.9133,
+   "event": "participant_connected",
+   "who": "recorder",
+   "sid": "PA_enYtSBEc9N3Z"
+  },
+  {
+   "t": 6.0525,
+   "event": "participant_connected",
+   "who": "ramesh",
+   "sid": "PA_qCRo9hKRGJvE"
+  },
+  {
+   "t": 6.1533,
+   "event": "participant_connected",
+   "who": "sunita",
+   "sid": "PA_QtoCdAPqxVZA"
+  },
+  {
+   "t": 6.2432,
+   "event": "track_published",
+   "who": "ramesh",
+   "track": "TR_AMyQqdoFxoZ4mF",
+   "media": "KIND_AUDIO"
+  },
+  {
+   "t": 6.275,
+   "event": "track_subscribed",
+   "who": "ramesh",
+   "track": "TR_AMyQqdoFxoZ4mF",
+   "media": "KIND_AUDIO"
+  },
+  {
+   "t": 6.2889,
+   "event": "first_audio_frame",
+   "who": "ramesh",
+   "track": "TR_AMyQqdoFxoZ4mF",
+   "sample_rate": 24000,
+   "channels": 1,
+   "samples_per_frame": 480,
+   "sample_format": "int16 PCM"
+  },
+  {
+   "t": 6.328,
+   "event": "track_published",
+   "who": "sunita",
+   "track": "TR_AMg4fsx6UuZxzN",
+   "media": "KIND_AUDIO"
+  },
+  {
+   "t": 6.5015,
+   "event": "track_subscribed",
+   "who": "sunita",
+   "track": "TR_AMg4fsx6UuZxzN",
+   "media": "KIND_AUDIO"
+  },
+  {
+   "t": 6.516,
+   "event": "first_audio_frame",
+   "who": "sunita",
+   "track": "TR_AMg4fsx6UuZxzN",
+   "sample_rate": 24000,
+   "channels": 1,
+   "samples_per_frame": 480,
+   "sample_format": "int16 PCM"
+  },
+  {
+   "t": 93.31,
+   "event": "track_unsubscribed",
+   "who": "ramesh",
+   "track": "TR_AMyQqdoFxoZ4mF"
+  },
+  {
+   "t": 93.3262,
+   "event": "track_unpublished",
+   "who": "ramesh",
+   "track": "TR_AMyQqdoFxoZ4mF"
+  },
+  {
+   "t": 93.3274,
+   "event": "participant_disconnected",
+   "who": "ramesh",
+   "sid": "PA_qCRo9hKRGJvE",
+   "reason": "CONNECTION_TIMEOUT"
+  },
+  {
+   "t": 94.2512,
+   "event": "participant_connected",
+   "who": "ramesh",
+   "sid": "PA_quLWjsAEdLqF"
+  },
+  {
+   "t": 94.4492,
+   "event": "track_published",
+   "who": "ramesh",
+   "track": "TR_AMps8L5m64qx5y",
+   "media": "KIND_AUDIO"
+  },
+  {
+   "t": 94.4838,
+   "event": "track_subscribed",
+   "who": "ramesh",
+   "track": "TR_AMps8L5m64qx5y",
+   "media": "KIND_AUDIO"
+  },
+  {
+   "t": 94.4963,
+   "event": "first_audio_frame",
+   "who": "ramesh",
+   "track": "TR_AMps8L5m64qx5y",
+   "sample_rate": 24000,
+   "channels": 1,
+   "samples_per_frame": 480,
+   "sample_format": "int16 PCM"
+  },
+  {
+   "t": 101.5677,
+   "event": "track_unsubscribed",
+   "who": "sunita",
+   "track": "TR_AMg4fsx6UuZxzN"
+  },
+  {
+   "t": 101.569,
+   "event": "track_unpublished",
+   "who": "sunita",
+   "track": "TR_AMg4fsx6UuZxzN"
+  },
+  {
+   "t": 101.571,
+   "event": "participant_disconnected",
+   "who": "sunita",
+   "sid": "PA_QtoCdAPqxVZA",
+   "reason": null
+  },
+  {
+   "t": 101.5715,
+   "event": "participant_connected",
+   "who": "sunita",
+   "sid": "PA_qwzF7LUErCF7"
+  },
+  {
+   "t": 101.848,
+   "event": "track_published",
+   "who": "sunita",
+   "track": "TR_AMacBhgo4CAsXQ",
+   "media": "KIND_AUDIO"
+  },
+  {
+   "t": 101.8758,
+   "event": "track_subscribed",
+   "who": "sunita",
+   "track": "TR_AMacBhgo4CAsXQ",
+   "media": "KIND_AUDIO"
+  },
+  {
+   "t": 101.8969,
+   "event": "first_audio_frame",
+   "who": "sunita",
+   "track": "TR_AMacBhgo4CAsXQ",
+   "sample_rate": 24000,
+   "channels": 1,
+   "samples_per_frame": 480,
+   "sample_format": "int16 PCM"
+  },
+  {
+   "t": 108.4731,
+   "event": "track_unsubscribed",
+   "who": "ramesh",
+   "track": "TR_AMps8L5m64qx5y"
+  },
+  {
+   "t": 108.4751,
+   "event": "track_unpublished",
+   "who": "ramesh",
+   "track": "TR_AMps8L5m64qx5y"
+  },
+  {
+   "t": 108.4813,
+   "event": "participant_disconnected",
+   "who": "ramesh",
+   "sid": "PA_quLWjsAEdLqF",
+   "reason": "CLIENT_INITIATED"
+  },
+  {
+   "t": 109.8646,
+   "event": "track_unsubscribed",
+   "who": "sunita",
+   "track": "TR_AMacBhgo4CAsXQ"
+  },
+  {
+   "t": 109.8647,
+   "event": "track_unpublished",
+   "who": "sunita",
+   "track": "TR_AMacBhgo4CAsXQ"
+  },
+  {
+   "t": 109.865,
+   "event": "participant_disconnected",
+   "who": "sunita",
+   "sid": "PA_qwzF7LUErCF7",
+   "reason": "CLIENT_INITIATED"
+  },
+  {
+   "t": 111.2942,
+   "event": "participant_disconnected",
+   "who": "recorder",
+   "sid": "PA_enYtSBEc9N3Z",
+   "reason": "CLIENT_INITIATED"
+  },
+  {
+   "t": 112.3069,
+   "event": "connection_state_changed",
+   "state": "CONN_DISCONNECTED"
+  },
+  {
+   "t": 112.3071,
+   "event": "track_audio_ended",
+   "who": "ramesh",
+   "track": "TR_AMps8L5m64qx5y",
+   "seconds": 14.2,
+   "file": "ramesh-2-TR_AMps8L5m64qx5y.wav"
+  },
+  {
+   "t": 112.3072,
+   "event": "track_audio_ended",
+   "who": "sunita",
+   "track": "TR_AMg4fsx6UuZxzN",
+   "seconds": 95.4,
+   "file": "sunita-1-TR_AMg4fsx6UuZxzN.wav"
+  },
+  {
+   "t": 112.3072,
+   "event": "track_audio_ended",
+   "who": "ramesh",
+   "track": "TR_AMyQqdoFxoZ4mF",
+   "seconds": 101.5,
+   "file": "ramesh-1-TR_AMyQqdoFxoZ4mF.wav"
+  },
+  {
+   "t": 112.3072,
+   "event": "track_audio_ended",
+   "who": "sunita",
+   "track": "TR_AMacBhgo4CAsXQ",
+   "seconds": 8.1,
+   "file": "sunita-2-TR_AMacBhgo4CAsXQ.wav"
+  }
+ ],
+ "files": {
+  "recorder": [],
+  "ramesh": [
+   "ramesh-1-TR_AMyQqdoFxoZ4mF.wav",
+   "ramesh-2-TR_AMps8L5m64qx5y.wav"
+  ],
+  "sunita": [
+   "sunita-1-TR_AMg4fsx6UuZxzN.wav",
+   "sunita-2-TR_AMacBhgo4CAsXQ.wav"
+  ]
+ },
+ "participant_minutes": 6.95,
+ "transcripts": {
+  "sunita": {
+   "played_into_fake_mic": "Hello, Ramesh ji bol rahe hain? Main Sunita bol rahi hoon, Sharma ji ne aapka number diya tha. Mujhe apna flat paint karwana hai. Two BHK hai, Indirapuram mein, third floor pe. Andar ka poora, dono bedroom, hall aur kitchen. Balcony ki grill bhi kar dena.",
+   "gpt_transcribe_of_agent_recording_first_40s": "हेलो, रमेश जी बोल रहे हैं। मैं सुनील बोल रहा हूँ। शर्मा जी ने आपका नंबर दिया। मुझे अपना फ्लैट पेंट करना है, टू बीएचके, एक तरफ पूरा... थर्ड फ्लोर है। अंदर का पूरा, दो बेडरूम, हॉल और किचन, बालकनी की ग्रिल भी कर देनी है।"
+  },
+  "ramesh": {
+   "played_into_fake_mic": "Haan ji madam, namaste. Boliye, kya kaam hai? Theek hai madam. Sirf andar ka kaam hai ya balcony ki grill bhi karni hai? Paint kaun sa lagwana hai? Asian Paints ka Royale loge ya normal Tractor Emulsion?",
+   "gpt_transcribe_of_agent_recording_first_40s": "हाँ जी मैडम, नमस्ते। बोलिए, क्या काम है? ठीक है मैडम, सर अंदर का काम है, अभी करेंगी, ग्रे भी करेंगे। पेंट कौन सा लगवाना है? … का … लोगे या नॉर्मल …"
+  }
+ },
+ "transcribe_calls": 2
+}
