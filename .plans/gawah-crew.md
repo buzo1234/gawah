@@ -100,7 +100,7 @@ Phase 1, in parallel, once the Judge tuning and the flaky-test fix have landed:
 - **Dashboard** (`app/dashboard`): the fact graph, conflicts, clip buttons, agent lanes.
 
 Phase 2:
-- **Judge** (`app/brain`): ambiguity, and conflicts from Memory turned into moments to speak.
+- **Judge** (`app/brain`): ambiguity, and conflicts from Memory turned into moments to speak. **Changed by the held-out evaluation (21 Nov):** the tuned Judge hit 4 of 10 required moments on five calls it had never seen, with 0.2 false fires per call. The causes were mostly in how terms are tracked, not when Gawah speaks: Sage2's yes/no "agreed" latched on a filler "theek hai" and never reopened; "no advance" was not taken as a settled answer; and the value lookup read a rejected counter-offer (35,000) as the agreed total (38,000), which the read-back would have stated aloud. So the Judge's checklist should come from Memory's facts, which keep offers, agreements, and their history apart; Sage2 stays as the fast signal for when to look. Re-score on the five held-out calls (`fixtures/holdout/`, scorer in `tests/brain/holdout/`) after the change.
 - **Clerk** (`app/contract`): amendments with history; the chain fingerprint.
 - Whole-flow test extended; a dry run of the two-call demo; then the user's run.
 
