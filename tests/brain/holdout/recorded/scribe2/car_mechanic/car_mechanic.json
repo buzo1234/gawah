@@ -1,0 +1,498 @@
+{
+ "model": "gpt-5.4-mini",
+ "effort": "none",
+ "replies": {
+  "Hello Salim bhai? Abhishek, Swift wala. Kal aapke garage pe gaadi chhodi thi, white Swift.": [],
+  "Haan Abhishek babu, UP32 wali. Dekh li maine. Clutch plate poori gayi hai, aur brake pad bhi khatam.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Mohammad Salim says he checked the car and found the clutch plate is completely worn out and the brake pad is also finished.",
+    "value": "clutch plate and brake pad are worn out",
+    "rupees": null,
+    "date": null,
+    "quote": "Haan Abhishek babu, UP32 wali. Dekh li maine. Clutch plate poori gayi hai, aur brake pad bhi khatam.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Yaar wahi laga tha. Kitna lagega total?": [
+   {
+    "item": "amount",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer asks how much the total will be.",
+    "value": "total price",
+    "rupees": null,
+    "date": null,
+    "quote": "Yaar wahi laga tha. Kitna lagega total?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Dekho, clutch kit 4,200 ki aati hai, company wali, brake pad 1,800, service 1,500 aur labour twelve hundred.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says the total cost components are clutch kit 4,200 rupees, brake pad 1,800 rupees, service 1,500 rupees, and labour 1,200 rupees.",
+    "value": "clutch kit 4,200 rupees, brake pad 1,800 rupees, service 1,500 rupees, labour 1,200 rupees",
+    "rupees": 9400,
+    "date": null,
+    "quote": "Dekho, clutch kit 4,200 ki aati hai, company wali, brake pad 1,800, service 1,500 aur labour twelve hundred.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the clutch kit is company-made.",
+    "value": "company-made clutch kit",
+    "rupees": null,
+    "date": null,
+    "quote": "Dekho, clutch kit 4,200 ki aati hai, company wali, brake pad 1,800, service 1,500 aur labour twelve hundred.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Matlab around eighty seven hundred?": [
+   {
+    "item": "amount",
+    "kind": "other",
+    "stance": "recall",
+    "text": "The hirer recalls the total as around 8,700 rupees.",
+    "value": "around 8,700 rupees",
+    "rupees": 8700,
+    "date": null,
+    "quote": "Matlab around eighty seven hundred?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan, aur oil filter, coolant daalna padega, to nau hazaar teen sau ke aas paas baith jayega.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The worker says the total will come to about 9,300 rupees with oil filter and coolant added.",
+    "value": "9,300 rupees",
+    "rupees": 9300,
+    "date": null,
+    "quote": "Haan, aur oil filter, coolant daalna padega, to nau hazaar teen sau ke aas paas baith jayega.",
+    "accepts_line": null,
+    "contradicts": "amount@1.5"
+   }
+  ],
+  "Salim bhai, 9,300 thoda zyada hai. Last time service 3,000 mein ho gaya tha.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "state",
+    "text": "The hirer says 9,300 rupees is a bit too much.",
+    "value": "9,300 rupees",
+    "rupees": 9300,
+    "date": null,
+    "quote": "Salim bhai, 9,300 thoda zyada hai.",
+    "accepts_line": null,
+    "contradicts": "amount@1.6"
+   },
+   {
+    "item": "amount",
+    "kind": "other",
+    "stance": "recall",
+    "text": "The hirer says last time the service was done for 3,000 rupees.",
+    "value": "3,000 rupees",
+    "rupees": 3000,
+    "date": null,
+    "quote": "Last time service 3,000 mein ho gaya tha.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Last time sirf service tha babu, clutch nahi tha. Chalo, aapke liye 9,000 flat. Upar neeche jo hoga main dekh lunga.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The worker says the price is 9,000 rupees flat for this job.",
+    "value": "9,000 rupees",
+    "rupees": 9000,
+    "date": null,
+    "quote": "Chalo, aapke liye 9,000 flat.",
+    "accepts_line": null,
+    "contradicts": "amount@1.6"
+   },
+   {
+    "item": "late_or_unfinished",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says he will handle whatever small extra amount comes up.",
+    "value": "whatever extra comes up",
+    "rupees": null,
+    "date": null,
+    "quote": "Upar neeche jo hoga main dekh lunga.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "9,000 all inclusive? Koi extra bill nahi aayega baad mein?": [
+   {
+    "item": "amount",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer asks whether the 9,000 rupees is all inclusive.",
+    "value": "9,000 rupees all inclusive",
+    "rupees": 9000,
+    "date": null,
+    "quote": "9,000 all inclusive?",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "late_or_unfinished",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer asks whether no extra bill will come later.",
+    "value": "no extra bill later",
+    "rupees": null,
+    "date": null,
+    "quote": "Koi extra bill nahi aayega baad mein?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Koi extra nahi. Nau hazaar mein gaadi ready.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The worker says the total amount is 9,000 rupees.",
+    "value": "9,000 rupees",
+    "rupees": 9000,
+    "date": null,
+    "quote": "Koi extra nahi. Nau hazaar mein gaadi ready.",
+    "accepts_line": 9,
+    "contradicts": null
+   }
+  ],
+  "Okay. Aur kab tak milegi? Mujhe Monday ko Kanpur jaana hai, client meeting hai.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says the car should be ready by Monday because he has to go to Kanpur for a client meeting.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Okay. Aur kab tak milegi? Mujhe Monday ko Kanpur jaana hai, client meeting hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Monday tak de dunga. Clutch ka part kal aayega Aminabad se.": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The worker says he will deliver the car by Monday.",
+    "value": "finish by Monday",
+    "rupees": null,
+    "date": null,
+    "quote": "Monday tak de dunga.",
+    "accepts_line": 11,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says the clutch part will come tomorrow from Aminabad.",
+    "value": "clutch part from Aminabad",
+    "rupees": null,
+    "date": null,
+    "quote": "Clutch ka part kal aayega Aminabad se.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Chalo theek hai, to Monday. Aur paise advance mein chahiye kuch? Part ke liye?": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The hirer accepts finish by Monday.",
+    "value": "finish by Monday",
+    "rupees": null,
+    "date": null,
+    "quote": "Chalo theek hai, to Monday.",
+    "accepts_line": 12,
+    "contradicts": null
+   },
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "state",
+    "text": "The hirer asks whether any money is needed in advance for the part.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Aur paise advance mein chahiye kuch? Part ke liye?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Arre nahi babu, gaadi to mere paas khadi hai, advance kya lena. Jab le jaoge tab de dena.": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says no advance is needed.",
+    "value": "no advance",
+    "rupees": 0,
+    "date": null,
+    "quote": "Arre nahi babu, gaadi to mere paas khadi hai, advance kya lena.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the rest is to be paid when the car is taken away.",
+    "value": "pay when you take it",
+    "rupees": null,
+    "date": null,
+    "quote": "Jab le jaoge tab de dena.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Cool. Online de dunga.": [
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "state",
+    "text": "The hirer says he will pay the rest online.",
+    "value": "pay online",
+    "rupees": null,
+    "date": null,
+    "quote": "Cool. Online de dunga.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan, Paytm hai garage pe.": [
+   {
+    "item": "balance",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says the garage has Paytm.",
+    "value": "Paytm available at the garage",
+    "rupees": null,
+    "date": null,
+    "quote": "Haan, Paytm hai garage pe.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Aur haan babu, aage wale dono tyre bhi ghis gaye hain. Baarish mein slip karegi gaadi.": [
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "state",
+    "text": "The worker says the front two tyres are also worn out.",
+    "value": "front two tyres are worn out",
+    "rupees": null,
+    "date": null,
+    "quote": "Aur haan babu, aage wale dono tyre bhi ghis gaye hain. Baarish mein slip karegi gaadi.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "late_or_unfinished",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says the car may slip in the rain.",
+    "value": "car may slip in rain",
+    "rupees": null,
+    "date": null,
+    "quote": "Aur haan babu, aage wale dono tyre bhi ghis gaye hain. Baarish mein slip karegi gaadi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan theek hai, theek hai. Accha ek baat, agar Monday ko gaadi ready nahi hui to mera poora din kharab. Cab karni padegi Kanpur tak.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says that if the car is not ready by Monday, his whole day will be ruined and he will have to take a cab to Kanpur.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Haan theek hai, theek hai. Accha ek baat, agar Monday ko gaadi ready nahi hui to mera poora din kharab. Cab karni padegi Kanpur tak.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "To cab ka kiraya Salim dega, aur kya. Hahaha.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says Salim will pay for the cab fare if the car is not ready.",
+    "value": "worker will pay cab fare",
+    "rupees": null,
+    "date": null,
+    "quote": "To cab ka kiraya Salim dega, aur kya.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Pakka? Dekho, ye call pe sab record ho raha hai, Gawah sun raha hai.": [],
+  "Haan haan pakka. Monday ko gaadi nahi mili to Kanpur ki cab ka paisa mera. Salim zubaan ka pakka hai.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The worker says that if the car is not ready by Monday, he will pay the Kanpur cab fare.",
+    "value": "worker pays cab fare if not ready by Monday",
+    "rupees": null,
+    "date": null,
+    "quote": "Haan haan pakka. Monday ko gaadi nahi mili to Kanpur ki cab ka paisa mera. Salim zubaan ka pakka hai.",
+    "accepts_line": 18,
+    "contradicts": null
+   }
+  ],
+  "Aur clutch ki warranty company ki hai, chhe mahine ya das hazaar kilometre.": [
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "state",
+    "text": "The worker says the clutch warranty is company warranty, for six months or 10,000 kilometres.",
+    "value": "company warranty, six months or 10,000 kilometres",
+    "rupees": null,
+    "date": null,
+    "quote": "Aur clutch ki warranty company ki hai, chhe mahine ya das hazaar kilometre.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Achha good. Salim bhai waise kal ka match dekha? Lucknow wala?": [],
+  "Arre mat poochho babu. Aakhri over mein haar gaye. Bowler ne do wide daal di.": [],
+  "Haan yaar, captain out hua to laga gaya match.": [],
+  "Hamara bhatija stadium gaya tha, chaar sau ka ticket leke. Bola paisa barbaad.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says his nephew went to the stadium and bought a 400-rupee ticket, then said it was a waste of money.",
+    "value": "400 rupees",
+    "rupees": 400,
+    "date": null,
+    "quote": "Hamara bhatija stadium gaya tha, chaar sau ka ticket leke. Bola paisa barbaad.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haha. Accha Gawah, ek baar bata do, total kitna fix hua tha, 9,000 ya 9,300?": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "recall",
+    "text": "The hirer asks which total was fixed, 9,000 or 9,300.",
+    "value": "9,000 or 9,300 rupees",
+    "rupees": null,
+    "date": null,
+    "quote": "Haha. Accha Gawah, ek baar bata do, total kitna fix hua tha, 9,000 ya 9,300?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Nau hazaar babu, flat. Main bhi wahi bol raha hoon.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "recall",
+    "text": "The worker says the fixed total was 9,000 rupees flat.",
+    "value": "9,000 rupees",
+    "rupees": 9000,
+    "date": null,
+    "quote": "Nau hazaar babu, flat.",
+    "accepts_line": null,
+    "contradicts": "amount@1.6"
+   },
+   {
+    "item": "amount",
+    "kind": "other",
+    "stance": "recall",
+    "text": "The worker says he was also saying the same thing.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Main bhi wahi bol raha hoon.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan haan. Chalo Salim bhai, Monday milte hain.": [
+   {
+    "item": "dates",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says they will meet on Monday.",
+    "value": "meet Monday",
+    "rupees": null,
+    "date": null,
+    "quote": "Haan haan. Chalo Salim bhai, Monday milte hain.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan babu. Aur tyre ka soch lena, baarish aa rahi hai.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says to think about the tyres because it is raining.",
+    "value": "think about tyres because rain is coming",
+    "rupees": null,
+    "date": null,
+    "quote": "Haan babu. Aur tyre ka soch lena, baarish aa rahi hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan haan dekhta hoon. Chalo bye, Khuda hafiz.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says he will take a look.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Haan haan dekhta hoon.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Khuda hafiz babu.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says goodbye.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Khuda hafiz babu.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ]
+ },
+ "checks": {}
+}

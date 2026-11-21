@@ -1,6 +1,6 @@
 {
  "fixture": "holdout_carpenter_wardrobe",
- "recorded_at": "2026-11-21T17:08:30+00:00",
+ "recorded_at": "2026-11-21T18:22:48+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "value:work@3": {
@@ -87,6 +87,13 @@
   "ambiguous:amount@10": {
    "ambiguous": false,
    "readings": null
+  },
+  "ambiguous:dates@14": {
+   "ambiguous": true,
+   "readings": [
+    "work will be finished by the 15th",
+    "work will continue until the 15th"
+   ]
   }
  }
 }

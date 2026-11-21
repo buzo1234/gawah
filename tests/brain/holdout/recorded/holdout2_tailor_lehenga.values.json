@@ -1,0 +1,46 @@
+{
+ "fixture": "holdout2_tailor_lehenga",
+ "recorded_at": "2026-11-21T18:25:10+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "ambiguous:work@12": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@14": {
+   "ambiguous": true,
+   "readings": [
+    "start when cloth is handed over tomorrow",
+    "start when cloth is handed over the day after tomorrow"
+   ]
+  },
+  "ambiguous:advance@19": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "names:-@1": {
+   "hirer": "Sunita",
+   "worker": null
+  },
+  "names:-@2": {
+   "hirer": "Sunita",
+   "worker": null
+  },
+  "names:-@3": {
+   "hirer": "Sunita",
+   "worker": null
+  },
+  "names:-@4": {
+   "hirer": "Sunita",
+   "worker": null
+  },
+  "names:-@5": {
+   "hirer": "Sunita",
+   "worker": null
+  },
+  "names:-@6": {
+   "hirer": "Sunita",
+   "worker": null
+  }
+ }
+}

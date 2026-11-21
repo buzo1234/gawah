@@ -1,0 +1,35 @@
+{
+ "fixture": "holdout2_mason_wall_call1",
+ "recorded_at": "2026-11-21T18:25:55+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "ambiguous:work@5": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@8": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@13": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:balance@13": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@19": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:late_or_unfinished@20": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "names:-@1": {
+   "hirer": "Fauji",
+   "worker": "Shakeel"
+  }
+ }
+}

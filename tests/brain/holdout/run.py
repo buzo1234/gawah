@@ -1,66 +1,130 @@
-"""The tuned Judge on the held-out calls in fixtures/holdout/: record once, then score.
+"""The tuned Judge on held-out calls: record once, then score.
 
-    uv run python -m tests.brain.holdout.run sage fixtures/holdout/<call>.json     # live Sage2: one update per line plus one
-    uv run python -m tests.brain.holdout.run values fixtures/holdout/<call>.json   # live OpenAI, only lookups not yet saved
-    uv run python -m tests.brain.holdout.run score                                  # no outside calls
+    uv run python -m tests.brain.holdout.run sage fixtures/holdout2/<call>.json     # live Sage2: one update per line plus one
+    uv run python -m tests.brain.holdout.run scribe fixtures/holdout2/<call>.json   # live Scribe, the whole deal the call is in
+    uv run python -m tests.brain.holdout.run values fixtures/holdout2/<call>.json   # live OpenAI lookups, the whole deal
+    uv run python -m tests.brain.holdout.run score [seen|fresh|all] [report.json]   # no outside calls
 
-Recordings live in tests/brain/holdout/recorded/, not tests/brain/recorded/, so the
-offline app and the practice-call tests never answer from them. The brain's checklist comes
-from the memory's facts, so the memory runs beside it on the Scribe's replies saved in
-recorded/scribe/ (made with `uv run python -m tests.memory.record fixtures/holdout/<call>.json
---save`, then moved there). `values` replays the call
-three ways (live mode, wrapup mode, and live mode with no names known at the start, as a
-WhatsApp deal starts) and saves every lookup each one makes. `score` replays the same
-three on the saved answers and scores them against each fixture's `expected` and
-`must_stay_silent`.
+Two sets: "seen" is fixtures/holdout/ (its failures guided later fixes, so its score is not
+an honest one) and "fresh" is fixtures/holdout2/. Calls that share a `deal` (the mason pair)
+are replayed as calls 1, 2, ... of one deal through one brain and one memory, so the memory
+and the checklist carry over. Each call starts on its `call_date`, which anchors "kal" and
+"Monday" for the memory and Sage2.
+
+Recordings live in tests/brain/holdout/recorded/, not tests/brain/recorded/, so the offline
+app and the practice-call tests never answer from them. The Scribe's replies for the seen set
+are in recorded/scribe/ (all calls in one folder); for the fresh set in recorded/scribe2/<deal>/,
+one folder per deal so a line said on two calls never borrows another call's reply. `values`
+replays the deal three ways (live mode, wrapup mode, and live mode with no names known at the
+start of call 1, as a WhatsApp deal starts) and saves every lookup each one makes. `score`
+replays the same three on the saved answers and scores them against each fixture's `expected`
+and `must_stay_silent`, and prints the memory's terms at the end of every call.
 """
 
 import asyncio
 import json
-import re
 import sys
 from datetime import UTC, datetime
+from functools import partial
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from app.brain import Brain, sage, tuning
 from app.brain.values import OpenAIValues, RecordedValues
 from app.bus import Bus
 from app.config import get_settings
-from app.contracts import CallStarted, ChecklistUpdated, JudgeSpeak, Person, Role
+from app.contracts import CallEnded, CallStarted, ChecklistUpdated, FactConflict, ItemKey, JudgeSpeak, Person, Role, TranscriptLine
+from app.memory.extract import RecordedExtractor, Routed
 from fakes.replayer import load
 from tests.brain.record import _Saving
 from tests.brain.replaying import Run, memory_on, play, settling
 
 OUT = Path(__file__).parent / "recorded"
-SCRIBE = OUT / "scribe"
-CALLS = sorted(Path("fixtures/holdout").glob("*.json"))
+SETS = {"seen": Path("fixtures/holdout"), "fresh": Path("fixtures/holdout2")}
+SAGE_BUDGET = 220  # Sage2 updates allowed for recording the fresh set
 VARIANTS = {"live": ("live", True), "wrapup": ("wrapup", True), "unnamed": ("live", False)}
-# The names each person is called by on the call. The cook's hirer is only ever "Sharma ji".
-HEARD = {
-    "holdout_carpenter_wardrobe": {"hirer": {"Deepak"}, "worker": {"Abdul"}},
-    "holdout_cook_month": {"hirer": {"Sharma", None}, "worker": {"Kamla"}},
-    "holdout_electrician_shop": {"hirer": {"Imran"}, "worker": {"Suresh"}},
-    "holdout_plumber_leak": {"hirer": {"Sunita"}, "worker": {"Raju"}},
-    "holdout_tutor_monthly": {"hirer": {"Ruma"}, "worker": {"Ankit"}},
-}
-# The carpenter's note: in live mode the conflict question after line 26 can satisfy the
-# wrap-up moment after line 27. (fixture id, expected after_line) -> first line that counts.
-COVERED_FROM = {("holdout_carpenter_wardrobe", 27): 26}
+_PREAMBLE = sage.preamble
 
 
 def people(fixture: dict, named: bool) -> list[Person]:
     return [Person(**(p if named else {**p, "name": None})) for p in fixture["people"]]
 
 
+def deal_of(path: Path) -> list[Path]:
+    """The calls of the deal this call is in, call 1 first."""
+    fixture = load(path)
+    if "deal" not in fixture:
+        return [path]
+    calls = [(load(p).get("call_no", 1), p) for p in sorted(path.parent.glob("*.json")) if load(p).get("deal") == fixture["deal"]]
+    return [p for _, p in sorted(calls)]
+
+
+def deals(folder: Path) -> list[list[Path]]:
+    found: list[list[Path]] = []
+    for path in sorted(folder.glob("*.json")):
+        calls = deal_of(path)
+        if calls not in found:
+            found.append(calls)
+    return found
+
+
+def scribe_dir(fixture: dict) -> Path:
+    return OUT / "scribe2" / fixture["deal"] if "deal" in fixture else OUT / "scribe"
+
+
+def call_day(fixture: dict) -> datetime | None:
+    day = fixture.get("call_date")
+    return datetime.fromisoformat(day).replace(hour=11, tzinfo=ZoneInfo("Asia/Kolkata")) if day else None
+
+
+def dated(emit, by_call: dict[int, dict]):
+    """Start each call on its call_date: the memory reads dates from call.started's time, and
+    Sage2 and the lookups are told today's date in the preamble."""
+
+    async def wrapped(event) -> None:
+        if isinstance(event, CallStarted):
+            day = call_day(by_call[event.call_no])
+            sage.preamble = partial(_PREAMBLE, today=day) if day else _PREAMBLE
+            if day:
+                event = event.model_copy(update={"ts": day.astimezone(UTC)})
+        await emit(event)
+
+    return wrapped
+
+
+class CountingScribe(RecordedExtractor):
+    """The saved Scribe replies, counting what a replay asked for that was not saved."""
+
+    def __init__(self, folder: Path) -> None:
+        super().__init__(folder)
+        self.missing_checks: list[str] = []
+
+    async def check(self, check):
+        found = await super().check(check)
+        if found is None:
+            self.missing_checks.append(check.key)
+        return found
+
+
 # ---- recording ----
+
+
+def _sage_spent() -> int:
+    return sum(json.loads(p.read_text())["updates"] for p in OUT.glob("holdout2_*.sage.json"))
 
 
 async def record_sage(path: str) -> None:
     fixture = load(path)
+    out = OUT / f"{fixture['id']}.sage.json"
+    if out.exists():
+        raise SystemExit(f"{out} exists; recording again would cost the whole call again")
+    spent, need = _sage_spent(), len(fixture["lines"]) + 1
+    if fixture["id"].startswith("holdout2_") and spent + need > SAGE_BUDGET:
+        raise SystemExit(f"over budget: {spent} spent, {need} needed, {SAGE_BUDGET} allowed")
     who = people(fixture, True)
     tuning.SAGE_TIMEOUT_S = 20.0
     stream = sage.SageStream(get_settings().require("sage_api_key"), sage.QUESTIONS)
-    preamble = sage.preamble(who)
+    preamble = _PREAMBLE(who, call_day(fixture))
     answers, lines, holes = {"0": await stream.open(preamble)}, {}, []
     try:
         for line in fixture["lines"]:
@@ -72,7 +136,6 @@ async def record_sage(path: str) -> None:
     finally:
         await stream.close()
         OUT.mkdir(exist_ok=True)
-        out = OUT / f"{fixture['id']}.sage.json"
         # Saved even with holes: a hole is a line Sage2 did not answer in time, which the brain
         # handles as on a real call. Recording again would cost the whole call again.
         out.write_text(json.dumps({
@@ -80,196 +143,134 @@ async def record_sage(path: str) -> None:
             "preamble": preamble, "questions": sage.QUESTIONS, "updates": stream.updates, "holes": holes,
             "lines": lines, "answers": answers,
         }, ensure_ascii=False, indent=1) + "\n")
-        print(f"saved {out}; sage2 updates sent: {stream.updates}; holes: {holes}")
+        print(f"saved {out}; sage2 updates sent: {stream.updates} (fresh set so far {_sage_spent()}); holes: {holes}")
+
+
+async def record_scribe(path: str) -> None:
+    """The live Scribe over every call of the deal, in order, into one memory."""
+    from app.memory import extract
+    from app.memory.openai_client import OpenAIClient
+    from tests.memory.record import Recorder
+
+    fixtures = [load(p) for p in deal_of(Path(path))]
+    by_call = {f.get("call_no", 1): f for f in fixtures}
+    client = OpenAIClient(get_settings())
+    recorder = Recorder(extract.LiveExtractor(client))
+    bus = Bus()
+    memory = memory_on(bus, extractor=recorder)
+    bus.start()
+
+    async def settle(event) -> None:
+        bus.publish(event)
+        for _ in range(3):
+            await bus.drain(60)
+            await memory.settle()
+
+    emit = dated(settle, by_call)
+    deal = f"record-{fixtures[0].get('deal', fixtures[0]['id'])}"
+    for n, fixture in by_call.items():
+        who = people(fixture, True)
+        room = f"record-{deal}-{n}"
+        await emit(CallStarted(deal_id=deal, people=who, room=room, call_no=n))
+        for line in fixture["lines"]:
+            await emit(TranscriptLine(deal_id=deal, call_no=n, **line))
+        await emit(CallEnded(deal_id=deal, people=who, room=room, call_no=n))
+        print(f"-- after call {n}:", json.dumps({k.value: _term(await memory.get_term(deal, k)) for k in ItemKey}, ensure_ascii=False))
+    for c in memory.conflicts:
+        print(f"  CONFLICT call {c.call_no} line {c.line_no}: {c.explanation}")
+    out = scribe_dir(fixtures[0]) / f"{fixtures[0].get('deal', fixtures[0]['id'])}.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(
+        {"model": extract.MODEL, "effort": extract.EFFORT, "replies": recorder.replies, "checks": recorder.checks},
+        indent=1, ensure_ascii=False,
+    ) + "\n")
+    print(f"saved {out}; openai calls: {dict(client.calls)}")
+    await client.close()
+    await bus.stop()
 
 
 async def record_values(path: str) -> None:
-    fixture = load(path)
-    out = OUT / f"{fixture['id']}.values.json"
+    fixtures = [load(p) for p in deal_of(Path(path))]
+    outs = {f.get("call_no", 1): OUT / f"{f['id']}.values.json" for f in fixtures}
     tuning.LOOKUP_WAIT_S = 30.0
-    silence_s, tuning.CLOSING_SILENCE_S = tuning.CLOSING_SILENCE_S, 3600.0
+    silence_s, tuning.CLOSING_SILENCE_S = tuning.CLOSING_SILENCE_S, 3600.0  # play() passes silences, in call seconds
     openai = OpenAIValues(get_settings().require("openai_api_key"))
-    saving = _Saving(openai, json.loads(out.read_text())["replies"] if out.exists() else None)
-    for variant, (mode, named) in VARIANTS.items():
+    savings = {n: _Saving(openai, json.loads(o.read_text())["replies"] if o.exists() else None) for n, o in outs.items()}
+    for variant in VARIANTS:
         print("--", variant, flush=True)
-        bus = Bus()
-        memory = memory_on(bus, SCRIBE)
-        bus.start()
-        brain = Brain(bus, mode, lambda started: (sage.RecordedDecisions(OUT / f"{fixture['id']}.sage.json"), saving), memory)
-        emit = settling(bus, memory, brain, 60)
-        await play({**fixture, "people": [p.model_dump() for p in people(fixture, named)]}, brain, emit, fixture["id"], silence_s)
-        await bus.stop()
-        saving.saved |= saving.replies
+        await replay(deal_of(Path(path)), variant, savings, timeout=60, silence_s=silence_s)
+        for s in savings.values():
+            s.saved |= s.replies
     await openai.close()
-    out.write_text(json.dumps({
-        "fixture": fixture["id"], "recorded_at": datetime.now(UTC).isoformat(timespec="seconds"),
-        "model": tuning.VALUES_MODEL, "replies": saving.saved,
-    }, ensure_ascii=False, indent=1) + "\n")
-    print(f"saved {out}; openai calls: {openai.calls}")
+    for n, out in outs.items():
+        out.write_text(json.dumps({
+            "fixture": out.name.removesuffix(".values.json"), "recorded_at": datetime.now(UTC).isoformat(timespec="seconds"),
+            "model": tuning.VALUES_MODEL, "replies": savings[n].saved,
+        }, ensure_ascii=False, indent=1) + "\n")
+        print(f"saved {out}")
+    print(f"openai calls: {openai.calls}")
 
 
 # ---- replaying ----
 
 
-async def replay(path: Path, variant: str) -> Run:
+def _term(view) -> str | None:
+    f = view.current
+    return None if f is None else f"{f.value or f.text} [{f.status.value}, call {f.call_no} line {f.line_no}]"
+
+
+async def replay(paths: list[Path], variant: str, values: dict | None = None, timeout: float = 5.0, silence_s: float | None = None) -> list[Run]:
+    """Every call of one deal in order through one brain and one memory; one Run per call."""
     mode, named = VARIANTS[variant]
-    fixture = load(path)
-    fixture = {**fixture, "people": [p.model_dump() for p in people(fixture, named)]}
-    values = RecordedValues(OUT / f"{fixture['id']}.values.json")
+    fixtures = [load(p) for p in paths]
+    by_call = {f.get("call_no", 1): f for f in fixtures}
+    values = values or {n: RecordedValues(OUT / f"{f['id']}.values.json") for n, f in by_call.items()}
+    scribe = CountingScribe(scribe_dir(fixtures[0]))
     bus = Bus()
-    memory = memory_on(bus, SCRIBE)
+    memory = memory_on(bus, extractor=Routed(None, scribe))
     bus.start()
-    brain = Brain(bus, mode, lambda started: (sage.RecordedDecisions(OUT / f"{fixture['id']}.sage.json"), values), memory)
-    events, started = [], []
+    brain = Brain(bus, mode, lambda started: (sage.RecordedDecisions(OUT / f"{by_call[started.call_no]['id']}.sage.json"), values[started.call_no]), memory)
+    events: list = []
 
     async def collect(event) -> None:
-        if isinstance(event, (JudgeSpeak, ChecklistUpdated)):
+        if isinstance(event, (JudgeSpeak, ChecklistUpdated, FactConflict, CallStarted)):
             events.append(event)
-        if isinstance(event, CallStarted):
-            started.append(event)
 
     bus.subscribe_all(collect)
-    await play(fixture, brain, settling(bus, memory, brain), f"{fixture['id']}-holdout")
+    emit = dated(settling(bus, memory, brain, timeout), by_call)
+    deal = f"{fixtures[0].get('deal', fixtures[0]['id'])}-holdout"
+    runs = []
+    for n, fixture in by_call.items():
+        start = len(events)
+        # Names unknown applies to the first call only: by call 2 the deal knows them.
+        who = people(fixture, named or n > 1)
+        await play({**fixture, "people": [p.model_dump() for p in who]}, brain, emit, deal, silence_s, call_no=n)
+        part = events[start:]
+        run = Run(fixture, [e for e in part if not isinstance(e, CallStarted)], values[n])
+        run.started = [e for e in part if isinstance(e, CallStarted)]
+        run.terms = {k.value: _term(await memory.get_term(deal, k)) for k in ItemKey}
+        run.memory_conflicts = [
+            (c, memory.book.fact(c.fact_ids[0]) if c.fact_ids else None) for c in memory.conflicts if c.call_no == n
+        ]
+        run.missing_checks = list(scribe.missing_checks)
+        scribe.missing_checks.clear()
+        runs.append(run)
     await bus.stop()
-    run = Run(fixture, events, values)
-    run.started = started
-    return run
-
-
-# ---- scoring ----
-
-
-def _pending_alts(want: dict) -> list[tuple[str, int | None]]:
-    alts = []
-    for text in want.get("also_pending", []):
-        m = re.match(r"(\w+)(?: \(until line (\d+)\))?", text)
-        alts.append((m.group(1), int(m.group(2)) if m.group(2) else None))
-    return alts
-
-
-def score(run: Run, mode: str) -> dict:
-    fid = run.fixture["id"]
-    speaks = run.speaks
-    wants = [w for w in run.fixture["expected"] if mode in w["modes"]]
-    used: set[int] = set()
-    outcome: dict[int, tuple[str, int | None, str]] = {}  # want index -> (verdict, speak index, detail)
-
-    def in_window(s, w):
-        return w["after_line"] <= s.after_line <= w["by_line"]
-
-    def reasons(w):
-        ok = {w["reason"], *w.get("reason_also_ok", [])}
-        # The Judge now raises a figure that differs from one already agreed as a contradiction
-        # of the record (from the memory's fact.conflict); the moment is the one these call
-        # conflicting_figures. Nothing else about a hit changes.
-        return ok | {"contradicts_record"} if "conflicting_figures" in ok else ok
-
-    def take(i, w, verdict, test, detail="", reuse=False):
-        if i in outcome:
-            return
-        for j, s in enumerate(speaks):
-            if (reuse or j not in used) and test(s, w):
-                outcome[i] = (verdict, j, detail)
-                used.add(j)
-                return
-
-    for i, w in enumerate(wants):  # exact
-        take(i, w, "hit", lambda s, w: in_window(s, w) and s.reason in reasons(w) and (s.item or None) == w["item"])
-    for i, w in enumerate(wants):  # another item they list as open at that moment
-        alts = _pending_alts(w)
-        take(i, w, "hit", lambda s, w: in_window(s, w) and s.reason in reasons(w) and s.item is not None and any(
-            s.item == item and (until is None or s.after_line < until) for item, until in alts), "on an also_pending item")
-    for i, w in enumerate(wants):
-        start = COVERED_FROM.get((fid, w["after_line"]))
-        if start is not None and mode == "live":
-            take(i, w, "hit", lambda s, w: start <= s.after_line <= w["by_line"] and s.item == w["item"],
-                 "covered by the question already asked", reuse=True)
-    for i, w in enumerate(wants):
-        take(i, w, "late", lambda s, w: s.after_line > w["by_line"] and s.reason in reasons(w) and (s.item or None) == w["item"])
-    for i, w in enumerate(wants):
-        take(i, w, "wrong item", lambda s, w: in_window(s, w))
-
-    silent = {m["after_line"] for m in run.fixture["must_stay_silent"]}
-    false = [(j, "after a must-stay-silent line" if s.after_line in silent else "") for j, s in enumerate(speaks) if j not in used]
-    rows = []
-    for i, w in enumerate(wants):
-        verdict, j, detail = outcome.get(i, ("missed" if w["required"] else "not taken (optional)", None, ""))
-        rows.append({"want": w, "verdict": verdict, "speak": j, "detail": detail})
-    return {"rows": rows, "false": false}
-
-
-def _fmt(s: JudgeSpeak) -> str:
-    return f"after {s.after_line}: {s.reason.value} {s.item.value if s.item else '-'} to {s.to.value} | {s.instruction}"
-
-
-async def score_all() -> dict:
-    report = {}
-    for path in CALLS:
-        fixture = load(path)
-        fid = fixture["id"]
-        report[fid] = {"noise": fixture["noise"]}
-        for variant in VARIANTS:
-            run = await replay(path, variant)
-            mode = VARIANTS[variant][0]
-            result = score(run, mode)
-            print(f"\n=== {fid} [{fixture['noise']}] {variant}")
-            for j, s in enumerate(run.speaks):
-                print(f"  #{j} {_fmt(s)}")
-            for row in result["rows"]:
-                w = row["want"]
-                req = "required" if w["required"] else "optional"
-                print(f"  {w['after_line']}-{w['by_line']} {w['reason']} {w['item']} ({req}, to {w['to']}): {row['verdict']}"
-                      + (f" by #{row['speak']}" if row["speak"] is not None else "") + (f" [{row['detail']}]" if row["detail"] else ""))
-            for j, why in result["false"]:
-                print(f"  FALSE FIRE #{j} {why}")
-            final = run.final
-            print("  final checklist:", "; ".join(
-                f"{k}={v.state.value}" + (f" ({v.value})" if v.value else "") + (f" [{v.note}]" if v.note else "") for k, v in final.items()))
-            if run.values.missing:
-                print("  MISSING recorded values:", run.values.missing)
-            names = None
-            if variant == "unnamed":
-                last = run.started[-1]
-                got = {p.role.value: p.name for p in last.people}
-                names = {role: (got.get(role), got.get(role) in HEARD[fid][role]) for role in ("hirer", "worker")}
-                print("  names learned:", names, "| call.started sent", len(run.started), "times")
-            report[fid][variant] = {
-                "speaks": [_fmt(s) for s in run.speaks], "rows": [{**r, "want": {k: r["want"][k] for k in ("after_line", "by_line", "reason", "item", "required")}} for r in result["rows"]],
-                "false": result["false"], "names": names, "missing": run.values.missing,
-            }
-    return report
-
-
-def summary(report: dict) -> None:
-    print("\n=== summary")
-    for variant in VARIANTS:
-        tot = {"required": 0, "hit": 0, "late": 0, "missed": 0, "wrong item": 0, "false": 0, "opt_taken": 0, "opt": 0}
-        for fid, r in report.items():
-            v = r[variant]
-            req = [row for row in v["rows"] if row["want"]["required"]]
-            opt = [row for row in v["rows"] if not row["want"]["required"]]
-            counts = {k: sum(row["verdict"] == k for row in req) for k in ("hit", "late", "missed", "wrong item")}
-            print(f"  {variant:8} {fid:30} required {len(req)} hit {counts['hit']} late {counts['late']} missed {counts['missed']} "
-                  f"wrong {counts['wrong item']} | optional taken {sum(row['verdict'] == 'hit' for row in opt)}/{len(opt)} "
-                  f"| false fires {len(v['false'])}" + (f" | names {v['names']}" if v["names"] else ""))
-            tot["required"] += len(req)
-            for k in counts:
-                tot[k] += counts[k]
-            tot["false"] += len(v["false"])
-        print(f"  {variant:8} TOTAL required {tot['required']} hit {tot['hit']} late {tot['late']} missed {tot['missed']} "
-              f"wrong {tot['wrong item']} false fires {tot['false']} ({tot['false'] / len(report):.1f} per call)")
+    sage.preamble = _PREAMBLE
+    return runs
 
 
 if __name__ == "__main__":
+    from tests.brain.holdout.score import score_main
+
     command = sys.argv[1]
     if command == "sage":
         asyncio.run(record_sage(sys.argv[2]))
+    elif command == "scribe":
+        asyncio.run(record_scribe(sys.argv[2]))
     elif command == "values":
         asyncio.run(record_values(sys.argv[2]))
     elif command == "score":
-        report = asyncio.run(score_all())
-        summary(report)
-        if len(sys.argv) > 2:
-            Path(sys.argv[2]).write_text(json.dumps(report, ensure_ascii=False, indent=1, default=str))
+        score_main(sys.argv[2] if len(sys.argv) > 2 else "all", sys.argv[3] if len(sys.argv) > 3 else None)
     else:
         raise SystemExit(__doc__)
