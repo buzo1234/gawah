@@ -11,7 +11,7 @@ Sends checklist.updated and judge.speak.
 - tuning.py   every gap and limit
 
 A real call uses live Sage2 and OpenAI. A replayed or fake call (room "replay-..." or
-"fake-...") never does: it uses the answers saved in tests/brain/recordings/ when the
+"fake-...") never does: it uses the answers saved in tests/brain/recorded/ when the
 deal id starts with a recorded call's name, and otherwise the brain stays quiet. That
 keeps `fakes.replayer` free for every stream. To send a replay to the live services,
 start the server with BRAIN_LIVE_REPLAYS=1 - each replayed line is one billed Sage2 update.
@@ -29,10 +29,11 @@ from app.brain.session import Session
 from app.brain.values import OpenAIValues, RecordedValues, Values
 from app.bus import Bus
 from app.contracts import CallEnded, CallKind, CallStarted, Event, JudgeSpoke, TranscriptLine
+from app.log import deal_log
 
 log = logging.getLogger("gawah.brain")
 
-RECORDINGS = Path(__file__).resolve().parents[2] / "tests" / "brain" / "recordings"
+RECORDINGS = Path(__file__).resolve().parents[2] / "tests" / "brain" / "recorded"
 
 Sources = Callable[[CallStarted], tuple[Decisions, Values]]
 
@@ -100,7 +101,8 @@ def register(app: FastAPI, bus: Bus) -> None:
             return found or (_Quiet(), _Quiet())
         if not openai:
             openai.append(OpenAIValues(settings.require("openai_api_key")))
-        return SageStream(settings.require("sage_api_key")), openai[0]
+        stream = SageStream(settings.require("sage_api_key"), log=deal_log("gawah.brain.sage", started.deal_id))
+        return stream, openai[0]
 
     async def close() -> None:
         for client in openai:

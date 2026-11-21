@@ -22,7 +22,7 @@ from app.config import get_settings
 from app.contracts import Event, Person, Role
 from fakes.replayer import load, play
 
-OUT = Path(__file__).parent / "recordings"
+OUT = Path(__file__).parent / "recorded"
 
 
 async def record_sage(fixture_path: str, extra_questions: dict[str, str]) -> None:

@@ -1,5 +1,5 @@
 """The brain on both practice calls, on answers recorded from the real Sage2 and the
-real OpenAI model (tests/brain/recordings/). No outside calls."""
+real OpenAI model (tests/brain/recorded/). No outside calls."""
 
 from pathlib import Path
 

@@ -91,8 +91,11 @@ class Session:
         self.lines.append(line)
         got = await self.decisions.append(line.no, sage.line_text(self.names[line.speaker], line.text))
         if got is None:
+            self.log.info("line %s: no answer from sage2", line.no)
             # Keep what we knew, but "did the last line speak to Gawah" is not about this line.
             got = {**self.answers, "addressed_gawah": None}
+        else:
+            self.log.info("line %s: sage2 yes to %s", line.no, ", ".join(q for q in got if yes(got, q)) or "nothing")
         self.answers = got
 
         self._latch_agreed_items()
@@ -212,8 +215,8 @@ class Session:
     async def _fetch_value(self, key: ItemKey, transcript: str, at_line: int, settles_conflict: bool) -> None:
         try:
             got = await self.values.lookup("value", key, transcript, at_line) or {}
-        except Exception:
-            self.log.exception("value lookup failed for %s", key.value)
+        except Exception as e:
+            self.log.warning("value lookup failed for %s (%s: %s)", key.value, type(e).__name__, str(e)[:200])
             got = {}
         finally:
             self.fetching.discard(key)
@@ -239,7 +242,7 @@ class Session:
             async with asyncio.timeout(tuning.LOOKUP_WAIT_S):
                 return await self.values.lookup(kind, item, self._transcript(), self.lines[-1].no)
         except Exception as e:
-            self.log.warning("%s lookup gave nothing (%s)", kind, type(e).__name__)
+            self.log.warning("%s lookup gave nothing (%s: %s)", kind, type(e).__name__, str(e)[:200])
             return None
 
     def _transcript(self) -> str:

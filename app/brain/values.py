@@ -8,7 +8,6 @@ replays saved replies.
 """
 
 import json
-import logging
 from pathlib import Path
 from typing import Literal, Protocol
 
@@ -16,8 +15,6 @@ import httpx
 
 from app.brain import tuning
 from app.contracts import ItemKey
-
-log = logging.getLogger("gawah.brain.values")
 
 Kind = Literal["value", "conflict", "unclear"]
 
@@ -108,8 +105,9 @@ class OpenAIValues:
                 response.raise_for_status()
                 reply = json.loads(response.json()["choices"][0]["message"]["content"])
                 return reply if isinstance(reply, dict) else None
-            except (httpx.HTTPError, KeyError, IndexError, ValueError) as e:
-                log.warning("openai %s try %s failed: %s", key(kind, item, at_line), attempt, type(e).__name__)
+            except (httpx.HTTPError, KeyError, IndexError, ValueError):
+                if attempt == 2:
+                    raise  # the caller logs it with the deal id
         return None
 
     async def close(self) -> None:
@@ -127,5 +125,5 @@ class RecordedValues:
         k = key(kind, item, at_line)
         if k not in self._replies:
             self.missing.append(k)
-            log.warning("no recorded reply for %s; record again with tests/brain/record.py values", k)
-        return self._replies.get(k)
+            raise LookupError(f"no recorded reply for {k}; record again with tests/brain/record.py values")
+        return self._replies[k]

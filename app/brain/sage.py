@@ -96,8 +96,11 @@ def _answers(frame: dict) -> Answers:
 class SageStream:
     """One live Sage2 stream for one call."""
 
-    def __init__(self, api_key: str, questions: dict[str, str] | None = None) -> None:
+    def __init__(
+        self, api_key: str, questions: dict[str, str] | None = None, log: logging.Logger | logging.LoggerAdapter = log
+    ) -> None:
         self._key = api_key
+        self._log = log  # pass one that carries the deal id
         self._questions = questions or QUESTIONS
         self._ws: ClientConnection | None = None
         self._content = ""
@@ -117,10 +120,10 @@ class SageStream:
             self.updates += 1
             return await self._decision(seq)
         except TimeoutError:
-            log.warning("sage2 gave no answer for line %s in %.1fs", seq, tuning.SAGE_TIMEOUT_S)
+            self._log.warning("sage2 gave no answer for line %s in %.1fs", seq, tuning.SAGE_TIMEOUT_S)
             return None
         except Exception as e:
-            log.warning("sage2 stream failed on line %s (%s); reopening", seq, type(e).__name__)
+            self._log.warning("sage2 stream failed on line %s (%s); reopening", seq, type(e).__name__)
             await self._drop()
             return await self._start()
 
@@ -131,7 +134,7 @@ class SageStream:
             except Exception:
                 pass
         await self._drop()
-        log.info("sage2 stream closed after %s updates", self.updates)
+        self._log.info("sage2 stream closed after %s updates", self.updates)
 
     async def _start(self) -> Answers | None:
         questions = [{"id": q, "kind": "yesno", "instructions": text} for q, text in self._questions.items()]
@@ -146,7 +149,7 @@ class SageStream:
             self.updates += 1
             return await self._decision(None)
         except Exception as e:
-            log.warning("sage2 stream did not open (%s); carrying on without it", type(e).__name__)
+            self._log.warning("sage2 stream did not open (%s); carrying on without it", type(e).__name__)
             await self._drop()
             return None
 
@@ -160,7 +163,7 @@ class SageStream:
                 if kind == "decision" and frame.get("seq") == seq:
                     return _answers(frame)
                 if kind == "error":
-                    log.warning("sage2 error frame: %s", str(frame.get("message") or frame.get("code"))[:200])
+                    self._log.warning("sage2 error frame: %s", str(frame.get("message") or frame.get("code"))[:200])
                     if frame.get("fatal"):
                         raise ConnectionError("sage2 fatal error")
 

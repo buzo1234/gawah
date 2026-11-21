@@ -1,0 +1,73 @@
+{
+ "fixture": "call_two_amounts",
+ "recorded_at": "2026-11-21T11:32:28+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "value:work@4": {
+   "value": "paint the 2BHK flat, including both rooms, hall, kitchen, bathroom doors and balcony railing; two coats on the walls and one coat on the ceiling",
+   "source_text": "Haan darwaze bhi, aur balcony ki railing bhi. Walls pe do coat chahiye, ceiling pe ek chalega.",
+   "line_no": 4
+  },
+  "value:amount@12": {
+   "value": "13,000 rupees for labour only; material provided by hirer",
+   "source_text": "Theek hai, 13 hazaar. Sirf labour, material mera.",
+   "line_no": 12
+  },
+  "value:advance@16": {
+   "value": "3,000 rupees on Sunday 22 November 2026 in cash",
+   "source_text": "Theek hai, 3 hazaar kal subah de dungi, cash mein.",
+   "line_no": 16
+  },
+  "value:balance@18": {
+   "value": "the remaining balance will be paid on the day the work is finished, after Sunita checks the work",
+   "source_text": "Baaki kaam poora hone ke baad, jis din finish karoge usi din. Pehle main kaam dekhungi, phir payment.",
+   "line_no": 18
+  },
+  "conflict:-@19": {
+   "item": "amount",
+   "figures": [
+    "13,000 rupees",
+    "14,000 rupees"
+   ],
+   "line_nos": [
+    "12",
+    "19"
+   ]
+  },
+  "value:dates@25": {
+   "value": "Wednesday 25 November 2026 to Monday 30 November 2026",
+   "source_text": "Parson se madam, Wednesday.",
+   "line_no": 21
+  },
+  "value:late_or_unfinished@27": {
+   "value": "if the work is left unfinished, the remaining money will not be paid and the advance will be returned",
+   "source_text": "Nahi madam, aisa nahi karunga. Agar kaam adhoora chhoda to baaki paise mat dena, aur advance bhi wapas kar dunga.",
+   "line_no": 27
+  },
+  "value:advance@32": {
+   "value": "3,000 rupees tomorrow morning in cash",
+   "source_text": "Theek hai, 3 hazaar kal subah de dungi, cash mein.",
+   "line_no": 16
+  },
+  "value:work@32": {
+   "value": "Paint the 2BHK flat: two coats on the walls, one coat on the ceiling, enamel on the bathroom doors and balcony railing, with putty where needed.",
+   "source_text": "Walls do coat, ceiling ek coat, darwaze aur railing pe enamel.",
+   "line_no": 5
+  },
+  "value:balance@32": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:dates@32": {
+   "value": "Wednesday 25 November 2026 to Monday 30 November 2026",
+   "source_text": "Wednesday subah aa jao, 10 baje.",
+   "line_no": 30
+  },
+  "value:late_or_unfinished@32": {
+   "value": "If the work is left unfinished, the remaining money will not be paid and the advance will be returned; if it is late, 300 rupees will be deducted per day.",
+   "source_text": "Nahi madam, aisa nahi karunga. Agar kaam adhoora chhoda to baaki paise mat dena, aur advance bhi wapas kar dunga.",
+   "line_no": 27
+  }
+ }
+}

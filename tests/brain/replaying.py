@@ -6,7 +6,7 @@ from app.brain.values import RecordedValues
 from app.contracts import ChecklistUpdated, JudgeSpeak
 from fakes.replayer import load, replay
 
-RECORDINGS = Path(__file__).parent / "recordings"
+RECORDINGS = Path(__file__).parent / "recorded"
 
 
 class Run:
