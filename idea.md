@@ -74,7 +74,13 @@ Two agents work on the call, speaking with one voice:
 
 ### On the call
 
-The Judge does not wait to be asked. Before the call ends, it speaks up in its own voice and asks about anything still pending - one question at a time, to the person who has to answer it.
+The Judge does not wait to be asked, and it does not save everything for the end. It sounds and acts like a person on the call: it follows the conversation live and picks its moment.
+
+- If a term is left unclear and the talk moves on, it asks right then, while it is fresh.
+- If two different figures are said for the same thing, it asks which one is right.
+- If they start wrapping up with something still pending, it asks before they hang up.
+
+It speaks only in a pause, never over someone. One question at a time, to the person who has to answer it.
 
 It only asks questions. It never suggests a term or takes a side - that is what keeps it neutral.
 
