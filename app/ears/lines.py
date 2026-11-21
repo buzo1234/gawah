@@ -47,6 +47,14 @@ class Ears:
         if line:
             self._take(speaker, line)
 
+    def forget(self, speaker: Role) -> None:
+        """This person has left. Publish what they were in the middle of saying and keep
+        nothing else of theirs: if they come back, their background is learnt afresh."""
+        line = self._segmenters[speaker].flush()
+        if line:
+            self._take(speaker, line)
+        self._segmenters[speaker] = Segmenter()
+
     async def finish(self) -> None:
         """The call is over: close any line being spoken and wait for the last texts."""
         for speaker, segmenter in self._segmenters.items():

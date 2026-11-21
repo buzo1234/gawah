@@ -1,4 +1,6 @@
 import asyncio
+import io
+import wave
 
 import httpx
 import numpy as np
@@ -11,7 +13,13 @@ from app.ears.transcribe import Transcriber, prompt_for
 from app.ears.vad import END_SILENCE, FRAME_SECONDS, RATE, Segmenter
 from fakes import RAMESH, SUNITA
 
-GAP = 1.0  # silence between one recorded line and the next, in the tests below
+GAP = 1.5  # silence between one recorded line and the next, in the tests below
+
+
+async def start_call(world):
+    await world.deal()
+    await world.join(role=Role.HIRER)
+    await world.join(role=Role.WORKER)
 
 
 def lines_in(segmenter: Segmenter, pcm: bytes, at: float) -> list:
@@ -48,7 +56,7 @@ def test_end_of_line_detection_on_the_recorded_lines(speaker):
         else:
             spoken = [line for line, _ in found if not line.is_noise]
             first_word, last_word = loud_part(pcm)
-            assert 1 <= len(spoken) <= 3, f"{name}: cut into {len(spoken)} pieces"
+            assert len(spoken) == 1, f"{name}: {len(spoken)} lines for one spoken line"
             # Every piece lies inside this recording: no line runs into the next one.
             assert all(at - 0.01 <= line.start < line.end <= at + seconds + 0.1 for line in spoken), name
             assert spoken[0].start <= at + first_word + 0.4, f"{name}: the start was missed"
@@ -59,9 +67,91 @@ def test_end_of_line_detection_on_the_recorded_lines(speaker):
             # The audio handed to transcription covers the line, with a little kept either side.
             for line in spoken:
                 assert line.end - line.start <= len(line.pcm) / 2 / RATE <= line.end - line.start + 0.45
-            pieces += len(spoken)
         at += seconds + GAP
-    assert pieces <= 16  # 12 lines each; a long pause inside a line may cut it in two
+
+
+def noise(seconds: float, kind: str, seed: int, level: float = -40.0) -> np.ndarray:
+    """Steady noise at `level` dB with a sharp click every second or two. "room" has most of
+    its energy below 500 Hz, like the hum and rumble a laptop microphone picks up in a quiet
+    room; "hiss" is white, which puts about 15 dB more of it in the voice band."""
+    rng = np.random.default_rng(seed)
+    count = int(seconds * RATE)
+    sound = rng.standard_normal(count)
+    if kind == "room":
+        spectrum = np.fft.rfft(sound)
+        spectrum /= np.maximum(np.fft.rfftfreq(count, 1 / RATE), 40.0)
+        sound = np.fft.irfft(spectrum, count)
+    sound *= 32768 * 10 ** (level / 20) / np.sqrt(np.mean(sound * sound))
+    at = 1.0
+    while at < seconds - 0.1:
+        start, length = int(at * RATE), int(rng.integers(16, 80))  # 1 to 5 ms
+        sound[start : start + length] += rng.choice([-1, 1]) * rng.uniform(8000, 20000) * np.exp(-np.arange(length) / 20)
+        at += rng.uniform(0.7, 2.5)
+    return sound
+
+
+def as_pcm(sound: np.ndarray) -> bytes:
+    return np.clip(sound, -32768, 32767).astype(np.int16).tobytes()
+
+
+@pytest.mark.parametrize("speaker", ["Sunita", "Ramesh"])
+def test_recorded_lines_over_room_noise_and_clicks_still_give_one_line_each(speaker):
+    spoken_at, parts, at = [], [], 0.0
+    for name in sorted(SPOKEN):
+        pcm = np.frombuffer(recorded(name), dtype=np.int16).astype(float)
+        mine = SPOKEN[name]["speaker"] == speaker
+        parts += [pcm if mine else np.zeros(len(pcm)), np.zeros(int(GAP * RATE))]
+        if mine:
+            spoken_at.append((name, at, at + len(pcm) / RATE))
+        at += len(pcm) / RATE + GAP
+    track = np.concatenate(parts)
+    track += noise(len(track) / RATE, "room", seed=5)[: len(track)]
+    found = [line for line, _ in lines_in(Segmenter(), as_pcm(track), 0.0)]
+    assert found, "nothing heard at all"
+    lines = [line for line in found if not line.is_noise]
+    for name, start, end in spoken_at:
+        mine = [line for line in lines if line.start < end and line.end > start]
+        assert len(mine) == 1, f"{name}: {len(mine)} lines for one spoken line"
+        assert start - 0.3 <= mine[0].start and mine[0].end <= end + 0.3, f"{name}: ran into the next line"
+    assert len(lines) == len(spoken_at) == 12  # and nothing in the gaps, where there is only noise
+
+
+@pytest.mark.parametrize("kind", ["room", "hiss"])
+def test_noise_alone_gives_no_lines(kind):
+    found = lines_in(Segmenter(), as_pcm(noise(180.0, kind, seed=9)), 0.0)
+    assert [line for line, _ in found if not line.is_noise] == []
+
+
+async def test_noise_alone_on_a_call_makes_no_transcription_calls(world):
+    await start_call(world)
+    world.talk(hirer=as_pcm(noise(60.0, "room", seed=1)), worker=as_pcm(noise(60.0, "hiss", seed=2)))
+    await world.settle()
+    assert world.transcribed == [] and world.named("transcript.line") == []
+    world.talk(worker=recorded("paint-23"), seconds=3)  # and it has not gone deaf
+    await world.settle()
+    assert [e.speaker for e in world.named("transcript.line")] == [Role.WORKER]
+
+
+async def test_a_muted_track_is_silence_on_the_timeline_and_not_an_absence(world):
+    await start_call(world)
+    world.talk(worker=recorded("paint-23"), seconds=3)
+    world.room().muted("worker", True)  # the phone's screen locked
+    world.talk(seconds=5)  # a muted track delivers digital silence...
+    world.talk(seconds=3, no_frames_from="worker")  # ...or nothing at all
+    await asyncio.sleep(0.3)  # longer than the "gone" limit
+    world.room().muted("worker", False)
+    world.talk(worker=recorded("paint-23"), seconds=3)
+    await world.settle()
+    assert world.named("call.ended") == [] and world.room().present == {Role.HIRER, Role.WORKER}
+    first, second = world.named("transcript.line")
+    assert 0.5 < first.start < 1.0 and 11.0 < second.start < 12.0  # 3 s + 5 s + 3 s later
+    world.room().left("hirer"), world.room().left("worker")
+    ended = await world.ended()
+    with wave.open(io.BytesIO(world.uploads[ended.recording_keys["worker"]])) as w:
+        audio = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16)
+    assert len(audio) == round(ended.duration * RATE) == 14 * RATE
+    assert not audio[3 * RATE : 11 * RATE].any()
+    assert np.array_equal(audio[: 3 * RATE], audio[11 * RATE :])  # the same three seconds, 11 s on, to the sample
 
 
 def test_short_replies_are_kept_whole():
@@ -94,12 +184,6 @@ def test_a_line_that_never_pauses_is_cut_so_it_cannot_hold_the_transcript_back()
     talk = recorded("paint-03")[: int(4.0 * RATE) * 2] * 8  # 32 s with no half-second pause
     found = lines_in(Segmenter(), bytes(RATE) + talk + bytes(RATE * 2), 0.0)
     assert len(found) >= 2 and all(line.end - line.start <= 20.0 for line, _ in found)
-
-
-async def start_call(world):
-    await world.deal()
-    await world.join(role=Role.HIRER)
-    await world.join(role=Role.WORKER)
 
 
 async def test_lines_are_numbered_and_timed_across_both_speakers(world):
