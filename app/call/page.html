@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gawah call</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, sans-serif; margin: 0; padding: 32px 20px; background: #101418; color: #eef2f5; text-align: center; }
+  main { max-width: 420px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 6px; color: #8fd3a8; }
+  #who { font-size: 20px; line-height: 1.4; margin: 0 0 4px; }
+  #notice { font-size: 15px; color: #b8c2cc; margin: 0 0 28px; }
+  button { font: inherit; font-size: 24px; font-weight: 600; width: 100%; padding: 22px 16px; border: 0; border-radius: 16px; color: #fff; }
+  #join { background: #1f9d55; }
+  #join:disabled { background: #46584d; }
+  #leave { background: #c0392b; margin-top: 8px; }
+  #copy { background: #2b3640; font-size: 18px; padding: 14px; margin-top: 12px; }
+  #status { font-size: 22px; line-height: 1.4; margin: 28px 0; min-height: 62px; }
+  body[data-state="on"] #status { color: #8fd3a8; }
+  body[data-state="waiting"] #status, body[data-state="reconnecting"] #status { color: #ffd479; }
+  #mic-help { text-align: left; font-size: 17px; line-height: 1.5; background: #3a2a12; border-radius: 14px; padding: 16px; color: #ffe2a8; }
+  #mic-help b { color: #fff; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body data-state="idle">
+<main>
+  <h1>Gawah</h1>
+  <p id="who"></p>
+  <p id="notice">Gawah is call ko sunega aur record karega.</p>
+  <button id="join">Call mein judein</button>
+  <button id="leave" hidden>Call chhodein</button>
+  <div id="status" role="status"></div>
+  <div id="mic-help" hidden>
+    <b>Microphone nahi chal raha.</b><br>
+    WhatsApp ke andar khula link kabhi-kabhi microphone nahi deta. Yeh kijiye:<br>
+    1. Upar teen bindu <b>⋮</b> dabaiye aur <b>Open in Chrome</b> (ya "Browser mein kholein") chuniye. iPhone par neeche <b>Safari</b> ka nishaan dabaiye.<br>
+    2. Wahan "Microphone" ke liye <b>Allow</b> dabaiye.<br>
+    3. Phir se "Call mein judein" dabaiye.
+    <button id="copy">Link copy karein</button>
+  </div>
+</main>
+<script type="application/json" id="config">__CONFIG__</script>
+<script src="/call/static/livekit-client.umd.min.js"></script>
+<script>
+const cfg = JSON.parse(document.getElementById('config').textContent);
+const $ = (id) => document.getElementById(id);
+const other = cfg.otherName || 'doosre vyakti';
+const MAX_MINUTES = 11;  // the server ends the call at 10; this is in case the server is gone
+const WORDS = {
+  idle: 'Button dabaiye aur microphone ki ijazat dijiye.',
+  connecting: 'Jud rahe hain...',
+  waiting: `${other} ka intezaar hai. Line par bane rahiye.`,
+  on: 'Call chalu hai. Aaram se baat kijiye.',
+  reconnecting: 'Network kamzor hai, dobara jud rahe hain...',
+  ended: 'Call khatam ho gaya. Dhanyavaad.',
+  left: 'Aapne call chhod diya. Wapas aana ho to button dabaiye.',
+  nobody: `${other} nahi aaye. Thodi der baad dobara button dabaiye.`,
+  elsewhere: 'Yeh call aapke kisi aur phone ya tab mein khul gaya hai.',
+  dropped: 'Line kat gayi. Dobara button dabaiye.',
+  unavailable: 'Abhi call nahi lag pa raha. Thodi der mein dobara button dabaiye.',
+  mic: 'Microphone ke bina call nahi ho sakta.',
+};
+const FINAL = ['ended', 'elsewhere'];  // no way back in from these
+let room = null, timer = null, callWasOn = false;
+
+$('who').textContent = `${cfg.name ? cfg.name + ' ji, aap' : 'Aap'} is call mein ${cfg.roleWords} hain. Baat ${other} se hogi.`;
+
+function show(state) {
+  document.body.dataset.state = state;
+  $('status').textContent = WORDS[state];
+  const inRoom = ['waiting', 'on', 'reconnecting'].includes(state);
+  $('leave').hidden = !inRoom;
+  $('join').hidden = inRoom || FINAL.includes(state);
+  $('join').disabled = state === 'connecting';
+  $('mic-help').hidden = state !== 'mic';
+  $('notice').hidden = FINAL.includes(state);
+}
+
+function refresh() {
+  if (!room || room.state !== 'connected') return;
+  const here = [...room.remoteParticipants.values()].some((p) => p.identity === cfg.other);
+  callWasOn = callWasOn || here;
+  show(here ? 'on' : 'waiting');
+}
+
+async function join() {
+  show('connecting');
+  const LK = LivekitClient;
+  // Gawah's voice comes out of this phone's loudspeaker: it must not go straight back in.
+  const audio = { echoCancellation: true, noiseSuppression: true, autoGainControl: true };
+  let mic;
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('no microphone access here');
+    mic = await LK.createLocalAudioTrack(audio);
+  } catch (e) {
+    console.warn('microphone:', e.name, e.message);
+    return show('mic');
+  }
+  try {
+    const res = await fetch(`${location.pathname.replace(/\/$/, '')}/join`, { method: 'POST' });
+    if (res.status === 410) { mic.stop(); return show('ended'); }
+    if (!res.ok) throw new Error(`join ${res.status}`);
+    const { url, token } = await res.json();
+    room = new LK.Room({ audioCaptureDefaults: audio, adaptiveStream: false, dynacast: false });
+    room.on(LK.RoomEvent.TrackSubscribed, (track) => {
+      if (track.kind === 'audio') document.body.appendChild(track.attach());
+    });
+    room.on(LK.RoomEvent.TrackUnsubscribed, (track) => track.detach().forEach((el) => el.remove()));
+    room.on(LK.RoomEvent.ParticipantConnected, refresh);
+    room.on(LK.RoomEvent.ParticipantDisconnected, refresh);
+    room.on(LK.RoomEvent.Reconnecting, () => show('reconnecting'));
+    room.on(LK.RoomEvent.Reconnected, refresh);
+    room.on(LK.RoomEvent.Disconnected, (reason) => {
+      clearTimeout(timer);
+      mic.stop();
+      const R = LK.DisconnectReason;
+      if (reason === R.ROOM_DELETED) show(callWasOn ? 'ended' : 'nobody');
+      else if (reason === R.CLIENT_INITIATED) show('left');
+      else if (reason === R.DUPLICATE_IDENTITY) show('elsewhere');
+      else show('dropped');
+      room = null;
+    });
+    await room.connect(url, token);
+    await room.startAudio();
+    await room.localParticipant.publishTrack(mic);
+    timer = setTimeout(leave, MAX_MINUTES * 60 * 1000);
+    if (navigator.wakeLock) navigator.wakeLock.request('screen').catch(() => {});
+    refresh();
+  } catch (e) {
+    console.warn('join:', e.name, e.message);
+    mic.stop();
+    if (room) await room.disconnect();
+    room = null;
+    show('unavailable');
+  }
+}
+
+async function leave() {
+  if (room) await room.disconnect();
+}
+
+$('join').onclick = join;
+$('leave').onclick = leave;
+$('copy').onclick = async () => {
+  try { await navigator.clipboard.writeText(location.href); $('copy').textContent = 'Link copy ho gaya'; }
+  catch (e) { $('copy').textContent = location.href; }
+};
+document.body.addEventListener('click', () => { if (room) room.startAudio(); });
+show(cfg.over ? 'ended' : 'idle');
+</script>
+</body>
+</html>
