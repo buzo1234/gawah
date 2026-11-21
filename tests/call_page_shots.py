@@ -18,7 +18,7 @@ import httpx
 import uvicorn
 from browser import Chrome
 
-from app.contracts import DealRequested, Role, call_path, callback_path
+from app.contracts import DealRequested, Person, Role, call_path, callback_path
 from fakes import RAMESH, SUNITA
 from tests.offline import offline_app
 
@@ -90,8 +90,10 @@ async def main(port: int = 8771) -> None:
     while not server.started:
         await asyncio.sleep(0.05)
     async with httpx.AsyncClient(base_url=url, timeout=10) as http:
-        deal = DealRequested(deal_id="shots", requested_by=SUNITA, other=RAMESH)
-        (await http.post("/dev/publish", content=deal.model_dump_json())).raise_for_status()
+        nameless = Person(role=Role.WORKER, phone=RAMESH.phone)  # the worker's name is not known yet
+        for deal in (DealRequested(deal_id="shots", requested_by=SUNITA, other=RAMESH),
+                     DealRequested(deal_id="noname", requested_by=SUNITA, other=nameless)):
+            (await http.post("/dev/publish", content=deal.model_dump_json())).raise_for_status()
         await asyncio.sleep(0.3)
 
     for width, height in SIZES:
@@ -148,6 +150,11 @@ async def main(port: int = 8771) -> None:
             v = await at("mic")
             check(v["title"] == "Microphone nahi chal raha" and v["join"] == "Phir se judiye", f"deal mic refused: {v}")
             await shot("deal-7-mic-refused")
+
+            await chrome.goto(url + call_path("noname", Role.HIRER))
+            v = await at("idle")
+            check(v["title"] == "Kaam karne wale", f"deal idle, the worker's name not known: {v}")
+            await shot("deal-8-before-no-name")
 
             # The call-back, as Ramesh.
             await chrome.goto(url + callback_path("shots", Role.WORKER))

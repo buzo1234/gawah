@@ -21,6 +21,7 @@ about 10 gpt-transcribe uploads, 2 S3 uploads. Sage2 and Twilio are switched off
 """
 
 import asyncio
+import base64
 import json
 import signal
 import socket
@@ -117,6 +118,18 @@ class CallBrowser:
         self.ws = await connect(pages[0]["webSocketDebuggerUrl"], max_size=None)
         await self.js(f"location.href = {json.dumps(url)}")
         await self.until("document.readyState === 'complete' && !!document.getElementById('join')")
+        await self.cdp("Emulation.setDeviceMetricsOverride", width=390, height=844, deviceScaleFactor=2, mobile=True)
+        # Counts what LiveKit's own speaker events do to Gawah's ring on the page.
+        await self.js("window.__gawahLit = 0; new MutationObserver(() => { if (document.getElementById('gawah')"
+                      ".classList.contains('talking')) window.__gawahLit++; }).observe(document.getElementById('gawah'), {attributes: true})")
+
+    async def cdp(self, method: str, **params) -> dict:
+        self._id += 1
+        await self.ws.send(json.dumps({"id": self._id, "method": method, "params": params}))
+        while True:
+            msg = json.loads(await asyncio.wait_for(self.ws.recv(), 30))
+            if msg.get("id") == self._id:
+                return msg.get("result", {})
 
     async def js(self, expression: str):
         self._id += 1
@@ -250,6 +263,14 @@ async def main(drop: bool, leaver: Role | None) -> None:
             report["join_to_call_started_s"] = round((started.ts - clicked).total_seconds(), 2)
             print(f"call.started {report['join_to_call_started_s']}s after the two taps: room={started.room} people={[(p.role.value, p.name) for p in started.people]}", flush=True)
             await asyncio.gather(*(b.until("document.body.dataset.state === 'on'") for b in browsers.values()))
+            try:  # Gawah's opening words light its ring on the page: a phone-sized picture of that
+                await browsers[Role.HIRER].until("document.getElementById('gawah').classList.contains('talking')", 15)
+                shot = await browsers[Role.HIRER].cdp("Page.captureScreenshot", format="png")
+                OUT.mkdir(parents=True, exist_ok=True)
+                (OUT / "page-hirer-gawah-speaking.png").write_bytes(base64.b64decode(shot["data"]))
+                report["gawah_ring_lit_when_shot"] = True
+            except TimeoutError:
+                report["gawah_ring_lit_when_shot"] = False
 
             async def sleep_until(at: float) -> None:
                 await asyncio.sleep(max(0.0, at - time.monotonic()))
@@ -297,7 +318,7 @@ async def main(drop: bool, leaver: Role | None) -> None:
                     await dashboard.shot(OUT / "dashboard-midcall.png")
                 await sleep_until(t_click + max(p["until"] for p in plan) + 2.5)
 
-            report["pages"] = {b.role.value: {"state": await b.state(), "sees_and_hears": await b.hears()} for b in browsers.values()}
+            report["pages"] = {b.role.value: {"state": await b.state(), "sees_and_hears": await b.hears(), "gawah_ring_lit": await b.js("window.__gawahLit")} for b in browsers.values()}
             if drop:
                 browsers[Role.WORKER].kill()
                 t_kill = time.monotonic()
