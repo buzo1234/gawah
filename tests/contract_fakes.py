@@ -1,5 +1,6 @@
 """Stand-ins for the model, the speech, S3 and Chrome, and the terms of a practice call."""
 
+import hashlib
 from pathlib import Path
 
 from app.contracts import ChecklistItem, ChecklistUpdated, ItemKey, ItemState
@@ -32,6 +33,7 @@ def answer_for(items: list[ChecklistItem], **changes) -> dict:
     answer = {
         "hirer_name": {"hi": "सुनीता", "en": "Sunita"},
         "worker_name": {"hi": "रमेश", "en": "Ramesh"},
+        "place": {"hi": "", "en": ""},
         "terms": {
             i.key.value: {"hi": f"तय हुआ: {i.value}", "en": i.value}
             for i in items if i.state is ItemState.AGREED
@@ -75,6 +77,12 @@ class FakeFiles:
 
     async def signed_url(self, key: str, expires_seconds: int = 900) -> str:
         return f"https://signed.invalid/{key}"
+
+
+async def fake_fingerprint(url: str) -> str:
+    if "missing" in url:
+        raise RuntimeError(f"404 for {url}")
+    return hashlib.sha256(url.encode()).hexdigest()
 
 
 async def fake_render_pdf(html: str, out: Path) -> None:

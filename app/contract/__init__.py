@@ -8,6 +8,7 @@ does the sending.
 from fastapi import FastAPI
 
 from app.bus import Bus
+from app.contract.fingerprint import sha256_of
 from app.contract.openai_client import OpenAI
 from app.contract.pdf import render_pdf
 from app.contract.stream import ContractStream
@@ -17,7 +18,7 @@ from app.store import S3
 def register(app: FastAPI, bus: Bus) -> None:
     settings = app.state.settings
     openai = OpenAI(settings)
-    stream = ContractStream(bus, app.state.store, openai, openai, S3(settings), render_pdf)
+    stream = ContractStream(bus, app.state.store, openai, openai, S3(settings), render_pdf, sha256_of)
     # One subscription for all four events, so they are handled in the order they were published.
     bus.subscribe_all(stream.on_event)
     app.state.on_shutdown.append(stream.close)

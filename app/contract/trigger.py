@@ -25,7 +25,8 @@ class DealState:
     items: list[ChecklistItem] = field(default_factory=list)
     confirmed: dict[Role, set[ItemKey]] = field(default_factory=lambda: {r: set() for r in Role})
     confirmed_at: dict[Role, datetime] = field(default_factory=dict)
-    call_ended_at: datetime | None = None
+    confirmed_said: dict[Role, str | None] = field(default_factory=dict)  # their words, if the event has them
+    call: CallEnded | None = None  # the deal call: when it ended, how long it was, its recordings
     written: bool = False
     # Goes up on every dispute, so a contract being written while one arrives is thrown away.
     version: int = 0
@@ -35,13 +36,14 @@ class DealState:
             case ChecklistUpdated():
                 self.items = event.items
             case CallEnded(kind=CallKind.DEAL):
-                self.call_ended_at = event.ts
+                self.call = event
             case TermsConfirmed():
                 if event.item is None:
                     self.confirmed[event.person] = set(ItemKey)
                 else:
                     self.confirmed[event.person].add(event.item)
                 self.confirmed_at[event.person] = event.ts
+                self.confirmed_said[event.person] = event.said
             case TermsDisputed():
                 if event.item is None:
                     self.confirmed[event.person].clear()

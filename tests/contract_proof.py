@@ -7,10 +7,13 @@ Start the server, then:
 It replays a practice call, publishes a checklist with all six terms agreed and both
 confirmations through /dev/publish, waits for contract.ready on the dashboard socket,
 and saves the PDF and the audio from their signed links into fixtures/contract-sample/.
+Two short clips from fixtures/audio/ are uploaded to stand in for the call's recordings,
+so the agreement prints their SHA-256 fingerprints.
 """
 
 import argparse
 import asyncio
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -22,12 +25,17 @@ from websockets.asyncio.client import connect
 sys.path.insert(0, str(Path(__file__).parent))
 from contract_fakes import agreed_items  # noqa: E402
 
-from app.contracts import ChecklistUpdated, ContractReady, Event, Role, TermsConfirmed, new_id, parse_event  # noqa: E402
+from app.config import get_settings  # noqa: E402
+from app.contracts import (  # noqa: E402
+    CallEnded, ChecklistUpdated, ContractReady, Event, Role, TermsConfirmed, new_id, parse_event,
+)
+from app.store import S3  # noqa: E402
 from fakes.replayer import load, play  # noqa: E402
 from fakes.tail import socket_url  # noqa: E402
 
 CALL = "fixtures/call_two_amounts.json"
 OUT = Path("fixtures/contract-sample")
+RECORDINGS = {Role.HIRER: Path("fixtures/audio/paint-01.wav"), Role.WORKER: Path("fixtures/audio/paint-02.wav")}
 
 
 def _no_query(url: str) -> str:
@@ -40,10 +48,16 @@ async def main(url: str) -> None:
     said = {line["line_no"]: line["text"] for line in fixture["lines"]}
     items = [i.model_copy(update={"source_text": said[i.line_no]}) for i in agreed_items()]
     deal_id = f"contract-proof-{new_id()[:4]}"
+    s3, recording_keys = S3(get_settings()), {}
+    for role, clip in RECORDINGS.items():
+        recording_keys[role.value] = await s3.upload(str(clip), f"recordings/{deal_id}/{role.value}.wav", "audio/wav")
+        print(f"uploaded {clip} as the {role.value}'s recording, sha256 {hashlib.sha256(clip.read_bytes()).hexdigest()}")
 
     async with httpx.AsyncClient(base_url=url, timeout=10) as server, connect(socket_url(url)) as watcher:
 
         async def publish(event: Event) -> None:
+            if isinstance(event, CallEnded):
+                event = event.model_copy(update={"recording_keys": recording_keys})
             response = await server.post("/dev/publish", content=event.model_dump_json())
             response.raise_for_status()
 

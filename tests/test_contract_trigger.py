@@ -1,8 +1,10 @@
 import pytest
-from contract_fakes import FakeFiles, FakeSpeaker, FakeWriter, agreed_items, checklist, fake_render_pdf
+from contract_fakes import (
+    FakeFiles, FakeSpeaker, FakeWriter, agreed_items, checklist, fake_fingerprint, fake_render_pdf,
+)
 
 from app.contract.stream import ContractStream
-from app.contracts import ContractReady, ItemKey, Role, TermsConfirmed, TermsDisputed
+from app.contracts import CallEnded, ContractReady, ItemKey, Role, TermsConfirmed, TermsDisputed
 from app.store import Store
 from fakes.replayer import replay
 
@@ -14,7 +16,9 @@ class Rig:
 
     def __init__(self, bus, store, files=None):
         self.bus, self.files, self.speaker = bus, files or FakeFiles(), FakeSpeaker()
-        self.stream = ContractStream(bus, store, FakeWriter(), self.speaker, self.files, fake_render_pdf)
+        self.stream = ContractStream(
+            bus, store, FakeWriter(), self.speaker, self.files, fake_render_pdf, fake_fingerprint
+        )
         self.ready: list[ContractReady] = []
         self.off = bus.subscribe_all(self.stream.on_event)
         bus.subscribe(ContractReady, self._collect)
@@ -28,8 +32,8 @@ class Rig:
         await self.bus.drain()  # the call is in the store long before anyone confirms
         return deal_id
 
-    def confirm(self, deal_id, role, item=None):
-        self.bus.publish(TermsConfirmed(deal_id=deal_id, person=role, item=item))
+    def confirm(self, deal_id, role, item=None, said=None):
+        self.bus.publish(TermsConfirmed(deal_id=deal_id, person=role, item=item, said=said))
 
     def dispute(self, deal_id, role, item=None):
         self.bus.publish(TermsDisputed(deal_id=deal_id, person=role, item=item))
@@ -68,9 +72,28 @@ async def test_both_confirm_and_the_contract_is_written_uploaded_and_announced(r
     assert rig.files.uploaded[ready.pdf_key][1] == "application/pdf"
     assert rig.files.uploaded[ready.voice_summary_key][1] == "audio/ogg"
     assert ready.items == agreed_items()
-    assert "13,000 rupees" in ready.text and "सुनीता (Sunita), +910000000001" in ready.text
-    assert "Said 0 min 59 sec into the call" in ready.text  # the amount, line 12, starts at 59.8s
+    assert "13,000 rupees" in ready.text and "सुनीता (Sunita), फ़ोन / phone +910000000001" in ready.text
+    # the amount, line 12, starts at 59.8s
+    assert "2. कीमत और उसमें क्या शामिल है / The price and what it covers  [कॉल / call 0:59]" in ready.text
+    assert "कहा / Said" not in ready.text and "SHA-256" not in ready.text  # nothing to print, so no line
     assert len(rig.speaker.spoken) == 1
+
+
+async def test_the_words_each_person_said_and_the_recordings_fingerprints_are_printed(rig, caplog):
+    deal_id = await rig.call()
+    recordings = {"hirer": f"recordings/{deal_id}/hirer.wav", "worker": f"recordings/{deal_id}/missing.wav"}
+    rig.bus.publish(CallEnded(deal_id=deal_id, duration=145.0, recording_keys=recordings))
+    rig.confirm(deal_id, Role.HIRER, said="haan sab sahi hai")
+    rig.confirm(deal_id, Role.WORKER)
+    [ready] = await rig.settle()
+
+    assert "कहा / Said: “haan sab sahi hai”" in ready.text and ready.text.count("कहा / Said") == 1
+    assert "and lasted 2 min 25 sec." in ready.text
+    hirer_print = await fake_fingerprint(f"https://signed.invalid/{recordings['hirer']}")
+    assert f"First party's audio: {hirer_print}" in ready.text
+    assert "Second party's audio" not in ready.text  # that recording could not be read: no line, not a blank
+    assert f"deal={deal_id} could not read the worker recording (RuntimeError)" in caplog.text
+    assert "signed.invalid" not in caplog.text  # a signed link never goes to the log
 
 
 async def test_one_person_confirming_is_not_enough(rig):
@@ -115,7 +138,7 @@ async def test_confirming_every_agreed_term_one_by_one_counts_as_all(rig):
             assert await rig.settle() == []
             rig.confirm(deal_id, Role.WORKER, key)
     [ready] = await rig.settle()
-    assert "This was not agreed on the call." in ready.text
+    assert "These were not agreed on the call: when the balance is paid and against what." in ready.text
 
 
 async def test_two_deals_at_the_same_time_do_not_mix(rig):
@@ -127,7 +150,7 @@ async def test_two_deals_at_the_same_time_do_not_mix(rig):
 
     rig.confirm(b, Role.HIRER)
     assert [r.deal_id for r in await rig.settle()] == [a, b]
-    assert f"Deal ID: {b}" in rig.ready[1].text
+    assert "Reference no.: GW-DEAL-B" in rig.ready[1].text
 
 
 async def test_no_agreed_terms_means_nothing_to_write(rig):

@@ -91,3 +91,12 @@ async def test_three_rejected_drafts_and_it_gives_up():
 async def test_a_name_is_used_only_if_it_was_said_on_the_call():
     draft = await write_draft(FakeWriter(ITEMS), "d", ITEMS, LINES)
     assert draft.names == {Role.HIRER: Bi("सुनीता", "Sunita"), Role.WORKER: None}  # Ramesh never said his name
+
+
+async def test_the_place_of_work_is_used_only_if_it_was_said_on_the_call():
+    indirapuram = answer_for(ITEMS, place={"hi": "इंदिरापुरम", "en": "Indirapuram"})
+    draft = await write_draft(FakeWriter(ITEMS, answers=[indirapuram]), "d", ITEMS, LINES)
+    assert draft.place is None  # nobody said it on this call
+    said = [*LINES, TranscriptLine(deal_id="d", speaker=Role.HIRER, text="Mera flat Indirapuram mein hai.", start=5, end=8)]
+    draft = await write_draft(FakeWriter(ITEMS, answers=[indirapuram]), "d", ITEMS, said)
+    assert draft.place == Bi("इंदिरापुरम", "Indirapuram")

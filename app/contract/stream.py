@@ -9,11 +9,11 @@ from pathlib import Path
 from typing import Protocol
 
 from app.bus import Bus
-from app.contract import document
+from app.contract import document, page
 from app.contract.pdf import page_count
 from app.contract.trigger import WATCHED, DealState
 from app.contract.writer import Writer, write_draft
-from app.contracts import CallKind, ContractReady, Event, Role
+from app.contracts import CallEnded, CallKind, ContractReady, Event, Role
 from app.log import deal_log, mask_phone
 from app.store import Store
 
@@ -30,12 +30,17 @@ class Files(Protocol):
 
 
 RenderPdf = Callable[[str, Path], Awaitable[None]]
+Fingerprint = Callable[[str], Awaitable[str]]  # a signed link in, the file's SHA-256 out
 
 
 class ContractStream:
-    def __init__(self, bus: Bus, store: Store, writer: Writer, speaker: Speaker, files: Files, render_pdf: RenderPdf) -> None:
+    def __init__(
+        self, bus: Bus, store: Store, writer: Writer, speaker: Speaker, files: Files,
+        render_pdf: RenderPdf, fingerprint: Fingerprint,
+    ) -> None:
         self._bus, self._store = bus, store
         self._writer, self._speaker, self._files, self._render_pdf = writer, speaker, files, render_pdf
+        self._fingerprint = fingerprint
         self._states: dict[str, DealState] = {}
         self._seen: set[str] = set()
         self._tasks: dict[str, asyncio.Task[None]] = {}
@@ -88,7 +93,9 @@ class ContractStream:
 
     async def _make(self, deal_id: str, state: DealState) -> ContractReady:
         log = deal_log(LOG, deal_id)
-        items, confirmed_at, call_ended_at = list(state.items), dict(state.confirmed_at), state.call_ended_at
+        items, confirmed_at, confirmed_said, call = (
+            list(state.items), dict(state.confirmed_at), dict(state.confirmed_said), state.call
+        )
         deal = await self._store.deal(deal_id)
         people = {p.role: p for p in deal.people} if deal else {}
         transcript = [line for line in await self._store.transcript(deal_id) if line.kind is CallKind.DEAL]
@@ -96,14 +103,18 @@ class ContractStream:
             "both confirmed, writing the contract for %s and %s",
             *(mask_phone(people[r].phone if r in people else None) for r in Role),
         )
-        draft = await write_draft(self._writer, deal_id, items, transcript)
+        draft, fingerprints = await asyncio.gather(
+            write_draft(self._writer, deal_id, items, transcript), self._fingerprints(deal_id, call)
+        )
         doc = document.build(
-            deal_id, people, draft.names, items, draft.terms, transcript, confirmed_at, call_ended_at, datetime.now(UTC)
+            deal_id=deal_id, people=people, names=draft.names, place=draft.place, items=items, bodies=draft.terms,
+            transcript=transcript, confirmed_at=confirmed_at, confirmed_said=confirmed_said, call=call,
+            fingerprints=fingerprints, now=datetime.now(UTC),
         )
         pdf_key, voice_key = f"contracts/{deal_id}.pdf", f"contracts/{deal_id}.ogg"
         with tempfile.TemporaryDirectory() as tmp:
             pdf_path, voice_path = Path(tmp) / "contract.pdf", Path(tmp) / "summary.ogg"
-            _, voice = await asyncio.gather(self._render_pdf(doc.html(), pdf_path), self._speaker.speak(draft.summary))
+            _, voice = await asyncio.gather(self._render_pdf(page.html(doc), pdf_path), self._speaker.speak(draft.summary))
             voice_path.write_bytes(voice)
             log.info("pdf has %d page(s), voice summary is %.1f seconds", page_count(pdf_path.read_bytes()), ogg_seconds(voice))
             # Nothing is published unless every upload and every link worked.
@@ -115,6 +126,22 @@ class ContractStream:
             voice_summary_key=voice_key, voice_summary_url=await self._files.signed_url(voice_key),
             text=doc.text(), items=items,
         )
+
+    async def _fingerprints(self, deal_id: str, call: CallEnded | None) -> dict[Role, str]:
+        """The SHA-256 of each person's recording. One that cannot be read is left out."""
+        found = {}
+        for role in Role:
+            key = call.recording_keys.get(role.value) if call else None
+            if not key:
+                continue
+            try:
+                found[role] = await self._fingerprint(await self._files.signed_url(key))
+            except Exception as e:
+                # Only the kind of error: its message can hold the signed link.
+                deal_log(LOG, deal_id).warning(
+                    "could not read the %s recording (%s); its fingerprint is left out", role.value, type(e).__name__
+                )
+        return found
 
 
 def ogg_seconds(data: bytes) -> float:
