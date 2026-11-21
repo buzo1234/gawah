@@ -196,6 +196,7 @@ class TranscriptLine(Event):
     start: float  # seconds from the start of the call
     end: float
     line_no: int | None = None  # 1-based position in the call; set it if you can
+    kind: CallKind = CallKind.DEAL  # callback lines are not part of the deal call
 
 
 class ChecklistUpdated(Event):
