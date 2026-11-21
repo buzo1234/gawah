@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Gawah is an AI witness for deals made on a call: it joins the call, asks about missing terms, writes the contract, and tracks payments on WhatsApp. This is a 2-day hackathon build. For the demo the call runs in the browser on LiveKit, and WhatsApp runs on the Twilio sandbox.
+Gawah is an AI witness for deals made on a call: it joins the call, asks about missing terms, writes the contract, and tracks payments on WhatsApp. This is a 2-day hackathon build. For the demo the call runs in the browser on LiveKit. WhatsApp runs on the Twilio sandbox, or on Meta's Cloud API test number when `.env` has `WHATSAPP_PROVIDER=meta` (setup and the live check: `tools/META-SETUP.md`).
 
 Read before you start:
 
@@ -21,7 +21,7 @@ Read before you start:
 
 ## Free plans - use them with care
 
-LiveKit and Twilio are on free plans with monthly allowances. Using them up in testing means no demo.
+LiveKit, Twilio and Meta's WhatsApp test number are on free plans with monthly allowances (Meta: 1,000 free replies a month per number, and only within 24 hours of the person's last message). Using them up in testing means no demo.
 
 - Build and test against the fakes and the replayer.
 - Open a real LiveKit room or send a real WhatsApp message only for a spike, a manual check, or a demo run.
@@ -46,14 +46,15 @@ LiveKit and Twilio are on free plans with monthly allowances. Using them up in t
 |---|---|
 | Install | `uv sync` |
 | Run the server | `uv run uvicorn app.main:app --reload --port 8000` |
-| Start a real run: fresh database in `runs/`, a tunnel, the server (no `--reload`), every service checked; prints the dashboard and the webhook address for Twilio. Ctrl-C stops it all and deletes rooms it opened. The steps are in `tools/DEMO-RUN.md` | `uv run python tools/demo.py` |
+| Start a real run: fresh database in `runs/`, a tunnel, the server (no `--reload`), every service checked (Meta instead of Twilio when `WHATSAPP_PROVIDER=meta`); prints the dashboard and the webhook steps for Twilio or Meta. Ctrl-C stops it all and deletes rooms it opened. The steps are in `tools/DEMO-RUN.md` | `uv run python tools/demo.py` |
 | Only check the outside services (one read-only call each, nothing billed) | `uv run python tools/demo.py --check` |
 | Rehearse the whole demo with no person, against a running `tools/demo.py`: simulated phones, two headless browsers on the call, one on each call-back (about 25 LiveKit participant-minutes and one Sage2 call) | `uv run python tools/dry_run.py` |
 | Run the tests | `uv run pytest -q` |
 | Record the Scribe's replies for a practice call: the live model reads each line (about 31 small-model calls), prints the facts, conflicts and time per line, and saves the replies to `tests/memory/recorded/` | `uv run python -m tests.memory.record fixtures/<call>.json --save` |
 | Replay a practice call into the running server, at real speed | `uv run python -m fakes.replayer fixtures/<call>.json` |
 | Replay it faster (10 = ten times faster, 0 = no waiting) | `uv run python -m fakes.replayer fixtures/<call>.json --speed 10` |
-| Run the server with every outside service faked: no `.env`, no keys, every phone simulated, a fake LiveKit and voice model, every call answered from the brain's saved answers, no Chrome or S3 for the contract | `uv run python -m tests.offline --port 8000` |
+| Run the server with every outside service faked: no `.env`, no keys, every phone simulated, a fake LiveKit and voice model, every call answered from the brain's saved answers, no Chrome or S3 for the contract. Add `--whatsapp meta` for Meta's message shapes (reply buttons, link buttons, reactions, the contract as a captioned PDF), shown as text on the dashboard | `uv run python -m tests.offline --port 8000` |
+| Send the sample contract (PDF and voice note) to both people of the newest deal through the running server, for the Meta live check (2 S3 uploads, 2 WhatsApp messages per real phone) | `uv run python -m tests.meta_contract_live` |
 | Watch events live | open `http://localhost:8000/dashboard` |
 | Prove the dashboard on the real memory and brain: the offline app in-process, headless Chrome at 1920x1080, three practice calls checked card by card against memory's own answers (statuses, standing terms, paid and owed, the chain, a clip played from `fixtures/audio`) and the brain's own question to Gawah; saves screenshots to `fixtures/dashboard-shots/live/` (nothing outside is called) | `PYTHONPATH=. uv run python tests/dashboard_live_shots.py` |
 | Screenshot the call page and the call-back page in every state at 390x844 and 360x640 (the offline app, and a stand-in for the LiveKit browser client that the script drives, so no room is opened); checks what each state says and saves `fixtures/call-page-shots/` | `PYTHONPATH=. uv run python tests/call_page_shots.py` |
@@ -92,7 +93,9 @@ Memory's Scribe does the same: a replayed or fake call gets the saved replies in
 - `POST /dev/publish` puts any event's JSON on the bus from outside the server process. It is for the replayer and tests only: `DEV_ROUTES=false` removes it, and it refuses requests that came through the tunnel.
 - A deal can have more than one call, all from the same two links: once a call is over the call page offers "Phir se baat karein". Each deal call has its own room `deal-<deal id>-<call no>`, its own `call.started` and `call.ended` with that `call_no`, recordings at `recordings/<deal id>/<call no>/<role>.wav` (on disk and in S3, keys in `call.ended`), and transcript lines numbered from 1 with times from that call's start. So a line is named by `(call_no, line_no)`, never by `line_no` alone.
 - The LiveKit agent runs inside the server process, as a background task started from the `call` stream's `register` (through `app.state.on_startup`). It publishes on the bus directly. It does not use `/dev/publish`.
-- The dashboard's "second phone" panel posts to the WhatsApp webhook path (`WHATSAPP_WEBHOOK_PATH` in `app/contracts.py`), in the same shape the real provider sends, so it goes through the real intake path. It does not publish `record.*` events itself. The whatsapp stream publishes every message in or out as `whatsapp.message`. A number that is not in `VERIFIED_NUMBERS` is a simulated second phone: a message to it is published as `whatsapp.message` with `simulated` true instead of being sent, and the dashboard panel shows it. A message that arrives before its deal exists carries `deal_id=NO_DEAL` (in `app/contracts.py`).
+- The dashboard's "second phone" panel posts to the WhatsApp webhook path (`WHATSAPP_WEBHOOK_PATH` in `app/contracts.py`) in Twilio's form shape, so it goes through the real intake path. The webhook takes that form and Meta's JSON (signed with `META_APP_SECRET`; with it empty, taken unsigned with a loud warning) whichever provider is set, so the panel works on both. On Meta a simulated phone gets what Meta would send, as text: buttons as `[Haan, sahi hai]  [Nahi]` under the question, a reaction as `👍 (reaction)`. It does not publish `record.*` events itself. The whatsapp stream publishes every message in or out as `whatsapp.message`. A number that is not in `VERIFIED_NUMBERS` is a simulated second phone: a message to it is published as `whatsapp.message` with `simulated` true instead of being sent, and the dashboard panel shows it. A message that arrives before its deal exists carries `deal_id=NO_DEAL` (in `app/contracts.py`).
+- WhatsApp's provider is `WHATSAPP_PROVIDER` (`twilio`, the default, or `meta`), read by `app/whatsapp/settings.py` from the shell or `.env`. Meta's client is `app/whatsapp/meta.py`; tests fake Graph at the HTTP level (`tests/meta_fakes.py`).
+- "delete my data" (or "mera data delete karo", "data hata do") sent to Gawah is answered in one line, logged as `DATA DELETION ASKED` with the deal id, and noted by the sentinel. Nothing is deleted automatically: the removal is by hand, after asking, with the steps in `tools/DELETE-DATA.md`.
 - The Sentinel (`app/records/sentinel.py`, built by `app/whatsapp` when `app.state.memory` exists) keeps watch between calls. It checks each payment against memory's `owed` and `get_term` before it is logged; a claim larger than what is owed gets what was agreed, when, and a clip link (only when memory has the audio), and then the usual yes-or-no question. Once a payment stands, both are told what is still owed. Work confirmed done with money owed, or a money term's date passed with money owed, gets one reminder to the hirer (the worker is told), once per deal and term; waiting and sent reminders are kept in `<database>.sentinel.json`, so they survive a restart. Delays are in `app/records/tuning.py` (`SENTINEL_BALANCE_REMINDER_SECONDS`, 60 by default, set in the shell). When one person opens call 2 or later, the bridge sends `call.opened` and the other person is told with their link; after call 2 or later, the call-back links go only to those who have not confirmed a term that call changed. Each thing it does is an `agent.note` from `sentinel`.
 - Memory's queries are the `MemoryQueries` protocol in `app/contracts.py`: `get_term`, `owed`, `search` (each takes the deal id first) and `clip(fact_id)`, returning `TermView`, `OwedRow`, `Fact` and WAV bytes. The memory stream sets the running implementation as `app.state.memory` (`MEMORY_STATE`); other streams type it as `MemoryQueries` and never import `app.memory`. The dashboard plays a clip from `clip_path(fact_id)` (`/memory/clip/<fact_id>`, served by memory). The event log stays the source of truth: the fact store is built from `fact.recorded`. `transcript.line`, `call.started` and `call.ended` carry `call_no` (1 for the first deal call), so a fact can name the call its clip is cut from.
 - Use `deal_log` and `mask_phone` from `app/log.py` for log lines.
@@ -100,7 +103,7 @@ Memory's Scribe does the same: a replayed or fake call gets the saved replies in
 ## Code rules
 
 - Async throughout. Shared types are pydantic models in `app/contracts.py`.
-- Outside services (LiveKit, Twilio, OpenAI, Sage2, S3) are called only from the stream that owns them, each behind one small client file with a timeout and one retry. Inside the app, trust the types.
+- Outside services (LiveKit, Twilio, Meta's Graph API, OpenAI, Sage2, S3) are called only from the stream that owns them, each behind one small client file with a timeout and one retry. Inside the app, trust the types.
 - Every log line carries the deal id. Mask phone numbers to the last 4 digits.
 - Keep files small and named for what they do. Split a file before it passes about 300 lines.
 - No comments that restate the code. Comment only what a reader could not work out.

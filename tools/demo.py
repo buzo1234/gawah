@@ -28,7 +28,8 @@ sys.path.insert(0, str(ROOT))
 
 from app.config import Settings  # noqa: E402
 from app.contracts import WHATSAPP_WEBHOOK_PATH  # noqa: E402
-from tools.service_checks import delete_rooms, open_rooms, run_checks  # noqa: E402
+from app.whatsapp.settings import WhatsAppSettings, whatsapp_settings  # noqa: E402
+from tools.service_checks import CHECKS, TIMEOUT, _reason, delete_rooms, open_rooms, run_checks  # noqa: E402
 
 RUNS = ROOT / "runs"  # git-ignored: each run's database and server log
 TUNNEL = re.compile(r"https://[a-z0-9-]+\.trycloudflare\.com")
@@ -108,8 +109,47 @@ def stop(process: subprocess.Popen | None, seconds: float = 20) -> None:
         process.wait(5)
 
 
-def banner(public: str, port: int, db: Path, server_log: Path, ok: bool) -> None:
+async def check_meta(s: WhatsAppSettings) -> tuple[bool, str]:
+    """WHATSAPP_PROVIDER=meta: read the business number with the token (read-only, not billed)."""
+    url = f"https://graph.facebook.com/{s.meta_graph_version}/{s.require('meta_phone_number_id')}"
+    async with httpx.AsyncClient(timeout=TIMEOUT) as http:
+        r = await http.get(url, params={"fields": "display_phone_number"},
+                           headers={"Authorization": f"Bearer {s.require('meta_whatsapp_token')}"})
+    if not r.is_success:
+        return False, f"HTTP {r.status_code}: {_reason(r)}"
+    s.require("meta_verify_token")
+    number = r.json().get("display_phone_number", "")
+    unsigned = "" if s.meta_app_secret else "; META_APP_SECRET is empty, so webhooks are taken unsigned"
+    return True, f"token works (business number ending {number[-4:]}){unsigned}"
+
+
+def use_meta() -> None:
+    """Check Meta in Twilio's place, in the same spot in the list."""
+    items = [("Meta WhatsApp", check_meta) if name == "Twilio" else (name, check) for name, check in CHECKS.items()]
+    CHECKS.clear()
+    CHECKS.update(items)
+
+
+def webhook_steps(public: str, meta: bool) -> str:
+    if not meta:
+        return f"""Paste this into the Twilio WhatsApp sandbox settings, "When a message comes in" (POST).
+It changes on every start:
+
+    {public}{WHATSAPP_WEBHOOK_PATH}
+
+  Twilio console > Messaging > Try it out > Send a WhatsApp message > Sandbox settings"""
+    return f"""Meta app dashboard > WhatsApp > Configuration > Webhook > Edit. It changes on every start:
+
+  Callback URL:   {public}{WHATSAPP_WEBHOOK_PATH}
+  Verify token:   the value of META_VERIFY_TOKEN in .env
+  Click "Verify and save", then under Webhook fields subscribe to "messages".
+  (tools/META-SETUP.md has every step.)"""
+
+
+def banner(public: str, port: int, db: Path, server_log: Path, ok: bool, meta: bool = False) -> None:
     line = "-" * 72
+    where = "Meta's webhook settings" if meta else "Twilio"
+    number = "the test number" if meta else "the sandbox number"
     print(f"""
 {line}
 Gawah is running{'' if ok else ' (BUT A CHECK ABOVE FAILED: fix it or expect that part to break)'}.
@@ -117,17 +157,12 @@ Gawah is running{'' if ok else ' (BUT A CHECK ABOVE FAILED: fix it or expect tha
 Dashboard (open on the laptop):   http://localhost:{port}/dashboard
 Public address of this run:       {public}
 
-Paste this into the Twilio WhatsApp sandbox settings, "When a message comes in" (POST).
-It changes on every start:
-
-    {public}{WHATSAPP_WEBHOOK_PATH}
-
-  Twilio console > Messaging > Try it out > Send a WhatsApp message > Sandbox settings
+{webhook_steps(public, meta)}
 
 What to do first (tools/DEMO-RUN.md has every step):
-  1. Paste the address above into Twilio and save.               (step 2)
+  1. Paste the address above into {where} and save.{' ' * (15 if not meta else 2)}(step 2)
   2. Open the dashboard on the laptop.                           (step 3)
-  3. From your phone, send "hi" to the sandbox number. It should
+  3. From your phone, send "hi" to {number}. It should
      show on the dashboard within a few seconds.                 (step 4)
   4. Go on from step 5.
 
@@ -143,7 +178,10 @@ def main() -> None:
     parser.add_argument("--check", action="store_true", help="only check the outside services, then exit")
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
-    settings = Settings()
+    settings = whatsapp_settings(Settings())
+    meta = settings.whatsapp_provider == "meta"
+    if meta:
+        use_meta()
 
     if args.check:
         print("Checking the outside services:")
@@ -176,7 +214,7 @@ def main() -> None:
                   "      opening a link on the laptop, or run: sudo killall -HUP mDNSResponder")
         print("Checking the outside services:")
         ok = asyncio.run(run_checks(settings))
-        banner(public, args.port, db, server_log, ok)
+        banner(public, args.port, db, server_log, ok, meta)
         while server.poll() is None and tunnel.poll() is None:
             time.sleep(1)
         print("The server stopped by itself." if server.poll() is not None else "The tunnel stopped by itself.",
