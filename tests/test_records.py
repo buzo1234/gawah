@@ -40,10 +40,10 @@ async def test_cash_is_one_persons_word_so_the_other_is_asked_and_says_yes(world
     assert world.texts_to(RAMESH)[-1] == asked.question
     assert world.texts_to(SUNITA)[-1] == "Likh liya. Kaam karne wale se confirm kar raha hoon."
 
-    await world.say(RAMESH, "Haan, sahi hai")
+    await world.say(RAMESH, "Haan, sahi hai", name="Ramesh")
     [confirmed] = world.named("record.confirmed")
     assert (confirmed.deal_id, confirmed.record_id, confirmed.confirmed_by, confirmed.confirmed) == (deal_id, record.id, Role.WORKER, True)
-    assert world.texts_to(SUNITA)[-1] == 'Kaam karne wale ne haan kaha. "2000 cash diya" record mein confirm ho gaya.'
+    assert world.texts_to(SUNITA)[-1] == 'Ramesh ji ne haan kaha. "2000 cash diya" record mein confirm ho gaya.'
     assert world.texts_to(RAMESH)[-1] == record_words.ANSWER_NOTED
     assert [r.confirmed for r in await world.store.records(deal_id)] == [True]
     assert world.reader.calls == [("2000 cash diya", False)]  # the yes was not sent to the model

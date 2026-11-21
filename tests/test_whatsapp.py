@@ -8,7 +8,7 @@ from app.contracts import (
 )
 from app.main import create_app
 from app.whatsapp import phone, words
-from app.whatsapp.twilio import signature
+from app.whatsapp.twilio import TwilioError, signature
 from fakes import call as fake_call
 
 
@@ -169,3 +169,8 @@ def test_the_signature_matches_the_worked_example_in_twilios_docs():
         "CallSid": "CA1234567890ABCDE",
     }
     assert signature("12345", "https://example.com/myapp.php?foo=1&bar=2", params) == "L/OH5YylLD5NRKLltdqwSvS0BnU="
+
+
+def test_a_twilio_error_keeps_its_reason_but_not_a_phone_number():
+    error = TwilioError(400, 21211, "The 'To' number whatsapp:+919811100001 is not a valid phone number")
+    assert str(error) == "twilio http 400 code 21211: The 'To' number whatsapp:***0001 is not a valid phone number"

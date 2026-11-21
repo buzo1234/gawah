@@ -113,7 +113,7 @@ class Bot:
         def reply(text: str) -> None:
             self.outbox.send(deal_id, message.phone, role, text)
 
-        if not message.media_url and self.intake.answer(message.phone, message.text):
+        if not message.media_url and self.intake.answer(message.phone, message.text, message.name):
             return
         numbers = [] if message.media_url else phone.find_numbers(message.text)
         if numbers == [message.phone]:

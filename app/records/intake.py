@@ -97,7 +97,7 @@ class Intake:
         self._asks.setdefault(other.phone, []).append(ask)
         return True
 
-    def answer(self, phone: str, text: str) -> bool:
+    def answer(self, phone: str, text: str, name: str | None = None) -> bool:
         """Take a yes or no as the answer to this person's oldest open question.
         False if they have no open question or the message is not a yes or no."""
         asks = self._asks.get(phone)
@@ -106,6 +106,7 @@ class Intake:
             return False
         ask = asks.pop(0)
         ask.timer.cancel()
+        ask.answerer.name = ask.answerer.name or name
         ask.record.confirmed = confirmed
         self.bus.publish(
             RecordConfirmed(

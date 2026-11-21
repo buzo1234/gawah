@@ -5,6 +5,7 @@ import base64
 import hashlib
 import hmac
 import logging
+import re
 from urllib.parse import urlsplit
 
 import httpx
@@ -19,11 +20,12 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 class TwilioError(Exception):
-    """Twilio said no. Carries Twilio's error code, not its message: the message can
-    contain a phone number."""
+    """Twilio said no. Carries Twilio's error code and its message, with any phone
+    number in the message cut to its last 4 digits."""
 
-    def __init__(self, status: int, code: int | None) -> None:
-        super().__init__(f"twilio http {status} code {code}")
+    def __init__(self, status: int, code: int | None, message: str = "") -> None:
+        message = re.sub(r"\+?\d{7,}", lambda m: f"***{m.group()[-4:]}", message)
+        super().__init__(f"twilio http {status} code {code}: {message}")
         self.status, self.code = status, code
 
 
@@ -78,8 +80,8 @@ class Twilio:
                 if response.status_code < 500 or attempt == 2:
                     break
         if response.status_code >= 400:
-            code = None
+            problem = {}
             if response.headers.get("content-type", "").startswith("application/json"):
-                code = response.json().get("code")
-            raise TwilioError(response.status_code, code)
+                problem = response.json()
+            raise TwilioError(response.status_code, problem.get("code"), problem.get("message", ""))
         return response
