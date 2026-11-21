@@ -107,6 +107,9 @@ async def test_drops_a_question_whose_item_was_agreed_meanwhile(world):
     await asyncio.sleep(0.05)
     items = [ChecklistItem(key=k, state=ItemState.AGREED if k is ItemKey.BALANCE else ItemState.PENDING) for k in ItemKey]
     world.bus.publish(ChecklistUpdated(deal_id="d1", items=items, changed=[ItemKey.BALANCE]))
+    # The checklist reaches the call before the pause does. Without this wait a slow event loop
+    # can run the pause check before the bus delivers the checklist, and the question is said.
+    await until(lambda: world.mouth.calls["d1"].checklist is not None)
     seat.stops("hirer")
     await asyncio.sleep(tuning.PAUSE_WAIT_S + 0.2)
     assert not answers(world) and len(seat.played) == played
