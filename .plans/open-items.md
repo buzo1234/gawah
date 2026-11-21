@@ -65,3 +65,4 @@ Last updated: 21 November 2026.
 | 55 | **Disk space on the laptop is tight.** `~/.cache/uv` is 50 GB; `uv cache prune` is the safe way to recover it. | Open |
 | 56 | Proof files left in the S3 bucket under `contracts/contract-proof-*`. | Open |
 | 57 | Rehearse without `--reload`: a restart drops WhatsApp's open questions. | Open |
+| 58 | **A rare test failure under heavy load.** Seen twice while five or six agents ran tests at once; its name was never captured. With two agents running, `main` passed 8 runs out of 8 (443 tests). Run the suite before the demo on a quiet laptop. | Open |
