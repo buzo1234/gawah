@@ -186,7 +186,9 @@ class RecordedDecisions:
     """Answers saved from a real Sage2 stream, replayed by line number."""
 
     def __init__(self, path: str | Path) -> None:
-        self._by_seq: dict[str, Answers] = json.loads(Path(path).read_text())["answers"]
+        saved = json.loads(Path(path).read_text())
+        self._by_seq: dict[str, Answers] = saved["answers"]
+        self.lines: dict[str, str] = saved["lines"]  # line number -> the line as Sage2 was sent it
 
     async def open(self, preamble: str) -> Answers | None:
         return self._by_seq.get("0")

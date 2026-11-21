@@ -11,10 +11,11 @@ Sends checklist.updated and judge.speak.
 - tuning.py   every gap and limit
 
 A real call uses live Sage2 and OpenAI. A replayed or fake call (room "replay-..." or
-"fake-...") never does: it uses the answers saved in tests/brain/recorded/ when the
-deal id starts with a recorded call's name, and otherwise the brain stays quiet. That
-keeps `fakes.replayer` free for every stream. To send a replay to the live services,
-start the server with BRAIN_LIVE_REPLAYS=1 - each replayed line is one billed Sage2 update.
+"fake-...") never does: it uses the answers saved in tests/brain/recorded/ for the
+practice call that says the same lines, whatever the deal id, and otherwise the brain
+stays quiet. That keeps `fakes.replayer` free for every stream. To send a replay to the
+live services, start the server with BRAIN_LIVE_REPLAYS=1 - each replayed line is one
+billed Sage2 update.
 """
 
 import logging
@@ -24,14 +25,12 @@ from pathlib import Path
 
 from fastapi import FastAPI
 
-from app.brain.sage import Decisions, RecordedDecisions, SageStream
+from app.brain.sage import Answers, Decisions, RecordedDecisions, SageStream
 from app.brain.session import Session
 from app.brain.values import OpenAIValues, RecordedValues, Values
 from app.bus import Bus
 from app.contracts import CallEnded, CallKind, CallStarted, Event, JudgeSpoke, TranscriptLine
 from app.log import deal_log
-
-log = logging.getLogger("gawah.brain")
 
 RECORDINGS = Path(__file__).resolve().parents[2] / "tests" / "brain" / "recorded"
 
@@ -69,22 +68,36 @@ class Brain:
             await session.idle()
 
 
-class _Quiet:
-    """No decisions and no values: the brain follows the call and says nothing."""
+class _Saved:
+    """The practice calls' saved answers, given to a call for as long as it says the same
+    lines: a saved call answers while every line so far is the line it was recorded on.
+    Nothing else picks it, so a practice call can be replayed into any deal. Once no saved
+    call fits, or with none to start from, the brain follows the call and says nothing."""
+
+    def __init__(self, calls: list[tuple[RecordedDecisions, RecordedValues]], log: logging.LoggerAdapter) -> None:
+        self.calls, self.log = calls, log
 
     async def open(self, preamble: str) -> None: ...
-    async def append(self, seq: int, text: str) -> None: ...
+
+    async def append(self, seq: int, text: str) -> Answers | None:
+        fits = [call for call in self.calls if call[0].lines.get(str(seq)) == text]
+        if self.calls and not fits:
+            self.log.warning("line %s is in no recorded practice call: the brain stays quiet", seq)
+        self.calls = fits
+        return await fits[0][0].append(seq, text) if fits else None
+
     async def close(self) -> None: ...
-    async def lookup(self, kind, item, transcript: str, at_line: int) -> None: ...
+
+    async def lookup(self, kind, item, transcript: str, at_line: int) -> dict | None:
+        return await self.calls[0][1].lookup(kind, item, transcript, at_line) if self.calls else None
 
 
-def recorded(name: str) -> tuple[Decisions, Values] | None:
-    """The saved answers for a practice call, by the call's name or a deal id that starts with it."""
-    for path in sorted(RECORDINGS.glob("*.sage.json")):
-        call = path.name.removesuffix(".sage.json")
-        if name.startswith(call):
-            return RecordedDecisions(path), RecordedValues(RECORDINGS / f"{call}.values.json")
-    return None
+def recorded() -> list[tuple[RecordedDecisions, RecordedValues]]:
+    """Every practice call's saved answers."""
+    return [
+        (RecordedDecisions(path), RecordedValues(path.with_name(path.name.replace(".sage.", ".values."))))
+        for path in sorted(RECORDINGS.glob("*.sage.json"))
+    ]
 
 
 def register(app: FastAPI, bus: Bus) -> None:
@@ -93,16 +106,20 @@ def register(app: FastAPI, bus: Bus) -> None:
     openai: list[OpenAIValues] = []
 
     def sources(started: CallStarted) -> tuple[Decisions, Values]:
+        log = deal_log("gawah.brain", started.deal_id)
         practice = (started.room or "").startswith(("replay-", "fake-"))
         if practice and not live_replays:
-            found = recorded(started.deal_id)
-            if found is None:
-                log.warning("deal=%s practice call with no recording: the brain stays quiet", started.deal_id)
-            return found or (_Quiet(), _Quiet())
+            saved = _Saved(recorded(), log)
+            return saved, saved
+        try:
+            sage_key, openai_key = settings.require("sage_api_key"), settings.require("openai_api_key")
+        except RuntimeError as missing:
+            log.error("%s: the brain cannot follow this call and stays quiet", missing)
+            quiet = _Saved([], log)
+            return quiet, quiet
         if not openai:
-            openai.append(OpenAIValues(settings.require("openai_api_key")))
-        stream = SageStream(settings.require("sage_api_key"), log=deal_log("gawah.brain.sage", started.deal_id))
-        return stream, openai[0]
+            openai.append(OpenAIValues(openai_key))
+        return SageStream(sage_key, log=deal_log("gawah.brain.sage", started.deal_id)), openai[0]
 
     async def close() -> None:
         for client in openai:

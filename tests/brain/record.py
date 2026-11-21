@@ -32,10 +32,11 @@ async def record_sage(fixture_path: str, extra_questions: dict[str, str]) -> Non
     tuning.SAGE_TIMEOUT_S = 20.0  # a recording must not have holes
     stream = sage.SageStream(get_settings().require("sage_api_key"), questions)
     preamble = sage.preamble(people)
-    answers = {"0": await stream.open(preamble)}
+    answers, lines = {"0": await stream.open(preamble)}, {}
     for line in fixture["lines"]:
         name = sage.speaker_name(people, Role(line["speaker"]))
-        got = await stream.append(line["line_no"], sage.line_text(name, line["text"]))
+        text = lines[str(line["line_no"])] = sage.line_text(name, line["text"])
+        got = await stream.append(line["line_no"], text)
         answers[str(line["line_no"])] = got
         print(line["line_no"], "".join("-" if got is None or got.get(q) is None else "Y" if sage.yes(got, q) else "n" for q in questions), flush=True)
     await stream.close()
@@ -44,7 +45,7 @@ async def record_sage(fixture_path: str, extra_questions: dict[str, str]) -> Non
     out = OUT / f"{fixture['id']}.sage.json"
     out.write_text(json.dumps({
         "fixture": fixture["id"], "recorded_at": datetime.now(UTC).isoformat(timespec="seconds"),
-        "preamble": preamble, "questions": questions, "updates": stream.updates, "answers": answers,
+        "preamble": preamble, "questions": questions, "updates": stream.updates, "lines": lines, "answers": answers,
     }, ensure_ascii=False, indent=1) + "\n")
     print(f"saved {out}; sage2 updates sent: {stream.updates}")
 
