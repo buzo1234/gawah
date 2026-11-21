@@ -20,6 +20,8 @@ Product ideas that are not being built now. Status is Parked, Picked, or Dropped
 | 12 | **Escalation to the principal employer.** On a building site, a notice to the builder when a contractor does not pay, since the builder is liable. | Only applies to site work under the labour codes, not to household deals. | Parked |
 | 13 | **Appointment letter from a voice deal.** For employers the labour codes cover: the spoken agreement produces the written appointment letter the law now requires. | Gives contractors a legal reason to use Gawah. A different customer from the household story. | Parked |
 | 14 | **More languages.** Beyond Hindi and Hinglish. | Demo is Hindi and Hinglish only. | Parked |
+| 15 | **Checklist items generated for the job.** A small model reads the start of the call and adds job-specific items for Sage2 to track (painting: who brings the paint, number of coats; carpentry: wood, measurements). Raised by the user on 21 Nov. | More versatile, less predictable. The Judge would ask about terms nobody raised, which is Gawah suggesting terms. Untested question wording caused wrong flips in the Sage2 spike. Each question is re-billed on every line. The six items are fixed in the shared types, dashboard, contract, and tests. The same six scored 147 of 150 on a carpenter call they were not tuned on. | Parked |
+| 16 | **"Also agreed" in the contract.** The safer form of 15. The Judge still interrupts only about the six items. When the contract is written, a small model pulls any other terms the two people actually said into an "Also agreed" section. Lives entirely in the contract stream: no Sage2 questions, no shared-type change. | Not needed for the demo. Low risk, a good day-2 stretch. | Parked |
 
 ## The build
 
