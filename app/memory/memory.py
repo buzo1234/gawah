@@ -19,7 +19,7 @@ from app.memory import clips
 from app.memory.book import IST, Book, DealBook
 from app.memory.chain import first_break
 from app.memory.extract import Extractor
-from app.memory.normalise import format_rupees, items_named, search_words
+from app.memory.normalise import asks_agreed, format_rupees, items_named, search_words
 from app.memory.scribe import Scribe
 from app.memory.status import Status
 from app.memory.vectors import Embedder, Vectors
@@ -228,8 +228,12 @@ class Memory:
         words = np.array([len(asked & search_words(t)) / len(asked) if asked else 0.0 for t in texts])
         item = np.array([0.1 if f.item and f.item.value in named else 0.0 for f in found])
         scores = sims + 0.25 * words + item + np.array([RANK_BONUS[f.status] for f in found])
-        order = [i for i in np.argsort(-scores, kind="stable") if sims[i] > 0 or words[i] > 0][:k]
+        order = [i for i in np.argsort(-scores, kind="stable") if sims[i] > 0 or words[i] > 0 or item[i] > 0]
         best = [found[i] for i in order]
+        if asks_agreed(query):  # "advance kitna tay hua tha": the term as it stands comes first
+            standing = [deal.current(ItemKey(n)) for n in sorted(named)]
+            best = [f for f in standing if f] + [f for f in best if f not in standing]
+        best = best[:k]
         if best:
             self.note("memory", f"searched \"{query[:60]}\": {len(best)} found", best[0])
         return best

@@ -235,3 +235,10 @@ def search_words(text: str) -> set[str]:
 
 def items_named(text: str) -> set[str]:
     return {ITEM_WORDS[t] for t in _tokens(text) if t in ITEM_WORDS}
+
+
+_AGREED = {"tay", "tey", "pakka", "final", "agreed", "decide", "decided", "fix", "तय", "पक्का", "confirm", "confirmed"}
+
+
+def asks_agreed(text: str) -> bool:
+    return any(t in _AGREED for t in _tokens(text))

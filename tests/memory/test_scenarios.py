@@ -262,3 +262,12 @@ async def test_a_contradiction_code_cannot_compare_goes_to_one_short_check(bus, 
     assert (conflict.line_no, conflict.call_no, conflict.confidence) == (1, 2, 0.7)
     assert conflict.explanation.startswith("Agreed: the worker brings the material")
     assert conflict.fact_ids == [world.fact_from_line(1, 1).id]
+
+
+async def test_asking_what_was_agreed_puts_the_agreed_figure_above_a_restated_one(bus, tmp_path):
+    lines = [(W, "13 hazaar lagega."), (H, "Theek hai."), (W, "To total 14 hazaar.")]
+    world = World(bus, tmp_path, {lines[0][1]: [claim("amount", "offer", 13000, "13 hazaar lagega")]})
+    await world.call(lines)
+    assert [c.line_no for c in world.conflicts] == [3]  # caught in code: no model reply for that line
+    found = await world.memory.search(DEAL, "Gawah, total kitna tay hua tha?", k=2)
+    assert [(f.value_rupees, f.status) for f in found] == [(13000, FactStatus.AGREED), (14000, FactStatus.SAID)]
