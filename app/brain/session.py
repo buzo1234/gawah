@@ -83,6 +83,7 @@ class Session:
         self.lines: list[_Line] = []
         self.answers: Answers = {}
         self.conflicts: list[Conflict] = []
+        self.held: dict[ItemKey, Conflict] = {}  # item -> the latest change offered and not yet accepted
         self.ambiguities: list[Ambiguity] = []
         self.unclear: ItemKey | None = None
         self.unclear_looked_up = False
@@ -133,11 +134,12 @@ class Session:
             return
         key = fact.item
         current = self.terms.current(key)
-        settled = current is not None and (current.status is FactStatus.CONFIRMED or current.replaces is not None)
+        settled = current is not None and current.status is FactStatus.CONFIRMED
         moved = [c for c in self.conflicts if c.item == key and settled and current.id != self.conflict_against[c.id]]
         if moved:
             # Both confirmed a value since (a change both confirmed, or a confirmation): the
-            # record settles it. A plain "theek hai" to the different figure does not.
+            # record settles it. A plain "theek hai" to the different figure does not, and nor
+            # does a change agreed on the call to something else about the term.
             self.conflicts = [c for c in self.conflicts if c not in moved]
             self.log.info("%s confirmed after the contradiction: no longer open", key.value)
         self._refresh(key)
@@ -157,10 +159,16 @@ class Session:
         ))
 
     def _said_change(self, fact: Fact) -> None:
-        """A change to an agreed term's figure, said on this call and not yet confirmed by both.
+        """A change to an agreed term's figure, said on this call. People bargain over a change
+        ("bees", "baarah", "pandrah"): an offer is held, and once the other accepts it the
+        memory makes it the term and it is read back at the end. Only a change still unaccepted
+        at wrap-up is asked about, or at once one that goes against a term both confirmed.
         Added details ("do ladke aur lagaunga") are not worth stopping a call for."""
         current = self.terms.current(fact.item) if fact.item else None
         cid = f"change:{fact.id}"
+        if fact.item and fact.status is not FactStatus.SAID:
+            self.held.pop(fact.item, None)  # accepted: the memory makes it the term, read back at the end
+            return
         if current is None or fact.call_no != self.call_no or any(c.id == cid for c in self.conflicts):
             return
         rupees = fact.value_rupees is not None and fact.value_rupees != current.value_rupees
@@ -171,15 +179,29 @@ class Session:
         day = fact.item is not ItemKey.DATES and fact.value_date is not None and current.value_date is not None
         if not (rupees or (day and fact.value_date != current.value_date)):
             return
-        if fact.status not in (FactStatus.SAID, FactStatus.AGREED) or cid in self.conflict_against:
+        if cid in self.conflict_against:
             return
         was = current.value or current.text
         where = f" (call {current.call_no}, line {current.line_no})" if current.line_no else ""
-        self._open(Conflict(
+        change = Conflict(
             id=cid, item=fact.item, fact_ids=[current.id, fact.id],
-            explanation=f"agreed as {was}{where}; now said as {fact.value or fact.text}.",
+            explanation=f"{current.status.value} as {was}{where}; now said as {fact.value or fact.text}.",
             said=fact.quote, speaker=fact.said_by, line_no=fact.line_no, change=True,
-        ))
+        )
+        if fact.status is FactStatus.SAID and current.status is not FactStatus.CONFIRMED:
+            self.held[fact.item] = change  # the latest offer while it is bargained
+            self.log.info("change offered at line %s about %s: held while they bargain", fact.line_no, fact.item.value)
+            return
+        self._open(change)
+
+    def _held(self) -> list[Conflict]:
+        """Changes offered and never accepted, still differing from the term as it stands."""
+        still = []
+        for item, change in self.held.items():
+            offer, current = self.terms.latest.get(change.fact_ids[1]), self.terms.current(item)
+            if offer and current and offer.status is FactStatus.SAID and offer.value_rupees != current.value_rupees:
+                still.append(change)
+        return still
 
     def _open(self, conflict: Conflict) -> None:
         self.conflicts.append(conflict)
@@ -284,7 +306,7 @@ class Session:
     # ---- the end of the call ----
 
     def _closing_signal(self) -> None:
-        self.closing = self.ending.on_line(self.answers, self.lines[-1].no, self._agreed())
+        self.closing = self.ending.on_line(self.answers, self.lines[-1].no, self._agreed(), self.lines[-1].text)
         if self.closing and not self.wrapping_up:
             self.log.info("wrapping up at line %s", self.lines[-1].no)
         self.wrapping_up = self.wrapping_up or self.closing
@@ -375,7 +397,7 @@ class Session:
         line = self.lines[-1]
         view = View(
             now=line.end + silence, closing=self.closing, speaker=line.speaker, text=line.text, answers=self.answers,
-            items=self.items, unclear=self.unclear, names=self.who.names, conflicts=self.conflicts,
+            items=self.items, unclear=self.unclear, names=self.who.names, conflicts=self.conflicts, held=self._held(),
             proposals=self._proposals(),
             ambiguities=self.ambiguities, follow_up=self.call_no > 1, changed=self._changed(),
             memory_silent=self.facts_heard == 0 and len(self.lines) >= tuning.MEMORY_SILENT_LINES,

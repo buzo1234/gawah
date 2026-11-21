@@ -145,24 +145,24 @@ async def test_spike_call_covers_a_dodged_question_and_speaking_to_gawah(bus):
         (18, "term_unclear", "balance", "hirer"),  # asked at 17, brushed off at 18
         (23, "addressed_directly", None, "hirer"),  # "Gawah, aapne sab note kar liya na?"
         # "Total 43 hazaar hua na" at 24 is, to the memory, a change to the 42,000 agreed: one
-        # person's word. The Judge is still waiting on its answer to line 23, so it asks at 26.
-        (26, "contradicts_record", "amount", "both"),
-        # Still unconfirmed, with late work never discussed and the balance never said: one turn.
-        (29, "wrapping_up", "amount", "both"),
+        # person's word, and a bare "haan theek hai" does not agree it. A change being offered is
+        # not raised mid-call; still unaccepted at the goodbye, it leads the one wrap-up turn.
+        (27, "wrapping_up", "amount", "both"),
     ]
     assert 'said: "Gawah, aapne sab note kar liya na?"' in run.speaks[1].instruction
     assert run.speaks[1].question == "Gawah, aapne sab note kar liya na?"
     assert "the total amount: 42,000 rupees" in run.speaks[1].instruction
+    assert "(1) Ramesh said" in run.speaks[2].instruction
     assert "agreed as 42,000 rupees (call 1, line 10); now said as 43,000 rupees" in run.speaks[2].instruction
     assert "whether they both agree to this change" in run.speaks[2].instruction
-    assert run.final["amount"].value == "42,000 rupees" and run.final["amount"].note.startswith("change said at line 24")
+    assert run.final["amount"].value == "42,000 rupees"
     assert run.values.missing == []
 
 
-async def test_spike_call_in_wrapup_mode_only_speaks_at_the_end(bus):
+async def test_spike_call_in_wrapup_mode_answers_gawah_and_otherwise_speaks_only_at_the_end(bus):
     run = await run_call(bus, "tests/brain/spike_painter_call.json", "wrapup")
-    assert run.spoken == [(27, "wrapping_up", "amount", "both")]
-    assert "(1) Ramesh said" in run.speaks[0].instruction
+    assert run.spoken == [(23, "addressed_directly", None, "hirer"), (27, "wrapping_up", "amount", "both")]
+    assert "(1) Ramesh said" in run.speaks[1].instruction
 
 
 # The first line on which wrap-up may fire without being mid-call (the first closing words:
@@ -189,11 +189,12 @@ async def fresh_run(path, mode: str, drop: set[int] = frozenset()):
 
 @pytest.mark.parametrize("path", ALL, ids=lambda p: p.stem)
 async def test_wrap_up_comes_at_the_closing_words_never_before(path):
-    # In wrapup mode the Judge's first word is the moment it saw wrap-up (every call has something pending).
+    # In wrapup mode the Judge's first word, past answering a question, is the moment it saw wrap-up.
     run = await fresh_run(path, "wrapup")
     first, last = WRAP[run.fixture["id"]]
-    assert run.speaks and run.speaks[0].reason == "wrapping_up"
-    assert first <= run.speaks[0].after_line <= last, run.spoken
+    wraps = [s for s in run.speaks if s.reason != "addressed_directly"]  # wrapup mode answers questions too
+    assert wraps and wraps[0].reason == "wrapping_up"
+    assert first <= wraps[0].after_line <= last, run.spoken
     live = await fresh_run(path, "live")
     assert all(s.after_line >= first for s in live.speaks if s.reason == "wrapping_up"), live.spoken
 
