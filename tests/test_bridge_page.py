@@ -36,7 +36,7 @@ def test_call_page_for_a_valid_link(site):
     client, livekit, _ = site
     page = client.get(call_path("d1", Role.HIRER))
     assert page.status_code == 200
-    assert "Call mein judein" in page.text and "Call chhodein" in page.text
+    assert "Judiye" in page.text and "Call chhodein" in page.text
     assert '"name": "Sunita"' in page.text and '"roleWords": "kaam dene wale"' in page.text
     # The other person's name is not known yet, and their phone number is never put on the page.
     worker = client.get(call_path("d1", Role.WORKER)).text
@@ -44,7 +44,7 @@ def test_call_page_for_a_valid_link(site):
     assert RAMESH.phone not in page.text and SUNITA.phone not in worker
     # What the page has to do: echo cancellation and friends, a way out of WhatsApp's browser, the three states.
     for needed in ("echoCancellation: true", "noiseSuppression: true", "autoGainControl: true",
-                   "Open in Chrome", "ka intezaar hai", "Call chalu hai", "Call khatam ho gaya",
+                   "Open in Chrome", "ka intezaar", "Call chalu hai", "Call khatam ho gaya",
                    "yeh page khula rakhiye", "wakeLock.request('screen')", "Aapka microphone band ho gaya hai"):
         assert needed in page.text, needed
     # Opening the page (or WhatsApp fetching a preview of it) opens no room.

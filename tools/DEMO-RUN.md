@@ -65,8 +65,8 @@ Send Ramesh's number: exactly what is in the "Second phone" panel's Number box, 
 
 ## 6. Join the call from both
 
-1. Laptop: click Ramesh's link in the "Second phone" panel. It opens in a new tab. Press **Call mein judein** and allow the microphone.
-2. Phone: tap your link in WhatsApp. Press **Call mein judein** and allow the microphone. If the WhatsApp in-app browser blocks the microphone, open the link in Chrome instead (the ⋮ menu > Open in Chrome).
+1. Laptop: click Ramesh's link in the "Second phone" panel. It opens in a new tab. Press the green **Judiye** button and allow the microphone.
+2. Phone: tap your link in WhatsApp. Press the green **Judiye** button and allow the microphone. If the WhatsApp in-app browser blocks the microphone, open the link in Chrome instead (the ⋮ menu > Open in Chrome).
 
 **You should see:**
 - Both pages say you are connected.
