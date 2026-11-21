@@ -31,13 +31,13 @@ DEAL_CALL_MAX_S = 660.0  # leave by then even if call.ended never comes (bridge 
 VAD_MODE = 3  # the WebRTC detector's strictness, 0 to 3: higher calls less noise speech. 2 and 3 measured the same on our recordings.
 FLOOR_START_DB = -30.0  # the floor assumed for someone who has just joined or unmuted: high, and it falls to the real one within a second
 MUTED_DB = -80.0  # quieter than any microphone: the track is muted (a phone does this when its screen locks)
-FLOOR_MIN_DB = -70.0  # the floor is never taken to be below this
+FLOOR_MIN_DB = -55.0  # no real microphone is quieter than this. A browser's noise suppression is: at -70 the tail of every click passed for voice.
 FLOOR_MAX_DB = -30.0  # nor so far up that a person would have to shout
 FLOOR_FALL = 0.1  # a frame quieter than the floor pulls it this share of the way down
 FLOOR_RISE_DB = 0.04  # a louder frame that is not speech lifts it this much (2 dB a second)
 FLOOR_CREEP_DB = 0.01  # a louder frame the detector calls speech lifts it this much (0.5 dB a second)
 SPEECH_OVER_NOISE_DB = 3.0  # voice must be this far above the floor
-START_MS = 100  # voice sustained this long: the person is talking
+START_MS = 200  # voice sustained this long: the person is talking. At 100, clicks through a browser counted as talking.
 SUSTAIN_LEAK = 0.25  # a frame that is not voice takes this share of a frame back off the count
 PAUSE_MS = 600  # no sustained voice for this long after talking: that is a pause
 

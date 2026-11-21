@@ -49,7 +49,7 @@ def test_recorded_speech_over_noise_cuts_gawah_off():
 def test_a_pause_is_found_after_speech_in_a_noisy_room():
     for name in sounds.LINES[:8]:
         noticed, share, paused = talking_ms(name, BROWSER_GAIN_DB)
-        assert noticed is not None and noticed <= 400 and share > 0.85
+        assert noticed is not None and noticed <= 500 and share > 0.85
         assert paused is not None and tuning.PAUSE_MS - 200 <= paused <= tuning.PAUSE_MS + 300
 
 

@@ -64,16 +64,17 @@ async def main() -> None:
             await until(lambda: len(call.hearing.people) == 2, 40, "both people's audio")
             both = now()
 
-            talked: set[str] = set()  # everyone the detector has ever heard as talking
+            heard_talking: list[tuple[float, list[str]]] = []  # every change in who the detector hears talking
 
             def talking() -> bool:
-                talked.update(call.hearing.talking())
                 return "hirer" in call.hearing.talking()
 
             async def watch() -> None:
                 while True:
-                    talking()
-                    await asyncio.sleep(0.05)
+                    now_talking = sorted(call.hearing.talking())
+                    if not heard_talking or heard_talking[-1][1] != now_talking:
+                        heard_talking.append((round(now() - joined, 2), now_talking))
+                    await asyncio.sleep(0.02)
 
             watching = asyncio.create_task(watch())
 
@@ -115,17 +116,21 @@ async def main() -> None:
             await asyncio.sleep(4.3)
             speak, sent = await ask("Ask Ramesh on which date the work will start and by which date it will finish.", Audience.WORKER, SpeakReason.TERM_UNCLEAR, ItemKey.DATES)
             was_talking = talking()
-            spoke = await until(lambda: spoke_for(speak), 20, "judge.spoke 2")
-            await asyncio.sleep(0.6)
-            heard = recorder.heard("gawah", after=sent)
-            last_word = recorder.heard("hirer", after=sent - 5, before=heard[0], db=-45)[-1]
-            result["checks"]["2_while_talking"] = {
-                "event": json.loads(rig.show(spoke)), "sunita_was_talking_when_asked": was_talking,
-                "ms_judge_speak_to_heard_in_room": ms(heard[0] - sent),
-                "ms_sunitas_last_sound_to_heard_in_room": ms(heard[0] - last_word),
-                "ms_gawah_overlapping_sunita": ms(max(0.0, last_word - heard[0])), "ms_ran_dry": outcome()["dry_ms"],
-            }
-            print("2:", rig.show(spoke), result["checks"]["2_while_talking"])
+            try:
+                spoke = await until(lambda: spoke_for(speak), 12, "judge.spoke 2")
+            except TimeoutError:
+                result["checks"]["2_while_talking"] = {"FAILED": "not said", "why": outcome().get("why"), "sunita_was_talking_when_asked": was_talking}
+            else:
+                await asyncio.sleep(0.6)
+                heard = recorder.heard("gawah", after=sent)
+                last_word = recorder.heard("hirer", after=sent - 5, before=heard[0], db=-45)[-1]
+                result["checks"]["2_while_talking"] = {
+                    "event": json.loads(rig.show(spoke)), "sunita_was_talking_when_asked": was_talking,
+                    "ms_judge_speak_to_heard_in_room": ms(heard[0] - sent),
+                    "ms_sunitas_last_sound_to_heard_in_room": ms(heard[0] - last_word),
+                    "ms_gawah_overlapping_sunita": ms(max(0.0, last_word - heard[0])), "ms_ran_dry": outcome()["dry_ms"],
+                }
+            print("2:", result["checks"]["2_while_talking"])
 
             # 3. Asked while she talks, and the item is agreed before she stops: nothing is said.
             await until(talking, 40, "Sunita's third line")
@@ -180,14 +185,19 @@ async def main() -> None:
             result["gawah_left_on_call_ended"] = deal_id not in server.app.state.mouth.calls
             await asyncio.sleep(0.5)
             recorder.save_levels(rig.SCRATCH / "deal-call-levels.json")
-            result["everything_gawah_was_asked"] = call.outcomes
-            result["rameshs_noise_ever_counted_as_talking"] = "worker" in talked
-            result["noise_floors_db"] = {who: round(p.floor, 1) for who, p in call.hearing.people.items()}
-            result["levels_in_the_room"] = {who: recorder.levels(who) for who in recorder.frames}
     finally:
         rig.kill(browsers)
         if recorder:
+            # What each microphone delivered, kept outside the repo, to replay through the detector.
+            for who in recorder.frames:
+                recorder.save(who, rig.SCRATCH / f"deal-call-{who}.wav")
+            result["levels_in_the_room"] = {who: recorder.levels(who) for who in recorder.frames}
             await recorder.stop()
+        if "call" in locals():
+            result["everything_gawah_was_asked"] = call.outcomes
+            result["who_the_detector_heard_talking"] = heard_talking
+            result["seconds_rameshs_noise_counted_as_talking"] = round(sum(
+                later[0] - at for (at, who), later in zip(heard_talking, heard_talking[1:]) if "worker" in who), 2)
         await server.rooms.delete(room)
         await asyncio.sleep(6)  # a deleted room shows in the list for a few seconds
         result["rooms_open_after"] = await server.rooms.names()
