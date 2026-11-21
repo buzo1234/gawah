@@ -26,12 +26,17 @@ API_TIMEOUT = aiohttp.ClientTimeout(total=8)
 CONNECT_TIMEOUT = 10.0
 
 
-def room_name(deal_id: str) -> str:
-    return ROOM_PREFIX + deal_id
+def room_name(deal_id: str, call_no: int) -> str:
+    """One room per deal call: "deal-<deal id>-<call no>"."""
+    return f"{ROOM_PREFIX}{deal_id}-{call_no}"
 
 
 def deal_of(room: str) -> str:
-    return room.removeprefix(ROOM_PREFIX)
+    return room.removeprefix(ROOM_PREFIX).rsplit("-", 1)[0]
+
+
+def call_of(room: str) -> int:
+    return int(room.rsplit("-", 1)[1])
 
 
 class RoomEvents(Protocol):

@@ -119,10 +119,10 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
         assert (await flow.client.get(call_path(deal_id, role))).status_code == 200
         joined = await flow.client.post(call_path(deal_id, role) + "/join")
         assert joined.status_code == 200, joined.text
-        flow.app.state.calls.livekit.open[f"deal-{deal_id}"].joined(role.value)
+        flow.app.state.calls.livekit.open[f"deal-{deal_id}-1"].joined(role.value)
     await flow.settle()
     [started] = flow.of(CallStarted)
-    assert (started.kind, started.room) == (CallKind.DEAL, f"deal-{deal_id}")
+    assert (started.kind, started.room) == (CallKind.DEAL, f"deal-{deal_id}-1")
     assert {p.role: p.phone for p in started.people} == PHONE
 
     # mouth: Gawah takes its seat in the same room and, once it hears both, says its opening line.
@@ -230,4 +230,53 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     assert state["events"] == [e.model_dump(mode="json") for e in flow.events]
 
     # No stream raised on an event or logged an error anywhere along the way.
+    assert [r.getMessage() for r in caplog.records if r.levelno >= logging.ERROR] == []
+
+
+async def test_a_second_call_on_the_same_deal_from_the_same_links(flow, caplog):
+    """Days after the first call, the two talk again on the deal. What the other streams do
+    with call 2 today: the mouth joins its new room and greets them; the brain starts a fresh
+    checklist; the dashboard gets every event. The Judge's follow-up behaviour is Phase 2."""
+    await flow.whatsapp(Role.HIRER, PHONE[Role.WORKER].removeprefix("+91"), name="Sunita")
+    [requested] = flow.of(DealRequested)
+    deal_id = requested.deal_id
+    livekit = flow.app.state.calls.livekit
+
+    async def call(after: int, room: str) -> tuple[CallStarted, CallEnded]:
+        for role in Role:
+            joined = await flow.client.post(call_path(deal_id, role) + f"/join?after={after}")
+            assert joined.status_code == 200, joined.text
+            livekit.open[room].joined(role.value)
+        [started] = await flow.until(lambda: flow.of(CallStarted, room=room))
+        seat = (await flow.until(lambda: [s for s in flow.voice.seats if s.room == room]))[0]
+        for role in Role:
+            seat.hears(role.value, sounds.room_noise(1.0, -50))
+        await flow.until(lambda: [s for s in flow.of(JudgeSpoke) if s.speak_id is None and s.ts > started.ts])
+        flow.bus.publish(TranscriptLine(
+            deal_id=deal_id, speaker=Role.WORKER, text="Madam, aapne 25 hazaar bola tha.", start=4.2, end=6.8,
+            line_no=1, call_no=started.call_no,
+        ))
+        await flow.settle()
+        for role in Role:
+            livekit.open[room].left(role.value)
+        [ended] = await flow.until(lambda: flow.of(CallEnded, kind=CallKind.DEAL, room=room))
+        await flow.until(lambda: seat.gone)
+        return started, ended
+
+    first, _ = await call(0, f"deal-{deal_id}-1")
+    page = (await flow.client.get(call_path(deal_id, Role.WORKER))).text
+    assert '"ended": 1' in page and "Phir se baat karein" in page
+    late = await flow.client.post(call_path(deal_id, Role.HIRER) + "/join?after=0")
+    assert late.status_code == 410
+
+    second, ended = await call(1, f"deal-{deal_id}-2")
+    assert (first.call_no, second.call_no, ended.call_no) == (1, 2, 2)
+    assert set(ended.recording_keys.values()) == {f"recordings/{deal_id}/2/{r.value}.wav" for r in Role}
+    assert [s.room for s in flow.voice.seats] == [first.room, second.room]  # Gawah's voice joined both
+    fresh = [c for c in flow.of(ChecklistUpdated) if c.ts >= second.ts]
+    assert fresh and all(i.state is ItemState.PENDING for i in fresh[0].items)  # the brain starts afresh
+
+    state = (await flow.client.get("/dashboard/state", params={"deal": deal_id})).json()
+    lines = [e for e in state["events"] if e["name"] == "transcript.line"]
+    assert [(e["call_no"], e["line_no"]) for e in lines] == [(1, 1), (2, 1)]
     assert [r.getMessage() for r in caplog.records if r.levelno >= logging.ERROR] == []

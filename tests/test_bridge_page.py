@@ -82,7 +82,7 @@ def test_join_opens_one_room_and_gives_each_person_their_own_token(site):
     client, livekit, _ = site
     hirer = client.post(call_path("d1", Role.HIRER) + "/join").json()
     worker = client.post(call_path("d1", Role.WORKER) + "/join").json()
-    assert livekit.created == ["deal-d1"] and list(livekit.open) == ["deal-d1"]
+    assert livekit.created == ["deal-d1-1"] and list(livekit.open) == ["deal-d1-1"]
     assert hirer["url"] == worker["url"] == "wss://fake.livekit.invalid"
 
     mine, theirs = claims(hirer["token"]), claims(worker["token"])
@@ -90,25 +90,32 @@ def test_join_opens_one_room_and_gives_each_person_their_own_token(site):
     assert (theirs["sub"], theirs["name"]) == ("worker", "worker")  # no name known: the role stands in
     for token in (mine, theirs):
         grant = token["video"]
-        assert grant["roomJoin"] is True and grant["room"] == "deal-d1" and deal_of(grant["room"]) == "d1"
+        assert grant["roomJoin"] is True and grant["room"] == "deal-d1-1" and deal_of(grant["room"]) == "d1"
         assert grant["canPublish"] is True and grant["canSubscribe"] is True and not grant.get("hidden")
         assert not grant.get("roomAdmin") and not grant.get("roomCreate")
         assert 0 < token["exp"] - time.time() <= 15 * 60
 
 
 def test_the_listener_is_hidden_and_cannot_speak():
-    token = claims(FakeLiveKit().token(room_name("d1"), LISTENER, listener=True))
+    token = claims(FakeLiveKit().token(room_name("d1", 1), LISTENER, listener=True))
     grant = token["video"]
-    assert token["sub"] == "gawah-ears" and grant["room"] == "deal-d1"
+    assert token["sub"] == "gawah-ears" and grant["room"] == "deal-d1-1"
     assert grant["hidden"] is True and grant["canPublish"] is False and grant["canSubscribe"] is True
 
 
-def test_after_the_call_the_page_says_so_and_join_is_refused(site):
+def test_after_the_call_the_page_says_so_and_offers_a_new_one(site):
     client, livekit, publish = site
-    publish(CallEnded(deal_id="d1", people=[SUNITA, RAMESH], room="deal-d1", duration=60))
-    assert '"over": true' in client.get(call_path("d1", Role.HIRER)).text
-    assert client.post(call_path("d1", Role.HIRER) + "/join").status_code == 410
-    assert livekit.created == []
+    publish(CallEnded(deal_id="d1", people=[SUNITA, RAMESH], room="deal-d1-1", duration=60))
+    page = client.get(call_path("d1", Role.HIRER)).text
+    assert '"ended": 1' in page and "Phir se baat karein" in page
+    late = client.post(call_path("d1", Role.HIRER) + "/join?after=0")  # a page from before it ended
+    assert (late.status_code, late.json()) == (410, {"error": "over", "ended": 1}) and livekit.created == []
+
+    again = client.post(call_path("d1", Role.HIRER) + "/join?after=1").json()
+    assert again["call_no"] == 2 and claims(again["token"])["video"]["room"] == "deal-d1-2"
+    other = client.post(call_path("d1", Role.WORKER) + "/join?after=0").json()  # a call is open: join it
+    assert other["call_no"] == 2 and livekit.created == ["deal-d1-2"]
+    assert '"ended": 0' in client.get(call_path("d1", Role.WORKER)).text
 
 
 def test_join_says_so_when_livekit_cannot_be_reached(site):
@@ -142,11 +149,11 @@ def test_server_shutdown_ends_an_open_call_and_deletes_its_room(settings, tmp_pa
         client.portal.call(app.state.bus.drain)
         for role in Role:
             assert client.post(call_path("d1", role) + "/join").status_code == 200
-            client.portal.call(lambda role=role: livekit.open["deal-d1"].joined(role.value))
+            client.portal.call(lambda role=role: livekit.open["deal-d1-1"].joined(role.value))
         assert seen == [] and livekit.deleted == []
     [ended] = seen
-    assert ended.reason == "shutdown" and sorted(uploaded) == ["recordings/d1/hirer.wav", "recordings/d1/worker.wav"]
-    assert livekit.deleted == ["deal-d1"] and livekit.listeners[0].disconnected
+    assert ended.reason == "shutdown" and sorted(uploaded) == ["recordings/d1/1/hirer.wav", "recordings/d1/1/worker.wav"]
+    assert livekit.deleted == ["deal-d1-1"] and livekit.listeners[0].disconnected
     # The call.ended sent during shutdown is in the event log, so the deal is not left "in call".
     store = Store(settings.database_path)
     asyncio.run(store.open())

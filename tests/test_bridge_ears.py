@@ -265,7 +265,8 @@ async def test_a_line_being_spoken_when_the_call_ends_is_still_published_before_
     world.talk(hirer=recorded("paint-23")[: int(1.2 * RATE) * 2])  # cut off mid-air, no pause after it
     world.room().left("hirer"), world.room().left("worker")
     await world.ended()
-    assert [e.name for e in world.events if e.name != "deal.requested"] == ["call.started", "transcript.line", "call.ended"]
+    assert [e.name for e in world.events if e.name not in ("deal.requested", "agent.note")] == [
+        "call.started", "transcript.line", "call.ended"]
 
 
 def test_the_prompt_names_the_people_when_we_know_them():

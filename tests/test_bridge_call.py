@@ -27,15 +27,15 @@ async def test_call_starts_only_when_both_people_are_in_the_room(world):
     await world.join(role=Role.HIRER)
     world.talk(hirer=recorded("paint-12"))  # alone in the room, talking to nobody
     await world.settle()
-    assert world.livekit.created == ["deal-d1"]
+    assert world.livekit.created == ["deal-d1-1"]
     assert world.named("call.started") == [] and world.named("transcript.line") == []
 
     await world.join(role=Role.WORKER)
     await world.settle()
     [started] = world.named("call.started")
-    assert (started.deal_id, started.room, started.kind) == ("d1", "deal-d1", CallKind.DEAL)
+    assert (started.deal_id, started.room, started.kind) == ("d1", "deal-d1-1", CallKind.DEAL)
     assert started.people == [SUNITA, RAMESH]
-    assert world.livekit.created == ["deal-d1"]  # the second person joined the same room
+    assert world.livekit.created == ["deal-d1-1"]  # the second person joined the same room
 
 
 async def test_someone_who_is_not_one_of_the_two_people_does_not_start_or_hold_the_call(world):
@@ -47,7 +47,7 @@ async def test_someone_who_is_not_one_of_the_two_people_does_not_start_or_hold_t
     world.room().audio("gawah", SILENT_FRAME)  # and its audio is not anyone's line
     world.room().left("hirer")
     await asyncio.sleep(0.15)
-    assert world.livekit.deleted == ["deal-d1"]  # Gawah alone does not keep the room open
+    assert world.livekit.deleted == ["deal-d1-1"]  # Gawah alone does not keep the room open
     assert world.named("call.ended") == []  # a call that never started does not end
 
 
@@ -87,11 +87,11 @@ async def test_call_ends_when_both_have_left(world):
     world.talk(hirer=recorded("paint-22"), worker=recorded("paint-23"), seconds=4)
     world.room().left("worker"), world.room().left("hirer")
     ended = await world.ended()
-    assert (ended.reason, ended.room, ended.people) == ("both_left", "deal-d1", [SUNITA, RAMESH])
+    assert (ended.reason, ended.room, ended.people) == ("both_left", "deal-d1-1", [SUNITA, RAMESH])
     assert ended.duration == 4.0
-    assert ended.recording_keys == {"hirer": "recordings/d1/hirer.wav", "worker": "recordings/d1/worker.wav"}
+    assert ended.recording_keys == {"hirer": "recordings/d1/1/hirer.wav", "worker": "recordings/d1/1/worker.wav"}
     assert set(world.uploads) == set(ended.recording_keys.values())
-    assert world.livekit.deleted == ["deal-d1"] and world.livekit.listeners[0].disconnected
+    assert world.livekit.deleted == ["deal-d1-1"] and world.livekit.listeners[0].disconnected
     assert world.calls.sessions == {}
     # Every line was published before the call ended, so whoever acts on call.ended has them all.
     names = [e.name for e in world.events]
@@ -110,7 +110,7 @@ async def test_call_ends_when_one_person_has_been_gone_for_a_while(world, leaver
     assert world.room().present == {leaver.other}  # and nothing is remembered of the one who left
     ended = await world.ended()
     assert ended.reason == "one_left" and len(ended.recording_keys) == 2
-    assert world.livekit.deleted == ["deal-d1"] and world.livekit.listeners[0].disconnected
+    assert world.livekit.deleted == ["deal-d1-1"] and world.livekit.listeners[0].disconnected
 
 
 @pytest.mark.parametrize("order", [("hirer", "worker"), ("worker", "hirer")])
@@ -123,7 +123,7 @@ async def test_call_ends_when_both_leave_in_either_order(world, order):
     world.talk(seconds=1)
     world.room().left(order[1])
     ended = await world.ended()
-    assert ended.reason == "both_left" and world.livekit.deleted == ["deal-d1"]
+    assert ended.reason == "both_left" and world.livekit.deleted == ["deal-d1-1"]
     assert world.calls.sessions == {} and world.livekit.listeners[0].disconnected
 
 
@@ -182,7 +182,7 @@ async def test_call_ends_at_our_own_time_limit(world):
     world.talk(seconds=2)
     ended = await world.ended()
     assert ended.reason == "time_limit" and len(ended.recording_keys) == 2
-    assert world.livekit.deleted == ["deal-d1"] and world.livekit.listeners[0].disconnected
+    assert world.livekit.deleted == ["deal-d1-1"] and world.livekit.listeners[0].disconnected
 
 
 async def test_call_ends_if_the_listener_loses_the_room(world):
@@ -193,7 +193,7 @@ async def test_call_ends_if_the_listener_loses_the_room(world):
     world.room().lost()
     ended = await world.ended()
     assert ended.reason == "listener_lost" and len(ended.recording_keys) == 2
-    assert world.livekit.deleted == ["deal-d1"]
+    assert world.livekit.deleted == ["deal-d1-1"]
 
 
 async def test_a_room_where_the_other_person_never_comes_is_closed_at_the_time_limit(world):
@@ -201,20 +201,21 @@ async def test_a_room_where_the_other_person_never_comes_is_closed_at_the_time_l
     await world.deal()
     await world.join(role=Role.HIRER)
     await asyncio.sleep(0.2)
-    assert world.livekit.deleted == ["deal-d1"] and world.livekit.listeners[0].disconnected
+    assert world.livekit.deleted == ["deal-d1-1"] and world.livekit.listeners[0].disconnected
     assert world.named("call.started") == [] and world.named("call.ended") == []
     assert await world.join(role=Role.HIRER)  # the call never happened, so the link still works
-    assert world.livekit.created == ["deal-d1", "deal-d1"]
+    assert world.livekit.created == ["deal-d1-1", "deal-d1-1"]
 
 
-async def test_the_link_stops_working_once_the_call_has_ended(world):
+async def test_coming_back_to_a_call_that_is_over_is_refused_and_does_not_open_a_new_one(world):
     await world.deal()
     await world.join(role=Role.HIRER)
     await world.join(role=Role.WORKER)
     world.room().left("worker"), world.room().left("hirer")
     await world.ended()
-    assert await world.join(role=Role.HIRER) is None
-    assert world.livekit.created == ["deal-d1"]
+    assert await world.join(role=Role.HIRER, after=0) is None  # the page still thought call 1 was on
+    assert world.livekit.created == ["deal-d1-1"]
+    assert await world.calls.ended_calls(await world.store.deal("d1")) == 1
 
 
 async def test_a_failed_upload_still_ends_the_call(world):
@@ -227,8 +228,8 @@ async def test_a_failed_upload_still_ends_the_call(world):
     await world.join(role=Role.WORKER)
     world.room().left("worker"), world.room().left("hirer")
     ended = await world.ended()
-    assert ended.recording_keys == {} and world.livekit.deleted == ["deal-d1"]
-    assert (world.calls.folder / "d1" / "hirer.wav").exists()  # the audio is not lost
+    assert ended.recording_keys == {} and world.livekit.deleted == ["deal-d1-1"]
+    assert (world.calls.folder / "d1" / "1" / "hirer.wav").exists()  # the audio is not lost
 
 
 async def test_two_deals_at_once_do_not_get_tangled(world):
@@ -248,13 +249,13 @@ async def test_two_deals_at_once_do_not_get_tangled(world):
     lines = {e.deal_id: e for e in world.named("transcript.line")}
     assert (lines["d1"].speaker, lines["d1"].line_no) == (Role.HIRER, 1)
     assert (lines["d2"].speaker, lines["d2"].line_no) == (Role.WORKER, 1)  # each call counts its own lines
-    assert world.livekit.created == ["deal-d1", "deal-d2"]
+    assert world.livekit.created == ["deal-d1-1", "deal-d2-1"]
 
     world.room("d2").left("hirer"), world.room("d2").left("worker")
     ended = await world.ended("d2")
     assert ended.people == [geeta, mohan] and set(ended.recording_keys.values()) == {
-        "recordings/d2/hirer.wav", "recordings/d2/worker.wav"}
-    assert world.livekit.deleted == ["deal-d2"] and "d1" in world.calls.sessions
+        "recordings/d2/1/hirer.wav", "recordings/d2/1/worker.wav"}
+    assert world.livekit.deleted == ["deal-d2-1"] and "d1" in world.calls.sessions
     assert [e.deal_id for e in world.named("call.ended")] == ["d2"]
     await world.calls.close_all()  # server shutdown closes what is left
-    assert world.livekit.deleted == ["deal-d2", "deal-d1"]
+    assert world.livekit.deleted == ["deal-d2-1", "deal-d1-1"]

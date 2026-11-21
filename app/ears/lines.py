@@ -31,15 +31,24 @@ def has_words(text: str) -> bool:
 
 
 class Ears:
-    def __init__(self, deal_id: str, bus: Bus, transcribe: Transcribe, clock: Callable[[], float]) -> None:
-        """clock gives seconds since the call started, the same timeline the audio is on."""
+    def __init__(
+        self, deal_id: str, bus: Bus, transcribe: Transcribe, clock: Callable[[], float], call_no: int = 1,
+    ) -> None:
+        """clock gives seconds since this call started, the same timeline the audio is on.
+        Line numbers count from 1 in each call, as transcript.line says."""
         self.deal_id, self.bus, self._transcribe, self._clock = deal_id, bus, transcribe, clock
+        self.call_no = call_no
         self.log = deal_log("gawah.ears", deal_id)
         self.delays: list[float] = []  # seconds from a line's last word to its event
         self._segmenters = {role: Segmenter() for role in Role}
         self._waiting: deque[_Waiting] = deque()
         self._tasks: set[asyncio.Task] = set()
         self._line_no = 0
+
+    @property
+    def lines(self) -> int:
+        """Lines published so far in this call."""
+        return self._line_no
 
     def hear(self, speaker: Role, pcm: bytes, at: float) -> None:
         """One frame of one person's audio, starting `at` seconds into the call."""
@@ -96,10 +105,10 @@ class Ears:
         delay = self._clock() - line.end
         self.delays.append(delay)
         self.log.info(
-            "line %d %s %.1f-%.1fs, published %.2fs after it ended",
-            self._line_no, waiting.speaker.value, line.start, line.end, delay,
+            "call %d line %d %s %.1f-%.1fs, published %.2fs after it ended",
+            self.call_no, self._line_no, waiting.speaker.value, line.start, line.end, delay,
         )
         self.bus.publish(TranscriptLine(
             deal_id=self.deal_id, speaker=waiting.speaker, text=waiting.text,
-            start=round(line.start, 2), end=round(line.end, 2), line_no=self._line_no,
+            start=round(line.start, 2), end=round(line.end, 2), line_no=self._line_no, call_no=self.call_no,
         ))

@@ -206,7 +206,7 @@ async def main(drop: bool, leaver: Role | None) -> None:
         await asyncio.sleep(0.05)
 
     deal_id = f"proof{new_id()[:6]}"
-    room = f"deal-{deal_id}"
+    room = f"deal-{deal_id}-1"
     received: list = []  # (when it arrived, event), as a dashboard client sees them
     browsers: dict[Role, CallBrowser] = {}
     seconds_in_room: dict[str, float] = {}
