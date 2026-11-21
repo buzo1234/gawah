@@ -84,7 +84,7 @@ We are not chasing coverage. These are required:
 - One branch and one worktree per stream. Names are in `PLAN.md`.
 - Commit messages follow the existing log: `<area>: <what changed>`, lower case.
 - Small commits. Rebase on `main` before asking for a merge.
-- Do not merge on your own. When your work is ready, report and stop. The orchestrator reviews it and tells you when to run `/merge`.
+- Do not merge, and do not run `/merge`. When your work is ready, report and stop. The orchestrator reviews it, pushes your branch, and opens a pull request. The user reviews and merges the pull request.
 
 ## Working in parallel
 

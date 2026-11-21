@@ -27,7 +27,7 @@ Events: <any event this stream now sends or listens to for the first time>
 Still missing: <what the stream's done-when still needs>
 ```
 
-Report and stop. The orchestrator reviews the work and tells you when to run `/merge`. Do not merge into `main` before that. The tests run again automatically before the merge, and a failure stops it.
+Report and stop. Do not merge and do not run `/merge`. The orchestrator reviews the work, pushes your branch, and opens a pull request. The user reviews and merges it. If the orchestrator or the user asks for changes, make them on the same branch and report again.
 
 ## Conflicts
 
