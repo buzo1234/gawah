@@ -9,8 +9,8 @@ Last updated: 21 November 2026.
 | # | Item | Found in | Status |
 |---|---|---|---|
 | 1 | **Real WhatsApp sends are refused.** Twilio answers error 21654 ("ContentSid Required") to every free-form message to the real phone. Nothing has reached a real phone. Next step: tunnel up, sandbox webhook address set in the Twilio console, the real phone sends a normal message, then retry. Fallback: Meta's test number. | PR 3 | Open |
-| 2 | **Speech detection fails on real microphones.** A plain loudness threshold treats room noise as speech: Gawah was cut off 3 times out of 3 with nobody speaking. Earphones were in, so this was room noise and not echo. Both `bridge` and `mouth` are replacing it with a real voice-activity detector. | The user's phone check | In progress |
-| 3 | **`bridge` and `mouth` are not built yet.** No real call has run through the product. | - | In progress |
+| 2 | **Speech detection fails on real microphones.** A plain loudness threshold treats room noise as speech: Gawah was cut off 3 times out of 3 with nobody speaking. Earphones were in, so this was room noise and not echo. Both `bridge` and `mouth` now use a speech detector plus each person's own noise floor: no false cut-offs on noise and clicks in their tests. Needs the phone check repeated once both are merged. | The user's phone check | In review (PRs 10, 11) |
+| 3 | **`bridge` and `mouth` are built, not merged.** No real call has run through the whole product yet. | - | In review (PRs 10, 11) |
 | 4 | **The streams have never run together on a real call.** The whole-flow test covers WhatsApp, brain, and records on fakes. | PR 9 | Open |
 
 ## Should fix before the demo
@@ -23,7 +23,11 @@ Last updated: 21 November 2026.
 | 13 | **The phone mutes its microphone** when the screen locks or the page goes to the background. The call page should keep the screen awake and say so. | The user's phone check | In progress |
 | 14 | **WhatsApp says "PDF below" with nothing attached** when the contract event has no usable file. | PR 9 | Open |
 | 15 | **Nobody has listened to the contract's voice summary.** It was checked by transcribing it back. | PR 6 | Open |
-| 16 | **Echo.** Whether Gawah's own voice coming out of a loudspeaker cuts it off has not been tested. | PR 8 | Open |
+| 16 | **Echo.** Whether Gawah's own voice coming out of a loudspeaker cuts it off has not been tested. The user's check had earphones in, so it is still open. | PR 8, PR 11 | Open |
+| 17 | **A sudden jump in room noise** (a fan switching on) while Gawah speaks can still cut it off. | PR 11 | Open |
+| 18 | **A record confirmed on the call-back is not reported on WhatsApp.** `app/records` does not listen for `record.confirmed` from the call-back, so the sender is not told, and a later "haan" on WhatsApp would answer it again. | PR 11 | Open |
+| 19 | **A dropped question publishes nothing**, so the brain waits out its 12-second timeout before asking anything else. | PR 11 | Open |
+| 20 | **Nobody has listened to Gawah's voice samples** in `fixtures/mouth-samples/`. | PR 11 | Open |
 
 ## Accepted for the demo
 
@@ -41,6 +45,11 @@ Last updated: 21 November 2026.
 | 39 | Only one conflict per call is tracked by the brain. | PR 4 | Accepted |
 | 40 | A person who drops without leaving is reported gone only after 22 seconds. | PR 8 | Accepted |
 | 41 | Docstrings in `app/contracts.py` name some listeners that do not exist. | PR 9 | Accepted |
+| 42 | A transcript line arrives about 2.3 seconds after the person stops (1 second of it is the wait for silence). | PR 10 | Accepted |
+| 43 | Someone much quieter than the recordings may be dropped by the one fixed level left in the line detector. | PR 10 | Accepted |
+| 44 | One call per deal; after it ends, the link says the call is over. | PR 10 | Accepted |
+| 45 | The call-back is not recorded or transcribed, and anyone with its link can open it. | PR 11 | Accepted |
+| 46 | A real call costs about 40 LiveKit participant-minutes per 10 minutes (two people, the hidden listener, and Gawah), and sends the brain to live Sage2. | PR 10, PR 11 | Accepted |
 
 ## Around the build
 
