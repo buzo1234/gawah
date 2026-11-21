@@ -23,6 +23,7 @@ main {
 .item.earlier .tick { border-color: var(--ok); color: var(--ok); }
 .item.earlier .label, .item.earlier .when { color: var(--ok); }
 .item.earlier .value { font-weight: 600; color: var(--ink2); -webkit-line-clamp: 1; }
+.decision .asked { font-weight: 800; }
 .chip.warn { border-color: var(--warn); background: var(--warn-bg); color: var(--warn); }
 
 /* ---------- witness chain, under the graph ---------- */
@@ -34,6 +35,8 @@ main {
 .chain .verdict.ok { color: var(--ok); }
 .chain .verdict.ok::before { content: "✓ "; }
 .chain .verdict.bad { color: var(--bad); }
+.chain .verdict.bad::before { content: "✗ "; }
+.chain .verdict.wait { color: var(--ink2); }
 
 /* ---------- the right-hand column: crew or phones ---------- */
 
@@ -100,6 +103,9 @@ svg.links { position: absolute; left: 0; top: 0; overflow: visible; pointer-even
 .fact.superseded { border-style: dashed; border-color: var(--ink2); background: var(--paper); }
 .fact.superseded .value { text-decoration: line-through; text-decoration-thickness: 2px; color: var(--ink2); }
 .fact.kind-payment, .fact.kind-work { border-left-width: 0.45rem; }
+/* The fact a term rests on now: a ring, and "stands" after its status. */
+.fact.stands { box-shadow: 0 0 0 0.2rem var(--ok); }
+.fact.stands .status::after { content: " · stands"; }
 
 .fact.change { border: 2px dashed var(--warn); background: var(--warn-bg); }
 .fact.change .status { color: var(--warn); }

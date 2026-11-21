@@ -1,6 +1,7 @@
 // The crew's part of the fold: facts and their versions, contradictions, amendments, the
-// agents' notes, and the witness chain. Called from apply() in state.js, so a reload
-// folds these the same way the live page did.
+// agents' notes, and how many links the witness chain has. Called from apply() in
+// state.js, so a reload folds these the same way the live page did. The chain itself is
+// checked by memory (/memory/chain/<deal>, see chain.js), not here.
 
 export const AGENTS = [
   ["ears", "Ears", "hears each person"],
@@ -13,28 +14,54 @@ export const AGENTS = [
   ["sentinel", "Sentinel", "watches between calls"],
 ];
 const NOTES_KEPT = 2; // what fits in a lane: the newest in full, one before it
-const HASH = /^[0-9a-f]{64}$/;
+const NOT_COUNTED = new Set(["disputed", "superseded"]);
 
 export function emptyCrew() {
   return {
-    facts: {}, // id -> the latest version, plus seq (when it was first seen)
+    facts: {}, // id -> the latest version, plus seq (when it was first seen) and last (its newest link)
     factOrder: [], // ids, first seen first
     seq: 0, // one counter for facts and changes, to tell what came after what
     conflicts: [], // each fact.conflict
     changes: {}, // change_id -> the latest step, plus seq and steps seen
     changeOrder: [],
     notes: Object.fromEntries(AGENTS.map(([key]) => [key, []])), // newest first
-    chain: { links: 0, latest: null, problem: null, hashes: new Set() },
+    chain: { links: 0 }, // one link per fact.recorded
+    chainCheck: null, // memory's answer from /memory/chain/<deal>, set by chain.js
   };
 }
 
-// The fact a term stands on now: confirmed beats agreed; the latest of either.
-export function standing(facts) {
+// The fact a term stands on now, as memory's current() picks it: only term facts;
+// confirmed beats agreed; of those, the one with the newest version.
+export function standing(state, item) {
+  const terms = state.factOrder.map((id) => state.facts[id]).filter((f) => f.item === item && f.kind === "term");
   for (const status of ["confirmed", "agreed"]) {
-    const found = facts.filter((f) => f.status === status);
-    if (found.length) return found[found.length - 1];
+    const found = terms.filter((f) => f.status === status);
+    if (found.length) return found.reduce((a, b) => (b.last > a.last ? b : a));
   }
   return null;
+}
+
+// What is paid and owed on each money term, by memory's own rules (Memory.owed): every
+// payment counts towards the amount; towards the advance, those that count towards an
+// advance; towards the balance, those that count towards the balance or the amount. The
+// balance is the agreed balance figure, or else the amount less the advance.
+export function owed(state) {
+  const figure = (item) => standing(state, item)?.value_rupees ?? null;
+  const payments = state.factOrder.map((id) => state.facts[id])
+    .filter((f) => f.kind === "payment" && !NOT_COUNTED.has(f.status) && f.value_rupees);
+  const towards = (p) => state.facts[p.counts_towards]?.item || p.item || "amount";
+  const [amount, advance] = [figure("amount"), figure("advance")];
+  let balance = figure("balance");
+  if (balance == null && amount != null && advance != null) balance = amount - advance;
+  const row = (item, agreed, counted) => {
+    const paid = counted.reduce((sum, p) => sum + p.value_rupees, 0);
+    return { item, agreed, paid, owed: agreed == null ? null : agreed - paid, payments: counted.map((p) => p.id) };
+  };
+  return {
+    amount: row("amount", amount, payments),
+    advance: row("advance", advance, payments.filter((p) => towards(p) === "advance")),
+    balance: row("balance", balance, payments.filter((p) => ["balance", "amount"].includes(towards(p)))),
+  };
 }
 
 // A change whose new value memory has since recorded as a fact is shown as that fact.
@@ -44,25 +71,19 @@ export function settledBy(state, change) {
     .find((f) => f.replaces === change.fact_id && f.seq > change.seq) || null;
 }
 
-function chainLink(chain, fact) {
-  chain.links += 1;
-  if (chain.problem) return;
-  if (!fact.hash || !HASH.test(fact.hash)) chain.problem = `link ${chain.links} has no fingerprint`;
-  else if (chain.hashes.has(fact.hash)) chain.problem = `link ${chain.links} repeats an earlier fingerprint`;
-  else chain.hashes.add(fact.hash);
-  chain.latest = fact.hash || chain.latest;
-}
-
 // Folds one crew event into state and fills in change. Returns false if it is not one.
 export function applyCrew(state, e, change) {
   switch (e.name) {
     case "fact.recorded": {
       const known = state.facts[e.fact.id];
       if (!known) state.factOrder.push(e.fact.id);
-      state.facts[e.fact.id] = { ...e.fact, seq: known ? known.seq : ++state.seq };
-      chainLink(state.chain, e.fact);
-      if (e.fact.status !== "superseded") change.fact = e.fact.id; // its successor keeps the highlight
-      change.panels.push("graph");
+      state.facts[e.fact.id] = { ...e.fact, seq: known ? known.seq : ++state.seq, last: ++state.chain.links };
+      // Memory sends a replacement first and the old version again as superseded after
+      // it: the highlight stays on the replacement.
+      change.fact = e.fact.status === "superseded"
+        ? state.factOrder.findLast((id) => state.facts[id].replaces === e.fact.id)
+        : e.fact.id;
+      change.panels.push("graph", "chain");
       return true;
     }
 

@@ -3,6 +3,7 @@
 
 import { NO_DEAL, apply, emptyState } from "./state.js";
 import { h, renderAll, renderChange, renderView } from "./render.js";
+import { checkChain, renderChain } from "./chain.js";
 import * as phones from "./phone.js";
 
 const $ = (id) => document.getElementById(id);
@@ -29,6 +30,10 @@ function drawEverything() {
   renderPicker();
 }
 
+// Memory's verdict on the witness chain comes back later; it is drawn only if the page
+// still shows the deal it was asked for.
+const chainChecked = (checked) => checked === state && renderChain(state);
+
 async function load() {
   ready = false;
   const data = await fetchState();
@@ -38,6 +43,7 @@ async function load() {
   state = emptyState(data.deal_id);
   for (const e of data.events) fold(e, false);
   drawEverything();
+  checkChain(state, chainChecked);
   ready = true;
   const waiting = held;
   held = [];
@@ -74,6 +80,7 @@ function fold(e, live) {
   if (!live) return;
   if (view === "phones" && typing()) state.view = "phones"; // never pull the composer away mid-message
   renderChange(state, change);
+  if (change.panels.includes("chain")) checkChain(state, chainChecked);
   if (change.panels.includes("all")) {
     phones.setPeople(state.people);
     phones.render();

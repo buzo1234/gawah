@@ -4,47 +4,18 @@
 // over the cards in one SVG once the cards are laid out.
 
 import { ITEMS, clock, nameOf } from "./state.js";
-import { settledBy, standing } from "./crew-state.js";
+import { owed, settledBy, standing } from "./crew-state.js";
 import { h, isWebLink } from "./render.js";
+import { clipButton } from "./clips.js";
+import { renderChain } from "./chain.js";
 
 const $ = (id) => document.getElementById(id);
 const SVG = "http://www.w3.org/2000/svg";
 const ROWS = [...ITEMS.map(([k, label]) => [k, k === "late_or_unfinished" ? "If late" : label]), ["payments", "Payments"], ["other", "Other details"]];
 const MONEY = new Set(["amount", "advance", "balance"]);
-const NOT_COUNTED = new Set(["disputed", "superseded"]);
 const STATUS = { said: "Said", agreed: "Agreed", confirmed: "Confirmed", disputed: "Disputed", superseded: "Replaced" };
 const SOURCE = { voice_note: "Voice note", text: "WhatsApp", screenshot: "Screenshot", record: "Record" };
 const rupees = (n) => "₹" + Number(n).toLocaleString("en-IN");
-export const clipPath = (factId) => `/memory/clip/${factId}`;
-
-// ---------- clips ----------
-
-let playing = null; // { button, audio }
-
-function stopClip() {
-  if (!playing) return;
-  playing.audio.pause();
-  playing.button.classList.remove("playing");
-  playing = null;
-}
-
-function playClip(factId, button) {
-  const again = playing?.button === button;
-  stopClip();
-  if (again) return;
-  const audio = new Audio(clipPath(factId));
-  playing = { button, audio };
-  button.classList.add("playing");
-  audio.addEventListener("ended", stopClip);
-  audio.play().catch(() => {
-    stopClip();
-    button.classList.add("missing");
-  });
-}
-
-export const clipButton = (factId, label = "Clip") =>
-  h("button", { type: "button", class: "play", title: "Play where it was said", onclick: (ev) => playClip(factId, ev.currentTarget) }, label);
-
 const hasClip = (f) => f && f.start != null && ["call", "callback", "voice_note"].includes(f.source);
 
 // ---------- cards ----------
@@ -68,10 +39,17 @@ function source(f) {
   return SOURCE[f.source] || "";
 }
 
-function factCard(state, f, amended) {
-  const label = f.kind === "payment" ? "Payment" : f.kind === "work" ? "Work done" : STATUS[f.status];
-  return h("div", { class: `fact ${f.status} kind-${f.kind}`, id: `fact-${f.id}`, title: f.quote ? `“${f.quote}”` : f.text },
-    h("div", { class: "top" }, h("span", { class: "status" }, label), h("span", { class: "by" }, who(state, f))),
+function cardLabel(f) {
+  if (f.kind === "payment") return f.status === "disputed" ? "Payment denied" : "Payment";
+  if (f.kind === "work") return "Work done";
+  if (f.kind === "change" && f.status === "said") return "Change asked";
+  return STATUS[f.status];
+}
+
+// stands: the fact the term rests on now, as memory's get_term gives it.
+function factCard(state, f, amended, stands) {
+  return h("div", { class: `fact ${f.status} kind-${f.kind}${stands ? " stands" : ""}`, id: `fact-${f.id}`, title: f.quote ? `“${f.quote}”` : f.text },
+    h("div", { class: "top" }, h("span", { class: "status" }, cardLabel(f)), h("span", { class: "by" }, who(state, f))),
     h("div", { class: "value" }, f.value || f.text),
     amended && h("div", { class: "amended" }, "Changed by voice · both said yes"),
     h("div", { class: "src" }, h("span", {}, source(f)),
@@ -104,8 +82,18 @@ function conflictCard(state, c) {
 
 // ---------- rows ----------
 
+// A term's row holds the facts memory files under that item: terms, and changes asked for.
+// Payments and work go under the term they count towards; any other detail, even one
+// about a term, goes to "Other details", as memory never takes it as the term's value.
+function rowFor(f) {
+  if (f.kind === "payment") return "payments";
+  if (f.item && (f.kind === "term" || f.kind === "change")) return f.item;
+  return "other";
+}
+
 function rowsOf(state) {
-  const rows = Object.fromEntries(ROWS.map(([key]) => [key, { versions: [], below: [], payments: [] }]));
+  const rows = Object.fromEntries(ROWS.map(([key]) => [key, { versions: [], below: [] }]));
+  const stands = new Set(ITEMS.map(([key]) => standing(state, key)?.id).filter(Boolean));
   const amendedBy = {};
   for (const id of state.changeOrder) {
     const c = state.changes[id];
@@ -117,13 +105,8 @@ function rowsOf(state) {
     const f = state.facts[id];
     const counts = f.kind === "payment" || f.kind === "work";
     const target = counts && state.facts[f.counts_towards];
-    if (target?.item) {
-      rows[target.item].below.push({ seq: f.seq, el: factCard(state, f) });
-      if (f.kind === "payment") rows[target.item].payments.push(f);
-    } else {
-      const key = f.item && !counts ? f.item : f.kind === "payment" ? "payments" : "other";
-      rows[key].versions.push({ seq: f.seq, el: factCard(state, f, amendedBy[f.id]), fact: f });
-    }
+    if (target?.item) rows[target.item].below.push({ seq: f.seq, el: factCard(state, f) });
+    else rows[rowFor(f)].versions.push({ seq: f.seq, el: factCard(state, f, amendedBy[f.id], stands.has(f.id)) });
   }
   for (const c of state.conflicts) {
     const key = c.factIds.map((id) => state.facts[id]?.item).find(Boolean) || "other";
@@ -132,11 +115,11 @@ function rowsOf(state) {
   return rows;
 }
 
+// Shown once a payment counts towards the term; the balance, with no figure of its own
+// agreed, is the amount less the advance, as memory works it out.
 function moneyLine(row) {
-  const term = standing(row.versions.map((v) => v.fact).filter(Boolean));
-  const paid = row.payments.filter((p) => !NOT_COUNTED.has(p.status)).reduce((sum, p) => sum + (p.value_rupees || 0), 0);
-  if (!row.payments.length || term?.value_rupees == null) return null;
-  return h("div", { class: "owed" }, `Paid ${rupees(paid)}`, h("br"), `${rupees(term.value_rupees - paid)} left`);
+  if (!row?.payments.length || row.agreed == null) return null;
+  return h("div", { class: "owed", title: `${rupees(row.agreed)} agreed` }, `Paid ${rupees(row.paid)}`, h("br"), `${rupees(row.owed)} left`);
 }
 
 function links(state) {
@@ -206,26 +189,38 @@ function svgDefs() {
   return svg;
 }
 
-// Each fact.recorded is one link. Without memory's hash formula in the contract the page
-// cannot recompute a fingerprint, so it checks what it can: every link has one, well
-// formed, and none repeats.
-function renderChain(state) {
-  const chain = state.chain;
-  $("chain").title = chain.latest || "";
-  $("chain").replaceChildren(...(!chain.links ? [] : [
-    h("span", { class: "label" }, "Witness chain"),
-    h("code", {}, chain.latest ? `${chain.latest.slice(0, 8)}…${chain.latest.slice(-4)}` : "none"),
-    h("span", { class: `verdict ${chain.problem ? "bad" : "ok"}` }, chain.problem ? `Broken: ${chain.problem}` : `${chain.links} links, none missing`),
-  ]));
-}
-
 // ---------- entry points ----------
 
 let lastLinks = [];
+let holdUntil = 0;
+let scrollTo = null; // the card whose row to bring into view once the graph is laid out
+const CONFLICT_HOLD_MS = 12000;
+
+// The graph is drawn afresh for every event, so a card that just came in keeps its glow
+// across the redraws that follow it, carried on from where it had got to.
+const GLOW_MS = { fresh: 3000, "fresh-conflict": 5000 };
+const glowing = new Map(); // element id -> { cls, since }
+
+const glow = (id, cls) => glowing.set(id, { cls, since: Date.now() });
+
+function showGlow() {
+  const now = Date.now();
+  for (const [id, { cls, since }] of glowing) {
+    if (now - since > GLOW_MS[cls]) {
+      glowing.delete(id);
+      continue;
+    }
+    const el = document.getElementById(id);
+    if (!el) continue;
+    el.classList.add(cls);
+    el.style.animationDelay = `-${now - since}ms`;
+  }
+}
 
 export function renderGraph(state, fresh = {}) {
   const box = $("graph");
   const rows = rowsOf(state);
+  const money = owed(state);
   const any = state.factOrder.length || state.changeOrder.length || state.conflicts.length;
   const facts = state.factOrder.length;
   $("graph-count").textContent = facts ? `${facts} fact${facts > 1 ? "s" : ""}` : "";
@@ -240,13 +235,16 @@ export function renderGraph(state, fresh = {}) {
     ROWS.map(([key, label]) => {
       const row = rows[key];
       const order = (list) => list.sort((a, b) => a.seq - b.seq).map((x) => x.el);
+      const paid = MONEY.has(key) && moneyLine(money[key]);
       if (!row.versions.length && !row.below.length) {
+        // A balance nobody named can still be owed: memory takes it as the amount less the advance.
         return ITEMS.some(([k]) => k === key)
-          ? h("div", { class: "term-row quiet" }, h("div", { class: "term-label" }, label), h("div", { class: "nothing" }, "Nothing said yet"))
+          ? h("div", { class: "term-row quiet" }, h("div", { class: "term-label" }, label, paid),
+            h("div", { class: "nothing" }, paid ? "Nothing said yet: the amount less the advance" : "Nothing said yet"))
           : null;
       }
       return h("div", { class: "term-row" },
-        h("div", { class: "term-label" }, label, MONEY.has(key) && moneyLine(row)),
+        h("div", { class: "term-label" }, label, paid),
         h("div", { class: "tracks" },
           h("div", { class: "track" }, order(row.versions)),
           row.below.length > 0 && h("div", { class: "track below" }, order(row.below))));
@@ -255,14 +253,21 @@ export function renderGraph(state, fresh = {}) {
   renderChain(state);
   lastLinks = links(state);
   const target = fresh.conflict ? `conflict-${fresh.conflict}` : fresh.changed ? `change-${fresh.changed}` : fresh.fact ? `fact-${fresh.fact}` : null;
-  const el = target && document.getElementById(target);
-  if (el) el.classList.add(fresh.conflict ? "fresh-conflict" : "fresh");
-  if (fresh.conflict) for (const id of state.conflicts.at(-1).factIds) document.getElementById(`fact-${id}`)?.classList.add("fresh-conflict");
+  if (target) glow(target, fresh.conflict ? "fresh-conflict" : "fresh");
+  // Bring the newest card's term row into view, so a contradiction is seen with the fact
+  // it contradicts. A contradiction holds the view for a while: the facts written down
+  // right after it do not scroll it away.
+  if (target && (fresh.conflict || Date.now() > holdUntil)) scrollTo = target;
+  if (fresh.conflict) {
+    for (const id of state.conflicts.at(-1).factIds) glow(`fact-${id}`, "fresh-conflict");
+    holdUntil = Date.now() + CONFLICT_HOLD_MS;
+  }
+  showGlow();
   requestAnimationFrame(() => {
+    if (!body.isConnected) return; // a newer event has drawn the graph again, and will do this
     drawLinks(body, lastLinks);
-    // Bring the whole term row into view from its top, so a contradiction is seen with
-    // the fact it contradicts.
-    const row = el?.closest(".term-row");
+    const row = scrollTo && document.getElementById(scrollTo)?.closest(".term-row");
+    scrollTo = null;
     if (row) {
       const r = row.getBoundingClientRect(), b = box.getBoundingClientRect();
       if (r.top < b.top || r.bottom > b.bottom) box.scrollTop += r.top - b.top;

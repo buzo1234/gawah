@@ -135,7 +135,8 @@ export function apply(state, e) {
     case "judge.speak":
       state.decisions.push({
         id: e.event_id, reason: e.reason, item: e.item, to: e.to,
-        instruction: e.instruction, afterLine: e.after_line, callNo: state.currentCall, spoken: null, interrupted: false,
+        instruction: e.instruction, question: e.question, afterLine: e.after_line, callNo: state.currentCall,
+        spoken: null, interrupted: false,
       });
       change.decision = e.event_id;
       change.panels = ["why"];
