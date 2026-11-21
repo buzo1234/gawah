@@ -90,9 +90,8 @@ class Scribe:
             log.warning("deal=%s line %s: the model gave no claims (%s)", line.deal_id, line.line_no, e)
             return []
         claims = [c for c in (parse_claim(r, line, today) for r in raw or []) if c]
-        if line.text.rstrip().endswith("?"):  # a question with no value in it settles nothing
-            claims = [c for c in claims if c.value or c.rupees is not None or c.date]
-        return claims
+        # A question settles nothing unless it names a figure or a day ("15 mein karoge?").
+        return [c for c in claims if not c.quote.rstrip().endswith("?") or c.rupees is not None or c.date or c.parts]
 
     def _with_total(self, deal: DealBook, line: TranscriptLine, claims: list[Claim]) -> list[Claim]:
         """Once an amount is agreed, a total stated in the words is an amount claim, whatever the
@@ -103,6 +102,8 @@ class Scribe:
         for claim in claims:
             if claim.item != ItemKey.AMOUNT and claim.rupees == total:
                 claim.rupees = None  # the total is not the balance or the advance
+            elif claim.item == ItemKey.AMOUNT and claim.rupees == total and claim.kind not in (FactKind.TERM, FactKind.CHANGE):
+                claim.kind, claim.stance = FactKind.TERM, "recall"
         if any(c.item == ItemKey.AMOUNT and c.rupees == total for c in claims):
             return claims
         said = Claim(
@@ -191,6 +192,8 @@ class Scribe:
         short model call on just the two decides, off the line's path."""
         if claim.kind == FactKind.CHANGE:
             return  # a proposed change is not a contradiction; it goes through fact.changed
+        if claim.item == ItemKey.DATES:
+            return  # code compares a start with the start and a finish with the finish; a day that is neither is no claim
         cited = extract.resolve(claim.contradicts, deal.standing())
         if cited is None or cited.status not in (FactStatus.AGREED, FactStatus.CONFIRMED) or cited.id == fact.id:
             return

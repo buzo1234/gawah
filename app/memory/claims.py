@@ -8,7 +8,7 @@ from datetime import date
 from app.contracts import Fact, FactKind, FactStatus, ItemKey, TranscriptLine
 from app.memory.book import DealBook
 from app.memory.dates import Day, date_parts, meets, pin_date
-from app.memory.normalise import normalise_rupees
+from app.memory.normalise import normalise_rupees, parse_rupees
 
 log = logging.getLogger("gawah.memory")
 
@@ -45,6 +45,8 @@ def parse_claim(raw: dict, line: TranscriptLine, today: date) -> Claim | None:
     except ValueError:
         return None
     rupees = normalise_rupees(raw.get("rupees"), raw.get("value"), quote)
+    if len(set(parse_rupees(quote))) > 1 and len(set(parse_rupees(raw.get("value")))) > 1:
+        rupees = None  # "7,000 halfway, 10,000 at the end": no one figure is the term
     parts = date_parts(quote, today) if item == ItemKey.DATES else {}
     if item == ItemKey.DATES and not parts and meets(quote):
         log.info("deal=%s line %s: dropped a meeting time filed as the dates: %r", line.deal_id, line.line_no, quote)

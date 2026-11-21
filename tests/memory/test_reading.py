@@ -177,3 +177,14 @@ async def test_sab_tay_ho_gaya_agrees_what_the_other_person_left_open(bus, tmp_p
     term = (await world.memory.get_term(DEAL, ItemKey.DATES)).current
     assert (term.status, term.said_by, term.agreed_by) == (FactStatus.AGREED, W, [H])
     assert (await world.memory.get_term(DEAL, ItemKey.BALANCE)).current.agreed_by == [W]  # her own term, his "haan ji"
+
+
+async def test_a_question_with_no_figure_settles_nothing(bus, tmp_path):
+    lines = [(W, "Ji. Aur baaki?"), (H, "Baaki kaam ke din, dekh ke."), (W, "Theek hai madam.")]
+    world = World(bus, tmp_path, {
+        lines[0][1]: [claim("balance", "offer", quote="Aur baaki?", value="the rest")],
+        lines[1][1]: [claim("balance", "accept", quote=lines[1][1], value="on the day of the work, after a look", accepts_line=1)],
+    })
+    await world.call(lines)
+    balance = (await world.memory.get_term(DEAL, ItemKey.BALANCE)).current
+    assert (balance.said_by, balance.agreed_by, balance.line_no) == (H, [W], 2)
