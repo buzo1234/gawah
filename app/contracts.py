@@ -130,7 +130,9 @@ class Record(BaseModel):
 # Links are built from the deal id, so no event is needed to pass them around.
 # Prefix them with settings.public_base_url before sending.
 
-WHATSAPP_WEBHOOK_PATH = "/whatsapp/webhook"  # served by whatsapp
+# Served by whatsapp. The dashboard's second-phone panel posts here too, in the shape
+# the real provider sends, instead of publishing record events itself.
+WHATSAPP_WEBHOOK_PATH = "/whatsapp/webhook"
 
 
 def call_path(deal_id: str, role: Role) -> str:
@@ -273,8 +275,7 @@ class ContractReady(Event):
 
 
 class RecordReceived(Event):
-    """Sent by whatsapp when a record comes in (and by the dashboard's second-phone panel).
-    Listened to by dashboard."""
+    """Sent by whatsapp when a record comes in. Listened to by dashboard."""
 
     name: Literal["record.received"] = "record.received"
     record: Record

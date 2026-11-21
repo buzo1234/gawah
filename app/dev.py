@@ -1,7 +1,8 @@
 """Development-only route: put any event on the bus over HTTP.
 
-The bus lives inside the server process, so the replayer and anything else running
-outside it publish through here. Set DEV_ROUTES=false to remove it. It also refuses
+The bus lives inside the server process, so the replayer and tests publish through
+here. Nothing in the app does: the LiveKit agent runs in-process and uses the bus.
+Set DEV_ROUTES=false to remove it. It also refuses
 anything that came in through the tunnel, so the public address cannot inject events.
 """
 
