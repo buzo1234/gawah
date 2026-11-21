@@ -73,8 +73,8 @@ class Document:
     def html(self) -> str:
         e = escape
         people = "".join(
-            f"<tr><th>{e(p.role.hi)}<br><span>{e(p.role.en)}</span></th>"
-            f"<td>{e(_both(p.name))}<br>{e(p.phone)}</td></tr>" for p in self.parties
+            f"<tr><th>{e(p.role.hi)} <span>/ {e(p.role.en)}</span></th>"
+            f"<td>{e(_both(p.name))}, {e(p.phone)}</td></tr>" for p in self.parties
         )
         terms = "".join(
             f"<section><h2>{n}. {e(t.title.hi)} <span>/ {e(t.title.en)}</span></h2>"
@@ -154,18 +154,18 @@ def _moment(when: datetime) -> Bi:
 
 _PAGE = """<!doctype html>
 <html lang="hi"><head><meta charset="utf-8"><title>{title_en}</title><style>
-@page {{ size: A4; margin: 15mm 16mm; }}
+@page {{ size: A4; margin: 13mm 16mm; }}
 body {{ font-family: "Kohinoor Devanagari", "Noto Sans Devanagari", "Devanagari Sangam MN", "Nirmala UI",
-  "Helvetica Neue", Arial, sans-serif; font-size: 10.5pt; line-height: 1.45; color: #111; margin: 0; }}
-h1 {{ font-size: 16pt; line-height: 1.3; margin: 0 0 3mm; }}
+  "Helvetica Neue", Arial, sans-serif; font-size: 10.5pt; line-height: 1.4; color: #111; margin: 0; }}
+h1 {{ font-size: 16pt; line-height: 1.3; margin: 0 0 2mm; }}
 h1 span, h2 span, th span {{ font-weight: normal; }}
 h2 {{ font-size: 11pt; margin: 0 0 0.5mm; }}
-h3 {{ font-size: 11pt; margin: 5mm 0 1.5mm; padding-bottom: 1mm; border-bottom: 0.3mm solid #999; }}
+h3 {{ font-size: 11pt; margin: 4mm 0 1.5mm; padding-bottom: 0.8mm; border-bottom: 0.3mm solid #999; }}
 p {{ margin: 0; }}
 table {{ border-collapse: collapse; }}
-th {{ text-align: left; vertical-align: top; padding: 0 6mm 1.5mm 0; }}
-td {{ vertical-align: top; padding: 0 0 1.5mm; }}
-section {{ margin: 0 0 3mm; break-inside: avoid; }}
+th {{ text-align: left; padding: 0 6mm 0.5mm 0; }}
+td {{ padding: 0 0 0.5mm; }}
+section {{ margin: 0 0 2.4mm; break-inside: avoid; }}
 .when, .meta {{ color: #555; font-size: 9.5pt; }}
 .statement {{ break-inside: avoid; }}
 </style></head><body>

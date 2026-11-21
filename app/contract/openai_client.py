@@ -1,6 +1,7 @@
 """The contract stream's two OpenAI calls: write JSON with a reasoning model, and speak.
 Each has a timeout and one retry. Tests replace this with fakes."""
 
+import asyncio
 import json
 
 import httpx
@@ -49,6 +50,8 @@ class OpenAI:
         headers = {"Authorization": f"Bearer {self._settings.require('openai_api_key')}"}
         async with httpx.AsyncClient(base_url=_BASE, timeout=timeout, headers=headers) as client:
             for attempt in (1, 2):
+                if attempt == 2:
+                    await asyncio.sleep(1)
                 try:
                     response = await client.post(path, json=body)
                     if response.status_code not in (429, 500, 502, 503, 504) or attempt == 2:
