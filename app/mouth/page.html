@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gawah</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; padding: 32px 24px; background: #111; color: #eee; text-align: center; }
+  h1 { font-size: 28px; margin: 12px 0 8px; }
+  p { font-size: 18px; line-height: 1.5; margin: 12px auto; max-width: 360px; }
+  button { font-size: 22px; padding: 18px 28px; border-radius: 12px; border: 0; background: #2e9e5b; color: #fff; width: 100%; max-width: 340px; margin-top: 16px; }
+  button:disabled { opacity: .6; }
+  button.leave { background: #b33; }
+  #status { font-size: 20px; min-height: 56px; margin-top: 24px; }
+  #hint { color: #fc6; }
+</style>
+</head>
+<body>
+<h1>Gawah</h1>
+<p>Gawah aapse akele mein baat karke deal ki sharten confirm karega.</p>
+<button id="join">Baat shuru karein</button>
+<button id="leave" class="leave" hidden>Call kaatein</button>
+<p id="status">Button dabaiye aur microphone ki permission dijiye.</p>
+<p id="hint" hidden>Microphone nahi chala. Browser mein microphone ki permission dijiye aur dobara button dabaiye. Agar link WhatsApp ke andar khula hai, to upar ⋮ menu se "Open in Chrome" chuniye.</p>
+<script src="/mouth/static/livekit-client.umd.min.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const status = (text) => { $('status').textContent = text; };
+let room = null;
+
+function reset(text) {
+  status(text);
+  $('leave').hidden = true; $('join').hidden = false; $('join').disabled = false;
+}
+
+// Everything happens inside the button's tap, so the phone allows the microphone and the sound.
+async function join() {
+  $('join').disabled = true; $('hint').hidden = true;
+  status('Jud rahe hain...');
+  let answer;
+  try {
+    const res = await fetch(location.pathname.replace(/\/$/, '') + '/join', { method: 'POST' });
+    answer = await res.json();
+    if (!res.ok) return reset(answer.message || 'Abhi baat nahi ho paa rahi. Thodi der mein dobara koshish kijiye.');
+  } catch (e) {
+    return reset('Network nahi mil raha. Dobara koshish kijiye.');
+  }
+  const LK = LivekitClient;
+  room = new LK.Room({ adaptiveStream: false, dynacast: false });
+  room.on(LK.RoomEvent.TrackSubscribed, (track) => {
+    if (track.kind === 'audio') document.body.appendChild(track.attach());
+  });
+  room.on(LK.RoomEvent.TrackUnsubscribed, (track) => track.detach().forEach((el) => el.remove()));
+  room.on(LK.RoomEvent.Reconnecting, () => status('Network dheema hai, dobara jud rahe hain...'));
+  room.on(LK.RoomEvent.Reconnected, () => status('Gawah se baat chalu hai.'));
+  room.on(LK.RoomEvent.AudioPlaybackStatusChanged, () => {
+    if (!room.canPlaybackAudio) status('Awaaz sunne ke liye screen par ek baar tap kijiye.');
+  });
+  room.on(LK.RoomEvent.Disconnected, () => { if (room) { room = null; reset('Baat poori ho gayi. Dhanyavaad.'); } });
+  document.body.addEventListener('click', () => room && room.startAudio());
+  try {
+    await room.connect(answer.url, answer.token);
+    await room.startAudio();
+  } catch (e) {
+    room = null;
+    return reset('Jud nahi paaye. Dobara koshish kijiye.');
+  }
+  try {
+    await room.localParticipant.setMicrophoneEnabled(true);
+  } catch (e) {
+    // Without a microphone there is no call: leave, so the room does not sit open.
+    const r = room; room = null; await r.disconnect();
+    reset('Microphone ke bina baat nahi ho sakti.');
+    $('hint').hidden = false;
+    return;
+  }
+  status('Gawah se baat chalu hai. Aapka mic on hai.');
+  $('join').hidden = true; $('leave').hidden = false;
+}
+
+$('join').onclick = join;
+$('leave').onclick = () => room && room.disconnect();
+if (new URLSearchParams(location.search).get('auto') === '1') join();  // for the headless check in tests/mouth
+</script>
+</body>
+</html>
