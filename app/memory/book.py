@@ -34,7 +34,7 @@ class DealBook:
 
     @property
     def last_call_no(self) -> int:
-        return max(self.calls, default=1)
+        return max(self.calls, default=0) or 1  # call 0 holds voice notes, not a call
 
     def call_date(self, call_no: int | None) -> date:
         started = self.calls.get(call_no or 0, Call()).started_at or datetime.now(UTC)

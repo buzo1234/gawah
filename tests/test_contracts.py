@@ -14,7 +14,7 @@ PLAN_EVENTS = {
     "deal.requested", "call.opened", "call.started", "call.ended", "transcript.line", "checklist.updated",
     "judge.speak", "judge.spoke", "terms.confirmed", "terms.disputed", "contract.ready",
     "record.received", "record.confirm_requested", "record.confirmed", "reply.timeout",
-    "whatsapp.message", "fact.recorded", "fact.conflict", "fact.changed", "agent.note",
+    "whatsapp.message", "whatsapp.voice_note", "fact.recorded", "fact.conflict", "fact.changed", "agent.note",
 }
 CREW_EVENTS = {"fact.recorded", "fact.conflict", "fact.changed", "agent.note"}
 

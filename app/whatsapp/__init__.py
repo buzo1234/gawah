@@ -11,7 +11,7 @@ from fastapi.responses import PlainTextResponse
 
 from app.access import signed_links
 from app.bus import Bus
-from app.config import Settings
+from app.config import ROOT, Settings
 from app.contracts import (
     MEMORY_STATE, NO_DEAL, WHATSAPP_WEBHOOK_PATH, CallEnded, CallOpened, ContractReady, MemoryQueries,
     RecordConfirmed, ReplyTimeout,
@@ -24,12 +24,14 @@ from app.records.sentinel import Sentinel, wall_clock
 from app.store import S3, Store
 from app.whatsapp.bot import Bot, link_for
 from app.whatsapp.clock import Clock
+from app.whatsapp.hearing import Transcriber
 from app.whatsapp.inbound import parse_inbound
 from app.whatsapp.meta import Meta
 from app.whatsapp.meta_inbound import parse_meta, report_failures
 from app.whatsapp.outbox import Outbox, Provider
 from app.whatsapp.settings import whatsapp_settings
 from app.whatsapp.twilio import Twilio
+from app.whatsapp.voice import Upload, VoiceNotes
 
 # The same test app/dev.py uses: the tunnel adds these headers, a local request has neither.
 _PROXY_HEADERS = ("cf-connecting-ip", "x-forwarded-for")
@@ -46,9 +48,11 @@ _UNSIGNED_ON_SERVER = (
 def wire(
     settings: Settings, bus: Bus, store: Store, provider: Provider | None = None,
     reader: Reader | None = None, clock: Clock | None = None, memory: MemoryQueries | None = None,
-    wall: Callable[[], datetime] = wall_clock,
+    wall: Callable[[], datetime] = wall_clock, transcriber: Transcriber | None = None,
+    upload: Upload | None = None, root: Path = ROOT,
 ) -> Bot:
-    """Build the bot and subscribe it. Tests pass a fake provider, reader, clock, and memory.
+    """Build the bot and subscribe it. Tests pass a fake provider, reader, clock, memory,
+    transcriber and upload, and their own root for voice notes.
     With no memory there is no Sentinel: records are logged and confirmed as before.
     The provider is Twilio unless WHATSAPP_PROVIDER=meta."""
     settings = whatsapp_settings(settings)
@@ -65,7 +69,12 @@ def wire(
         )
         sentinel.subscribe()
     intake = Intake(bus, outbox, reader or Reader(settings), clock, settings.reply_timeout_seconds, sentinel)
-    bot = Bot(settings, bus, store, provider, outbox, intake, sign=S3(settings).signed_url, sentinel=sentinel)
+    if sentinel:
+        sentinel.ask_change = intake.ask_change
+    s3 = S3(settings)
+    # Voice notes are kept beside the calls' recordings, recordings/<deal id>/voice/ under root.
+    voice = VoiceNotes(bus, outbox, intake, provider, transcriber or Transcriber(settings), upload or s3.upload, root)
+    bot = Bot(settings, bus, store, provider, outbox, intake, sign=s3.signed_url, sentinel=sentinel, voice=voice)
     bus.subscribe(CallOpened, bot.on_call_opened)
     bus.subscribe(CallEnded, bot.on_call_ended)
     bus.subscribe(ContractReady, bot.on_contract_ready)

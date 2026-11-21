@@ -473,6 +473,23 @@ class WhatsAppMessage(Event):
     provider_id: str | None = None  # the provider's message id
 
 
+class VoiceNote(Event):
+    """Sent by whatsapp when a person on a deal sends a voice note, once it is heard.
+    The audio is kept like a call's recordings: on disk at media_key under the app's root,
+    and in S3 under the same key. Listened to by memory (the Scribe reads it as one line
+    the speaker said, unless it became a record) and dashboard."""
+
+    name: Literal["whatsapp.voice_note"] = "whatsapp.voice_note"
+    speaker: Role
+    phone: str
+    text: str  # what it says, as transcribed
+    media_key: str  # recordings/<deal id>/voice/<message id>.<ext>
+    media_type: str | None = None  # as sent, e.g. audio/ogg
+    message_id: str  # the provider's message id
+    seconds: float | None = None  # its length
+    record_id: str | None = None  # set when it became a payment or work record: the record owns it
+
+
 class FactRecorded(Event):
     """Sent by memory for a new fact, or a new version of one. The latest version of each
     id is the fact as it stands. Listened to by brain, mouth, contract, dashboard."""
@@ -557,6 +574,7 @@ AnyEvent = Annotated[
     | RecordConfirmed
     | ReplyTimeout
     | WhatsAppMessage
+    | VoiceNote
     | FactRecorded
     | FactConflict
     | FactChanged

@@ -1,0 +1,30 @@
+{
+  "paint-05.ogg": {
+    "from": "fixtures/audio/paint-05.wav",
+    "speaker": "hirer",
+    "seconds": 6.36,
+    "said": "Andar ka poora, dono bedroom, hall aur kitchen. Balcony ki grill bhi kar dena.",
+    "use": "agrees: the work, as on the call"
+  },
+  "paint-08.ogg": {
+    "from": "fixtures/audio/paint-08.wav",
+    "speaker": "worker",
+    "seconds": 6.18,
+    "said": "Do coat aur putty ka touch-up, material ke saath pachees hazaar lagega madam.",
+    "use": "a new amount for the job: a change, the hirer is asked"
+  },
+  "paint-11.ogg": {
+    "from": "fixtures/audio/paint-11.wav",
+    "speaker": "hirer",
+    "seconds": 7.56,
+    "said": "Theek hai, twenty two thousand done. Lekin material aapka hoga, upar se koi extra charge nahi.",
+    "use": "contradicts the amount agreed"
+  },
+  "paint-14.ogg": {
+    "from": "fixtures/audio/paint-14.wav",
+    "speaker": "hirer",
+    "seconds": 6.3,
+    "said": "Paanch hazaar advance main kal GPay kar dungi. UPI pe aapka yahi number hai na?",
+    "use": "an advance of 5,000: a record, the worker is asked"
+  }
+}
