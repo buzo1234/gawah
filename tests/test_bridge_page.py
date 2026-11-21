@@ -116,3 +116,31 @@ def test_join_says_so_when_livekit_cannot_be_reached(site):
 
     livekit.create_room = down
     assert client.post(call_path("d1", Role.HIRER) + "/join").status_code == 503
+
+
+def test_server_shutdown_ends_an_open_call_and_deletes_its_room(settings, tmp_path):
+    app = create_app(settings)
+    calls = app.state.calls
+    livekit = calls.livekit = FakeLiveKit()
+    calls.folder = tmp_path / "recordings"
+    seen, uploaded = [], []
+
+    async def note(event) -> None:
+        seen.append(event)
+
+    async def upload(path: str, key: str, content_type: str) -> str:
+        uploaded.append(key)
+        return key
+
+    calls.upload = upload
+    app.state.bus.subscribe("call.ended", note)
+    with TestClient(app) as client:
+        client.post("/dev/publish", content=DealRequested(deal_id="d1", requested_by=SUNITA, other=RAMESH).model_dump_json())
+        client.portal.call(app.state.bus.drain)
+        for role in Role:
+            assert client.post(call_path("d1", role) + "/join").status_code == 200
+            client.portal.call(lambda role=role: livekit.open["deal-d1"].joined(role.value))
+        assert seen == [] and livekit.deleted == []
+    [ended] = seen
+    assert ended.reason == "shutdown" and sorted(uploaded) == ["recordings/d1/hirer.wav", "recordings/d1/worker.wav"]
+    assert livekit.deleted == ["deal-d1"] and livekit.listeners[0].disconnected

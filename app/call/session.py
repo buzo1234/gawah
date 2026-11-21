@@ -40,13 +40,14 @@ class CallSession:
     def __init__(
         self, deal: Deal, prompt: str, *, bus: Bus, livekit: LiveKit, transcribe: Transcribe,
         upload: Upload, limits: Limits, clock: Callable[[], float], folder: Path,
-        on_closed: Callable[["CallSession"], None],
+        on_closing: Callable[["CallSession"], None], on_closed: Callable[["CallSession"], None],
     ) -> None:
         self.deal, self.room = deal, room_name(deal.id)
         self.log = deal_log("gawah.call", deal.id)
         self._prompt, self._bus, self._livekit = prompt, bus, livekit
         self._transcribe, self._upload, self._limits = transcribe, upload, limits
-        self._clock, self._folder, self._on_closed = clock, folder, on_closed
+        self._clock, self._folder = clock, folder
+        self._on_closing, self._on_closed = on_closing, on_closed
         self.present: set[Role] = set()
         self.started_at: float | None = None  # time zero, on our clock
         self.ears: Ears | None = None
@@ -54,6 +55,7 @@ class CallSession:
         self._listener = None
         self._timers: dict[str, asyncio.Task] = {}
         self._closing = False
+        self._closed = asyncio.Event()
 
     async def open(self) -> None:
         await self._livekit.create_room(self.room)
@@ -132,9 +134,17 @@ class CallSession:
     async def close(self, reason: str) -> None:
         """End the call: leave and delete the room first, then send what is owed."""
         if self._closing:
+            await self._closed.wait()
             return
         self._closing = True
-        self._on_closed(self)
+        self._on_closing(self)
+        try:
+            await self._close(reason)
+        finally:
+            self._closed.set()
+            self._on_closed(self)
+
+    async def _close(self, reason: str) -> None:
         for task in self._timers.values():
             if task is not asyncio.current_task():
                 task.cancel()
@@ -190,6 +200,7 @@ class Calls:
         self.clock: Callable[[], float] = time.monotonic
         self.folder = ROOT / "recordings"
         self.sessions: dict[str, CallSession] = {}
+        self._closing: set[CallSession] = set()  # out of sessions, still saving and uploading
         self._over: set[str] = set()
         self._lock = asyncio.Lock()
 
@@ -210,21 +221,26 @@ class Calls:
                 session = CallSession(
                     deal, prompt, bus=self.bus, livekit=self.livekit, transcribe=self.transcribe,
                     upload=self.upload, limits=self.limits, clock=self.clock, folder=self.folder,
-                    on_closed=self._closed,
+                    on_closing=self._session_closing, on_closed=self._closing.discard,
                 )
                 await session.open()
                 self.sessions[deal.id] = session
         person = deal.person(role)
         return self.livekit.token(session.room, role.value, name=person.name if person else None)
 
-    def _closed(self, session: CallSession) -> None:
+    def _session_closing(self, session: CallSession) -> None:
         if self.sessions.get(session.deal.id) is session:
             del self.sessions[session.deal.id]
+        self._closing.add(session)
         if session.started_at is not None:
             self._over.add(session.deal.id)
 
-    async def close_all(self) -> None:
-        """Server shutdown: never leave a room open or the listener sitting in one."""
-        await asyncio.gather(*(s.close("shutdown") for s in list(self.sessions.values())))
+    async def close_all(self) -> int:
+        """Server shutdown: never leave a room open or the listener sitting in one, and let
+        a call that is already ending finish sending its recordings and call.ended.
+        Returns how many calls it closed or waited for."""
+        sessions = [*self.sessions.values(), *self._closing]
+        await asyncio.gather(*(s.close("shutdown") for s in sessions))
         await self.transcriber.close()
         await self.livekit.close()
+        return len(sessions)

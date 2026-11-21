@@ -158,5 +158,9 @@ async def world(bus, settings, tmp_path):
     store = Store(settings.database_path)
     await store.open()
     bus.subscribe_all(store.record_event)
-    yield World(bus, store, tmp_path / "recordings")
+    world = World(bus, store, tmp_path / "recordings")
+    yield world
+    # A call still open, or still ending, would write to the store after it is closed.
+    await world.calls.close_all()
+    await bus.drain()
     await store.close()

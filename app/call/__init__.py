@@ -24,7 +24,15 @@ ROLE_WORDS = {Role.HIRER: "kaam dene wale", Role.WORKER: "kaam karne wale"}
 
 def register(app: FastAPI, bus: Bus) -> None:
     calls = app.state.calls = Calls(app.state.settings, bus, app.state.store)
-    app.state.on_shutdown.append(calls.close_all)
+
+    async def shutdown() -> None:
+        if await calls.close_all():
+            try:  # the store closes right after the hooks: let call.ended reach it first
+                await bus.drain()
+            except TimeoutError:
+                pass
+
+    app.state.on_shutdown.append(shutdown)
     # Mounted before the page route, which would otherwise match /call/static/<file>.
     app.mount("/call/static", StaticFiles(directory=HERE / "static"), name="call-static")
 
