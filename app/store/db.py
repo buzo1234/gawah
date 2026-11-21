@@ -157,10 +157,11 @@ class Store:
     @staticmethod
     def _people(db: sqlite3.Connection, deal_id: str, people: list[Person]) -> None:
         for p in people:
-            # A later event with a blank name or phone must not wipe what we already know.
+            # A later event fills in a name or phone we do not have. It never replaces one:
+            # a practice call replayed into a deal carries its own people, not the deal's.
             db.execute(
                 "INSERT INTO people (deal_id, role, name, phone) VALUES (?, ?, ?, ?)"
                 " ON CONFLICT (deal_id, role) DO UPDATE SET"
-                " name = COALESCE(excluded.name, name), phone = COALESCE(excluded.phone, phone)",
+                " name = COALESCE(name, excluded.name), phone = COALESCE(phone, excluded.phone)",
                 (deal_id, p.role, p.name, p.phone),
             )

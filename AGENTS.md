@@ -48,6 +48,7 @@ LiveKit and Twilio are on free plans with monthly allowances. Using them up in t
 | Run the tests | `uv run pytest -q` |
 | Replay a practice call into the running server, at real speed | `uv run python -m fakes.replayer fixtures/<call>.json` |
 | Replay it faster (10 = ten times faster, 0 = no waiting) | `uv run python -m fakes.replayer fixtures/<call>.json --speed 10` |
+| Run the server with every outside service faked: no `.env`, no keys, every phone simulated, no Chrome or S3 for the contract | `uv run python -m tests.offline --port 8000` |
 | Watch events live | open `http://localhost:8000/dashboard` |
 | Watch events live in a terminal, one JSON object per line | `uv run python -m fakes.tail` |
 | Public address for webhooks | `cloudflared tunnel --url http://localhost:8000` |
@@ -59,8 +60,8 @@ The contract stream prints its PDF with a headless Chrome-family browser already
 
 The practice calls are `fixtures/call_missing_balance.json` and `fixtures/call_two_amounts.json`. The replayer and the tail need the server running, and both take the same `--url` (default `http://localhost:8000`). In a test, replay straight onto a bus instead: `await replay(bus, "fixtures/<call>.json", speed=0)` from `fakes.replayer`.
 
-The brain answers a replayed or fake call (room `replay-...` or `fake-...`) from the saved answers in `tests/brain/recorded/`, so it never reaches live Sage2 or OpenAI. It finds them by the deal id, which the replayer builds from the fixture's name; leave `--deal-id` alone or start it with that name.
-With no saved answers for a call the brain stays quiet: the checklist stays all pending and no `judge.speak` is sent.
+The brain answers a replayed or fake call (room `replay-...` or `fake-...`) from the saved answers in `tests/brain/recorded/`, so it never reaches live Sage2 or OpenAI. It finds them by what is said: a saved call answers for as long as every line so far is the line it was recorded on. The deal id does not matter, so `--deal-id <id>` replays a practice call into a deal that was started on WhatsApp. That deal keeps its own people: a call fills in a name or phone the deal does not have, and never replaces one.
+A call that says anything else gets no saved answers and the brain stays quiet: the checklist stays all pending and no `judge.speak` is sent. So if you change a practice call, record it again (`tests/brain/record.py`).
 To send a replay to the live services, start the server with `BRAIN_LIVE_REPLAYS=1` set in the shell (it is not read from `.env`). Each replayed line is then one billed Sage2 update, so count them.
 
 ## How a stream plugs in
@@ -91,6 +92,7 @@ We are not chasing coverage. These are required:
 
 - Each stream has at least one test that passes with only the fakes present.
 - The brain has repeatable tests on both practice calls: the right question, at the right line.
+- `tests/test_whole_flow.py` walks one deal through every merged stream in one process, on the fakes in `tests/offline.py`. When your stream is merged, fill in its step there, and add the fake for its outside service.
 - Tests never call a real outside service. Real calls happen in `spikes/` and in manual checks.
 
 ## Safety

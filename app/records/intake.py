@@ -107,16 +107,17 @@ class Intake:
         ask = asks.pop(0)
         ask.timer.cancel()
         ask.answerer.name = ask.answerer.name or name
-        ask.record.confirmed = confirmed
+        # A copy: the record inside the events already published must stay as it was sent.
+        record = ask.record.model_copy(update={"confirmed": confirmed})
         self.bus.publish(
             RecordConfirmed(
-                deal_id=ask.deal_id, record_id=ask.record.id, confirmed_by=ask.answerer.role,
-                confirmed=confirmed, record=ask.record,
+                deal_id=ask.deal_id, record_id=record.id, confirmed_by=ask.answerer.role,
+                confirmed=confirmed, record=record,
             )
         )
         self.outbox.send(
             ask.deal_id, ask.sender.phone, ask.sender.role,
-            words.answer_for_sender(ask.answerer, ask.record, confirmed),
+            words.answer_for_sender(ask.answerer, record, confirmed),
         )
         self.outbox.send(ask.deal_id, ask.answerer.phone, ask.answerer.role, words.ANSWER_NOTED)
         return True

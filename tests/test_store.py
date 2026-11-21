@@ -1,7 +1,7 @@
 import pytest
 
 from app.config import Settings
-from app.contracts import NO_DEAL, Backing, DealStatus, Direction, Role
+from app.contracts import NO_DEAL, Backing, DealStatus, Direction, Person, Role
 from app.log import deal_log, mask_phone
 from app.store import S3, Store
 from fakes import RAMESH, SUNITA
@@ -42,6 +42,16 @@ async def test_store_is_filled_from_events(bus, store):
         (Role.HIRER, "Hello Ramesh ji"), (Role.WORKER, "Namaste madam"),
     ]
     assert await store.deal("no-such-deal") is None
+
+
+async def test_a_call_never_replaces_the_people_the_deal_was_made_with(bus, store):
+    asha = Person(role=Role.HIRER, name="Asha", phone="+919000000001")
+    deal_id = request_deal(bus, asha, "+919000000002").deal_id
+    start_call(bus, deal_id)  # carries Sunita and Ramesh, as a practice call replayed into the deal does
+    await bus.drain()
+    deal = await store.deal(deal_id)
+    assert deal.person(Role.HIRER) == asha
+    assert deal.person(Role.WORKER) == Person(role=Role.WORKER, name="Ramesh", phone="+919000000002")
 
 
 async def test_records_and_the_fake_whatsapp_flow(bus, store):
