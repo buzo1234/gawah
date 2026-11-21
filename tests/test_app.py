@@ -27,13 +27,18 @@ def test_published_event_reaches_the_dashboard_socket_and_the_event_log(settings
         for event in events:
             response = client.post("/dev/publish", content=event.model_dump_json())
             assert response.status_code == 200, response.text
-        received = [parse_event(ws.receive_text()) for _ in events]
+        # Streams answer some of these events with events of their own, so look only at ours.
+        received = []
+        while len(received) < len(events):
+            event = parse_event(ws.receive_text())
+            if event in events:
+                received.append(event)
         assert received == events
         # The socket and the event log are separate subscriptions: the socket having
         # the last event does not mean the log has written it yet.
         client.portal.call(app.state.bus.drain)
         logged = client.portal.call(app.state.store.events, "d-app")
-        assert logged == events
+        assert [e for e in logged if e in events] == events
 
 
 def test_dev_publish_rejects_bad_events_and_tunnel_traffic(settings):
