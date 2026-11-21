@@ -1,6 +1,6 @@
 {
  "fixture": "holdout_tutor_monthly",
- "recorded_at": "2026-11-21T15:16:55+00:00",
+ "recorded_at": "2026-11-21T17:05:57+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "value:work@4": {
@@ -71,6 +71,22 @@
   "names:-@1": {
    "hirer": "Ruma",
    "worker": "Ankit"
+  },
+  "ambiguous:dates@4": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@6": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@4": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@8": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }

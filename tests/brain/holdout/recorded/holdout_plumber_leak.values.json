@@ -1,6 +1,6 @@
 {
  "fixture": "holdout_plumber_leak",
- "recorded_at": "2026-11-21T15:15:39+00:00",
+ "recorded_at": "2026-11-21T17:05:58+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "value:work@8": {
@@ -50,6 +50,18 @@
   "names:-@2": {
    "hirer": "Sunita",
    "worker": "Raju"
+  },
+  "ambiguous:dates@15": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@17": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@23": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }

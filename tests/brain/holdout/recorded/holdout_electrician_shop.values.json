@@ -1,6 +1,6 @@
 {
  "fixture": "holdout_electrician_shop",
- "recorded_at": "2026-11-21T15:16:35+00:00",
+ "recorded_at": "2026-11-21T17:06:00+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "value:work@5": {
@@ -65,6 +65,26 @@
   "names:-@1": {
    "hirer": "Imran",
    "worker": "Suresh"
+  },
+  "ambiguous:work@5": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@11": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@13": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:balance@15": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:late_or_unfinished@23": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }

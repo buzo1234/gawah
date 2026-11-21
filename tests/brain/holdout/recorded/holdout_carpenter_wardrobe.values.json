@@ -1,6 +1,6 @@
 {
  "fixture": "holdout_carpenter_wardrobe",
- "recorded_at": "2026-11-21T15:16:00+00:00",
+ "recorded_at": "2026-11-21T17:05:55+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "value:work@3": {
@@ -79,6 +79,14 @@
   "names:-@1": {
    "hirer": "Deepak",
    "worker": "Abdul"
+  },
+  "ambiguous:work@4": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@10": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }

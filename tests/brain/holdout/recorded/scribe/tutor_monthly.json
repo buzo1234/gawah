@@ -1,0 +1,468 @@
+{
+ "model": "gpt-5.4-mini",
+ "effort": "none",
+ "replies": {
+  "Hello, Ankit? Main Rohan ki mummy bol rahi hoon, Ruma Das. Sharma aunty ne aapka number diya tha.": [],
+  "Haan ji namaste aunty, Sharma aunty ne bataya tha. Rohan class eight mein hai na?": [],
+  "Haan eighth mein hai, DPS mein. Maths aur science dono mein weak hai, especially maths, half yearly mein bahut kam aaye.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Ruma Das says Rohan is in eighth at DPS and is weak in maths and science, especially maths, with low half-yearly marks.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Haan eighth mein hai, DPS mein. Maths aur science dono mein weak hai, especially maths, half yearly mein bahut kam aaye.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Koi baat nahi aunty, eighth ka maths main kaafi bachchon ko padha chuka hoon. Main ghar aake padhaunga, Monday se Friday, shaam paanch se saadhe chhe, chalega?": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says he will come to the house and teach.",
+    "value": "home tutoring",
+    "rupees": null,
+    "date": null,
+    "quote": "Main ghar aake padhaunga, Monday se Friday, shaam paanch se saadhe chhe, chalega?",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says the tutoring would run Monday to Friday.",
+    "value": "Monday to Friday",
+    "rupees": null,
+    "date": null,
+    "quote": "Main ghar aake padhaunga, Monday se Friday, shaam paanch se saadhe chhe, chalega?",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says the tutoring would be from 5:00 pm to 5:30 pm.",
+    "value": "5:00 pm to 5:30 pm",
+    "rupees": null,
+    "date": null,
+    "quote": "Main ghar aake padhaunga, Monday se Friday, shaam paanch se saadhe chhe, chalega?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan woh time theek hai, chaar baje woh school se aata hai, thoda kha pee leta hai. Fees kitni loge?": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The hirer accepts the proposed Monday-to-Friday evening time from the worker.",
+    "value": "Monday to Friday, 5:00 pm to 6:30 pm",
+    "rupees": null,
+    "date": null,
+    "quote": "Haan woh time theek hai, chaar baje woh school se aata hai, thoda kha pee leta hai. Fees kitni loge?",
+    "accepts_line": 4,
+    "contradicts": null
+   },
+   {
+    "item": "amount",
+    "kind": "other",
+    "stance": "offer",
+    "text": "The hirer asks what fee the worker will charge.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Haan woh time theek hai, chaar baje woh school se aata hai, thoda kha pee leta hai. Fees kitni loge?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Dono subject ke chaar hazaar mahina, aunty.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "offer",
+    "text": "Ankit Verma says the fee is 4,000 rupees per month for both subjects.",
+    "value": "4,000 rupees per month for both subjects",
+    "rupees": 4000,
+    "date": null,
+    "quote": "Dono subject ke chaar hazaar mahina, aunty.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Chaar hazaar theek hai. Kab se start kar sakte ho?": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "accept",
+    "text": "Ruma Das accepts Ankit Verma's fee of 4,000 rupees per month.",
+    "value": "4,000 rupees per month",
+    "rupees": 4000,
+    "date": null,
+    "quote": "Chaar hazaar theek hai.",
+    "accepts_line": 6,
+    "contradicts": null
+   }
+  ],
+  "Ek December se. Aur March mein final exam tak padhaunga, uske baad aap dekh lena aage rakhna hai ya nahi.": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says he can start from 1 December.",
+    "value": "1 December",
+    "rupees": null,
+    "date": "2026-12-01",
+    "quote": "Ek December se.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says he will teach until the final exam in March.",
+    "value": "until the final exam in March",
+    "rupees": null,
+    "date": null,
+    "quote": "Aur March mein final exam tak padhaunga",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says after that the hirer can decide whether to keep him on.",
+    "value": "after that, hirer will decide whether to continue",
+    "rupees": null,
+    "date": null,
+    "quote": "uske baad aap dekh lena aage rakhna hai ya nahi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek hai, ek December se March ke exam tak. Paise kaise, mahine ke end mein?": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The hirer accepts that the tutoring will run from 1 December to the March exam period.",
+    "value": "1 December to March exam period",
+    "rupees": null,
+    "date": null,
+    "quote": "Theek hai, ek December se March ke exam tak.",
+    "accepts_line": 8,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The hirer asks whether the remaining payment will be made at the end of the month.",
+    "value": "end of month",
+    "rupees": null,
+    "date": null,
+    "quote": "Paise kaise, mahine ke end mein?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Pehle mahine ke do hazaar pehle din de dijiye, baaki do hazaar mahine ke end mein. Uske baad har mahine ki pehli tareekh ko poore chaar hazaar.": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says to give 2,000 rupees on the first day of the first month as an advance.",
+    "value": "2,000 rupees",
+    "rupees": 2000,
+    "date": null,
+    "quote": "Pehle mahine ke do hazaar pehle din de dijiye, baaki do hazaar mahine ke end mein. Uske baad har mahine ki pehli tareekh ko poore chaar hazaar.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says the remaining 2,000 rupees will be paid at the end of the month.",
+    "value": "2,000 rupees at month end",
+    "rupees": 2000,
+    "date": null,
+    "quote": "Pehle mahine ke do hazaar pehle din de dijiye, baaki do hazaar mahine ke end mein. Uske baad har mahine ki pehli tareekh ko poore chaar hazaar.",
+    "accepts_line": null,
+    "contradicts": "balance@1.9"
+   }
+  ],
+  "Haan ye theek hai. Aur agar aap kisi din nahi aa paaye toh? College ke exam bhi toh honge aapke.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer asks what happens if the worker cannot come on some day, noting that the worker may also have college exams.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Haan ye theek hai. Aur agar aap kisi din nahi aa paaye toh? College ke exam bhi toh honge aapke.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan aunty, jo class miss hogi woh main Saturday ko cover kar dunga. Aur agar kabhi beech mein chhodna pada toh ek hafta pehle bataunga, aur us mahine jitne din padhaya utne ke hi paise lunga.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says that if a class is missed, he will cover it on Saturday.",
+    "value": "missed class covered on Saturday",
+    "rupees": null,
+    "date": null,
+    "quote": "Haan aunty, jo class miss hogi woh main Saturday ko cover kar dunga.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "late_or_unfinished",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says that if he has to stop in the middle, he will give one week's notice.",
+    "value": "one week's notice",
+    "rupees": null,
+    "date": null,
+    "quote": "Aur agar kabhi beech mein chhodna pada toh ek hafta pehle bataunga,",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says that for that month he will take payment only for the days he taught.",
+    "value": "pay for days taught in that month",
+    "rupees": null,
+    "date": null,
+    "quote": "aur us mahine jitne din padhaya utne ke hi paise lunga.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Bilkul theek hai, fair hai. Toh pakka, ek December se.": [
+   {
+    "item": "dates",
+    "kind": "other",
+    "stance": "accept",
+    "text": "The hirer says it is fine and definite that the job starts on 1 December.",
+    "value": "1 December",
+    "rupees": null,
+    "date": "2026-12-01",
+    "quote": "Bilkul theek hai, fair hai. Toh pakka, ek December se.",
+    "accepts_line": 8,
+    "contradicts": null
+   }
+  ],
+  "Waise aap khud kya padh rahe ho?": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer asks the worker what he is studying.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Waise aap khud kya padh rahe ho?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "BSc maths, final year, Hansraj se. Aage MSc ka socha hai, ya phir koi exam dunga.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says he is in final year BSc maths at Hansraj and is planning to do MSc or take an exam later.",
+    "value": "BSc maths, final year, from Hansraj; planning MSc or an exam",
+    "rupees": null,
+    "date": null,
+    "quote": "BSc maths, final year, Hansraj se. Aage MSc ka socha hai, ya phir koi exam dunga.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Arre wah, Hansraj. Mere bhai ka beta bhi wahin tha, commerce mein. Rohan ko bhi thoda samjhana, sirf phone pe cricket dekhta rehta hai.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says Rohan should also be taught a little and that he only keeps watching cricket on his phone.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Arre wah, Hansraj. Mere bhai ka beta bhi wahin tha, commerce mein. Rohan ko bhi thoda samjhana, sirf phone pe cricket dekhta rehta hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haha, aaj toh match bhi hai na, India ka. Main bhi dekhunga shaam ko.": [],
+  "Haan wahi toh, aaj toh woh padhega hi nahi. Kal ka score bhi subah subah poochh raha tha.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Ruma Das says Rohan will not study today and was asking about tomorrow's score early this morning.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Haan wahi toh, aaj toh woh padhega hi nahi. Kal ka score bhi subah subah poochh raha tha.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Kal toh accha khela, last over mein jeete. Theek hai, pehle din Rohan se match ki baat karke hi dosti kar lunga.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says that yesterday's match was good and was won in the last over, and that he will first befriend Rohan by talking about the match.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Kal toh accha khela, last over mein jeete. Theek hai, pehle din Rohan se match ki baat karke hi dosti kar lunga.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan woh accha rahega, woh thoda shy hai, naye logon se baat nahi karta.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Ruma Das says Rohan is shy and does not talk to new people.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Haan woh accha rahega, woh thoda shy hai, naye logon se baat nahi karta.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Koi baat nahi aunty, do teen din mein khul jaayega. Uski books kaun si hain, NCERT hi na?": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says Rohan's books are NCERT.",
+    "value": "NCERT books",
+    "rupees": null,
+    "date": null,
+    "quote": "Koi baat nahi aunty, do teen din mein khul jaayega. Uski books kaun si hain, NCERT hi na?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "NCERT hai, aur ek RD Sharma bhi school ne lagwayi hai. Science mein ek lab manual bhi hai.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Ruma Das says the school has assigned NCERT books, an RD Sharma book, and a science lab manual.",
+    "value": "NCERT books, RD Sharma, and a science lab manual",
+    "rupees": null,
+    "date": null,
+    "quote": "NCERT hai, aur ek RD Sharma bhi school ne lagwayi hai. Science mein ek lab manual bhi hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek hai, RD Sharma toh mere paas hai. Main ek baar dekh lunga kaun se chapter chal rahe hain.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says he already has RD Sharma and will check which chapters are being covered.",
+    "value": "RD Sharma book",
+    "rupees": null,
+    "date": null,
+    "quote": "Theek hai, RD Sharma toh mere paas hai. Main ek baar dekh lunga kaun se chapter chal rahe hain.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan main uska syllabus WhatsApp kar dungi aapko. Aur ghar ka address bhi bhej deti hoon, C-block, Sector nine.": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "Ruma Das says she will send the child's syllabus on WhatsApp and also send the home address, C-block, Sector nine.",
+    "value": "syllabus by WhatsApp; address C-block, Sector nine",
+    "rupees": null,
+    "date": null,
+    "quote": "Haan main uska syllabus WhatsApp kar dungi aapko. Aur ghar ka address bhi bhej deti hoon, C-block, Sector nine.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan bhej dijiye. Sector nine toh mere ghar se das minute hai.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says Sector nine is ten minutes from his home.",
+    "value": "10 minutes",
+    "rupees": null,
+    "date": null,
+    "quote": "Haan bhej dijiye. Sector nine toh mere ghar se das minute hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Accha hai, phir toh barish mein bhi aa jaoge, haha.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Ruma Das says the worker will still come even in the rain.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Accha hai, phir toh barish mein bhi aa jaoge, haha.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan haan aunty, barish ho ya match, aa jaaunga.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says he will come whether it rains or there is a match.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Haan haan aunty, barish ho ya match, aa jaaunga.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek hai Ankit, toh phir milte hain ek tareekh ko. Bye.": [
+   {
+    "item": "dates",
+    "kind": "other",
+    "stance": "state",
+    "text": "Ruma Das says they will meet on a date.",
+    "value": "a date",
+    "rupees": null,
+    "date": null,
+    "quote": "Theek hai Ankit, toh phir milte hain ek tareekh ko.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ]
+ },
+ "checks": {}
+}

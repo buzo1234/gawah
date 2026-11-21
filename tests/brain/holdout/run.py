@@ -5,7 +5,10 @@
     uv run python -m tests.brain.holdout.run score                                  # no outside calls
 
 Recordings live in tests/brain/holdout/recorded/, not tests/brain/recorded/, so the
-offline app and the practice-call tests never answer from them. `values` replays the call
+offline app and the practice-call tests never answer from them. The brain's checklist comes
+from the memory's facts, so the memory runs beside it on the Scribe's replies saved in
+recorded/scribe/ (made with `uv run python -m tests.memory.record fixtures/holdout/<call>.json
+--save`, then moved there). `values` replays the call
 three ways (live mode, wrapup mode, and live mode with no names known at the start, as a
 WhatsApp deal starts) and saves every lookup each one makes. `score` replays the same
 three on the saved answers and scores them against each fixture's `expected` and
@@ -23,12 +26,13 @@ from app.brain import Brain, sage, tuning
 from app.brain.values import OpenAIValues, RecordedValues
 from app.bus import Bus
 from app.config import get_settings
-from app.contracts import CallStarted, ChecklistUpdated, Event, JudgeSpeak, Person, Role
+from app.contracts import CallStarted, ChecklistUpdated, JudgeSpeak, Person, Role
 from fakes.replayer import load
 from tests.brain.record import _Saving
-from tests.brain.replaying import Run, play
+from tests.brain.replaying import Run, memory_on, play, settling
 
 OUT = Path(__file__).parent / "recorded"
+SCRIBE = OUT / "scribe"
 CALLS = sorted(Path("fixtures/holdout").glob("*.json"))
 VARIANTS = {"live": ("live", True), "wrapup": ("wrapup", True), "unnamed": ("live", False)}
 # The names each person is called by on the call. The cook's hirer is only ever "Sharma ji".
@@ -89,16 +93,10 @@ async def record_values(path: str) -> None:
     for variant, (mode, named) in VARIANTS.items():
         print("--", variant, flush=True)
         bus = Bus()
+        memory = memory_on(bus, SCRIBE)
         bus.start()
-        brain = Brain(bus, mode, lambda started: (sage.RecordedDecisions(OUT / f"{fixture['id']}.sage.json"), saving))
-
-        async def emit(event: Event | None) -> None:
-            if event:
-                bus.publish(event)
-            await bus.drain(60)
-            await brain.idle()
-            await bus.drain(60)
-
+        brain = Brain(bus, mode, lambda started: (sage.RecordedDecisions(OUT / f"{fixture['id']}.sage.json"), saving), memory)
+        emit = settling(bus, memory, brain, 60)
         await play({**fixture, "people": [p.model_dump() for p in people(fixture, named)]}, brain, emit, fixture["id"], silence_s)
         await bus.stop()
         saving.saved |= saving.replies
@@ -119,8 +117,9 @@ async def replay(path: Path, variant: str) -> Run:
     fixture = {**fixture, "people": [p.model_dump() for p in people(fixture, named)]}
     values = RecordedValues(OUT / f"{fixture['id']}.values.json")
     bus = Bus()
+    memory = memory_on(bus, SCRIBE)
     bus.start()
-    brain = Brain(bus, mode, lambda started: (sage.RecordedDecisions(OUT / f"{fixture['id']}.sage.json"), values))
+    brain = Brain(bus, mode, lambda started: (sage.RecordedDecisions(OUT / f"{fixture['id']}.sage.json"), values), memory)
     events, started = [], []
 
     async def collect(event) -> None:
@@ -129,13 +128,8 @@ async def replay(path: Path, variant: str) -> Run:
         if isinstance(event, CallStarted):
             started.append(event)
 
-    async def emit(event: Event | None) -> None:
-        if event:
-            bus.publish(event)
-        await bus.drain()
-
     bus.subscribe_all(collect)
-    await play(fixture, brain, emit, f"{fixture['id']}-holdout")
+    await play(fixture, brain, settling(bus, memory, brain), f"{fixture['id']}-holdout")
     await bus.stop()
     run = Run(fixture, events, values)
     run.started = started
@@ -164,7 +158,11 @@ def score(run: Run, mode: str) -> dict:
         return w["after_line"] <= s.after_line <= w["by_line"]
 
     def reasons(w):
-        return {w["reason"], *w.get("reason_also_ok", [])}
+        ok = {w["reason"], *w.get("reason_also_ok", [])}
+        # The Judge now raises a figure that differs from one already agreed as a contradiction
+        # of the record (from the memory's fact.conflict); the moment is the one these call
+        # conflicting_figures. Nothing else about a hit changes.
+        return ok | {"contradicts_record"} if "conflicting_figures" in ok else ok
 
     def take(i, w, verdict, test, detail="", reuse=False):
         if i in outcome:

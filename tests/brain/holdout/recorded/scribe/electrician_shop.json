@@ -1,0 +1,518 @@
+{
+ "model": "gpt-5.4-mini",
+ "effort": "none",
+ "replies": {
+  "हां हेलो इमरान भाई सुरेश बोल रहा हूं electrician": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Suresh says he is speaking as an electrician.",
+    "value": "electrician",
+    "rupees": null,
+    "date": null,
+    "quote": "हां हेलो इमरान भाई सुरेश बोल रहा हूं electrician",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "हां बोलो दुकान देख ली थी कल": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Imran Qureshi says he had seen the shop yesterday.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "हां बोलो दुकान देख ली थी कल",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "हां देख ली भाई पूरी wiring पुरानी है एकदम aluminium की है अभी तक मैं तो हैरान हो गया आजकल कौन aluminium लगाता है": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Suresh says the shop's wiring is completely old and is aluminum.",
+    "value": "old aluminum wiring",
+    "rupees": null,
+    "date": null,
+    "quote": "हां देख ली भाई पूरी wiring पुरानी है एकदम aluminium की है अभी तक मैं तो हैरान हो गया आजकल कौन aluminium लगाता है",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "पूरी बदलनी है": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "Imran Qureshi says the whole wiring has to be replaced.",
+    "value": "whole wiring replacement",
+    "rupees": null,
+    "date": null,
+    "quote": "पूरी बदलनी है",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "हां पूरी बदलनी पड़ेगी copper की डालेंगे Havells या Polycab जो आप बोलो और एक नया MCB box लगेगा": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the whole wiring will have to be replaced with copper wiring and a new MCB box will be installed.",
+    "value": "whole wiring replacement with copper wiring and a new MCB box",
+    "rupees": null,
+    "date": null,
+    "quote": "हां पूरी बदलनी पड़ेगी copper की डालेंगे Havells या Polycab जो आप बोलो और एक नया MCB box लगेगा",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says Havells or Polycab can be used.",
+    "value": "Havells or Polycab",
+    "rupees": null,
+    "date": null,
+    "quote": "हां पूरी बदलनी पड़ेगी copper की डालेंगे Havells या Polycab जो आप बोलो और एक नया MCB box लगेगा",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Polycab ठीक है points कितने": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "accept",
+    "text": "Imran Qureshi accepts Polycab for the materials.",
+    "value": "Polycab",
+    "rupees": null,
+    "date": null,
+    "quote": "Polycab ठीक है points कितने",
+    "accepts_line": 5,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Imran Qureshi asks how many points there are.",
+    "value": "points",
+    "rupees": null,
+    "date": null,
+    "quote": "Polycab ठीक है points कितने",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "आठ socket point है counter पे चार पीछे चार उसके अलावा दो light और AC की अलग line": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "Suresh says there are eight socket points, four at the counter and four at the back, plus two lights and a separate line for the AC.",
+    "value": "8 socket points, 2 lights, separate AC line",
+    "rupees": null,
+    "date": null,
+    "quote": "आठ socket point है counter पे चार पीछे चार उसके अलावा दो light और AC की अलग line",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "AC का भी हां ठीक है total बोलो": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "accept",
+    "text": "The hirer accepts that the AC line is included.",
+    "value": "AC line included",
+    "rupees": null,
+    "date": null,
+    "quote": "AC का भी हां ठीक है total बोलो",
+    "accepts_line": 7,
+    "contradicts": null
+   }
+  ],
+  "देखो भाई सब मिला के material labour सब सत्रह हज़ार": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the total for material and labour together is 17,000 rupees.",
+    "value": "17,000 rupees",
+    "rupees": 17000,
+    "date": null,
+    "quote": "देखो भाई सब मिला के material labour सब सत्रह हज़ार",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "सत्रह ज़्यादा है पंद्रह कर लो": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "Imran Qureshi says that 17,000 rupees is too much and offers 15,000 rupees instead.",
+    "value": "15,000 rupees",
+    "rupees": 15000,
+    "date": null,
+    "quote": "सत्रह ज़्यादा है पंद्रह कर लो",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "इमरान भाई copper का rate आपको पता है आजकल आसमान पे है सत्रह से कम नहीं होगा सच बोल रहा हूं मेरा अपना कुछ नहीं बचता": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "recall",
+    "text": "The worker says the amount cannot be less than 17,000 rupees.",
+    "value": "17,000 rupees",
+    "rupees": 17000,
+    "date": null,
+    "quote": "इमरान भाई copper का rate आपको पता है आजकल आसमान पे है सत्रह से कम नहीं होगा सच बोल रहा हूं मेरा अपना कुछ नहीं बचता",
+    "accepts_line": null,
+    "contradicts": "amount@1.10"
+   }
+  ],
+  "ठीक है सत्रह": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "accept",
+    "text": "Imran Qureshi accepts 17,000 rupees as the total amount.",
+    "value": "17,000 rupees",
+    "rupees": 17000,
+    "date": null,
+    "quote": "ठीक है सत्रह",
+    "accepts_line": 11,
+    "contradicts": "amount@1.10"
+   }
+  ],
+  "हां तो advance पांच हज़ार दे देना जिस दिन start करूं material उठाना पड़ता है": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "offer",
+    "text": "Worker Suresh says to give an advance of 5,000 rupees on the day he starts because he has to buy material.",
+    "value": "5,000 rupees",
+    "rupees": 5000,
+    "date": null,
+    "quote": "हां तो advance पांच हज़ार दे देना जिस दिन start करूं material उठाना पड़ता है",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "offer",
+    "text": "Worker Suresh says the work will start on the day he starts.",
+    "value": "start on the day I begin",
+    "rupees": null,
+    "date": null,
+    "quote": "हां तो advance पांच हज़ार दे देना जिस दिन start करूं material उठाना पड़ता है",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "Worker Suresh says he has to bring the material.",
+    "value": "worker buys material",
+    "rupees": null,
+    "date": null,
+    "quote": "हां तो advance पांच हज़ार दे देना जिस दिन start करूं material उठाना पड़ता है",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "ठीक है पांच start वाले दिन बाकी": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "accept",
+    "text": "Imran Qureshi accepts a 5,000 rupee advance.",
+    "value": "5,000 rupees",
+    "rupees": 5000,
+    "date": null,
+    "quote": "ठीक है पांच start वाले दिन बाकी",
+    "accepts_line": 13,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "state",
+    "text": "Imran Qureshi says the rest will be paid on the start day.",
+    "value": "rest on start day",
+    "rupees": null,
+    "date": null,
+    "quote": "ठीक है पांच start वाले दिन बाकी",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "काम ख़तम होते ही": [
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "state",
+    "text": "The hirer says the rest will be paid as soon as the work is finished.",
+    "value": "rest paid on completion",
+    "rupees": null,
+    "date": null,
+    "quote": "काम ख़तम होते ही",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "हां हां उसी दिन ले लूंगा कोई दिक्कत नहीं": [
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "accept",
+    "text": "Worker Suresh accepts that the rest will be taken the same day the work is finished.",
+    "value": "same day work is finished",
+    "rupees": null,
+    "date": null,
+    "quote": "हां हां उसी दिन ले लूंगा कोई दिक्कत नहीं",
+    "accepts_line": 15,
+    "contradicts": null
+   }
+  ],
+  "start कब": [
+   {
+    "item": "dates",
+    "kind": "other",
+    "stance": "state",
+    "text": "Imran Qureshi asks when the start will be.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "start कब",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "सोमवार से कर देता हूं सोमवार को वैसे भी मेरे पास दूसरी कोई site नहीं है वो गुप्ता जी का मकान था वो ख़तम हो गया": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says he can start on Monday.",
+    "value": "Monday",
+    "rupees": null,
+    "date": "2026-11-23",
+    "quote": "सोमवार से कर देता हूं",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "dates",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says he has no other site on Monday.",
+    "value": "no other site on Monday",
+    "rupees": null,
+    "date": null,
+    "quote": "सोमवार को वैसे भी मेरे पास दूसरी कोई site नहीं है",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says the Gupta ji house work is finished.",
+    "value": "Gupta ji house work finished",
+    "rupees": null,
+    "date": null,
+    "quote": "वो गुप्ता जी का मकान था वो ख़तम हो गया",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "कितने दिन लगेंगे दुकान बंद रखनी पड़ेगी मुझे": [
+   {
+    "item": "dates",
+    "kind": "other",
+    "stance": "state",
+    "text": "Imran Qureshi asks how many days the work will take and says he will have to keep the shop closed.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "कितने दिन लगेंगे दुकान बंद रखनी पड़ेगी मुझे",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "अरे भाई जल्दी कर दूंगा आप चिंता मत करो मेरा काम साफ़ होता है पूछ लो market में किसी से भी वो सामने वाली medical shop की wiring भी मैंने की थी": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "Suresh says he will do the job quickly.",
+    "value": "quickly",
+    "rupees": null,
+    "date": null,
+    "quote": "अरे भाई जल्दी कर दूंगा",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Suresh says people can ask in the market and that he did the wiring of the medical shop across the way.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "आप चिंता मत करो मेरा काम साफ़ होता है पूछ लो market में किसी से भी वो सामने वाली medical shop की wiring भी मैंने की थी",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "और वो जो board है ना पुराना वो भी हटा देंगे नया modular लगा देंगे वो free में": [
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "state",
+    "text": "The worker says he will remove the old board and install a new modular board for free.",
+    "value": "remove old board and install new modular board",
+    "rupees": null,
+    "date": null,
+    "quote": "और वो जो board है ना पुराना वो भी हटा देंगे नया modular लगा देंगे वो free में",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "state",
+    "text": "The worker says the new modular board will be free.",
+    "value": "free",
+    "rupees": 0,
+    "date": null,
+    "quote": "और वो जो board है ना पुराना वो भी हटा देंगे नया modular लगा देंगे वो free में",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "ठीक है देर हुई तो हर दिन का पांच सौ काटूंगा ये पहले बता रहा हूं": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "term",
+    "stance": "state",
+    "text": "Imran Qureshi says that if the work is delayed, he will deduct 500 rupees per day.",
+    "value": "500 rupees per day",
+    "rupees": 500,
+    "date": null,
+    "quote": "ठीक है देर हुई तो हर दिन का पांच सौ काटूंगा ये पहले बता रहा हूं",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "हां ठीक है भाई काट लेना इतना भरोसा है अपने काम पे": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The worker says it is okay to deduct 500 rupees per day if the job is delayed.",
+    "value": "500 rupees per day",
+    "rupees": 500,
+    "date": null,
+    "quote": "हां ठीक है भाई काट लेना इतना भरोसा है अपने काम पे",
+    "accepts_line": 23,
+    "contradicts": null
+   }
+  ],
+  "और कुछ": [],
+  "बस तो सोमवार सुबह नौ बजे आ जाऊंगा दो लड़के साथ होंगे seventy हज़ार में पूरा काम poly cap वाला MCB के साथ": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says he will come on Monday morning at 9.",
+    "value": "Monday morning 9 a.m.",
+    "rupees": null,
+    "date": "2026-11-23",
+    "quote": "बस तो सोमवार सुबह नौ बजे आ जाऊंगा",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says he will come with two laborers.",
+    "value": "two workers",
+    "rupees": null,
+    "date": null,
+    "quote": "दो लड़के साथ होंगे",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says the whole job with Polycab and MCB will cost 70,000 rupees.",
+    "value": "70,000 rupees",
+    "rupees": 70000,
+    "date": null,
+    "quote": "seventy हज़ार में पूरा काम poly cap वाला MCB के साथ",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "और दुकान की चाबी किसके पास रहेगी आप होगे सुबह": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker asks who will have the shop key and says you will be there in the morning.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "और दुकान की चाबी किसके पास रहेगी आप होगे सुबह",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "मैं रहूंगा": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Imran Qureshi says he will be there.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "मैं रहूंगा",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "ठीक है फिर अरे भाई मेरा दूसरा call आ रहा है गुप्ता जी का": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says his other call is coming from Gupta ji.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "ठीक है फिर अरे भाई मेरा दूसरा call आ रहा है गुप्ता जी का",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ]
+ },
+ "checks": {}
+}
