@@ -9,6 +9,7 @@ from urllib.parse import parse_qsl
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import PlainTextResponse
 
+from app.access import signed_links
 from app.bus import Bus
 from app.config import Settings
 from app.contracts import (
@@ -36,6 +37,10 @@ _UNSIGNED = (
     "META_APP_SECRET IS NOT SET: Meta webhooks are taken WITHOUT checking their signature. "
     "Set it in .env (App settings > Basic > App secret > Show)."
 )
+_UNSIGNED_ON_SERVER = (
+    "ACCESS_KEY is set (a public server) and WHATSAPP_PROVIDER=meta, but META_APP_SECRET is empty: "
+    "anyone could post to the webhook as a phone. Set META_APP_SECRET in the secret and restart."
+)
 
 
 def wire(
@@ -55,7 +60,7 @@ def wire(
     if memory is not None:
         saved = Path(settings.database_path).with_suffix(".sentinel.json")
         sentinel = Sentinel(
-            bus, outbox, store, memory, link_for(settings),
+            bus, outbox, store, memory, signed_links(settings, link_for(settings)),
             reminders=lambda s: Reminders(saved, clock, wall, s.remind), wall=wall,
         )
         sentinel.subscribe()
@@ -80,6 +85,9 @@ def register(app: FastAPI, bus: Bus) -> None:
     twilio = Twilio(settings)
     meta = bot.provider if hasattr(bot.provider, "signed_by_meta") else Meta(settings)
     log = deal_log("gawah.whatsapp", NO_DEAL)
+    on_server = settings.access_key is not None
+    if on_server and settings.whatsapp_provider == "meta" and not settings.meta_app_secret:
+        raise RuntimeError(_UNSIGNED_ON_SERVER)
     if settings.whatsapp_provider == "meta" and not settings.meta_app_secret:
         async def warn() -> None:
             log.warning(_UNSIGNED)
@@ -101,7 +109,10 @@ def register(app: FastAPI, bus: Bus) -> None:
         if request.headers.get("content-type", "").startswith("application/json"):
             # With the app secret set, every Meta post must be signed. Without it the demo can
             # still run, but anyone who finds the address could post as a phone: say so loudly.
+            # On a public server (access key set) an unsigned post is refused instead.
             if not settings.meta_app_secret:
+                if on_server:
+                    raise HTTPException(403, "unsigned, and META_APP_SECRET is not set")
                 log.warning(_UNSIGNED)
             elif not meta.signed_by_meta(body, request.headers.get("x-hub-signature-256")):
                 raise HTTPException(403, "bad signature")

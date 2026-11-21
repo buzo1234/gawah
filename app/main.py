@@ -14,7 +14,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app import actor, brain, call, contract, dashboard, dev, ears, memory, mouth, records, whatsapp
+from app import access, actor, brain, call, contract, dashboard, dev, ears, memory, mouth, records, whatsapp
 from app.bus import Bus
 from app.config import Settings, get_settings
 from app.store import Store
@@ -51,6 +51,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     bus.subscribe_all(store.record_event)
     for stream in STREAMS:
         stream.register(app, bus)
+    access.register(app)  # with ACCESS_KEY set: the key guards the board and the routes behind it
 
     @app.get("/health")
     async def health() -> dict[str, str]:

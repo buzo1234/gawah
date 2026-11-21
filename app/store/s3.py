@@ -9,6 +9,10 @@ from botocore.config import Config
 from app.config import Settings
 
 
+def _plain(value) -> str | None:
+    return value.get_secret_value() if value else None
+
+
 class S3:
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
@@ -20,9 +24,10 @@ class S3:
             self._client = boto3.client(
                 "s3",
                 region_name=s.require("aws_default_region"),
-                aws_access_key_id=s.require("aws_access_key_id"),
-                aws_secret_access_key=s.require("aws_secret_access_key"),
-                aws_session_token=s.aws_session_token.get_secret_value() if s.aws_session_token else None,
+                # No keys (the server): boto3 uses the instance role.
+                aws_access_key_id=_plain(s.aws_access_key_id),
+                aws_secret_access_key=_plain(s.aws_secret_access_key),
+                aws_session_token=_plain(s.aws_session_token),
                 # max_attempts counts the first try, so 2 means one retry.
                 # "virtual" puts the region in the host (bucket.s3.<region>.amazonaws.com), so a
                 # signed link is answered directly. Without it the link goes to the global host,
