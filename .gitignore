@@ -11,3 +11,4 @@ __pycache__/
 recordings/
 .DS_Store
 runs/
+memory-cache/
