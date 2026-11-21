@@ -18,7 +18,7 @@ tools/deploy/provision.sh
 
 It makes the security group (80 and 443 only), the Elastic IP, the instance role, GitHub's OIDC provider and the deploy role (it trusts only `buzo1234/gawah` on `main`), the secret, and the `t3.medium` instance. Running it again only adds what is missing. At the end it prints the address, the Meta webhook URL, and the GitHub variables.
 
-The secret is `.env` plus `.env.deploy` (git-ignored, values for the server only), without the AWS keys, `PUBLIC_BASE_URL` and `DATABASE_PATH` (the server sets those). The first run makes the dashboard's access key and keeps it in `.env.deploy` as `ACCESS_KEY`. Do not put `ACCESS_KEY` in `.env`: the laptop would then ask for it too, and the replayer would be refused.
+The secret is `.env` plus `.env.deploy` (git-ignored, values for the server only), without the AWS keys, `PUBLIC_BASE_URL` and `DATABASE_PATH` (the server sets those). The first run makes the dashboard's access key and keeps it in `.env.deploy` as `ACCESS_KEY`. Put `ACTOR_ROUTES=1` in `.env.deploy` only if you want the AI actor ("AI plays this person") on the server; without it the actor's routes do not exist there. With it, they answer only with the access key. Do not put `ACCESS_KEY` in `.env`: the laptop would then ask for it too, and the replayer would be refused.
 
 ## 2. Settings, whenever `.env` changes
 

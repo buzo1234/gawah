@@ -1,5 +1,6 @@
 # Gawah's server image: Python 3.12 with uv, a headless Chrome to print the agreement PDF,
-# Devanagari fonts for it, and the app. Built on the server by tools/deploy/deploy.sh.
+# Devanagari fonts for it, ffmpeg (WhatsApp voice notes are ogg Opus), and the app.
+# Built on the server by tools/deploy/deploy.sh.
 FROM python:3.12-slim-trixie
 
 COPY --from=ghcr.io/astral-sh/uv:0.12.19 /uv /usr/local/bin/uv
@@ -7,7 +8,7 @@ COPY --from=ghcr.io/astral-sh/uv:0.12.19 /uv /usr/local/bin/uv
 # chromium-headless-shell: Chromium's headless-only build (no window system), enough for
 # --print-to-pdf. fonts-noto-core has Noto Serif Devanagari, which the agreement asks for.
 RUN apt-get update \
- && apt-get install -y --no-install-recommends chromium-headless-shell fonts-noto-core \
+ && apt-get install -y --no-install-recommends chromium-headless-shell fonts-noto-core ffmpeg \
  && rm -rf /var/lib/apt/lists/*
 
 RUN useradd --create-home --uid 1000 gawah \

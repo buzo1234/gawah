@@ -5,7 +5,8 @@ POST /actor/stop    {deal_id, role}
 GET  /actor/status?deal_id=...              {active, role, kind, state, seconds, name, room}
 
 Development only: the routes exist only with ACTOR_ROUTES=1 (shell or .env) and DEV_ROUTES on,
-and refuse anything that came through the tunnel, as /dev/publish does.
+and refuse anything that came through the tunnel, as /dev/publish does. On a server with
+ACCESS_KEY set they take requests from outside only with the key (app/access.py guards /actor).
 
 The actor joins through the call page's own join route, so to the call it is that person: the
 bridge opens the room, records and transcribes it, and Gawah hears it, as for a phone. One actor
@@ -25,6 +26,7 @@ import httpx
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 
+from app.access import local_or_keyed
 from app.actor import persona
 from app.actor.actor import Actor
 from app.actor.realtime import Realtime
@@ -34,7 +36,6 @@ from app.config import Settings
 from app.contracts import CallEnded, CallKind, Role, call_path, callback_path
 
 log = logging.getLogger("gawah.actor")
-_PROXY_HEADERS = ("cf-connecting-ip", "x-forwarded-for")
 
 
 class ActorSettings(Settings):
@@ -70,10 +71,6 @@ def register(app: FastAPI, bus: Bus) -> None:
     app.state.actor_seat = lambda call_log: Seat(call_log)
     app.state.actor_link = lambda config, on_event, call_log: Realtime(settings.require("openai_api_key"), config, on_event, call_log)
 
-    def local(request: Request) -> None:
-        if any(h in request.headers for h in _PROXY_HEADERS):
-            raise HTTPException(403, "local only")
-
     def view(actor: Actor | None) -> dict:
         if actor is None or actor.state == "ended":
             return {"active": False, "role": None, "kind": None}
@@ -91,7 +88,7 @@ def register(app: FastAPI, bus: Bus) -> None:
 
     @app.post("/actor/start")
     async def start(body: Start, request: Request) -> dict:
-        local(request)
+        local_or_keyed(request)
         async with lock:
             running: Actor | None = app.state.actor
             if running and running.state != "ended":
@@ -120,7 +117,7 @@ def register(app: FastAPI, bus: Bus) -> None:
 
     @app.post("/actor/stop")
     async def stop(body: Stop, request: Request) -> dict:
-        local(request)
+        local_or_keyed(request)
         actor: Actor | None = app.state.actor
         if actor and actor.deal_id == body.deal_id and actor.role is body.role and actor.state != "ended":
             actor.stop("stopped from the dashboard")
@@ -129,7 +126,7 @@ def register(app: FastAPI, bus: Bus) -> None:
 
     @app.get("/actor/status")
     async def status(deal_id: str, request: Request) -> dict:
-        local(request)
+        local_or_keyed(request)
         actor: Actor | None = app.state.actor
         if actor and actor.deal_id == deal_id and actor.name is None:
             # The deal began on WhatsApp without this person's name; the call itself may have told it since.
