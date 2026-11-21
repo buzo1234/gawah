@@ -15,7 +15,7 @@ post_create:
   - "<global>"
   - 'if [ -f pyproject.toml ]; then uv sync --quiet; fi'
 
-# Runs before a merge. A failing test stops the merge.
+# Runs before a merge: the same as GitHub's CI job (tools/ci.sh). A failing test stops the merge.
 pre_merge:
   - "<global>"
-  - 'cd "$WM_WORKTREE_PATH" && if [ -f pyproject.toml ]; then uv run pytest -q; fi'
+  - 'cd "$WM_WORKTREE_PATH" && if [ -f tools/ci.sh ]; then bash tools/ci.sh; elif [ -f pyproject.toml ]; then uv run pytest -q; fi'
