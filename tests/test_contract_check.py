@@ -70,11 +70,12 @@ LINES = [
 ]
 
 
-async def test_a_rejected_draft_is_retried_with_the_problems_listed():
+async def test_a_rejected_draft_is_retried_with_the_problems_listed(caplog):
     bad = answer_for(ITEMS, terms=with_term("amount", en="13,000 rupees for labour, about 20,000 with paint"))
     writer = FakeWriter(ITEMS, answers=[bad])
-    draft = await write_draft(writer, ITEMS, LINES)
+    draft = await write_draft(writer, "d", ITEMS, LINES)
     assert len(writer.calls) == 2
+    assert "deal=d draft rejected by the check: amount.en has the figure 20000" in caplog.text
     assert "amount.en has the figure 20000, which is not in the agreed terms" in writer.calls[1]
     assert draft.terms == GOOD["terms"]
 
@@ -83,10 +84,10 @@ async def test_three_rejected_drafts_and_it_gives_up():
     bad = answer_for(ITEMS, summary_hi="कुल ₹99,000 " * 25)
     writer = FakeWriter(ITEMS, answers=[bad] * 5)
     with pytest.raises(DraftRejected, match="99000"):
-        await write_draft(writer, ITEMS, LINES)
+        await write_draft(writer, "d", ITEMS, LINES)
     assert len(writer.calls) == 3
 
 
 async def test_a_name_is_used_only_if_it_was_said_on_the_call():
-    draft = await write_draft(FakeWriter(ITEMS), ITEMS, LINES)
+    draft = await write_draft(FakeWriter(ITEMS), "d", ITEMS, LINES)
     assert draft.names == {Role.HIRER: Bi("सुनीता", "Sunita"), Role.WORKER: None}  # Ramesh never said his name

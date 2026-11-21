@@ -8,6 +8,7 @@ from typing import Protocol
 from app.contract import check
 from app.contract.document import Bi
 from app.contracts import ChecklistItem, ItemState, Role, TranscriptLine
+from app.log import deal_log
 
 ATTEMPTS = 3
 
@@ -65,7 +66,9 @@ class Draft:
     summary: str
 
 
-async def write_draft(writer: Writer, items: list[ChecklistItem], transcript: list[TranscriptLine]) -> Draft:
+async def write_draft(
+    writer: Writer, deal_id: str, items: list[ChecklistItem], transcript: list[TranscriptLine]
+) -> Draft:
     agreed = [i for i in items if i.state is ItemState.AGREED and i.value]
     request = {
         "terms": [{"key": i.key.value, "value": i.value, "said": i.source_text} for i in agreed],
@@ -83,6 +86,7 @@ async def write_draft(writer: Writer, items: list[ChecklistItem], transcript: li
         if not found:
             names = {role: _name(answer[f"{role.value}_name"], said) for role in Role}
             return Draft(names, answer["terms"], answer["summary_hi"].strip())
+        deal_log("gawah.contract", deal_id).warning("draft rejected by the check: %s", "; ".join(found))
     raise DraftRejected(f"the model's text failed the check {ATTEMPTS} times: {'; '.join(found)}")
 
 

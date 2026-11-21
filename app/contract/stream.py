@@ -96,7 +96,7 @@ class ContractStream:
             "both confirmed, writing the contract for %s and %s",
             *(mask_phone(people[r].phone if r in people else None) for r in Role),
         )
-        draft = await write_draft(self._writer, items, transcript)
+        draft = await write_draft(self._writer, deal_id, items, transcript)
         doc = document.build(
             deal_id, people, draft.names, items, draft.terms, transcript, confirmed_at, call_ended_at, datetime.now(UTC)
         )
