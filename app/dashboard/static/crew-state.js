@@ -1,19 +1,8 @@
-// The crew's part of the fold: facts and their versions, contradictions, amendments, the
-// agents' notes, and how many links the witness chain has. Called from apply() in
-// state.js, so a reload folds these the same way the live page did. The chain itself is
-// checked by memory (/memory/chain/<deal>, see chain.js), not here.
+// Memory's part of the fold: facts and their versions, contradictions, amendments, and
+// how many links the witness chain has. Called from apply() in state.js, so a reload
+// folds these the same way the live page did. The chain itself is checked by memory
+// (/memory/chain/<deal>, see chain.js), not here.
 
-export const AGENTS = [
-  ["ears", "Ears", "hears each person"],
-  ["scribe", "Scribe", "writes down facts"],
-  ["memory", "Memory", "remembers and searches"],
-  ["judge", "Judge", "decides what to ask"],
-  ["floor", "Floor", "decides when to speak"],
-  ["gawah", "Gawah", "the voice on the call"],
-  ["clerk", "Clerk", "contract and changes"],
-  ["sentinel", "Sentinel", "watches between calls"],
-];
-const NOTES_KEPT = 2; // what fits in a lane: the newest in full, one before it
 const NOT_COUNTED = new Set(["disputed", "superseded"]);
 
 export function emptyCrew() {
@@ -24,7 +13,6 @@ export function emptyCrew() {
     conflicts: [], // each fact.conflict
     changes: {}, // change_id -> the latest step, plus seq and steps seen
     changeOrder: [],
-    notes: Object.fromEntries(AGENTS.map(([key]) => [key, []])), // newest first
     chain: { links: 0 }, // one link per fact.recorded
     chainCheck: null, // memory's answer from /memory/chain/<deal>, set by chain.js
   };
@@ -83,7 +71,7 @@ export function applyCrew(state, e, change) {
       change.fact = e.fact.status === "superseded"
         ? state.factOrder.findLast((id) => state.facts[id].replaces === e.fact.id)
         : e.fact.id;
-      change.panels.push("graph", "chain");
+      change.panels.push("graph", "chain", "checklist");
       return true;
     }
 
@@ -93,8 +81,7 @@ export function applyCrew(state, e, change) {
         speaker: e.speaker, callNo: e.call_no, lineNo: e.line_no, confidence: e.confidence,
       });
       change.conflict = e.event_id;
-      change.panels.push("graph", "flow");
-      state.view = "graph";
+      change.panels.push("graph", "checklist");
       return true;
 
     case "fact.changed": {
@@ -104,20 +91,10 @@ export function applyCrew(state, e, change) {
         id: e.change_id, fact_id: e.fact_id, new_value: e.new_value, status: e.status,
         item: e.item || state.facts[e.fact_id]?.item || null, proposed_by: e.proposed_by || known?.proposed_by,
         confirmed_by: e.confirmed_by, said: e.said, seq: known ? known.seq : ++state.seq,
+        callNo: known ? known.callNo : state.currentCall,
       };
       change.changed = e.change_id;
       change.panels.push("graph", "checklist");
-      state.view = "graph";
-      return true;
-    }
-
-    case "agent.note": {
-      const lane = state.notes[e.agent];
-      if (!lane) return true;
-      lane.unshift({ id: e.event_id, text: e.text });
-      lane.length = Math.min(lane.length, NOTES_KEPT);
-      change.note = e.agent;
-      change.panels.push("lanes");
       return true;
     }
   }

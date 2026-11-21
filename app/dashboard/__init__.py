@@ -1,4 +1,5 @@
-"""Stream: dashboard. The big-screen view of one deal, and the "second phone".
+"""Stream: dashboard. The big-screen view of one deal: the contract checklist, the
+knowledge graph, and the "second phone" (its own page, /dashboard/phone, in a frame).
 
 The page keeps no state of its own on the server. On load it asks /dashboard/state for
 the event log and folds it; after that it folds each event from the websocket with the

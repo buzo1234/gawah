@@ -1,5 +1,5 @@
 """Drives the Chrome installed on this Mac, headless, over its debugging socket. Used by
-dashboard_shots.py. Not a test: pytest does not collect it."""
+dashboard_live_shots.py. Not a test: pytest does not collect it."""
 
 import asyncio
 import base64

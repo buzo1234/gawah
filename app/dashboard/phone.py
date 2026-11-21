@@ -1,6 +1,7 @@
-"""The second phone: plays a person who has no real phone.
+"""The second phone: plays a person who has no real phone. Its page is /dashboard/phone,
+shown on the board in a phone-shaped frame.
 
-A message typed on the dashboard is posted to the WhatsApp webhook path as the form the
+A message typed on the phone is posted to the WhatsApp webhook path as the form the
 provider (Twilio) sends for an inbound WhatsApp message, so it goes through the real
 intake. Nothing here publishes an event: the whatsapp stream does that for every message.
 
@@ -17,7 +18,7 @@ from uuid import uuid4
 
 import httpx
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 
 from app.contracts import NO_DEAL, WHATSAPP_WEBHOOK_PATH
@@ -25,6 +26,7 @@ from app.log import deal_log, mask_phone
 
 log = deal_log("gawah.dashboard", NO_DEAL)
 
+PAGE = Path(__file__).parent / "phone.html"
 MEDIA_DIR = Path(tempfile.gettempdir()) / "gawah-second-phone"
 MEDIA_TYPES = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp"}
 MEDIA_NAME = re.compile(r"[0-9a-f]{32}\.(jpg|png|webp)")
@@ -81,6 +83,10 @@ def register(app: FastAPI) -> None:
     def local_only(request: Request) -> None:
         if any(h in request.headers for h in _PROXY_HEADERS):
             raise HTTPException(403, "local only")
+
+    @app.get("/dashboard/phone", response_class=HTMLResponse)
+    async def page() -> str:
+        return PAGE.read_text()
 
     @app.post("/dashboard/media")
     async def upload(request: Request) -> dict[str, str]:

@@ -1,7 +1,7 @@
 // The whole dashboard is a fold over the event log: apply(state, event) is the only
 // place state changes, and it runs the same way for a reload and for a live event.
 
-import { applyCrew, emptyCrew } from "./crew-state.js";
+import { applyCrew, emptyCrew, settledBy } from "./crew-state.js";
 
 export const NO_DEAL = "no-deal";
 
@@ -14,7 +14,6 @@ export const ITEMS = [
   ["late_or_unfinished", "If late or unfinished"],
 ];
 
-export const otherRole = (role) => (role === "hirer" ? "worker" : "hirer");
 export const clock = (s) =>
   s == null ? "" : `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 export const nameOf = (state, role) =>
@@ -23,25 +22,22 @@ export const nameOf = (state, role) =>
 // A deal-call line, by its call and its line number (line numbers start again each call).
 export const lineAt = (state, lineNo, callNo = state.currentCall) => state.lines[`${callNo}:${lineNo}`];
 
+// "Call 1 · 0:55": where something was said, as the page names it everywhere.
+export const at = (callNo, start) =>
+  callNo == null ? "" : `Call ${callNo}${start != null ? ` · ${clock(start)}` : ""}`;
+
 export function emptyState(dealId) {
   return {
     ...emptyCrew(),
     dealId,
     people: {}, // role -> { name, phone }
-    status: dealId ? "requested" : "none",
-    callback: null, // the role on a call-back right now
-    flow: [], // the conversation: lines, Gawah's lines, and call marks
     lines: {}, // "call:line" -> the deal-call line, for "when was it said"
-    calls: {}, // call_no -> { ended, duration }
+    calls: [], // the deal calls seen, by call_no
     currentCall: 1,
     itemCall: {}, // item -> the call it was last changed on, to find its line
     earlier: {}, // item -> its last agreed value on an earlier call, with callNo
-    view: "phones", // the right-hand column: "phones", or "graph" (the crew) once a call starts
     items: ITEMS.map(([key]) => ({ key, state: "pending" })),
-    decisions: [], // each judge.speak, with what was then said
-    records: [], // { record, askedOf, answer, timedOut }
     terms: { hirer: {}, worker: {} }, // role -> item or "all" -> { ok, said }
-    contract: null,
   };
 }
 
@@ -53,71 +49,43 @@ function people(state, list) {
   }
 }
 
-function record(state, r) {
-  let entry = state.records.find((x) => x.record.id === r.id);
-  if (!entry) {
-    entry = { record: r, askedOf: null, answer: null, timedOut: false };
-    state.records.push(entry);
+// Returns what the page has to redraw: { panels, moved, fact, conflict, changed }.
+// moved: the checklist terms whose state or value just changed.
+export function apply(state, e) {
+  const change = { panels: [], moved: [] };
+  const before = Object.fromEntries(ITEMS.map(([key]) => [key, termView(state, key)]));
+  if (!applyCrew(state, e, change)) applyDeal(state, e, change);
+  if (change.panels.includes("checklist")) {
+    change.moved = ITEMS.map(([key]) => key).filter((key) => {
+      const [a, b] = [before[key], termView(state, key)];
+      return a.state !== b.state || a.value !== b.value;
+    });
   }
-  entry.record = r;
-  if (r.confirmed != null) entry.answer = r.confirmed;
-  return entry;
+  return change;
 }
 
-const onCall = (state) => state.status === "in_call" || state.callback != null;
-
-// Returns what the page has to redraw: { panels, flow, agreed, decision, fact, ... }.
-export function apply(state, e) {
-  const change = { panels: [], flow: null, agreed: [], decision: null };
-  if (applyCrew(state, e, change)) return change;
-  const say = (entry) => {
-    state.flow.push(entry);
-    change.flow = entry;
-  };
-
+function applyDeal(state, e, change) {
   switch (e.name) {
     case "deal.requested":
       people(state, [e.requested_by, e.other]);
       change.panels = ["all"];
       break;
 
-    case "call.started":
+    case "call.started": {
       people(state, e.people);
-      if (e.kind === "callback") {
-        state.callback = e.people?.[0]?.role || null;
-        say({ type: "mark", text: `Call-back with ${e.people?.[0] ? nameOf(state, e.people[0].role) : "one person"}: confirming the terms alone` });
-      } else if (!state.calls[e.call_no ?? 1]) {
-        const no = e.call_no ?? 1;
+      const no = e.call_no ?? 1;
+      if (e.kind !== "callback" && !state.calls.includes(no)) {
         // The brain starts each call with a fresh checklist, so keep what was agreed so far.
         for (const i of state.items) if (i.state === "agreed") state.earlier[i.key] = { ...i, callNo: state.itemCall[i.key] ?? state.currentCall };
-        state.calls[no] = { ended: false, duration: null };
+        state.calls.push(no);
         state.currentCall = no;
-        state.status = "in_call";
-        state.view = "graph";
-        say({ type: "call", callNo: no, text: no === 1 ? "The deal call" : "A follow-up call on the same deal" });
-      } // else: the brain sent it again with a name learned on the call
+      } // else: a call-back, or the brain sent it again with a name learned on the call
       change.panels = ["all"];
       break;
-
-    case "call.ended":
-      if (e.kind === "callback") {
-        state.callback = null;
-        say({ type: "mark", text: "Call-back ended" });
-      } else {
-        const no = e.call_no ?? 1;
-        if (state.calls[no]) Object.assign(state.calls[no], { ended: true, duration: e.duration });
-        if (state.status === "in_call" || state.status === "requested") state.status = state.contract ? "contract_ready" : "call_ended";
-        say({ type: "mark", text: `Call ${no} ended${e.duration != null ? ` after ${clock(e.duration)}` : ""}` });
-      }
-      change.panels = ["header"];
-      break;
+    }
 
     case "transcript.line":
       if (e.kind !== "callback" && e.line_no != null) state.lines[`${e.call_no ?? 1}:${e.line_no}`] = e;
-      say({
-        type: "line", speaker: e.speaker, text: e.text, start: e.start, lineNo: e.line_no,
-        callNo: e.kind === "callback" ? null : e.call_no ?? 1,
-      });
       break;
 
     case "checklist.updated": {
@@ -125,88 +93,73 @@ export function apply(state, e) {
       const now = Object.fromEntries(e.items.map((i) => [i.key, i]));
       state.items = ITEMS.map(([key]) => now[key] || before[key]);
       for (const key of e.changed || []) state.itemCall[key] = state.currentCall;
-      change.agreed = state.items
-        .filter((i) => i.state === "agreed" && (before[i.key].state !== "agreed" || before[i.key].value !== i.value))
-        .map((i) => i.key);
       change.panels = ["checklist"];
-      break;
-    }
-
-    case "judge.speak":
-      state.decisions.push({
-        id: e.event_id, reason: e.reason, item: e.item, to: e.to,
-        instruction: e.instruction, question: e.question, afterLine: e.after_line, callNo: state.currentCall,
-        spoken: null, interrupted: false,
-      });
-      change.decision = e.event_id;
-      change.panels = ["why"];
-      break;
-
-    case "judge.spoke": {
-      const decision =
-        state.decisions.find((d) => d.id === e.speak_id) ||
-        (e.speak_id ? null : state.decisions.findLast((d) => d.spoken == null));
-      const dropped = !e.text && e.start == null;  // the moment passed and nothing was said
-      if (decision) {
-        decision.spoken = dropped ? null : e.text;
-        decision.dropped = dropped;
-        decision.interrupted = e.interrupted;
-        change.panels = ["why"];
-      }
-      if (dropped) break;
-      say({
-        type: "gawah", text: e.text, start: e.start, interrupted: e.interrupted,
-        reason: e.reason || decision?.reason, item: e.item || decision?.item, clip: e.clip_fact_id,
-      });
       break;
     }
 
     case "terms.confirmed":
       if (e.item) state.terms[e.person][e.item] = { ok: true, said: e.said };
       else state.terms[e.person] = { all: { ok: true, said: e.said } };
-      change.panels = ["header", "checklist"];
+      change.panels = ["checklist"];
       break;
 
     case "terms.disputed":
       state.terms[e.person][e.item || "all"] = { ok: false, said: e.said };
-      change.panels = ["header", "checklist"];
+      change.panels = ["checklist"];
       break;
-
-    case "contract.ready":
-      if (state.status !== "in_call") state.status = "contract_ready";
-      state.contract = { url: e.pdf_url, text: e.text };
-      change.panels = ["header"];
-      break;
-
-    case "record.received":
-      record(state, e.record);
-      if (!onCall(state)) state.view = "phones";
-      change.panels = ["ledger"];
-      break;
-
-    case "record.confirm_requested": {
-      const entry = e.record ? record(state, e.record) : state.records.find((x) => x.record.id === e.record_id);
-      if (entry) entry.askedOf = e.confirm_by;
-      change.panels = ["ledger"];
-      break;
-    }
-
-    case "record.confirmed": {
-      const entry = e.record ? record(state, e.record) : state.records.find((x) => x.record.id === e.record_id);
-      if (entry) {
-        entry.answer = e.confirmed;
-        entry.askedOf = e.confirmed_by;
-      }
-      change.panels = ["ledger"];
-      break;
-    }
-
-    case "reply.timeout": {
-      const entry = state.records.find((x) => x.record.id === e.record_id);
-      if (entry) entry.timedOut = true;
-      change.panels = ["ledger"];
-      break;
-    }
   }
-  return change;
+}
+
+// ---------- one checklist term, as the page shows it ----------
+
+const ROLES = ["hirer", "worker"];
+const SETTLED = new Set(["agreed", "confirmed", "changed"]);
+export const isSettled = (view) => SETTLED.has(view.state);
+
+// { state, value, when, note, contradicted }. state is one of pending, agreed, confirmed,
+// disputed, changed. A dispute outweighs everything; then a change both people agreed
+// to; then both people confirming on their call-backs; then agreed, on this call or an
+// earlier one.
+export function termView(state, key) {
+  const item = state.items.find((i) => i.key === key);
+  const earlier = item.state !== "agreed" && state.earlier[key];
+  const agreed = item.state === "agreed" ? item : earlier || null;
+  const callNo = item.state === "agreed" ? state.itemCall[key] ?? state.currentCall : earlier?.callNo;
+  const agreedAt = agreed ? at(callNo, agreed.line_no == null ? null : lineAt(state, agreed.line_no, callNo)?.start) : "";
+  const said = (role) => state.terms[role][key] || state.terms[role].all;
+  const view = { state: agreed ? "agreed" : "pending", value: agreed?.value || null, when: agreedAt, note: null, contradicted: null };
+
+  const changes = state.changeOrder.map((id) => state.changes[id]).filter((c) => c.item === key && c.status !== "withdrawn");
+  const held = changes.findLast((c) => c.status === "confirmed_both");
+  const asked = changes.findLast((c) => c.status !== "confirmed_both" && (!held || c.seq > held.seq));
+  const disputing = ROLES.filter((role) => said(role)?.ok === false);
+  const confirming = ROLES.filter((role) => said(role)?.ok === true);
+
+  if (disputing.length) {
+    const quote = said(disputing[0]).said;
+    return { ...view, state: "disputed", note: `${disputing.map((r) => nameOf(state, r)).join(" and ")} disputes this${quote ? `: “${quote}”` : ""}` };
+  }
+  if (held) {
+    const fact = settledBy(state, held);
+    view.state = "changed";
+    view.value = fact?.value || held.new_value;
+    view.when = at(fact?.call_no ?? held.callNo, fact?.start);
+    view.note = agreed?.value && agreed.value !== view.value ? `Was ${agreed.value}` : null;
+  } else if (confirming.length === ROLES.length && agreed) {
+    view.state = "confirmed";
+    view.note = "Both confirmed on their call-backs";
+  } else if (confirming.length && agreed) {
+    view.note = `${nameOf(state, confirming[0])} confirmed`;
+  }
+  if (asked) {
+    const yes = asked.confirmed_by?.length ? ` · ${asked.confirmed_by.map((r) => nameOf(state, r)).join(" and ")} said yes` : "";
+    view.note = `Change asked: ${asked.new_value}${yes}`;
+  }
+  // A contradiction on this call that came after the term's last change is still open.
+  if (view.state === "agreed" || view.state === "pending") {
+    const c = state.conflicts.findLast((x) => (x.callNo ?? state.currentCall) === state.currentCall
+      && x.factIds.some((id) => state.facts[id]?.item === key));
+    if (c) view.contradicted = at(c.callNo, c.lineNo == null ? null : lineAt(state, c.lineNo, c.callNo)?.start) || "On WhatsApp";
+  }
+  return view;
 }

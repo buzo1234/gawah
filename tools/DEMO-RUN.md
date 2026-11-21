@@ -3,8 +3,8 @@
 You play both people, alone, in a quiet room.
 
 - **Your phone is Sunita**, the hirer. Real WhatsApp, and the calls in the phone's browser.
-- **The laptop is Ramesh**, the worker. His WhatsApp is the dashboard's "Second phone" panel. His calls are links opened in the laptop's browser.
-- **The big screen shows the dashboard** (`http://localhost:8000/dashboard`) the whole time: conversation, checklist, fact graph, Gawah's crew in lanes along the bottom, the witness chain.
+- **The laptop is Ramesh**, the worker. His WhatsApp is the dashboard's "Second phone" panel (also its own page, `/dashboard/phone`). His call links open inside that panel.
+- **The big screen shows the dashboard** (`http://localhost:8000/dashboard`) the whole time: the contract checklist, the knowledge graph with the witness chain's state above it, and Ramesh's phone. Another deal: press D, or add `?deal=<id>`.
 
 The story: Day 1, the deal call and the call-backs, version 1 of the agreement, the advance screenshot. Day 5, a second call where Ramesh remembers the total wrong and both agree a change by voice; version 2 arrives. Day 7, the work is done, and Gawah reminds Sunita of the balance. In the room it all happens in about 35 minutes.
 
@@ -24,7 +24,7 @@ The lines are in `fixtures/demo/demo_call_1.json` and `demo_call_2.json`; the ta
   - Your phone must be on the test number's allowed list and in `VERIFIED_NUMBERS`.
   - Meta lets Gawah message a phone only within 24 hours of that phone's last message, so your `hi` in step 4 comes first. One run sends your phone about 25 messages, inside the free 1,000 a month.
   - Ramesh's "Second phone" is simulated, as before: nothing sent to it reaches Meta.
-- **On Twilio instead** (`WHATSAPP_PROVIDER=twilio`): the sandbox membership lapses on 24 November (send `join <code>` again first), and Twilio's trial refuses every message to your phone (error 21654). Then look in the dashboard's "Real phone" panel wherever a step says your phone gets something, and see "When the phone gets nothing" at the end.
+- **On Twilio instead** (`WHATSAPP_PROVIDER=twilio`): the sandbox membership lapses on 24 November (send `join <code>` again first), and Twilio's trial refuses every message to your phone (error 21654). Then open `http://localhost:8000/dashboard/phone?number=<your number>` wherever a step says your phone gets something, and see "When the phone gets nothing" at the end.
 
 ## How to talk to Gawah
 
@@ -94,7 +94,7 @@ Send Ramesh's number: exactly what is in the "Second phone" panel's Number box, 
 1. Laptop: click Ramesh's link in the "Second phone" panel. Press the green **Judiye** button and allow the microphone.
 2. Phone: tap **Call kholiye**. Press the green **Judiye** button and allow the microphone. If the WhatsApp in-app browser blocks the microphone, open the link in Chrome.
 
-**You should see:** both pages say you are connected. Within about 5 to 20 seconds (it waits to hear both of you, at most 15 seconds) Gawah says: "Namaste. Main Gawah hoon. Yeh call record ho rahi hai ... Aap dono, kripya ek-ek karke apna naam bataiye aur kahiye ki aap sehmat hain." The dashboard header says "On call 1".
+**You should see:** both pages say you are connected. Within about 5 to 20 seconds (it waits to hear both of you, at most 15 seconds) Gawah says: "Namaste. Main Gawah hoon. Yeh call record ho rahi hai ... Aap dono, kripya ek-ek karke apna naam bataiye aur kahiye ki aap sehmat hain."
 
 **If Gawah never speaks:** look in the server log for `Gawah has no voice on this call`. The call still works without the voice; go on.
 
@@ -134,7 +134,7 @@ Send Ramesh's number: exactly what is in the "Second phone" panel's Number box, 
 
 Then press **Call chhodein** on both.
 
-**On the dashboard during the call:** each line under its speaker; the checklist filling in (work, amount 22,000, advance 5,000, dates, balance, late); the fact graph growing, with 25,000 and 20,000 as offers and 22,000 as agreed; the crew's lanes (Ears, Scribe, Memory, Judge, Floor, Gawah) each saying what it just did. When Gawah speaks, "Why Gawah spoke" says why.
+**On the dashboard during the call:** the checklist filling in (work, amount 22,000, advance 5,000, dates, balance, late), each with the call time it was agreed at; the knowledge graph growing, with 25,000 and 20,000 as offers and 22,000 as agreed.
 
 **If Gawah does not ask about the balance in 30 seconds:** go on to line 18 anyway, and note it. **If it does not answer line 22:** say it once more, a little closer to the laptop. **If it does not read the terms back:** go on; the call-backs read every term to each of you.
 
@@ -152,7 +152,7 @@ About 3 seconds after you both leave, each of you gets a call-back: "Gawah aapse
 
 Then the same on the laptop, from Ramesh's call-back link in the "Second phone" panel.
 
-**You should see:** after each call-back, the dashboard header says "Sunita confirmed the terms" (then Ramesh). **If Gawah keeps waiting:** say "haan" a little louder, closer to the device.
+**You should see:** after each call-back, the dashboard checklist notes "Sunita confirmed"; once both have, the terms read "Confirmed". **If Gawah keeps waiting:** say "haan" a little louder, closer to the device.
 
 ### 9. The agreement, version 1
 
@@ -214,7 +214,7 @@ Phone: tap **Call kholiye** and press **Phir se baat karein**. Gawah greets you 
 
 Then **Call chhodein** on both.
 
-**On the dashboard:** at line 3 a red contradiction link in the fact graph, from Ramesh's "25,000" to the 22,000 both agreed, with "Hear what was agreed"; Gawah's lane says it played the clip. At line 8 the change appears; when both have said haan, the amount reads 24,000 and the old 22,000 is marked replaced.
+**On the dashboard:** at line 3 a red contradiction link in the fact graph, from Ramesh's "25,000" to the 22,000 both agreed, with "Hear what was agreed", and the checklist's amount says "Contradicted". At line 8 the change appears; when both have said haan, the checklist's amount reads "Changed" 24,000, and in the graph the old 22,000 is marked replaced.
 
 **At line 8, Gawah may first replay the 22,000 moment.** The brain takes the new total as a contradiction of the old one before Gawah has proposed the change. Wait it out: Gawah then proposes the change. Answer haan only after it has asked.
 
@@ -256,7 +256,7 @@ Ctrl-C in the runner's terminal. It stops the server and the tunnel, deletes any
 
 ## When the phone gets nothing
 
-On Meta, the server log says why (`not sent to ***NNNN: meta http ... code ...`; the codes are in `tools/META-SETUP.md`): most often an expired token (190), or more than 24 hours since the phone last wrote (131047: send Gawah any message from it). On Twilio's trial every send to your phone is refused. Either way you can go on by copying your links by hand. The dashboard shows everything Gawah sent you in the "Real phone" panel; your links are also Ramesh's with `hirer` in place of `worker`:
+On Meta, the server log says why (`not sent to ***NNNN: meta http ... code ...`; the codes are in `tools/META-SETUP.md`): most often an expired token (190), or more than 24 hours since the phone last wrote (131047: send Gawah any message from it). On Twilio's trial every send to your phone is refused. Either way you can go on by copying your links by hand. `http://localhost:8000/dashboard/phone?number=<your number>` shows everything Gawah sent you; your links are also Ramesh's with `hirer` in place of `worker`:
 
 - Call (day 1 and day 5): Ramesh's call link from the "Second phone" panel, with the ending `/worker` changed to `/hirer`.
 - Call-back: the same, with Ramesh's call-back link.
