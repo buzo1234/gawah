@@ -16,14 +16,9 @@ from app.bus import Bus
 from app.contracts import CallStarted, Event, JudgeSpoke
 from app.mouth import Mouth, tuning
 from fakes import RAMESH, SUNITA
+from tests.mouth import sounds
 
-LOUD, QUIET = -20.0, -90.0
-
-
-def frame(db: float) -> bytes:
-    """One 20 ms frame at a given loudness."""
-    level = 0 if db <= -90 else int(32768 * 10 ** (db / 20))
-    return np.full(tuning.FRAME_BYTES // 2, level, dtype=np.int16).tobytes()
+SPEECH = sounds.line("paint-09.wav") * 3  # a recorded line with no gap in it, at the level a browser's gain control gives
 
 
 def audio(ms: int) -> str:
@@ -32,7 +27,7 @@ def audio(ms: int) -> str:
 
 class FakeSeat:
     def __init__(self) -> None:
-        self.on_frame = self.on_left = lambda *a: None
+        self.on_frame = self.on_left = self.on_silent = lambda *a: None
         self.on_closed = lambda: None
         self.room: str | None = None
         self.gone = False
@@ -59,16 +54,20 @@ class FakeSeat:
 
     # what the test does to the room
 
-    def hears(self, who: str, db: float, ms: int) -> None:
-        for _ in range(ms // tuning.FRAME_MS):
-            self.on_frame(who, frame(db))
+    def hears(self, who: str, samples: np.ndarray) -> None:
+        for frame in sounds.frames(samples):
+            self.on_frame(who, frame)
+
+    def says(self, who: str, ms: int) -> None:
+        """Recorded speech from this person's microphone."""
+        self.hears(who, SPEECH[: tuning.RATE * ms // 1000])
 
     def talks(self, who: str) -> None:
         """They are mid-sentence, and stay so until stops()."""
-        self.hears(who, LOUD, 200)
+        self.says(who, 600)
 
     def stops(self, who: str) -> None:
-        self.hears(who, QUIET, tuning.PAUSE_MS)
+        self.hears(who, sounds.room_noise((tuning.PAUSE_MS + 100) / 1000, -50))
 
 
 class FakeLink:
@@ -163,6 +162,8 @@ class World:
         before = len(self.seats)
         self.bus.publish(CallStarted(deal_id=deal_id, people=[SUNITA, RAMESH], room=f"deal-{deal_id}", **started))
         await until(lambda: deal_id in self.mouth.calls)
+        for who in ("hirer", "worker"):  # both are in the room, and quiet
+            self.seats[before].hears(who, sounds.room_noise(1.0, -50))
         if opening:
             await until(lambda: self.of(JudgeSpoke, deal_id))
         return self.seats[before], self.links[before]

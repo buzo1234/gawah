@@ -86,7 +86,8 @@ class Callback:
                 deal_id=self.deal_id, people=[self.person], kind=CallKind.CALLBACK, room=self.room_name,
                 duration=round(time.monotonic() - self._joined, 1), reason=reason,
             ))
-        for close in (self.link.close, self.seat.leave, lambda: self.rooms.delete(self.room_name)):
+        # The room first: that is what costs minutes.
+        for close in (self.seat.leave, lambda: self.rooms.delete(self.room_name), self.link.close):
             try:
                 await close()
             except Exception:

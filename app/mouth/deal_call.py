@@ -16,7 +16,7 @@ from app.bus import Bus
 from app.contracts import CallStarted, ChecklistUpdated, ItemState, JudgeSpeak, JudgeSpoke, Role, SpeakReason
 from app.log import deal_log
 from app.mouth import tuning, voice
-from app.mouth.hearing import Hearing, frame_db
+from app.mouth.hearing import Hearing
 from app.mouth.player import Player
 from app.mouth.voice import Utterance, Voice
 
@@ -66,7 +66,7 @@ class DealCall:
 
     async def start(self) -> None:
         self.seat.on_frame = self._on_frame
-        self.seat.on_left = self.hearing.forget
+        self.seat.on_left = self.seat.on_silent = self.hearing.forget
         self.seat.on_closed = lambda: self.on_over(self, "the room closed")
         try:
             await self.seat.join(self.room_name)
@@ -87,7 +87,7 @@ class DealCall:
         for task in self._tasks:
             task.cancel()
         self.player.stop()
-        for close in (self.voice.link.close, self.seat.leave):
+        for close in (self.seat.leave, self.voice.link.close):  # out of the room first: that is what costs minutes
             try:
                 await close()
             except Exception:
@@ -120,7 +120,7 @@ class DealCall:
 
     def _on_frame(self, who: str, pcm: bytes) -> None:
         gawah_ms = self.player.heard_so_far() if self.player.active else None
-        if self.hearing.hear(who, frame_db(pcm), gawah_ms):
+        if self.hearing.hear(who, pcm, gawah_ms):
             self.log.info("%s talked over Gawah", who)
             self.player.stop()
 

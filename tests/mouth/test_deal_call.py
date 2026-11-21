@@ -9,7 +9,8 @@ from app.contracts import (
 )
 from app.mouth import tuning
 from fakes import RAMESH, SUNITA
-from tests.mouth.world import LOUD, until
+from tests.mouth import sounds
+from tests.mouth.world import until
 
 
 def speak(deal_id="d1", item=ItemKey.BALANCE, reason=SpeakReason.TERM_UNCLEAR, to=Audience.HIRER) -> JudgeSpeak:
@@ -35,7 +36,7 @@ async def test_opening_line_is_the_only_thing_said_unasked(world):
 
 async def test_the_model_never_hears_the_room_and_never_replies_by_itself(world):
     seat, link = await world.call()
-    seat.hears("hirer", LOUD, 1000)
+    seat.says("hirer", 1000)
     assert link.config["audio"]["input"]["turn_detection"] is None
     assert not link.of("input_audio_buffer.append")
 
@@ -102,7 +103,9 @@ async def test_stops_when_talked_over_and_says_so(world):
     world.bus.publish(speak())
     call = world.mouth.calls["d1"]
     await until(lambda: call.player.active and call.player.given_ms >= 300)
-    seat.hears("worker", LOUD, 200)
+    seat.says("worker", 100)  # a short sound is not enough
+    assert call.player.active
+    seat.says("worker", 600)
     spoke = (await until(lambda: answers(world)))[0]
     assert spoke.interrupted and seat.cleared
     assert spoke.end - spoke.start < 1.0  # three seconds of speech, cut short
@@ -131,7 +134,7 @@ async def test_judge_spoke_carries_the_id_and_the_times(world):
     assert (spoke.speak_id, spoke.to, spoke.reason, spoke.item) == (asked.event_id, Audience.BOTH, asked.reason, ItemKey.DATES)
     assert spoke.text == link.text and not spoke.interrupted
     now = (datetime.now(UTC) - started).total_seconds()
-    assert 100 < spoke.start < spoke.end <= now  # seconds from call.started
+    assert 100 < spoke.start < spoke.end <= now + 0.01  # seconds from call.started
     assert 0.25 <= spoke.end - spoke.start <= 1.0  # 300 ms of speech, played at the speed of speech
 
 

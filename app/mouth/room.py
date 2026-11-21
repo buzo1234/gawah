@@ -81,6 +81,7 @@ class Seat:
         self._rooms, self.log = rooms, log
         self.on_frame: Callable[[str, bytes], None] = lambda who, pcm: None  # 20 ms, 24 kHz, 16-bit mono
         self.on_left: Callable[[str], None] = lambda who: None
+        self.on_silent: Callable[[str], None] = lambda who: None  # their track was muted or ended; they may still be here
         self.on_closed: Callable[[], None] = lambda: None  # the room is gone, or we were thrown out
         self._room: rtc.Room | None = None
         self._source: rtc.AudioSource | None = None
@@ -99,6 +100,12 @@ class Seat:
         @room.on("participant_disconnected")
         def _left(participant: rtc.RemoteParticipant):
             self.on_left(participant.identity)
+
+        # A phone mutes its track when the screen locks or the page goes to the background.
+        @room.on("track_muted")
+        def _muted(participant: rtc.Participant, publication: rtc.TrackPublication):
+            if publication.kind == rtc.TrackKind.KIND_AUDIO:
+                self.on_silent(participant.identity)
 
         @room.on("disconnected")
         def _disconnected(reason=None):
@@ -122,6 +129,7 @@ class Seat:
             async for event in stream:
                 self.on_frame(who, bytes(event.frame.data))
         finally:
+            self.on_silent(who)
             await stream.aclose()
 
     async def play(self, pcm: bytes) -> None:

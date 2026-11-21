@@ -14,7 +14,8 @@ from app.contracts import (
 from app.mouth import callback, tuning
 from app.store import Store
 from fakes import RAMESH, SUNITA
-from tests.mouth.world import LOUD, FakeLink, FakeSeat, until
+from tests.mouth import sounds
+from tests.mouth.world import FakeLink, FakeSeat, until
 
 AGREED = {
     ItemKey.WORK: "painting the 2BHK flat, two coats",
@@ -94,7 +95,7 @@ class Desk:
         assert response.status_code == 200, response.text
         seat, link = self.seats[before], self.links[before]
         assert response.json() == {"url": self.rooms.url, "token": f"token:{seat.room}:{role.value}"}
-        seat.hears(role.value, LOUD, 100)
+        seat.hears(role.value, sounds.silence(0.1))
         await until(lambda: link.of("response.create"))
         await link.says("Namaste Ramesh ji, main Gawah hoon.")
         return seat, link
@@ -270,7 +271,7 @@ async def test_the_person_talking_over_gawah_stops_it(desk):
     cut = link.of("conversation.item.truncate")[0]
     assert cut["item_id"] == item and 200 <= cut["audio_end_ms"] < 3000  # the model is told how much was heard
     # The person's audio reaches the model, which is how it hears the answer.
-    seat.hears("worker", LOUD, 100)
+    seat.says("worker", 100)
     await until(lambda: link.of("input_audio_buffer.append"))
 
 

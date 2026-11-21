@@ -1,7 +1,8 @@
 """Every delay, threshold and persona the mouth uses. Tune Gawah's voice here and nowhere else.
 
 Loudness is in dB below full scale, measured on each 20 ms frame of a person's own track:
-digital silence is -90, a quiet room about -60, speech into a phone about -30 to -15.
+digital silence (a muted track) is -90, a real microphone in a silent room -41 to -54 (measured
+on a laptop), recorded speech about -35 to -15.
 """
 
 from app.contracts import ItemKey, RecordKind, Role
@@ -10,7 +11,7 @@ from app.contracts import ItemKey, RecordKind, Role
 MODEL = "gpt-realtime-2.1"  # not the mini: it added words and once suggested a term (spikes/3-mouth.md)
 VOICE = "marin"
 SPEED = 1.0  # the call-back reads terms at CALLBACK_SPEED
-EFFORT: str | None = None  # "minimal" was about 0.25 s quicker to first sound in the spike (3 runs only)
+EFFORT: str | None = None  # "minimal" was about 0.2 s quicker to first sound, but its read-back stopped after the first term (2 runs of 2)
 CONNECT_TIMEOUT_S = 10.0  # per try, for the model and for the room; one retry
 VOICE_TIMEOUT_S = 8.0  # no sound from the model this long after asking: drop what was to be said
 
@@ -25,10 +26,20 @@ IDENTITY = "gawah"  # must differ from bridge's listener: the same identity twic
 NAME = "Gawah"
 DEAL_CALL_MAX_S = 660.0  # leave by then even if call.ended never comes (bridge caps the call at 10 minutes)
 
-# --- Who is talking ---
-SPEECH_DB = -40.0  # a frame louder than this is voiced. Raise it for a noisy room.
-START_FRAMES = 3  # this many voiced frames in a row (60 ms): the person is talking
-PAUSE_MS = 600  # quiet this long after talking: that is a pause
+# --- Who is talking (hearing.py) ---
+# A frame is voice when the detector calls it speech and it is clear of the person's own noise floor.
+VAD_MODE = 3  # the WebRTC detector's strictness, 0 to 3: higher calls less noise speech. 2 and 3 measured the same on our recordings.
+FLOOR_START_DB = -30.0  # the floor assumed for someone who has just joined or unmuted: high, and it falls to the real one within a second
+MUTED_DB = -80.0  # quieter than any microphone: the track is muted (a phone does this when its screen locks)
+FLOOR_MIN_DB = -70.0  # the floor is never taken to be below this
+FLOOR_MAX_DB = -30.0  # nor so far up that a person would have to shout
+FLOOR_FALL = 0.1  # a frame quieter than the floor pulls it this share of the way down
+FLOOR_RISE_DB = 0.04  # a louder frame that is not speech lifts it this much (2 dB a second)
+FLOOR_CREEP_DB = 0.01  # a louder frame the detector calls speech lifts it this much (0.5 dB a second)
+SPEECH_OVER_NOISE_DB = 3.0  # voice must be this far above the floor
+START_MS = 100  # voice sustained this long: the person is talking
+SUSTAIN_LEAK = 0.25  # a frame that is not voice takes this share of a frame back off the count
+PAUSE_MS = 600  # no sustained voice for this long after talking: that is a pause
 
 # --- Picking the moment ---
 PAUSE_WAIT_S = 4.0  # no pause this long after judge.speak: a wrap-up question is said anyway, others are dropped
@@ -41,8 +52,10 @@ OPENING_WAIT_S = 15.0  # say the opening line by then even if only one person's 
 TICK_S = 0.01  # how often the wait for a pause looks again
 
 # --- Being talked over, on the deal call ---
-BARGE_DB = -35.0  # louder than SPEECH_DB, so Gawah's own voice leaking from a loudspeaker counts for less
-BARGE_FRAMES = 5  # this many such frames in a row (100 ms) and Gawah stops
+# Stricter than "is talking", because Gawah's own voice can come back through someone's loudspeaker.
+BARGE_OVER_NOISE_DB = 6.0  # voice must be this far above the person's noise floor ...
+BARGE_MIN_DB = -45.0  # ... and at least this loud
+BARGE_MS = 300  # and sustained this long before Gawah stops. At 240 a cough-like burst of 250 ms cut it off; at 300 it does not.
 BARGE_HOLDOFF_MS = 300  # nobody can cut Gawah off this early: echo cancelling is at its worst as Gawah starts
 BARGE_REARM_MS = 200  # someone who was already talking when Gawah started must first be quiet this long
 HEARD_MIN_MS = 250  # cut off before this much was heard: report that nothing was said
