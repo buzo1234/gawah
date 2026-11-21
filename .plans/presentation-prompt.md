@@ -30,7 +30,14 @@ Gawah is an AI that joins the phone call where a deal is made, between a househo
    - Through the job: payments and finished work logged on WhatsApp; reminders when something is due.
 6. **Demo.** A full-bleed slide that says "Live" with the two-call story as three beats: Day 1, the deal. Day 5, the argument. Day 7, the balance.
 7. **The showpiece: receipts mid-argument.** Use the dashboard screenshot of the contradiction. Caption: on a second call, Ramesh says the total was 25,000. Gawah: "21 November ki call mein 24,000 tay hua tha. Suniye." - and plays the original moment.
-8. **Under the hood: a crew, not a bot.** Eight agents on one call, each with one job: Ears (hears each person), Scribe (turns words into facts), Memory (searches every fact), Judge (decides what needs saying), Floor (decides when to speak), Gawah (the voice and reasoning, acting only through tools), Clerk (the agreement and its changes), Sentinel (watches between calls). Show them as one diagram around the call, with the event bus as their shared blackboard.
+8. **Under the hood: one witness, four jobs.** Keep it simple: four boxes left to right and one loop, no more.
+   - **Hear**: each person on their own track; speech detected and turned into words.
+   - **Remember**: every word becomes a fact, with who said it, when, and the audio clip.
+   - **Decide**: what needs raising (a skipped term, a contradiction, two meanings) and when (in a pause, one at a time).
+   - **Speak**: Gawah, a voice agent that knows the whole conversation and acts only through tools.
+   - The loop: Speak looks things up in Remember before it says anything. That is the clever part; draw it clearly.
+   - Under the boxes, one small line: "After the call: the agreement and its changes · watching between calls."
+   - One caption: "Several AI parts, one shared record of everything said. None calls another." Do not count agents, and do not draw separate boxes for parts that are rules or signal processing.
 9. **The fact layer.** Why not plain RAG: it returns mentions, not truth - it cannot tell an offer from an agreement. Why not a full knowledge graph: a deal has tens of facts, not thousands. What Gawah uses: a small versioned fact graph - every fact knows who said it, when, the audio clip, who confirmed it, and what it replaced - with vector search on the side, and a hash chain so no past fact can be quietly changed.
 10. **Built and measured.** A grid of real numbers from the build:
     - Gawah answers a question about the deal 3.7 s after the person stops speaking, and acknowledges in 1.7 s.
