@@ -114,6 +114,15 @@ async def test_drops_a_question_whose_item_was_agreed_meanwhile(world):
     assert len(dropped(world)) == 1
 
 
+async def test_a_contradiction_of_an_agreed_term_is_still_said(world):
+    # On a second call every term is agreed, and the brain keeps a contradicted one agreed.
+    seat, link = await world.call()
+    items = [ChecklistItem(key=k, state=ItemState.AGREED) for k in ItemKey]
+    world.bus.publish(ChecklistUpdated(deal_id="d1", items=items))
+    world.bus.publish(speak(item=ItemKey.AMOUNT, reason=SpeakReason.CONTRADICTS_RECORD, to=Audience.BOTH))
+    assert (await until(lambda: answers(world)))[0].item is ItemKey.AMOUNT
+
+
 async def test_an_item_still_pending_is_asked(world):
     seat, link = await world.call()
     world.bus.publish(ChecklistUpdated(deal_id="d1", items=empty_checklist()))
