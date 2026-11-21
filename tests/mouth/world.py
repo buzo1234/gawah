@@ -158,13 +158,13 @@ class World:
     def of(self, kind: type, deal_id: str | None = None) -> list:
         return [e for e in self.events if isinstance(e, kind) and deal_id in (None, e.deal_id)]
 
-    async def call(self, deal_id: str = "d1", opening: bool = True, **started) -> tuple[FakeSeat, FakeLink]:
+    async def call(self, deal_id: str = "d1", opening: bool = True, room_db: float = -50.0, **started) -> tuple[FakeSeat, FakeLink]:
         """Start a deal call and wait until Gawah is in the room and has said its opening line."""
         before = len(self.seats)
         self.bus.publish(CallStarted(deal_id=deal_id, people=[SUNITA, RAMESH], room=f"deal-{deal_id}", **started))
         await until(lambda: deal_id in self.mouth.calls)
         for who in ("hirer", "worker"):  # both are in the room, and quiet
-            self.seats[before].hears(who, sounds.room_noise(1.0, -50))
+            self.seats[before].hears(who, sounds.room_noise(1.0, room_db))
         if opening:
             await until(lambda: self.of(JudgeSpoke, deal_id))
         return self.seats[before], self.links[before]

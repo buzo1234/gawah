@@ -53,6 +53,34 @@ async def test_speaks_only_in_a_pause(world):
     assert len(seat.played) > played and not spoke.interrupted
 
 
+async def test_a_track_muted_mid_word_is_silence_not_someone_still_talking(world):
+    seat, link = await world.call()
+    seat.talks("hirer")
+    world.bus.publish(speak())
+    await asyncio.sleep(0.1)
+    assert not answers(world)
+    seat.on_silent("hirer")  # her phone's screen locked: no more frames come from her
+    assert await until(lambda: answers(world))
+
+
+async def test_room_noise_and_clicks_neither_block_a_pause_nor_cut_gawah_off(world):
+    seat, link = await world.call(room_db=-40.0)
+    link.pieces = [1500]
+    noise = sounds.frames(sounds.room_noise(4.0, -40, seed=7) + sounds.clicks(4.0, every=0.3))
+
+    async def noisy_microphone():
+        for frame in noise:
+            seat.on_frame("worker", frame)
+            await asyncio.sleep(0.005)
+
+    room = asyncio.create_task(noisy_microphone())
+    await asyncio.sleep(0.3)
+    world.bus.publish(speak())
+    spoke = (await until(lambda: answers(world)))[0]
+    room.cancel()
+    assert not spoke.interrupted and spoke.end - spoke.start >= 1.4
+
+
 async def test_drops_a_question_whose_item_was_agreed_meanwhile(world):
     seat, link = await world.call()
     played = len(seat.played)
