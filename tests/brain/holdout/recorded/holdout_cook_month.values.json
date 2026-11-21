@@ -1,0 +1,60 @@
+{
+ "fixture": "holdout_cook_month",
+ "recorded_at": "2026-11-21T15:16:16+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "value:work@4": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:work@6": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:work@8": {
+   "value": "cook breakfast and lunch together and dinner",
+   "source_text": "दोनों टाइम सुबह का नशा और lunch एक साथ और रात का खाना ठीक है",
+   "line_no": 7
+  },
+  "value:amount@16": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:amount@18": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:amount@20": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:balance@21": {
+   "value": "the full monthly payment at the end of the month, with no advance",
+   "source_text": "नहीं advance नहीं चाहिए महीना पूरा होने पे पूरा दे देना",
+   "line_no": 21
+  },
+  "value:work@32": {
+   "value": "cook breakfast, lunch and dinner",
+   "source_text": "दोनों टाइम सुबह का नशा और lunch एक साथ और रात का खाना ठीक है",
+   "line_no": 7
+  },
+  "value:balance@32": {
+   "value": "At the end of the month against 7,500 rupees",
+   "source_text": "नहीं advance नहीं चाहिए महीना पूरा होने पे पूरा दे देना",
+   "line_no": 21
+  },
+  "names:-@1": {
+   "hirer": null,
+   "worker": "Kamla"
+  },
+  "names:-@2": {
+   "hirer": "Sharma",
+   "worker": "Kamla"
+  }
+ }
+}
