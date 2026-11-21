@@ -223,6 +223,39 @@ async def test_a_change_is_proposed_and_holds_only_when_both_say_yes(world):
     assert "both agreed: the total amount is now 14,000 rupees" in notes(world)
 
 
+async def test_while_a_change_waits_for_yes_the_brains_contradiction_of_that_term_does_not_take_its_turn(world):
+    # The demo's dry run: the brain saw "total 24,000" as contradicting the 22,000 on record and asked
+    # again after each "haan"; the clip was replayed and the haan never recorded.
+    seat, link = await world.call()
+    for fact in FACTS:
+        world.bus.publish(FactRecorded(deal_id="d1", fact=fact))
+    call = world.mouth.calls["d1"]
+    link.replies = [
+        {"calls": [("propose_change", {"fact_id": "f-amount", "new_value": "14,000 rupees", "proposed_by": "hirer", "said": "14 kar do"})]},
+        {"text": "Total 14,000 karna hai? Dono haan boliye.", "ms": 200},
+    ]
+    call._follow_left, call._follow_about = 2, "which total they mean"
+    world.bus.publish(line(22, Role.HIRER, "Theek hai, total 14 kar do."))
+    [proposed] = await until(lambda: world.of(FactChanged))
+    await settle(world, link)
+
+    link.replies = [
+        {"calls": [("confirm_change", {"change_id": proposed.change_id, "person": "hirer", "agrees": True, "said": "haan"})]},
+        {"text": "Ramesh ji?", "ms": 200},
+    ]
+    seat.talks("worker")
+    world.bus.publish(line(23, Role.HIRER, "Haan."))
+    contradiction = JudgeSpeak(deal_id="d1", instruction="Says 14,000; 13,000 was agreed.", to=Audience.BOTH,
+                               reason=SpeakReason.CONTRADICTS_RECORD, item=ItemKey.AMOUNT, fact_ids=["f-amount"])
+    world.bus.publish(contradiction)
+    seat.stops("worker")
+    await until(lambda: len(world.of(FactChanged)) == 2)
+    assert world.of(FactChanged)[-1].status is ChangeStatus.CONFIRMED_ONE
+    [released] = [e for e in world.of(JudgeSpoke) if e.speak_id == contradiction.event_id]
+    assert (released.text, released.start) == ("", None)  # the brain stops waiting; nothing was replayed
+    assert {"what": "amount", "said": False, "why": "a change to it is open"} in call.outcomes
+
+
 async def test_a_proposal_that_was_never_said_aloud_is_never_sent(world, monkeypatch):
     seat, link = await world.call()
     world.bus.publish(FactRecorded(deal_id="d1", fact=FACTS[1]))

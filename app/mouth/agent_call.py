@@ -46,6 +46,12 @@ class AgentCall(DealCall):
     # ---- what happens on the call ----
 
     def on_speak(self, event: JudgeSpeak) -> None:
+        if event.item and event.reason in (SpeakReason.CONTRADICTS_RECORD, SpeakReason.WRAPPING_UP) and any(
+            c.event.item == event.item for c in self.tools.open_changes()
+        ):
+            # A change to this term is waiting for both to say yes. The brain sees the new figure as a
+            # contradiction until then; replaying the old one would take the turn that records the yes.
+            return self._drop(_Job(event.instruction, False, event, event.reason.value, event.to), "a change to it is open")
         if self._follow_job and self._follow_job.spoke is None and not self._follow_job.playing:
             self._follow_job.superseded = True  # the brain's moment comes first; it reads the same lines
         addressed = event.reason is SpeakReason.ADDRESSED_DIRECTLY
