@@ -46,10 +46,12 @@ LiveKit and Twilio are on free plans with monthly allowances. Using them up in t
 |---|---|
 | Install | `uv sync` |
 | Run the server | `uv run uvicorn app.main:app --reload --port 8000` |
+| Start a real run: fresh database in `runs/`, a tunnel, the server (no `--reload`), every service checked; prints the dashboard and the webhook address for Twilio. Ctrl-C stops it all and deletes rooms it opened. The steps are in `tools/DEMO-RUN.md` | `uv run python tools/demo.py` |
+| Only check the outside services (one read-only call each, nothing billed) | `uv run python tools/demo.py --check` |
 | Run the tests | `uv run pytest -q` |
 | Replay a practice call into the running server, at real speed | `uv run python -m fakes.replayer fixtures/<call>.json` |
 | Replay it faster (10 = ten times faster, 0 = no waiting) | `uv run python -m fakes.replayer fixtures/<call>.json --speed 10` |
-| Run the server with every outside service faked: no `.env`, no keys, every phone simulated, no Chrome or S3 for the contract | `uv run python -m tests.offline --port 8000` |
+| Run the server with every outside service faked: no `.env`, no keys, every phone simulated, a fake LiveKit and voice model, every call answered from the brain's saved answers, no Chrome or S3 for the contract | `uv run python -m tests.offline --port 8000` |
 | Watch events live | open `http://localhost:8000/dashboard` |
 | Watch events live in a terminal, one JSON object per line | `uv run python -m fakes.tail` |
 | Public address for webhooks | `cloudflared tunnel --url http://localhost:8000` |
