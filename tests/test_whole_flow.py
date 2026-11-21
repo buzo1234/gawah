@@ -2,21 +2,21 @@
 in one process with every outside service replaced by a fake (tests/offline.py).
 
 Each stream's own tests pass with the other streams absent. This is the guard for what
-happens between them: whatsapp, bridge, brain, mouth (the deal call and the call-back),
-contract, records, and the dashboard, each reached the way the real thing reaches it.
+happens between them: whatsapp, bridge, brain, memory, mouth (the deal call and the
+call-back), contract, records, and the dashboard, each reached the way the real thing reaches it.
 """
 
 import asyncio
 import logging
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 import httpx
 import pytest
 
 from app.call.session import Limits
 from app.contracts import (
-    WHATSAPP_WEBHOOK_PATH, Backing, CallEnded, CallKind, CallStarted, ChecklistUpdated, ContractReady,
-    DealRequested, DealStatus, Direction, Event, ItemKey, ItemState, JudgeSpeak, JudgeSpoke, RecordConfirmed,
+    MEMORY_STATE, WHATSAPP_WEBHOOK_PATH, Backing, CallEnded, CallKind, CallStarted, ChecklistUpdated, ContractReady,
+    DealRequested, DealStatus, Direction, Event, FactRecorded, FactStatus, ItemKey, ItemState, JudgeSpeak, JudgeSpoke, RecordConfirmed,
     RecordConfirmRequested, RecordReceived, ReplyTimeout, Role, TermsConfirmed, TranscriptLine, WhatsAppMessage,
     call_path, callback_path,
 )
@@ -149,6 +149,19 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     final = {item.key: item for item in flow.of(ChecklistUpdated)[-1].items}
     assert final.pop(ItemKey.BALANCE).state is ItemState.PENDING
     assert all(item.state is ItemState.AGREED and item.value for item in final.values())
+
+    # memory: the Scribe turned the lines into facts (from its saved replies: no key, no live
+    # call), each quoting its line; the amount stands at the 24,000 both agreed; the chain holds.
+    memory = getattr(flow.app.state, MEMORY_STATE)
+    await memory.settle()
+    await flow.settle()
+    facts = [e.fact for e in flow.of(FactRecorded)]
+    assert facts and all(f.deal_id == deal_id and f.quote for f in facts)
+    amount = (await memory.get_term(deal_id, ItemKey.AMOUNT)).current
+    assert (amount.value_rupees, amount.status, amount.call_no) == (24000, FactStatus.AGREED, 1)
+    assert amount.valid_from == started.ts + timedelta(seconds=amount.start)
+    chain = (await flow.client.get(f"/memory/chain/{deal_id}")).json()
+    assert chain["verified"] and chain["links"] == len(facts) and chain["head"] == facts[-1].hash
 
     # mouth: each judge.speak was said in the room, in call seconds counted from call.started.
     since_start = (datetime.now(UTC) - started.ts).total_seconds()

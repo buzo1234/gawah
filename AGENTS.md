@@ -50,6 +50,7 @@ LiveKit and Twilio are on free plans with monthly allowances. Using them up in t
 | Only check the outside services (one read-only call each, nothing billed) | `uv run python tools/demo.py --check` |
 | Rehearse the whole demo with no person, against a running `tools/demo.py`: simulated phones, two headless browsers on the call, one on each call-back (about 25 LiveKit participant-minutes and one Sage2 call) | `uv run python tools/dry_run.py` |
 | Run the tests | `uv run pytest -q` |
+| Record the Scribe's replies for a practice call: the live model reads each line (about 31 small-model calls), prints the facts, conflicts and time per line, and saves the replies to `tests/memory/recorded/` | `uv run python -m tests.memory.record fixtures/<call>.json --save` |
 | Replay a practice call into the running server, at real speed | `uv run python -m fakes.replayer fixtures/<call>.json` |
 | Replay it faster (10 = ten times faster, 0 = no waiting) | `uv run python -m fakes.replayer fixtures/<call>.json --speed 10` |
 | Run the server with every outside service faked: no `.env`, no keys, every phone simulated, a fake LiveKit and voice model, every call answered from the brain's saved answers, no Chrome or S3 for the contract | `uv run python -m tests.offline --port 8000` |
@@ -73,6 +74,8 @@ The brain answers a replayed or fake call (room `replay-...` or `fake-...`) from
 A call that says anything else gets no saved answers and the brain stays quiet: the checklist stays all pending and no `judge.speak` is sent. So if you change a practice call, record it again (`tests/brain/record.py`).
 The mouth stays out of a replayed or fake call (room `replay-...` or `fake-...`): it joins no room, opens no voice connection, and sends no `judge.spoke`.
 To send a replay to the live services, start the server with `BRAIN_LIVE_REPLAYS=1` set in the shell (it is not read from `.env`). Each replayed line is then one billed Sage2 update, so count them.
+
+Memory's Scribe does the same: a replayed or fake call gets the saved replies in `tests/memory/recorded/`, found by the words of each line, so it makes no OpenAI call. With no OpenAI key (the offline app) every call gets them, and search uses word matching instead of embeddings. If you change a practice call, record it again (`tests.memory.record ... --save`). To send a replay to the live model, start the server with `MEMORY_LIVE_REPLAYS=1` set in the shell (not read from `.env`): each replayed line is then one small-model call, plus embeddings.
 
 ## How a stream plugs in
 
