@@ -1,3 +1,34 @@
+## Summary
+
+### What are we building?
+
+Gawah (Witness) is an AI that joins the phone call where a deal is made, and stays until the last rupee is paid.
+
+- On the call - it listens like a third person on the line. When a term is left unclear, it picks its moment and asks, in a natural voice, without taking a side.
+- After the call - it rings each person separately to confirm the terms, then sends both a written contract.
+- Through the job - advances, payments and finished work are logged on WhatsApp. Proof that stands on its own is recorded. Anything else is confirmed with the other side, and Gawah calls only when a message goes unanswered.
+
+No new app. Just a phone call and WhatsApp.
+
+### What exact problem are we solving?
+
+When a deal is made on a phone call, there is no record of it that both sides trust.
+
+- The hirer fears paying an advance and watching the worker vanish.
+- The worker fears finishing the job and getting paid half.
+- When it goes wrong, it is one person's word against the other's.
+
+In India, most work is agreed this way:
+
+- 8 to 9 out of 10 workers are informal.
+- 58% of even salaried employees have no written contract.
+- In construction, a Delhi and Bengaluru survey found just 0.4% of workers had one - and 1 in 5 were not always paid on time.
+- When it goes wrong, the formal route is slow: over 1.14 lakh cases were pending in labour courts and tribunals in May 2026.
+
+One year ago today, the new labour codes told formal employers to put it in writing. The deal between a household and a worker is still just spoken.
+
+`India's economy runs on zubaan. We give that word a witness.`
+
 ## Back Story
 
 India's new labour codes took effect on 21st November 2025 - exactly one year ago today.
@@ -51,6 +82,10 @@ Our tagline:
 - Even salaried jobs are mostly unwritten: About 58% of regular wage and salaried employees have no written job contract. [Labour force survey data](https://dataful.in/datasets/20479/)
 
 - In construction, written contracts barely exist: A [Delhi and Bengaluru survey](https://knowledgecommons.popcouncil.org/cgi/viewcontent.cgi?article=2795&context=departments_sbsr-pgy) found 0.4% of workers had one, and an [ILO (International Labour Organisation) study](https://www.ilo.org/sites/default/files/wcmsp5/groups/public/@ed_protect/@protrav/@travail/documents/publication/wcms_450077.pdf) found 1.7%.
+
+- Late pay is common: In the same Delhi and Bengaluru survey, only 80% of workers always received their wages on time.
+
+- The formal route is slow: About 1.14 lakh labour and industrial cases were pending in state labour courts and tribunals as of May 2026. [Newslaundry](https://www.newslaundry.com/2026/05/12/over-1-lakh-pending-cases-noida-burned-after-years-of-silence-in-labour-courts)
 
 - Impact to economy: Informal sector is roughly 45% of GDP. (UNVERIFIED - only found in an unsourced explainer. Find a primary source or drop before pitching.)
 
