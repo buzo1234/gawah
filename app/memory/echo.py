@@ -112,3 +112,21 @@ def scale(deal: DealBook, line: TranscriptLine, claim: Claim) -> None:
 def asks_which(text: str | None) -> bool:
     """Asks what a figure was ("kitna bola tha, do hazaar?"), rather than saying it ("14 tay hua tha na?")."""
     return bool(text) and any(t in _QUESTION for t in tokens(text))
+
+
+# A promise to pay ("kal de dungi", "भेज दूंगा") against money handed over ("de diya", "भेज दिया").
+_WILL_PAY = normed({
+    "dunga", "dungi", "doonga", "doongi", "denge", "dena", "dedunga", "dedungi", "karunga", "karungi", "karenge",
+    "bhejunga", "bhejungi", "bhejenge", "dunge", "doon", "dun", "दूंगा", "दूंगी", "देंगे", "दूं", "करूंगा", "करूंगी",
+    "करेंगे", "भेजूंगा", "भेजूंगी", "भेजेंगे", "दूँगा", "will",
+})
+_PAID = normed({
+    "diya", "diye", "di", "bheja", "bheje", "kiya", "kiye", "paid", "sent", "gave", "transferred", "दिया", "दिए",
+    "दी", "भेजा", "भेजे", "किया", "किए",
+})
+
+
+def promises_to_pay(text: str | None) -> bool:
+    """Worded as a promise to pay, with nothing in it said to be paid already."""
+    toks = tokens(text or "")
+    return any(t in _WILL_PAY for t in toks) and not any(t in _PAID for t in toks)

@@ -130,6 +130,11 @@ class Scribe:
         return compare(deal, claim.item, claim.rupees, claim.date, claim.parts, claim.figure == "part")
 
     def _apply(self, deal: DealBook, line: TranscriptLine, claim: Claim, received: float) -> None:
+        if claim.kind == FactKind.PAYMENT and echo.promises_to_pay(claim.quote):
+            # "पांच हज़ार एडवांस कल पे कर दूँगी" is the advance term, not money paid: counted as paid
+            # it would be taken off what is owed before it is handed over.
+            claim.kind = FactKind.TERM
+            claim.item = claim.item if claim.item in (ItemKey.ADVANCE, ItemKey.BALANCE) else ItemKey.BALANCE
         # A recall with a question tag still says what was agreed ("32 tay hua tha na?").
         asked = claim.stance != "recall"
         if claim.item and echo.echoes(deal, line, claim.rupees) and doubts_figure(line.text, claim.rupees, asked):

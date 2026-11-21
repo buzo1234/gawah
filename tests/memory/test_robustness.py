@@ -237,3 +237,30 @@ async def test_asking_what_a_figure_was_contradicts_nothing_saying_it_does(bus, 
     })
     await world.call(lines)
     assert [c.line_no for c in world.conflicts] == [4]
+
+
+# ---- a promise to pay is not a payment ----
+
+async def test_a_promise_to_pay_is_a_term_even_when_the_model_calls_it_a_payment(bus, tmp_path):
+    """The model files each of these as money paid; worded as a promise, it is the term. Only
+    the last, said as done, is a payment, so 6,000 of the 20,000 is owed off, not 20,000."""
+    lines = [
+        (W, "Rasoi ki chimney fitting, 20,000 lagenge."),
+        (H, "Theek hai, 20,000."),
+        (H, "छह हज़ार एडवांस मैं परसों भेज दूंगी।"),
+        (H, "Baaki 14 kaam ke baad de dungi."),
+        (H, "Chalo, 6,000 abhi GPay kar diya."),
+    ]
+    world = World(bus, tmp_path, {
+        lines[0][1]: [claim("amount", "offer", 20000, "20,000 lagenge")],
+        lines[1][1]: [claim("amount", "accept", 20000, "Theek hai, 20,000", accepts_line=1)],
+        lines[2][1]: [claim("advance", "state", 6000, lines[2][1], kind="payment")],
+        lines[3][1]: [claim(None, "state", 14000, "Baaki 14 kaam ke baad de dungi", kind="payment")],
+        lines[4][1]: [claim("advance", "state", 6000, "6,000 abhi GPay kar diya", kind="payment")],
+    })
+    await world.call(lines)
+    payments = [f for f in world.versions if f.kind == FactKind.PAYMENT]
+    assert [p.line_no for p in payments] == [5]
+    assert world.fact_from_line(1, 3).item == ItemKey.ADVANCE and world.fact_from_line(1, 4).item == ItemKey.BALANCE
+    owed = {r.item: r.owed_rupees for r in await world.memory.owed(DEAL)}
+    assert owed[ItemKey.AMOUNT] == 14000
