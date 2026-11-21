@@ -97,10 +97,12 @@ class Flow:
         return ended
 
 
-@pytest.fixture
-async def flow(tmp_path):
+@pytest.fixture(params=["twilio", "meta"])
+async def flow(tmp_path, request):
+    """The same deal in each provider's message shapes. Both phones are simulated either
+    way; Meta's own payloads are proven in tests/test_whatsapp_meta.py."""
     clock = FakeClock()
-    app = offline_app(tmp_path / "test.db", clock)
+    app = offline_app(tmp_path / "test.db", clock, whatsapp=request.param)
     app.state.calls.limits = Limits(gone=0.15, empty=0.05, max_age=30)  # real seconds, so short ones
     transport = httpx.ASGITransport(app=app)
     async with app.router.lifespan_context(app), httpx.AsyncClient(transport=transport, base_url="http://gawah.test") as client:
@@ -229,7 +231,10 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     assert {i.key for i in ready.items if i.state is ItemState.AGREED} == set(ItemKey) - {ItemKey.BALANCE}
     assert ready.pdf_url and ready.voice_summary_url and ready.text
     for role in Role:
-        assert flow.sent_to(role)[-3:] == [words.CONTRACT, ready.pdf_url, ready.voice_summary_url]
+        if flow.app.state.whatsapp.outbox.rich:  # the line is the PDF's caption
+            assert flow.sent_to(role)[-2:] == [words.contract_caption(1, voice=True), ready.voice_summary_url]
+        else:
+            assert flow.sent_to(role)[-3:] == [words.CONTRACT, ready.pdf_url, ready.voice_summary_url]
     assert (await flow.store.deal(deal_id)).status is DealStatus.CONTRACT_READY
 
     # records: cash is one person's word, so the worker is asked, and "haan" confirms it.
@@ -238,7 +243,7 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     assert (received.record.sender, received.record.amount, received.record.backing) == (Role.HIRER, 2000, Backing.UNBACKED)
     [asked] = flow.of(RecordConfirmRequested)
     assert (asked.record_id, asked.confirm_by) == (received.record.id, Role.WORKER)
-    assert flow.sent_to(Role.WORKER)[-1] == asked.question
+    assert flow.sent_to(Role.WORKER)[-1].startswith(asked.question)  # Meta's buttons follow it, as text
 
     await flow.whatsapp(Role.WORKER, "haan")
     [confirmed] = flow.of(RecordConfirmed)

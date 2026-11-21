@@ -11,6 +11,10 @@ tests/test_whole_flow.py runs on it. To walk a deal through a running server by 
 
     uv run python -m tests.offline --port 8000
 
+With --whatsapp meta the bot sends in Meta's shapes (reply buttons, link buttons,
+reactions, the contract as a captioned document), shown as text on the dashboard; every
+phone is still simulated, and Meta's Graph API is the fake in tests/meta_fakes.py.
+
 A stream that adds an outside service adds its fake here.
 """
 
@@ -23,10 +27,12 @@ import uvicorn
 from fastapi import FastAPI
 
 from app import brain
-from app.config import Settings
 from app.main import create_app
+from app.whatsapp.meta import Meta
+from app.whatsapp.settings import WhatsAppSettings
 from tests.bridge_world import FakeLiveKit
 from tests.contract_fakes import FakeFiles, FakeSpeaker, answer_to, fake_fingerprint, fake_render_pdf
+from tests.meta_fakes import FakeGraph
 from tests.mouth.world import FakeLink, FakeRooms, FakeSeat
 from tests.whatsapp_world import FakeClock, FakeReader, FakeTwilio
 
@@ -67,10 +73,14 @@ async def _keep_key(path: str, key: str, content_type: str) -> str:
     return key
 
 
-def offline_app(database_path: str | Path, clock: FakeClock | None = None) -> FastAPI:
-    """clock: pass a FakeClock to move the no-reply timer by hand; without one it is real time."""
-    settings = Settings(_env_file=None, database_path=str(database_path))
-    fakes = {"Twilio": lambda settings: FakeTwilio(clock or FakeClock()), "Reader": lambda settings: FakeReader()}
+def offline_app(database_path: str | Path, clock: FakeClock | None = None, whatsapp: str = "twilio") -> FastAPI:
+    """clock: pass a FakeClock to move the no-reply timer by hand; without one it is real time.
+    whatsapp: the provider whose message shapes the bot uses, "twilio" or "meta"."""
+    settings = WhatsAppSettings(_env_file=None, database_path=str(database_path), whatsapp_provider=whatsapp)
+    fakes = {
+        "Twilio": lambda settings: FakeTwilio(clock or FakeClock()), "Reader": lambda settings: FakeReader(),
+        "Meta": lambda settings: Meta(settings, transport=FakeGraph().transport()),
+    }
     if clock:
         fakes["Clock"] = lambda: clock
     contract = {
@@ -92,6 +102,7 @@ def offline_app(database_path: str | Path, clock: FakeClock | None = None) -> Fa
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Serve Gawah with every outside service faked.")
     parser.add_argument("--port", type=int, default=8000)
-    port = parser.parse_args().port
+    parser.add_argument("--whatsapp", choices=("twilio", "meta"), default="twilio")
+    args = parser.parse_args()
     database = Path(tempfile.mkdtemp(prefix="gawah-offline-")) / "gawah.db"
-    uvicorn.run(offline_app(database), host="127.0.0.1", port=port)
+    uvicorn.run(offline_app(database, whatsapp=args.whatsapp), host="127.0.0.1", port=args.port)
