@@ -1,0 +1,55 @@
+{
+ "fixture": "holdout_plumber_leak",
+ "recorded_at": "2026-11-21T15:15:39+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "value:work@8": {
+   "value": "break 2-3 tiles, replace the concealed pipe, and refit the same tiles",
+   "source_text": "Do teen tile. Pipe badal ke wapas laga denge.",
+   "line_no": 7
+  },
+  "value:amount@12": {
+   "value": "pipe, fitting, cement, labour, all together 4,500 rupees",
+   "source_text": "Pipe, fitting, cement, labour, sab milake paintalis sau.",
+   "line_no": 9
+  },
+  "value:dates@15": {
+   "value": "Sunday 22 November 2026 to Sunday 22 November 2026",
+   "source_text": "Kal subah das baje. Ek din ka kaam hai, shaam tak ho jayega.",
+   "line_no": 15
+  },
+  "value:advance@18": {
+   "value": "1,500 rupees today by GPay",
+   "source_text": "Material ke liye pandrah sau pehle dena padega. Aaj hi.",
+   "line_no": 17
+  },
+  "value:amount@30": {
+   "value": "4,500 rupees for pipe, fitting, cement and labour",
+   "source_text": "Pipe, fitting, cement, labour, sab milake paintalis sau.",
+   "line_no": 9
+  },
+  "value:dates@30": {
+   "value": "Sunday 22 November 2026 in the morning to Sunday 22 November 2026 by evening",
+   "source_text": "Kal subah das baje. Ek din ka kaam hai, shaam tak ho jayega.",
+   "line_no": 15
+  },
+  "value:work@30": {
+   "value": "replace the concealed bathroom pipe, and check the geyser and the kitchen sink",
+   "source_text": "Kal dekh lenge sab.",
+   "line_no": 23
+  },
+  "value:advance@30": {
+   "value": "1,500 rupees today by GPay",
+   "source_text": "Pandrah sau aaj? Accha chalo, GPay pe bhej deti hoon, yahi number hai na?",
+   "line_no": 18
+  },
+  "names:-@1": {
+   "hirer": null,
+   "worker": "Raju"
+  },
+  "names:-@2": {
+   "hirer": "Sunita",
+   "worker": "Raju"
+  }
+ }
+}
