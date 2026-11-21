@@ -40,17 +40,21 @@ For each claim give:
 - kind: "term" (a value for an item), "payment" (says money was paid or handed over), "work" (says work was done, started or finished), "change" (proposes to add to or alter a term already agreed, e.g. "balcony ke 2,000 extra"), "other" (any other detail).
 - stance:
   "offer": proposes or asks for a value the other person has not accepted yet, including a counter-offer ("15 hazaar lagega", "12 mein karo").
-  "accept": accepts a value the OTHER person proposed just before. Only when the value is clear from those lines: the new line restates it, or the other person's last line proposed exactly one value for that item. A "theek hai" that only acknowledges, or leads into a new question, accepts nothing: give no claim for it.
+  "accept": accepts a value the OTHER person proposed just before. Only when the value is clear from those lines: the new line restates it, or the other person's last line proposed exactly one value for that item. A yes at the start of a line ("theek hai", "chalo theek hai", "done", "pakka") right after the other person proposed one value accepts it, even when the line then moves on to something else: "Chalo theek hai. To Wednesday aa jao" after "late hua to 300 roz kaat lena" accepts the 300 a day; give the accept claim, then the claims for the rest. A "theek hai" when the other person proposed nothing only acknowledges: no claim for it. Never accept your own proposal, or a value the other person did not say.
   "state": states a term or detail without bargaining ("paint main khud le aaungi").
   "recall": says what was said or agreed before ("aapne 25 bola tha", "to total 14 hazaar").
 - text: the claim as one plain English sentence that names who says it.
 - value: the value as a short English phrase, amounts in digits ("22,000 rupees"); null if there is none.
 - rupees: the amount as a whole number of rupees, scaled by the talk around it ("14 kar dete hain" after 15 hazaar was asked is 14000); 0 for no advance; null if it is not an amount.
-- date: YYYY-MM-DD only when the words fix the day (today's date is given); otherwise null.
+- date: YYYY-MM-DD only when the words fix the day (today's date is given); otherwise null. A day of the month ("bees tarikh", "15 tarikh") is that day of this month, or of next month if it has passed.
 - quote: the exact words of the new line the claim comes from, copied character for character.
 - accepts_line: for "accept", the number of the line whose value is accepted; otherwise null.
 - contradicts: the reference (first column) of a fact listed under "Facts so far" with status agreed or confirmed that this claim gives a different value for; otherwise null. Only cite a reference from that list.
 
+Dates are when the work starts and when it finishes, and they are two separate things. Give one dates claim for a line, and say in its value which day is which, in words ("start Monday, finish by the 15th"; never YYYY-MM-DD). A start or a finish different from the one agreed contradicts it ("bees tarikh tak" when the finish was agreed as the 15th), even if the other part is unchanged.
+A time to meet, come over, call or talk again is not a dates claim ("Monday ko milte hain", "subah 9 baje aa jaana", "kal phone karna", "Wednesday 10 baje"): give none for it, unless the line says the work starts or finishes then.
+Hindi number words are exact: "adtees" is 38, "pachees sau" 2,500, "dedh lakh" 150,000, "saade teen hazaar" 3,500, "ek lakh bees hazaar" 120,000.
+A list of figures gives each term its own figure: "total 22 hazaar, 5 advance, 7 beech mein" is a total of 22,000, an advance of 5,000 and 7,000 halfway; never join two figures into one number.
 "No advance" ("advance nahi chahiye") is a settled answer: an advance claim with rupees 0.
 One claim per item: a line that names the total, the advance and when the rest is paid ("total 14 hazaar mein se 3 advance, baaki finish pe") gives three claims, each with its own figure.
 Turning a value down ("15 zyada hai") is no claim; a counter-offer in the same line is an offer.

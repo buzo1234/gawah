@@ -1,74 +1,123 @@
-"""Values pinned down in code: rupees as whole numbers, dates when the words fix a day,
-and the cheap check that a line is only a greeting or a yes."""
+"""Values pinned down in code: rupees as whole numbers, and the cheap check that a line is
+only a greeting or a yes. Dates are in dates.py; both read words through `tokens`."""
 
 import re
-from datetime import date, timedelta
+import unicodedata
+
+from app.memory.number_words import DEVANAGARI, ENGLISH, ROMAN, table
+
+_MARK = "\x00"
+BREAK = "|"  # a comma, a danda, a full stop, "aur": figures on either side stay apart
 
 _DEV_DIGITS = str.maketrans("०१२३४५६७८९", "0123456789")
 
-_WORDS = {
-    "ek": 1, "do": 2, "teen": 3, "tin": 3, "char": 4, "chaar": 4, "paanch": 5, "panch": 5, "paach": 5,
-    "chhe": 6, "chhah": 6, "che": 6, "chah": 6, "chheh": 6, "saat": 7, "sat": 7, "aath": 8, "ath": 8,
-    "nau": 9, "das": 10, "gyarah": 11, "gyara": 11, "barah": 12, "bara": 12, "baarah": 12, "terah": 13,
-    "tera": 13, "chaudah": 14, "chauda": 14, "pandrah": 15, "pandra": 15, "solah": 16, "sola": 16,
-    "satrah": 17, "satra": 17, "atharah": 18, "athara": 18, "unnees": 19, "unnis": 19, "bees": 20,
-    "bis": 20, "ikkees": 21, "ikkis": 21, "baees": 22, "bais": 22, "baais": 22, "baaees": 22, "teis": 23,
-    "teish": 23, "tees": 30, "chaubees": 24, "chaubis": 24, "pachchees": 25, "pachees": 25, "pachis": 25,
-    "pacchis": 25, "chhabbees": 26, "chhabbis": 26, "sattaees": 27, "sattais": 27, "atthaees": 28,
-    "atthais": 28, "untees": 29, "untis": 29, "tis": 30, "chalees": 40, "chalis": 40, "pachaas": 50,
-    "pachas": 50, "saath": 60, "sattar": 70, "assi": 80, "nabbe": 90,
-    "एक": 1, "दो": 2, "तीन": 3, "चार": 4, "पांच": 5, "पाँच": 5, "छह": 6, "छः": 6, "छे": 6, "सात": 7,
-    "आठ": 8, "नौ": 9, "दस": 10, "ग्यारह": 11, "बारह": 12, "तेरह": 13, "चौदह": 14, "पंद्रह": 15,
-    "पन्द्रह": 15, "सोलह": 16, "सत्रह": 17, "अठारह": 18, "उन्नीस": 19, "बीस": 20, "इक्कीस": 21,
-    "बाईस": 22, "बाइस": 22, "तेईस": 23, "चौबीस": 24, "पच्चीस": 25, "छब्बीस": 26, "सत्ताईस": 27,
-    "अट्ठाईस": 28, "उनतीस": 29, "तीस": 30, "चालीस": 40, "पचास": 50, "साठ": 60, "सत्तर": 70,
-    "अस्सी": 80, "नब्बे": 90,
-}
-_FRACTIONS = {"dedh": 1.5, "derh": 1.5, "डेढ": 1.5, "dhai": 2.5, "dhaai": 2.5, "ढाई": 2.5}
-_PLUS_HALF = {"saade", "sadhe", "saadhe", "साढे"}
-_MULT = {
-    "k": 1000, "hazaar": 1000, "hazar": 1000, "hajar": 1000, "hazaar.": 1000, "thousand": 1000,
-    "हजार": 1000, "lakh": 100000, "lac": 100000, "lakhs": 100000, "लाख": 100000,
-    "sau": 100, "सौ": 100, "hundred": 100,
-}
-_CURRENCY = {"rupaye", "rupaiye", "rupay", "rupees", "rupee", "rs", "inr", "₹", "रुपये", "रुपए", "रुपया"}
+
+def norm(word: str) -> str:
+    """One spelling for what transcription writes several ways: no nukta (हज़ार is हजार),
+    chandrabindu as anusvara (पाँच is पांच)."""
+    word = unicodedata.normalize("NFD", word.lower()).replace("़", "").replace("ँ", "ं")
+    return unicodedata.normalize("NFC", word)
 
 
-def _tokens(text: str) -> list[str]:
-    t = text.lower().replace("़", "").translate(_DEV_DIGITS)  # drop the nukta: हज़ार == हजार
+def normed(words) -> dict | set:
+    return {norm(k): v for k, v in words.items()} if isinstance(words, dict) else {norm(w) for w in words}
+
+
+_SPLIT = re.compile(r"[\s!?;:()\"'“”‘’\-–—/|,।॥]+")
+_BREAKS = re.compile(r"(?<!\d),|,(?!\d)|[।॥!?;:]|(?<!\d)\.|\.(?!\d)|\n")
+_JOINS = normed({"aur", "और", "and", "or", "ya", "या", "phir", "fir", "फिर"})
+
+
+def tokens(text: str, breaks: bool = False) -> list[str]:
+    """Words, lower case, Devanagari digits as digits, "22,000" as "22000", "15th" as "15".
+    With `breaks`, a BREAK stands where a list or a sentence turns: punctuation and "aur"."""
+    t = norm(text).translate(_DEV_DIGITS)
     t = re.sub(r"(?<=\d),(?=\d)", "", t)
+    t = re.sub(r"\b(rs|no)\.", r"\1 ", t)
     t = re.sub(r"₹", " ₹ ", t)
+    t = re.sub(r"(\d)(st|nd|rd|th)\b", r"\1", t)
     t = re.sub(r"(\d)(k|rs)\b", r"\1 \2", t)
-    t = re.sub(r"(?<!\d)\.|\.(?!\d)", " ", t)
-    return [w for w in re.split(r"[\s,!?;:()\"'“”‘’\-–—/|]+", t) if w]
+    words = [w for w in _SPLIT.split(_BREAKS.sub(f" {_MARK} ", t)) if w]
+    if not breaks:
+        return [w for w in words if w != _MARK]
+    out: list[str] = []
+    for w in words:
+        w = BREAK if w == _MARK or w in _JOINS else w
+        if not (w == BREAK and (not out or out[-1] == BREAK)):
+            out.append(w)
+    return out
 
 
-def _number(toks: list[str], i: int) -> tuple[float | None, int, bool]:
+# ---------- rupees ----------
+
+_WORDS = normed(table(ROMAN) | table(DEVANAGARI) | table(ENGLISH))
+_TENS_EN = normed({w for w, v in table(ENGLISH).items() if v >= 20})
+_UNITS_EN = normed({w for w, v in table(ENGLISH).items() if v < 10})
+_ALONE = normed({  # a fraction said on its own: dedh sau, dhai hazaar, sava lakh, pauna hazaar
+    "dedh": 1.5, "derh": 1.5, "dedd": 1.5, "डेढ": 1.5, "dhai": 2.5, "dhaai": 2.5, "adhai": 2.5,
+    "arhai": 2.5, "ढाई": 2.5, "अढाई": 2.5, "sava": 1.25, "sawa": 1.25, "सवा": 1.25,
+    "pauna": 0.75, "paune": 0.75, "पौना": 0.75, "पौने": 0.75,
+})
+_BEFORE = normed({  # said before a number: saade teen 3.5, sava do 2.25, paune do 1.75
+    "saade": 0.5, "sadhe": 0.5, "saadhe": 0.5, "sade": 0.5, "साढे": 0.5,
+    "sava": 0.25, "sawa": 0.25, "सवा": 0.25, "paune": -0.25, "pone": -0.25, "पौने": -0.25,
+})
+_MULT = normed({
+    "k": 1000, "hazaar": 1000, "hazar": 1000, "hajar": 1000, "hajaar": 1000, "hazzar": 1000,
+    "thousand": 1000, "हजार": 1000, "थाउजंड": 1000, "थाउसेंड": 1000, "थाउजेंड": 1000,
+    "lakh": 100000, "lac": 100000, "lakhs": 100000, "laakh": 100000, "लाख": 100000,
+    "crore": 10000000, "karod": 10000000, "करोड": 10000000,
+    "sau": 100, "सौ": 100, "hundred": 100, "हंड्रेड": 100,
+})
+_CURRENCY = normed({
+    "rupaye", "rupaiye", "rupay", "rupye", "rupiya", "rupaiya", "rupya", "rupees", "rupee", "rs", "inr", "₹",
+    "रुपये", "रुपए", "रुपया", "रूपये", "रूपए", "रुपयों", "रूपया",
+})
+ITEM_WORDS = normed({
+    "advance": "advance", "एडवांस": "advance", "pehle": "advance",
+    "baaki": "balance", "baki": "balance", "बाकी": "balance", "balance": "balance", "remaining": "balance",
+    "total": "amount", "price": "amount", "rate": "amount", "kharcha": "amount", "amount": "amount",
+    "टोटल": "amount", "कुल": "amount",
+    "shuru": "dates", "khatam": "dates", "date": "dates", "start": "dates", "finish": "dates",
+    "late": "late_or_unfinished", "deri": "late_or_unfinished", "adhoora": "late_or_unfinished",
+    "chhod": "late_or_unfinished", "unfinished": "late_or_unfinished",
+})
+
+
+def number_at(toks: list[str], i: int) -> tuple[float | None, int, bool]:
     """A number at toks[i]: (value, index after it, spoken as a word)."""
     if i >= len(toks):
         return None, i, False
-    half = 0.0
-    if toks[i] in _PLUS_HALF and i + 1 < len(toks):
-        half, i = 0.5, i + 1
     tok = toks[i]
+    if tok in _BEFORE and i + 1 < len(toks):
+        value, j, _ = number_at(toks, i + 1)
+        if value is not None and value >= 1:
+            return value + _BEFORE[tok], j, True
     if re.fullmatch(r"\d+(\.\d+)?", tok):
-        return float(tok) + half, i + 1, False
+        return float(tok), i + 1, False
     if tok in _WORDS:
-        return _WORDS[tok] + half, i + 1, True
-    if tok in _FRACTIONS:
-        return _FRACTIONS[tok], i + 1, True
+        value = _WORDS[tok]
+        if tok in _TENS_EN and i + 1 < len(toks) and toks[i + 1] in _UNITS_EN:
+            return value + _WORDS[toks[i + 1]], i + 2, True
+        return value, i + 1, True
+    if tok in _ALONE:
+        return _ALONE[tok], i + 1, True
     return None, i, False
 
 
-def parse_rupees(text: str | None) -> list[int]:
-    """Every amount the words state outright: with a unit (hazaar, lakh, k, rupaye, ₹) or as a
-    figure of 1,000 or more. A bare "14" is left out: only the context says it means 14,000."""
+def figures(text: str | None) -> list[tuple[int | float, bool]]:
+    """Every number group in the words, in order: (value, stated as an amount). Stated means
+    with a unit (hazaar, lakh, sau, k, rupaye, ₹) or a figure of 1,000 or more."""
     if not text:
         return []
-    toks, out, i = _tokens(text), [], 0
+    toks, out, i = tokens(text, breaks=True), [], 0
     while i < len(toks):
-        value, j, spoken = _number(toks, i)
+        value, j, spoken = number_at(toks, i)
         if value is None:
+            if toks[i] in _MULT and toks[i] != "k" and i + 1 < len(toks) and toks[i + 1] in _CURRENCY:
+                out.append((_MULT[toks[i]], True))  # "sau rupaye"
+                i += 2
+                continue
             i += 1
             continue
         prefixed = i > 0 and toks[i - 1] in _CURRENCY
@@ -78,12 +127,13 @@ def parse_rupees(text: str | None) -> list[int]:
             if unit in _MULT:
                 total += value * _MULT[unit]
                 stated, j = True, j + 1
-                nxt, k, _ = _number(toks, j)
+                nxt, k, _ = number_at(toks, j)
                 if nxt is not None and k < len(toks) and toks[k] in _MULT and _MULT[toks[k]] < _MULT[unit]:
-                    value, j = nxt, k
+                    value, j = nxt, k  # ek lakh bees hazaar, 38 hazaar paanch sau
                     continue
-                if nxt is not None and _MULT[unit] >= 1000 and nxt < 1000 and not (k < len(toks) and toks[k] in _MULT):
-                    total, j = total + nxt, k
+                after = toks[k] if k < len(toks) else None
+                if nxt is not None and 100 <= nxt < _MULT[unit] and after not in _MULT and after not in ITEM_WORDS:
+                    total, j = total + nxt, k  # 13 hazaar 500; not "22 hazaar paanch" (a 5 is another figure)
                 if j < len(toks) and toks[j] in _CURRENCY:
                     j += 1
                 break
@@ -93,23 +143,29 @@ def parse_rupees(text: str | None) -> list[int]:
             elif prefixed or (not spoken and value >= 1000):
                 stated = True
             break
-        if stated and total > 0:
-            out.append(int(round(total)))
+        if total > 0 or stated:
+            out.append((int(round(total)) if stated else total, stated))
         i = max(j, i + 1)
     return out
 
 
-def _bare_numbers(text: str) -> set[float]:
-    return {float(t) for t in _tokens(text) if re.fullmatch(r"\d+(\.\d+)?", t)}
+def parse_rupees(text: str | None) -> list[int]:
+    """Every amount the words state outright. A bare "14" is left out: only the context says
+    it means 14,000."""
+    return [int(v) for v, stated in figures(text) if stated and v > 0]
+
+
+def bare_numbers(text: str) -> set[float]:
+    return {float(v) for v, stated in figures(text) if not stated}
 
 
 def normalise_rupees(model: int | None, value: str | None, quote: str) -> int | None:
     """Whole rupees for a claim. The model says whether the claim has an amount; the words win
     where they state it outright, and the model's figure is taken where the words leave the
-    scale to the context ("14 kar dete hain" is 14,000)."""
+    scale to the context ("14 kar dete hain" is 14,000; "paanch advance" is 5,000)."""
     said = parse_rupees(quote)
     if model is not None:
-        if model in said or (model % 1000 == 0 and model // 1000 in _bare_numbers(quote)):
+        if model in said or (model > 0 and model / 1000 in bare_numbers(quote)):
             return model
         if len(set(said)) == 1:
             return said[0]
@@ -123,15 +179,20 @@ def one_amount(text: str | None) -> int | None:
     return found.pop() if len(found) == 1 else None
 
 
-_TOTAL = {"total", "kul", "कुल", "pura", "poora", "पूरा", "टोटल"}
+_TOTAL = normed({"total", "kul", "कुल", "pura", "poora", "पूरा", "टोटल"})
 
 
 def stated_total(text: str) -> int | None:
-    """An amount the words call the total ("to total 14 hazaar", "kul 22 hazaar")."""
-    toks = _tokens(text)
+    """An amount the words call the total ("to total 14 hazaar", "kul 22 hazaar"), up to the
+    next break: "total 22 hazaar, 5 advance" is 22,000."""
+    toks = tokens(text, breaks=True)
     for i, tok in enumerate(toks):
         if tok in _TOTAL:
-            found = parse_rupees(" ".join(toks[i + 1:i + 5]))
+            span = toks[i + 1:i + 8]
+            while span and span[0] == BREAK:
+                span = span[1:]
+            span = span[:span.index(BREAK)] if BREAK in span else span
+            found = parse_rupees(" ".join(span))
             if found:
                 return found[0]
     return None
@@ -141,104 +202,66 @@ def format_rupees(rupees: int) -> str:
     return f"{rupees:,} rupees"
 
 
-# ---------- dates ----------
-
-_WEEKDAYS = {
-    "monday": 0, "somvar": 0, "somwar": 0, "सोमवार": 0, "tuesday": 1, "mangalvar": 1, "mangalwar": 1,
-    "मंगलवार": 1, "wednesday": 2, "budhvar": 2, "budhwar": 2, "बुधवार": 2, "thursday": 3, "guruvar": 3,
-    "guruwar": 3, "brihaspativar": 3, "गुरुवार": 3, "friday": 4, "shukravar": 4, "shukrawar": 4,
-    "शुक्रवार": 4, "saturday": 5, "shanivar": 5, "shaniwar": 5, "शनिवार": 5, "sunday": 6, "ravivar": 6,
-    "raviwar": 6, "itvaar": 6, "itwar": 6, "रविवार": 6,
-}
-_RELATIVE = {"aaj": 0, "आज": 0, "kal": 1, "कल": 1, "parson": 2, "parso": 2, "परसों": 2, "परसो": 2}
-_MONTHS = {
-    "jan": 1, "january": 1, "feb": 2, "february": 2, "mar": 3, "march": 3, "apr": 4, "april": 4, "may": 5,
-    "jun": 6, "june": 6, "jul": 7, "july": 7, "aug": 8, "august": 8, "sep": 9, "sept": 9, "september": 9,
-    "oct": 10, "october": 10, "nov": 11, "november": 11, "navambar": 11, "dec": 12, "december": 12,
-    "disambar": 12,
-}
-
-
-def date_candidates(text: str, today: date) -> set[date]:
-    toks, found = _tokens(text), set()
-    for i, tok in enumerate(toks):
-        if tok in _WEEKDAYS:
-            ahead = (_WEEKDAYS[tok] - today.weekday()) % 7 or 7
-            found.add(today + timedelta(days=ahead))
-        elif tok in _RELATIVE:
-            found.add(today + timedelta(days=_RELATIVE[tok]))
-        elif tok in _MONTHS and i > 0 and re.fullmatch(r"\d{1,2}", toks[i - 1]):
-            try:
-                day = date(today.year, _MONTHS[tok], int(toks[i - 1]))
-            except ValueError:
-                continue
-            found.add(day if day >= today - timedelta(days=60) else day.replace(year=today.year + 1))
-    return found
-
-
-def pin_date(quote: str, today: date, model: date | None) -> date | None:
-    """The day the words fix, if they fix one. Two different days in the words and no
-    agreement from the model means it is not pinned down."""
-    found = date_candidates(quote, today)
-    if model is not None and model in found:
-        return model
-    if len(found) == 1:
-        return next(iter(found))
-    return model if not found else None
-
-
 # ---------- lines with nothing to extract ----------
 
-_YES = {
-    "haan", "han", "haa", "ha", "haanji", "hanji", "theek", "thik", "theekh", "ok", "okay", "done", "pakka",
-    "chalo", "achha", "accha", "acha", "achcha", "sahi", "bilkul", "right", "yes", "sure", "हाँ", "हां",
-    "ठीक", "ओके", "पक्का", "चलो", "अच्छा", "बिलकुल", "बिल्कुल", "सही", "डन",
-}
-_FILLER = {
+_STRONG_YES = normed({
+    "theek", "thik", "theekh", "ok", "okay", "done", "pakka", "bilkul", "sahi", "manzoor", "final", "deal",
+    "ठीक", "ओके", "पक्का", "बिलकुल", "बिल्कुल", "सही", "डन", "मंजूर", "फाइनल", "डील",
+})
+_YES = _STRONG_YES | normed({
+    "haan", "han", "haa", "ha", "haanji", "hanji", "chalo", "achha", "accha", "acha", "achcha", "right",
+    "yes", "sure", "हाँ", "हां", "चलो", "अच्छा",
+})
+_FILLER = normed({
     "ji", "jee", "hai", "he", "h", "hmm", "hm", "madam", "sir", "bhaiya", "bhai", "didi", "aunty", "uncle",
     "hello", "hi", "helo", "hallo", "namaste", "namaskar", "pranam", "bye", "dhanyavad", "dhanyawad",
     "shukriya", "thanks", "thank", "you", "phir", "fir", "to", "toh", "जी", "है", "हम्म", "नमस्ते",
-    "नमस्कार", "हेलो", "धन्यवाद", "शुक्रिया", "फिर", "तो",
-}
+    "नमस्कार", "हेलो", "धन्यवाद", "शुक्रिया", "फिर", "तो", "मैडम", "सर", "भैया", "दीदी", "बाय",
+})
 
 
 def filler_kind(text: str, names: set[str] = frozenset()) -> str | None:
-    """"yes" for a line that is only a yes ("theek hai", "haan ji", "done"), "greeting" for a
-    line with nothing to extract at all ("namaste", "hello"), None for anything else."""
-    toks = [t for t in _tokens(text) if t not in names]
+    """"yes" for a line that is only a yes ("theek hai", "haan ji", "ठीक है।"), "greeting" for
+    a line with nothing to extract at all ("namaste", "hello"), None for anything else."""
+    names = {norm(n) for n in names}
+    toks = [t for t in tokens(text) if t not in names]
     if not toks or not all(t in _YES or t in _FILLER for t in toks):
         return None if toks else "greeting"
     return "yes" if any(t in _YES for t in toks) else "greeting"
 
 
+def opens_with_yes(text: str, names: set[str] = frozenset()) -> bool:
+    """A line whose first clause is a firm yes and that then goes on ("Chalo theek hai. To
+    Wednesday aa jao"). "Haan" or "achha" alone can just mean "I hear you", so a firm word
+    ("theek", "pakka", "done") is needed."""
+    toks = tokens(text, breaks=True)
+    if BREAK not in toks:
+        return False
+    cut = toks.index(BREAK)
+    first, rest = toks[:cut], [t for t in toks[cut:] if t != BREAK]
+    return bool(rest) and filler_kind(" ".join(first), names) == "yes" and any(t in _STRONG_YES for t in first)
+
+
 # ---------- search words ----------
 
-_STOP = {
+_STOP = normed({
     "kya", "hai", "tha", "thi", "the", "hua", "hui", "kitna", "kitni", "kab", "kaun", "kaise", "ke", "ki",
     "ka", "mein", "baare", "aur", "hoga", "hogi", "was", "what", "how", "when", "who", "about", "baat",
     "tay", "gawah", "maine", "aapne", "bola", "kaha", "tha", "na", "and", "for", "with", "that", "this",
     "said", "says", "rupees", "will", "are", "has", "ji", "madam",
-}
-ITEM_WORDS = {
-    "advance": "advance", "एडवांस": "advance", "pehle": "advance",
-    "baaki": "balance", "baki": "balance", "बाकी": "balance", "balance": "balance", "remaining": "balance",
-    "total": "amount", "price": "amount", "rate": "amount", "kharcha": "amount", "amount": "amount",
-    "shuru": "dates", "khatam": "dates", "date": "dates", "start": "dates", "finish": "dates",
-    "late": "late_or_unfinished", "deri": "late_or_unfinished", "adhoora": "late_or_unfinished",
-    "chhod": "late_or_unfinished", "unfinished": "late_or_unfinished",
-}
+})
 
 
 def search_words(text: str) -> set[str]:
-    return {t for t in _tokens(text) if len(t) > 2 and t not in _STOP and not t.isdigit()}
+    return {t for t in tokens(text) if len(t) > 2 and t not in _STOP and not t.isdigit()}
 
 
 def items_named(text: str) -> set[str]:
-    return {ITEM_WORDS[t] for t in _tokens(text) if t in ITEM_WORDS}
+    return {ITEM_WORDS[t] for t in tokens(text) if t in ITEM_WORDS}
 
 
-_AGREED = {"tay", "tey", "pakka", "final", "agreed", "decide", "decided", "fix", "तय", "पक्का", "confirm", "confirmed"}
+_AGREED = normed({"tay", "tey", "pakka", "final", "agreed", "decide", "decided", "fix", "तय", "पक्का", "confirm", "confirmed"})
 
 
 def asks_agreed(text: str) -> bool:
-    return any(t in _AGREED for t in _tokens(text))
+    return any(t in _AGREED for t in tokens(text))

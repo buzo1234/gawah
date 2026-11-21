@@ -7,7 +7,8 @@
 - memory.py     MemoryQueries (get_term, owed, search, clip), conflicts, agent notes
 - vectors.py    embeddings, cached on disk under memory-cache/
 - clips.py      a fact's seconds of audio from the call recordings
-- normalise.py  rupees, dates, and lines with nothing to extract
+- normalise.py  rupees (number words in number_words.py) and lines with nothing to extract
+- dates.py      days, and whether each is the start or the finish
 
 Set on app.state.memory (MEMORY_STATE). The clip is served at clip_path(fact_id), the chain
 check at /memory/chain/<deal_id>; for the dashboard and checks by hand, /memory/term/<deal_id>/<item>,
