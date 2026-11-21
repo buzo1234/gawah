@@ -87,12 +87,34 @@ if ! aws iam get-open-id-connect-provider --open-id-connect-provider-arn "$OIDC_
 else
   echo "the OIDC provider exists (used as it is)"
 fi
+# The token's sub starts with the repo's prefix. With GitHub's immutable subject claims it
+# carries owner and repo ids (repo:owner@123/repo@456), so the plain form never matches.
+github_sub_prefix() {
+  local check="gh api repos/$GITHUB_REPO/actions/oidc/customization/sub" out use_default prefix
+  if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1 \
+      && out="$(gh api "repos/$GITHUB_REPO/actions/oidc/customization/sub" \
+           --jq '"\(.use_default) \(.sub_claim_prefix // "")"' 2>/dev/null)"; then
+    read -r use_default prefix <<<"$out"
+    if [ "$use_default" = false ]; then
+      echo "warning: $GITHUB_REPO has custom OIDC claim keys; the deploy role may not match ($check)" >&2
+    fi
+    printf '%s' "${prefix:-repo:$GITHUB_REPO}"
+    return
+  fi
+  echo "warning: could not read $GITHUB_REPO's OIDC subject format (gh missing or not logged in);" >&2
+  echo "  trusting repo:$GITHUB_REPO. If the repo uses immutable subject claims, deploys will fail" >&2
+  echo "  with 'Not authorized to perform sts:AssumeRoleWithWebIdentity'. Check: $check" >&2
+  echo "  then run gh auth login and run this script again." >&2
+  printf 'repo:%s' "$GITHUB_REPO"
+}
+GITHUB_SUB="$(github_sub_prefix):ref:refs/heads/main"
+echo "deploy role trusts sub $GITHUB_SUB"
 cat >"$tmp/github-trust.json" <<EOF
 {"Version": "2012-10-17", "Statement": [{"Effect": "Allow",
   "Principal": {"Federated": "$OIDC_ARN"}, "Action": "sts:AssumeRoleWithWebIdentity",
   "Condition": {"StringEquals": {
     "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-    "token.actions.githubusercontent.com:sub": "repo:$GITHUB_REPO:ref:refs/heads/main"}}}]}
+    "token.actions.githubusercontent.com:sub": "$GITHUB_SUB"}}}]}
 EOF
 cat >"$tmp/deploy-policy.json" <<EOF
 {"Version": "2012-10-17", "Statement": [
