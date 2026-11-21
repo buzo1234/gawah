@@ -1,0 +1,811 @@
+{
+ "variant": "generated",
+ "calls": {
+  "spike_painter_call": {
+   "1": {
+    "out": {
+     "work_agreed": false,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 2108,
+    "attempt": 1,
+    "usage": {
+     "input": 484,
+     "cached": 0,
+     "output": 42
+    },
+    "from_static": true
+   },
+   "2": {
+    "out": {
+     "work_agreed": false,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1401,
+    "attempt": 1,
+    "usage": {
+     "input": 430,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "3": {
+    "out": {
+     "work_agreed": false,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1383,
+    "attempt": 1,
+    "usage": {
+     "input": 462,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "4": {
+    "out": {
+     "work_agreed": false,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1265,
+    "attempt": 1,
+    "usage": {
+     "input": 487,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "5": {
+    "out": {
+     "work_agreed": false,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1233,
+    "attempt": 1,
+    "usage": {
+     "input": 523,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "6": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1206,
+    "attempt": 1,
+    "usage": {
+     "input": 557,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "7": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1295,
+    "attempt": 1,
+    "usage": {
+     "input": 578,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "8": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1198,
+    "attempt": 1,
+    "usage": {
+     "input": 595,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "9": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1405,
+    "attempt": 1,
+    "usage": {
+     "input": 616,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "10": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1196,
+    "attempt": 1,
+    "usage": {
+     "input": 642,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "11": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1158,
+    "attempt": 1,
+    "usage": {
+     "input": 664,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "12": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1270,
+    "attempt": 1,
+    "usage": {
+     "input": 701,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "13": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1372,
+    "attempt": 1,
+    "usage": {
+     "input": 708,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "14": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1501,
+    "attempt": 1,
+    "usage": {
+     "input": 722,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "15": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1165,
+    "attempt": 1,
+    "usage": {
+     "input": 743,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "16": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1247,
+    "attempt": 1,
+    "usage": {
+     "input": 765,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "17": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1231,
+    "attempt": 1,
+    "usage": {
+     "input": 778,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "18": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1161,
+    "attempt": 1,
+    "usage": {
+     "input": 809,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "19": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1303,
+    "attempt": 1,
+    "usage": {
+     "input": 825,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "20": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": true,
+     "late_terms": false
+    },
+    "ms": 1327,
+    "attempt": 1,
+    "usage": {
+     "input": 858,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "21": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": true,
+     "late_terms": false
+    },
+    "ms": 1337,
+    "attempt": 1,
+    "usage": {
+     "input": 880,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "22": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": true,
+     "late_terms": false
+    },
+    "ms": 1267,
+    "attempt": 1,
+    "usage": {
+     "input": 899,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "23": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": true,
+     "late_terms": false
+    },
+    "ms": 1361,
+    "attempt": 1,
+    "usage": {
+     "input": 915,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "24": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": true,
+     "late_terms": false
+    },
+    "ms": 1313,
+    "attempt": 1,
+    "usage": {
+     "input": 939,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "25": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": true,
+     "late_terms": false
+    },
+    "ms": 1287,
+    "attempt": 1,
+    "usage": {
+     "input": 967,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "26": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": true,
+     "late_terms": false
+    },
+    "ms": 1408,
+    "attempt": 1,
+    "usage": {
+     "input": 990,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "27": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": true,
+     "late_terms": false
+    },
+    "ms": 1180,
+    "attempt": 1,
+    "usage": {
+     "input": 1016,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "28": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": true,
+     "late_terms": false
+    },
+    "ms": 1335,
+    "attempt": 1,
+    "usage": {
+     "input": 1042,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "29": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": true,
+     "late_terms": false
+    },
+    "ms": 1207,
+    "attempt": 1,
+    "usage": {
+     "input": 1059,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "30": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": true,
+     "balance_when": false,
+     "dates_agreed": true,
+     "late_terms": false
+    },
+    "ms": 1340,
+    "attempt": 1,
+    "usage": {
+     "input": 1068,
+     "cached": 0,
+     "output": 42
+    }
+   }
+  },
+  "holdout_carpenter_call": {
+   "1": {
+    "out": {
+     "work_agreed": false,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 2153,
+    "attempt": 1,
+    "usage": {
+     "input": 479,
+     "cached": 0,
+     "output": 42
+    },
+    "from_static": true
+   },
+   "2": {
+    "out": {
+     "work_agreed": false,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1314,
+    "attempt": 1,
+    "usage": {
+     "input": 418,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "3": {
+    "out": {
+     "work_agreed": false,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1667,
+    "attempt": 1,
+    "usage": {
+     "input": 435,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "4": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1625,
+    "attempt": 1,
+    "usage": {
+     "input": 463,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "5": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1295,
+    "attempt": 1,
+    "usage": {
+     "input": 478,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "6": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1314,
+    "attempt": 1,
+    "usage": {
+     "input": 502,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "7": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1326,
+    "attempt": 1,
+    "usage": {
+     "input": 516,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "8": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1300,
+    "attempt": 1,
+    "usage": {
+     "input": 531,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "9": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1169,
+    "attempt": 1,
+    "usage": {
+     "input": 554,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "10": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": false,
+     "balance_when": false,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1206,
+    "attempt": 1,
+    "usage": {
+     "input": 583,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "11": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": true,
+     "balance_when": true,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1192,
+    "attempt": 1,
+    "usage": {
+     "input": 613,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "12": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": true,
+     "advance_agreed": true,
+     "balance_when": true,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1357,
+    "attempt": 1,
+    "usage": {
+     "input": 635,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "13": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": true,
+     "balance_when": true,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1381,
+    "attempt": 1,
+    "usage": {
+     "input": 657,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "14": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": true,
+     "balance_when": true,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1206,
+    "attempt": 1,
+    "usage": {
+     "input": 673,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "15": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": true,
+     "balance_when": true,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1242,
+    "attempt": 1,
+    "usage": {
+     "input": 691,
+     "cached": 0,
+     "output": 42
+    }
+   },
+   "16": {
+    "out": {
+     "work_agreed": true,
+     "amount_agreed": false,
+     "advance_agreed": true,
+     "balance_when": true,
+     "dates_agreed": false,
+     "late_terms": false
+    },
+    "ms": 1405,
+    "attempt": 1,
+    "usage": {
+     "input": 700,
+     "cached": 0,
+     "output": 42
+    }
+   }
+  }
+ },
+ "questions": {
+  "spike_painter_call": {
+   "work_agreed": "Have both speakers agreed on the flat painting work? Answer yes only if both accepted the same scope.",
+   "amount_agreed": "Have both speakers agreed on the total painting price and what it covers? Answer yes only if both accepted the same amount and coverage.",
+   "advance_agreed": "Have both speakers agreed on the advance amount and when it is paid? Answer yes only if both accepted the same terms.",
+   "balance_when": "Have both speakers agreed on when the rest is paid and what it is paid against? Answer yes only if both accepted the same terms.",
+   "dates_agreed": "Have both speakers agreed on when the painting starts and finishes? Answer yes only if both accepted the same dates.",
+   "late_terms": "Have both speakers agreed on what happens if the painting is late, unfinished, or not done right? Answer yes only if both accepted the same terms."
+  },
+  "holdout_carpenter_call": {
+   "work_agreed": "Have both speakers agreed on the wardrobe size and design? Answer yes only if both accepted the same thing.",
+   "amount_agreed": "Have both speakers agreed on the total price and what it covers? Answer yes only if both accepted the same thing.",
+   "advance_agreed": "Have both speakers agreed on the advance amount and when it will be paid? Answer yes only if both accepted the same thing.",
+   "balance_when": "Have both speakers agreed on when the rest will be paid and against what? Answer yes only if both accepted the same thing.",
+   "dates_agreed": "Have both speakers agreed on when the wardrobe work will start and finish? Answer yes only if both accepted the same thing.",
+   "late_terms": "Have both speakers agreed on what happens if the wardrobe work is late, unfinished, or not done right? Answer yes only if both accepted the same thing."
+  }
+ }
+}

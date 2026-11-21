@@ -1,0 +1,436 @@
+
+== gen luna: lint {'ready': {'labels': 120, 'long': 27, 'value': 6}, 'end': {'labels': 120, 'long': 21, 'value': 12}}
+   ready median line 3.0, never 0, latency median 2078 p95 5343 max 5864 (n 85)
+  call_missing_balance         ready 1/32 5343 ms  Painting
+     {'work': 'Painting work', 'amount': 'Painting amount', 'advance': 'Painting advance', 'balance': 'Painting balance', 'dates': 'Painting dates', 'late_or_unfinished': 'If painting is unfinished'}  extras@ready []  moved by end 6
+  call_two_amounts             ready 2/33 4314 ms  Painting the flat
+     {'work': 'Flat painting', 'amount': 'Painting fee', 'advance': 'Painting advance', 'balance': 'Remaining painting payment', 'dates': 'Painting start and finish', 'late_or_unfinished': 'If painting is unfinished'}  extras@ready []  moved by end 6
+  demo_script_call             ready 1/18 5864 ms  Painting Sunita's 2BHK flat in Indirapuram
+     {'work': '2BHK flat painting', 'amount': 'Total painting price', 'advance': 'Painting advance', 'balance': 'Painting balance', 'dates': 'Painting start and finish', 'late_or_unfinished': 'If painting is unfinished'}  extras@ready []  moved by end 6
+  dry_run_call                 ready 3/24 4081 ms  Paint Sunita's two-BHK flat
+     {'work': 'Two-BHK flat painting', 'amount': 'Painting fee', 'advance': 'Painting advance', 'balance': 'Remaining painting payment', 'dates': 'Painting start and finish', 'late_or_unfinished': 'If painting is unfinished'}  extras@ready []  moved by end 6
+  holdout_carpenter_call       ready 1/16 4283 ms  Build a floor-to-ceiling wardrobe in the bedroom
+     {'work': 'Bedroom wardrobe', 'amount': 'Wardrobe total price', 'advance': 'Wardrobe advance', 'balance': 'Remaining wardrobe payment', 'dates': 'Wardrobe work dates', 'late_or_unfinished': 'If wardrobe is unfinished'}  extras@ready []  moved by end 1
+  second_call                  ready 6/9 3894 ms  Painting the rooms
+     {'work': 'Painting the rooms', 'amount': 'Total labour', 'advance': 'Advance payment', 'balance': 'Remaining labour payment', 'dates': 'Painting dates', 'late_or_unfinished': 'If painting is unfinished'}  extras@ready []  moved by end 4
+     end extra: Paint supply h6 w7 cited_ok=True
+  spike_painter_call           ready 1/30 4017 ms  Painting Sunita's flat
+     {'work': 'Flat painting', 'amount': 'Painting amount', 'advance': 'Painting advance', 'balance': 'Painting balance', 'dates': 'Painting dates', 'late_or_unfinished': 'If painting is unfinished'}  extras@ready []  moved by end 4
+     end extra: Furniture cover and cleaning h25 w26 cited_ok=True
+  holdout2_ac_repair           ready 1/34 3995 ms  AC service
+     {'work': 'AC service', 'amount': 'AC service fee', 'advance': 'AC service advance', 'balance': 'AC service balance', 'dates': 'AC service dates', 'late_or_unfinished': 'If AC service is unfinished'}  extras@ready []  moved by end 6
+     end extra: AC repair options h26 w27 cited_ok=True
+  holdout2_car_mechanic        ready 3/33 4095 ms  Repair the white Swift's clutch plate and brake pads
+     {'work': 'Swift clutch and brakes', 'amount': 'Total repair cost', 'advance': 'Repair advance', 'balance': 'Remaining repair payment', 'dates': 'Repair start and finish', 'late_or_unfinished': 'If repair is unfinished'}  extras@ready []  moved by end 5
+     end extra: Clutch warranty h23 w23 cited_ok=False
+  holdout2_driver_monthly      ready 3/32 4324 ms  Full-time driver for Ananya’s Creta automatic, Monday to Saturday
+     {'work': 'Full-time Creta driver', 'amount': 'Driver pay', 'advance': 'Driving advance', 'balance': 'Remaining driver pay', 'dates': 'Monday to Saturday', 'late_or_unfinished': 'If driving is missed'}  extras@ready []  moved by end 6
+     end extra: Sunday driving h18 w19 cited_ok=True
+     end extra: Monthly leave h22 w23 cited_ok=True
+     end extra: No smoking in car h20 w21 cited_ok=True
+  holdout2_mason_wall_call1    ready 3/34 3910 ms  Build a 180-foot-long, 6-foot-high, 9-inch brick wall with two gate pillars.
+     {'work': 'Brick wall and pillars', 'amount': 'Total building amount', 'advance': 'Building advance', 'balance': 'Remaining payment', 'dates': 'Building start and finish', 'late_or_unfinished': 'If building is unfinished'}  extras@ready []  moved by end 6
+     end extra: Site payment arrangement h26 w27 cited_ok=True
+  holdout2_mason_wall_call2    ready 8/31 4097 ms  Brick foundation and wall construction
+     {'work': 'Foundation and wall work', 'amount': 'Total work payment', 'advance': 'Foundation payment', 'balance': 'Next work payment', 'dates': 'Foundation and wall dates', 'late_or_unfinished': 'If wall work is unfinished'}  extras@ready []  moved by end 6
+  holdout2_tailor_lehenga      ready 3/34 4019 ms  Lehenga blouse and suits
+     {'work': 'Lehenga blouse and suits', 'amount': 'Total tailoring fee', 'advance': 'Tailoring advance', 'balance': 'Remaining tailoring fee', 'dates': 'Tailoring start and finish', 'late_or_unfinished': 'If tailoring is unfinished'}  extras@ready []  moved by end 6
+     end extra: Customer supplies fabric h5 w6 cited_ok=True
+     end extra: Bridal measurements h23 w24 cited_ok=True
+  holdout_carpenter_wardrobe   ready 3/32 4242 ms  wardrobe
+     {'work': 'Wardrobe work', 'amount': 'Wardrobe price', 'advance': 'Wardrobe advance', 'balance': 'Wardrobe balance', 'dates': 'Wardrobe dates', 'late_or_unfinished': 'If wardrobe is unfinished'}  extras@ready []  moved by end 5
+     end extra: Exterior laminate colour h29 w30 cited_ok=True
+     end extra: Home drilling electricity h23 w22 cited_ok=True
+  holdout_cook_month           ready 6/33 4115 ms  Cooking meals for Ramesh and his wife
+     {'work': 'Meals to cook', 'amount': 'Total cooking pay', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Cooking start and finish', 'late_or_unfinished': 'If cooking is unfinished'}  extras@ready []  moved by end 5
+     end extra: Monthly days off h18 w19 cited_ok=True
+     end extra: Household groceries h26 w27 cited_ok=True
+  holdout_electrician_shop     ready 3/31 4269 ms  Rewiring Imran's shop
+     {'work': 'Shop rewiring', 'amount': 'Rewiring cost', 'advance': 'Rewiring advance', 'balance': 'Rewiring balance', 'dates': 'Rewiring dates', 'late_or_unfinished': 'If rewiring is unfinished'}  extras@ready []  moved by end 6
+     end extra: Old board replacement h22 w22 cited_ok=False
+  holdout_plumber_leak         ready 4/32 4265 ms  Fix the bathroom leakage causing dampness and water dripping into the flat below.
+     {'work': 'Bathroom leakage repair', 'amount': 'Repair cost', 'advance': 'Repair advance', 'balance': 'Remaining repair payment', 'dates': 'Repair start and finish', 'late_or_unfinished': 'If repair is unfinished'}  extras@ready []  moved by end 3
+     end extra: Repair materials h26 w27 cited_ok=True
+  holdout_tutor_monthly        ready 3/30 4116 ms  Maths and science tuition for Rohan, who is in class eight
+     {'work': 'Maths and science tuition', 'amount': 'Tuition fee', 'advance': 'Tuition advance', 'balance': 'Remaining tuition fee', 'dates': 'Tuition dates', 'late_or_unfinished': 'If tuition is unfinished'}  extras@ready []  moved by end 4
+     end extra: Teaching days and hours h5 w4 cited_ok=True
+  demo_call_1                  ready 3/26 4078 ms  Painting Sunita's two-BHK flat
+     {'work': 'Two-BHK flat painting', 'amount': 'Painting fee', 'advance': 'Painting advance', 'balance': 'Remaining painting payment', 'dates': 'Painting start and finish', 'late_or_unfinished': 'If painting is unfinished'}  extras@ready []  moved by end 6
+  demo_call_2                  ready 7/12 3767 ms  Painting work
+     {'work': 'Balcony wall painting', 'amount': 'Total painting fee', 'advance': 'Painting advance', 'balance': 'Painting balance', 'dates': 'Painting dates', 'late_or_unfinished': 'If painting is unfinished'}  extras@ready []  moved by end 2
+
+== gen luna6: lint {'ready': {'labels': 120, 'long': 4, 'value': 0}, 'end': {'labels': 120, 'long': 2, 'value': 1}}
+   ready median line 3.0, never 0, latency median 2306.5 p95 5738 max 6377 (n 88)
+  call_missing_balance         ready 2/32 4405 ms  painting
+     {'work': 'Painting work', 'amount': 'Total amount', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Painting dates', 'late_or_unfinished': 'If painting is delayed'}  extras@ready []  moved by end 5
+  call_two_amounts             ready 2/33 4660 ms  Painting the flat
+     {'work': 'Flat painting', 'amount': 'Total price', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Painting dates', 'late_or_unfinished': 'If painting is late'}  extras@ready []  moved by end 4
+     end extra: Paint supply h6 w7 cited_ok=True
+  demo_script_call             ready 1/18 5255 ms  Painting a two-bedroom flat
+     {'work': 'Flat painting', 'amount': 'Total price', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Painting dates', 'late_or_unfinished': 'If painting is delayed'}  extras@ready []  moved by end 2
+  dry_run_call                 ready 3/24 4147 ms  Paint a two-bedroom flat
+     {'work': 'Flat painting', 'amount': 'Total painting cost', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Painting dates', 'late_or_unfinished': 'If painting is delayed'}  extras@ready []  moved by end 5
+  holdout_carpenter_call       ready 2/16 4719 ms  Building a floor-to-ceiling bedroom wardrobe
+     {'work': 'Wardrobe size and design', 'amount': 'Total price', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Work dates', 'late_or_unfinished': 'If work is delayed'}  extras@ready []  moved by end 3
+  second_call                  ready 7/9 4688 ms  Painting rooms
+     {'work': 'Rooms to paint', 'amount': 'Labour total', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Painting dates', 'late_or_unfinished': 'If painting is unfinished'}  extras@ready ['Paint supply']  moved by end 1
+     end extra: Paint supply h6 w7 cited_ok=True
+  spike_painter_call           ready 2/30 4645 ms  painting a flat
+     {'work': 'Flat painting', 'amount': 'Painting price', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Painting dates', 'late_or_unfinished': 'If painting is delayed'}  extras@ready []  moved by end 4
+     end extra: Furniture and cleanup h25 w26 cited_ok=True
+  holdout2_ac_repair           ready 2/34 4213 ms  AC service
+     {'work': 'AC service', 'amount': 'Total service charge', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Service dates', 'late_or_unfinished': 'If service is unfinished'}  extras@ready []  moved by end 5
+  holdout2_car_mechanic        ready 4/33 4836 ms  Repairing Abhishek’s Swift car
+     {'work': 'Clutch and brake repair', 'amount': 'Total repair cost', 'advance': 'Advance', 'balance': 'Remaining payment', 'dates': 'Repair dates', 'late_or_unfinished': 'If repair is delayed'}  extras@ready []  moved by end 3
+     end extra: Clutch warranty h24 w23 cited_ok=True
+  holdout2_driver_monthly      ready 3/32 5234 ms  Full-time driver for Ananya’s Creta automatic, Monday to Saturday.
+     {'work': 'Driving duties', 'amount': 'Driver pay', 'advance': 'Advance', 'balance': 'Remaining pay', 'dates': 'Work dates', 'late_or_unfinished': 'If work is missed'}  extras@ready []  moved by end 4
+     end extra: Overtime h7 w6 cited_ok=True
+     end extra: Sunday work h18 w19 cited_ok=True
+     end extra: Monthly leave h22 w23 cited_ok=True
+  holdout2_mason_wall_call1    ready 3/34 5359 ms  Building a brick wall with two gate pillars
+     {'work': 'Wall and gate pillars', 'amount': 'Total cost', 'advance': 'Advance', 'balance': 'Remaining payment', 'dates': 'Work dates', 'late_or_unfinished': 'If work is unfinished'}  extras@ready []  moved by end 5
+  holdout2_mason_wall_call2    ready 7/31 5341 ms  Building a wall
+     {'work': 'Wall construction', 'amount': 'Total contract amount', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Work dates', 'late_or_unfinished': 'If work is unfinished'}  extras@ready []  moved by end 4
+     end extra: Plaster sand h26 w27 cited_ok=True
+  holdout2_tailor_lehenga      ready 3/34 4222 ms  Making a lehenga blouse and some suits
+     {'work': 'Blouse and suits', 'amount': 'Total amount', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Work dates', 'late_or_unfinished': 'If work is delayed'}  extras@ready []  moved by end 3
+     end extra: Who brings lining h33 w33 cited_ok=False
+  holdout_carpenter_wardrobe   ready 4/32 4474 ms  Building a wardrobe
+     {'work': 'Wardrobe design', 'amount': 'Wardrobe price', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Wardrobe dates', 'late_or_unfinished': 'If the wardrobe is late'}  extras@ready []  moved by end 3
+     end extra: Work locations h17 w18 cited_ok=True
+     end extra: Bedroom electricity h23 w22 cited_ok=True
+  holdout_cook_month           ready 4/33 4503 ms  Cooking
+     {'work': 'Meals to cook', 'amount': 'Cooking pay', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Cooking dates', 'late_or_unfinished': 'If cooking is unfinished'}  extras@ready []  moved by end 5
+     end extra: Monthly days off h18 w19 cited_ok=True
+     end extra: Household groceries h26 w27 cited_ok=True
+  holdout_electrician_shop     ready 4/31 4729 ms  Replacing the shop's old aluminium wiring
+     {'work': 'Shop wiring', 'amount': 'Total cost', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Work dates', 'late_or_unfinished': 'If work is delayed'}  extras@ready []  moved by end 3
+     end extra: Old board removal h22 w22 cited_ok=False
+  holdout_plumber_leak         ready 2/32 4755 ms  Fixing a bathroom leak
+     {'work': 'Bathroom leak repair', 'amount': 'Total charge', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Repair dates', 'late_or_unfinished': 'If repair is delayed'}  extras@ready []  moved by end 4
+     end extra: Who brings materials h26 w27 cited_ok=True
+  holdout_tutor_monthly        ready 4/30 4525 ms  Maths and science tuition for Rohan, who is in class eight.
+     {'work': 'Maths and science tuition', 'amount': 'Tuition fee', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Tuition dates', 'late_or_unfinished': 'Missed or unfinished tuition'}  extras@ready []  moved by end 5
+  demo_call_1                  ready 3/26 4818 ms  Painting Sunita’s flat
+     {'work': 'Flat painting', 'amount': 'Total amount', 'advance': 'Advance', 'balance': 'Balance', 'dates': 'Painting dates', 'late_or_unfinished': 'If painting is delayed'}  extras@ready []  moved by end 3
+  demo_call_2                  ready 6/12 4648 ms  Painting
+     {'work': 'Walls to paint', 'amount': 'Total painting cost', 'advance': 'Advance', 'balance': 'Remaining payment', 'dates': 'Painting dates', 'late_or_unfinished': 'If painting is unfinished'}  extras@ready []  moved by end 5
+
+== gen luna-v1: lint {'ready': {'labels': 114, 'long': 18, 'value': 0}, 'end': {'labels': 120, 'long': 17, 'value': 15}}
+   ready median line 3, never 1, latency median 3955.0 p95 5309 max 6117 (n 78)
+  holdout_cook_month           ready 4/33 4227 ms  Cooking food in the hirer's home
+     {'work': 'Cooking at home', 'amount': 'Total cooking payment', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Cooking dates', 'late_or_unfinished': 'Unfinished cooking'}  extras@ready []  moved by end 5
+     end extra: Monthly holidays h18 w19 cited_ok=True
+     end extra: Ingredients at home h26 w27 cited_ok=True
+  call_missing_balance         ready 2/32 4704 ms  painting
+     {'work': 'Painting work', 'amount': 'Total painting fee', 'advance': 'Painting advance', 'balance': 'Remaining painting payment', 'dates': 'Painting dates', 'late_or_unfinished': 'Unfinished painting'}  extras@ready []  moved by end 5
+     end extra: Workers on site h19 w20 cited_ok=True
+  call_two_amounts             ready 2/33 3974 ms  painting the flat
+     {'work': 'Flat painting', 'amount': 'Total painting fee', 'advance': 'Advance payment', 'balance': 'Remaining fee payment', 'dates': 'Painting dates', 'late_or_unfinished': 'Late or unfinished painting'}  extras@ready []  moved by end 5
+  demo_script_call             ready 1/18 4750 ms  Paint Sunita’s two-BHK flat in Indirapuram
+     {'work': 'Flat painting work', 'amount': 'Total painting fee', 'advance': 'Painting work advance', 'balance': 'Remaining painting payment', 'dates': 'Painting start and finish', 'late_or_unfinished': 'Late or incomplete painting'}  extras@ready []  moved by end 5
+     end extra: Monday arrival time h14 w13 cited_ok=True
+  dry_run_call                 ready 3/24 3981 ms  Paint Sunita's two-bedroom flat
+     {'work': 'Flat painting work', 'amount': 'Total painting fee', 'advance': 'Advance payment', 'balance': 'Remaining fee payment', 'dates': 'Painting start and finish', 'late_or_unfinished': 'Late or unfinished painting'}  extras@ready []  moved by end 4
+  holdout_carpenter_call       ready 1/16 4239 ms  Build a floor-to-ceiling wardrobe in the bedroom.
+     {'work': 'Bedroom wardrobe', 'amount': 'Wardrobe price', 'advance': 'Wardrobe advance', 'balance': 'Remaining wardrobe payment', 'dates': 'Wardrobe work dates', 'late_or_unfinished': 'Unfinished wardrobe work'}  extras@ready []  moved by end 6
+  second_call                  ready 7/9 4670 ms  Painting the rooms
+     {'work': 'Rooms and coats', 'amount': 'Labour total', 'advance': 'Payment before start', 'balance': 'Remaining labour payment', 'dates': 'Start and finish', 'late_or_unfinished': 'Late or unfinished work'}  extras@ready ['Paint supplied']  moved by end 4
+  spike_painter_call           ready None/30 None ms  None
+     None  extras@ready None  moved by end None
+     end extra: Furniture cover and cleaning h25 w26 cited_ok=True
+  holdout2_ac_repair           ready 1/34 4343 ms  AC service
+     {'work': 'AC service', 'amount': 'Total service fee', 'advance': 'Advance payment', 'balance': 'Remaining service payment', 'dates': 'Service dates', 'late_or_unfinished': 'Unfinished service outcome'}  extras@ready []  moved by end 6
+     end extra: Third-floor access h32 w33 cited_ok=True
+  holdout2_car_mechanic        ready 2/33 4318 ms  Repair Abhishek's white Swift: replace the clutch plate and brake pads.
+     {'work': 'Clutch and brake repair', 'amount': 'Repair price', 'advance': 'Payment before repair', 'balance': 'Remaining repair payment', 'dates': 'Repair dates', 'late_or_unfinished': 'Delayed repair outcome'}  extras@ready []  moved by end 6
+     end extra: Clutch warranty h23 w23 cited_ok=False
+  holdout2_driver_monthly      ready 3/32 4511 ms  Full-time driver for Ananya’s Creta automatic, Monday to Saturday
+     {'work': 'Driving days and car', 'amount': 'Driver pay', 'advance': 'Payment before start', 'balance': 'Remaining driver pay', 'dates': 'Driving start and end', 'late_or_unfinished': 'Missed driving work'}  extras@ready []  moved by end 6
+     end extra: Leave and illness notice h22 w23 cited_ok=True
+     end extra: No smoking in car h20 w21 cited_ok=True
+  holdout2_mason_wall_call1    ready 3/34 4928 ms  Build a brick boundary wall with two gate pillars
+     {'work': 'Wall and gate pillars', 'amount': 'Total building price', 'advance': 'Advance for construction', 'balance': 'Remaining construction payment', 'dates': 'Construction start and finish', 'late_or_unfinished': 'Late or unfinished wall'}  extras@ready []  moved by end 6
+  holdout2_mason_wall_call2    ready 3/31 4201 ms  Foundation construction
+     {'work': 'Foundation construction', 'amount': 'Total payment', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Work dates', 'late_or_unfinished': 'Unfinished work'}  extras@ready ['Current progress']  moved by end 6
+     end extra: Front wall height h10 w11 cited_ok=True
+     end extra: Material quality h26 w27 cited_ok=True
+  holdout2_tailor_lehenga      ready 3/34 4566 ms  Lehenga blouse and some suits
+     {'work': 'Blouse and suits', 'amount': 'Total tailoring fee', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Wedding deadline', 'late_or_unfinished': 'Late or unfinished work'}  extras@ready []  moved by end 5
+     end extra: Bridal measurements h23 w24 cited_ok=True
+  holdout_carpenter_wardrobe   ready 4/32 3957 ms  wardrobe
+     {'work': 'Wardrobe specifications', 'amount': 'Wardrobe price', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Wardrobe work dates', 'late_or_unfinished': 'Unfinished wardrobe work'}  extras@ready []  moved by end 6
+     end extra: Work location and noise h17 w18 cited_ok=True
+     end extra: Bedroom power point h23 w22 cited_ok=True
+  holdout_electrician_shop     ready 3/31 4072 ms  rewiring the shop
+     {'work': 'Shop rewiring', 'amount': 'Total rewiring price', 'advance': 'Rewiring advance', 'balance': 'Remaining rewiring payment', 'dates': 'Rewiring dates', 'late_or_unfinished': 'Unfinished rewiring'}  extras@ready []  moved by end 6
+     end extra: Free board replacement h25 w22 cited_ok=True
+  holdout_plumber_leak         ready 2/32 4193 ms  Bathroom leakage repair
+     {'work': 'Bathroom leakage repair', 'amount': 'Repair fee', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Repair dates', 'late_or_unfinished': 'Unfinished repair plan'}  extras@ready []  moved by end 6
+     end extra: Tiles supplied by Sunita h28 w27 cited_ok=True
+  holdout_tutor_monthly        ready 3/30 4256 ms  Maths and science tuition for Rohan
+     {'work': 'Maths and science tuition', 'amount': 'Total tuition fee', 'advance': 'Advance tuition payment', 'balance': 'Remaining tuition payment', 'dates': 'Tuition start and finish', 'late_or_unfinished': 'Unfinished tuition plan'}  extras@ready []  moved by end 5
+  demo_call_1                  ready 3/26 4237 ms  Paint Sunita’s two-BHK flat in Indirapuram.
+     {'work': 'Flat painting work', 'amount': 'Total painting fee', 'advance': 'Painting advance', 'balance': 'Remaining painting payment', 'dates': 'Painting dates', 'late_or_unfinished': 'Late or unfinished painting'}  extras@ready []  moved by end 5
+  demo_call_2                  ready 7/12 3995 ms  painting work
+     {'work': 'Completed painting work', 'amount': 'Total painting fee', 'advance': 'Advance payment', 'balance': 'Remaining painting payment', 'dates': 'Painting work dates', 'late_or_unfinished': 'Unfinished painting work'}  extras@ready []  moved by end 3
+
+== gen mini-v1: lint {'ready': {'labels': 90, 'long': 0, 'value': 0}, 'end': {'labels': 120, 'long': 0, 'value': 6}}
+   ready median line 3, never 5, latency median 3364.0 p95 5834 max 8415 (n 70)
+  call_missing_balance         ready 1/32 6048 ms  painting
+     {'work': 'Painting Work', 'amount': 'Painting Amount', 'advance': 'Advance Payment', 'balance': 'Balance Payment', 'dates': 'Start And Finish', 'late_or_unfinished': 'Late Or Unfinished'}  extras@ready []  moved by end 6
+  call_two_amounts             ready None/33 None ms  None
+     None  extras@ready None  moved by end None
+  demo_script_call             ready 1/18 4994 ms  पेंटिंग फ्लैट
+     {'work': 'Flat painting', 'amount': 'Total painting fee', 'advance': 'Advance payment', 'balance': 'Final payment', 'dates': 'Start and finish', 'late_or_unfinished': 'Delay or unfinished'}  extras@ready []  moved by end 2
+  dry_run_call                 ready None/24 None ms  None
+     None  extras@ready None  moved by end None
+     end extra: UPI Number h14 w15 cited_ok=True
+  holdout_carpenter_call       ready 1/16 4019 ms  bedroom wardrobe making
+     {'work': 'Wardrobe Work', 'amount': 'Total Fee', 'advance': 'Advance Payment', 'balance': 'Final Payment', 'dates': 'Work Dates', 'late_or_unfinished': 'Late Or Left Work'}  extras@ready []  moved by end 6
+  second_call                  ready 4/9 5171 ms  Clearing rooms and removing stored items
+     {'work': 'Room clearing', 'amount': 'Total labour fee', 'advance': 'Advance payment', 'balance': 'Final balance', 'dates': 'Start and finish', 'late_or_unfinished': 'Delay or unfinished work'}  extras@ready []  moved by end 5
+  spike_painter_call           ready 1/30 3393 ms  flat painting
+     {'work': 'Flat painting', 'amount': 'Painting amount', 'advance': 'Advance payment', 'balance': 'Balance payment', 'dates': 'Painting dates', 'late_or_unfinished': 'Late or unfinished'}  extras@ready []  moved by end 5
+     end extra: Furniture covering h25 w26 cited_ok=True
+     end extra: Cleaning after work h25 w26 cited_ok=True
+  holdout2_ac_repair           ready None/34 None ms  None
+     None  extras@ready None  moved by end None
+     end extra: Three Month Warranty h22 w24 cited_ok=True
+  holdout2_car_mechanic        ready None/33 None ms  None
+     None  extras@ready None  moved by end None
+     end extra: Cab Fare h18 w21 cited_ok=True
+  holdout2_driver_monthly      ready 3/32 3626 ms  driver
+     {'work': 'Driving work', 'amount': 'Pay amount', 'advance': 'Advance payment', 'balance': 'Final payment', 'dates': 'Job dates', 'late_or_unfinished': 'Late or unfinished'}  extras@ready []  moved by end 6
+     end extra: Sunday work h18 w19 cited_ok=True
+     end extra: Smoking ban h20 w21 cited_ok=True
+     end extra: Monthly leave h22 w23 cited_ok=True
+  holdout2_mason_wall_call1    ready 3/34 4778 ms  building a boundary wall
+     {'work': 'Boundary wall work', 'amount': 'Total payment', 'advance': 'Advance payment', 'balance': 'Final payment', 'dates': 'Work dates', 'late_or_unfinished': 'Late or unfinished'}  extras@ready []  moved by end 6
+  holdout2_mason_wall_call2    ready None/31 None ms  None
+     None  extras@ready None  moved by end None
+  holdout2_tailor_lehenga      ready 3/34 3822 ms  Blouse and suit stitching
+     {'work': 'Blouse and suits', 'amount': 'Total payment', 'advance': 'Advance payment', 'balance': 'Final payment', 'dates': 'Work dates', 'late_or_unfinished': 'Delay or left unfinished'}  extras@ready []  moved by end 3
+     end extra: Trial fitting h13 w14 cited_ok=True
+  holdout_carpenter_wardrobe   ready 3/32 3016 ms  wardrobe work
+     {'work': 'Wardrobe work', 'amount': 'Wardrobe total', 'advance': 'Advance payment', 'balance': 'Balance payment', 'dates': 'Work dates', 'late_or_unfinished': 'Late or unfinished'}  extras@ready []  moved by end 4
+  holdout_cook_month           ready 3/33 3708 ms  Cooking
+     {'work': 'Cooking work', 'amount': 'Total payment', 'advance': 'Advance payment', 'balance': 'Final payment', 'dates': 'Start and finish', 'late_or_unfinished': 'Late or unfinished'}  extras@ready []  moved by end 5
+     end extra: Days off h18 w19 cited_ok=True
+     end extra: Food supplies h26 w27 cited_ok=True
+  holdout_electrician_shop     ready 1/31 4286 ms  electrician
+     {'work': 'Electrical work', 'amount': 'Total payment', 'advance': 'Advance payment', 'balance': 'Final payment', 'dates': 'Start and finish', 'late_or_unfinished': 'Late or unfinished'}  extras@ready []  moved by end 6
+     end extra: Modular board h22 w22 cited_ok=False
+  holdout_plumber_leak         ready 1/32 4023 ms  plumbing work
+     {'work': 'Plumbing work', 'amount': 'Job amount', 'advance': 'Advance payment', 'balance': 'Balance payment', 'dates': 'Work dates', 'late_or_unfinished': 'Late or unfinished'}  extras@ready []  moved by end 6
+     end extra: Geyser check h20 w21 cited_ok=True
+     end extra: Sink blockage h22 w23 cited_ok=True
+  holdout_tutor_monthly        ready 3/30 3739 ms  maths and science tuition
+     {'work': 'Tuition work', 'amount': 'Tuition fee', 'advance': 'Advance payment', 'balance': 'Final payment', 'dates': 'Tuition dates', 'late_or_unfinished': 'Missed tuition'}  extras@ready []  moved by end 6
+     end extra: Books and syllabus h23 w24 cited_ok=True
+     end extra: Address for visits h25 w26 cited_ok=True
+  demo_call_1                  ready 3/26 4949 ms  paint a flat
+     {'work': 'Flat painting', 'amount': 'Paint job price', 'advance': 'Advance payment', 'balance': 'Final payment', 'dates': 'Work dates', 'late_or_unfinished': 'Delay and finish'}  extras@ready []  moved by end 6
+  demo_call_2                  ready 6/12 3884 ms  Painting the balcony wall
+     {'work': 'Balcony wall paint', 'amount': 'Total amount', 'advance': 'Advance payment', 'balance': 'Final payment', 'dates': 'Work dates', 'late_or_unfinished': 'Late or unfinished'}  extras@ready []  moved by end 1
+     end extra: Extra balcony work h6 w7 cited_ok=True
+
+== gen luna6-v1: lint {'ready': {'labels': 120, 'long': 6, 'value': 0}, 'end': {'labels': 120, 'long': 7, 'value': 1}}
+   ready median line 3.0, never 0, latency median 3296.0 p95 6208 max 11339 (n 80)
+  call_missing_balance         ready 1/32 6357 ms  Painting
+     {'work': 'Painting work', 'amount': 'Total payment', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Painting dates', 'late_or_unfinished': 'Delay or unfinished work'}  extras@ready []  moved by end 5
+     end extra: Paint type h7 w6 cited_ok=True
+  call_two_amounts             ready 2/33 4253 ms  painting a flat
+     {'work': 'Flat painting', 'amount': 'Painting cost', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Painting dates', 'late_or_unfinished': 'Delay or unfinished work'}  extras@ready []  moved by end 3
+  demo_script_call             ready 1/18 5377 ms  Painting a two-bedroom flat
+     {'work': 'Flat painting', 'amount': 'Painting price', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Painting dates', 'late_or_unfinished': 'Delay or unfinished work'}  extras@ready []  moved by end 2
+  dry_run_call                 ready 3/24 4210 ms  Paint a two-bedroom flat
+     {'work': 'Flat painting', 'amount': 'Painting amount', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Painting dates', 'late_or_unfinished': 'Late or unfinished work'}  extras@ready []  moved by end 5
+  holdout_carpenter_call       ready 1/16 4262 ms  Building a floor-to-ceiling bedroom wardrobe
+     {'work': 'Wardrobe work', 'amount': 'Total payment', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Work dates', 'late_or_unfinished': 'Delay or unfinished work'}  extras@ready []  moved by end 3
+  second_call                  ready 7/9 4350 ms  Painting rooms
+     {'work': 'Room painting', 'amount': 'Painting labour', 'advance': 'Advance payment', 'balance': 'Remaining labour payment', 'dates': 'Painting dates', 'late_or_unfinished': 'Late or unfinished painting'}  extras@ready []  moved by end 3
+     end extra: Paint supply h6 w7 cited_ok=True
+  spike_painter_call           ready 1/30 4049 ms  painting a flat
+     {'work': 'Flat painting', 'amount': 'Painting price', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Painting dates', 'late_or_unfinished': 'Late or unfinished'}  extras@ready []  moved by end 3
+     end extra: Furniture and cleanup h25 w26 cited_ok=True
+  holdout2_ac_repair           ready 2/34 4675 ms  AC servicing and repair
+     {'work': 'AC servicing and repair', 'amount': 'Service and repair cost', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Service dates', 'late_or_unfinished': 'Delayed or unfinished work'}  extras@ready []  moved by end 5
+     end extra: Gas refill h12 w13 cited_ok=True
+     end extra: Compressor replacement h26 w27 cited_ok=True
+  holdout2_car_mechanic        ready 4/33 3998 ms  Repairing a white Swift car
+     {'work': 'Car repairs', 'amount': 'Total repair cost', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Repair dates', 'late_or_unfinished': 'Late or unfinished repairs'}  extras@ready []  moved by end 5
+     end extra: Clutch warranty h23 w24 cited_ok=False
+  holdout2_driver_monthly      ready 4/32 4191 ms  Full-time driver
+     {'work': 'Driving work', 'amount': 'Driver pay', 'advance': 'Advance pay', 'balance': 'Remaining pay', 'dates': 'Driving dates', 'late_or_unfinished': 'Missed work'}  extras@ready []  moved by end 6
+     end extra: Overtime rate h13 w12 cited_ok=True
+     end extra: Sunday work h18 w19 cited_ok=True
+     end extra: Monthly leave h22 w23 cited_ok=True
+  holdout2_mason_wall_call1    ready 3/34 4058 ms  Building a brick boundary wall with two gate pillars
+     {'work': 'Wall and pillars', 'amount': 'Total price', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Work dates', 'late_or_unfinished': 'Late or unfinished work'}  extras@ready []  moved by end 4
+  holdout2_mason_wall_call2    ready 3/31 4320 ms  Filling a foundation
+     {'work': 'Foundation filling', 'amount': 'Total payment', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Work dates', 'late_or_unfinished': 'Delay or unfinished work'}  extras@ready []  moved by end 4
+     end extra: Front wall height h10 w11 cited_ok=True
+  holdout2_tailor_lehenga      ready 3/34 4421 ms  Lehenga blouse and suits tailoring
+     {'work': 'Blouse and suits', 'amount': 'Total price', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Work dates', 'late_or_unfinished': 'Delay or unfinished work'}  extras@ready []  moved by end 4
+     end extra: Daughter’s measurements h23 w24 cited_ok=True
+  holdout_carpenter_wardrobe   ready 3/32 4357 ms  wardrobe work
+     {'work': 'Wardrobe work', 'amount': 'Wardrobe cost', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Work dates', 'late_or_unfinished': 'Late or unfinished work'}  extras@ready []  moved by end 5
+     end extra: Mirror size h21 w20 cited_ok=True
+     end extra: Work locations h19 w18 cited_ok=True
+     end extra: Bedroom power point h23 w22 cited_ok=True
+  holdout_cook_month           ready 3/33 4217 ms  Cooking
+     {'work': 'Cooking work', 'amount': 'Cooking payment', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Cooking dates', 'late_or_unfinished': 'Unfinished cooking'}  extras@ready []  moved by end 5
+     end extra: Days off h18 w19 cited_ok=True
+     end extra: Household supplies h26 w27 cited_ok=True
+  holdout_electrician_shop     ready 4/31 4837 ms  Replace the shop’s old aluminium wiring.
+     {'work': 'Shop wiring', 'amount': 'Total price', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Work dates', 'late_or_unfinished': 'Delay or unfinished work'}  extras@ready []  moved by end 5
+     end extra: Old board removal h25 w22 cited_ok=True
+     end extra: Shop key h29 w28 cited_ok=True
+  holdout_plumber_leak         ready 2/32 4220 ms  Bathroom leakage repair
+     {'work': 'Bathroom leak repair', 'amount': 'Repair cost', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Repair dates', 'late_or_unfinished': 'Delay or incomplete repair'}  extras@ready []  moved by end 5
+     end extra: Tile preparation h28 w27 cited_ok=True
+  holdout_tutor_monthly        ready 4/30 4319 ms  Maths and science tuition
+     {'work': 'Maths and science lessons', 'amount': 'Tuition fee', 'advance': 'Advance payment', 'balance': 'Remaining fee', 'dates': 'Tuition dates', 'late_or_unfinished': 'Missed lessons'}  extras@ready []  moved by end 3
+     end extra: Weekly lesson schedule h5 w4 cited_ok=True
+     end extra: Missed lesson makeup h11 w12 cited_ok=True
+  demo_call_1                  ready 3/26 4344 ms  Painting Sunita’s two-BHK flat
+     {'work': 'Flat painting', 'amount': 'Painting price', 'advance': 'Advance payment', 'balance': 'Remaining payment', 'dates': 'Painting dates', 'late_or_unfinished': 'Delay or unfinished work'}  extras@ready []  moved by end 2
+  demo_call_2                  ready 6/12 3962 ms  Painting a balcony wall
+     {'work': 'Balcony wall painting', 'amount': 'Total painting price', 'advance': 'Painting advance', 'balance': 'Remaining painting payment', 'dates': 'Painting dates', 'late_or_unfinished': 'Unfinished painting'}  extras@ready []  moved by end 5
+
+== decide static
+  topic_left_unclear   5/10  false fires 7 (5/17)
+  balance_skipped      4/4  false fires 10 (9/15)
+  unclear_any          9/10  false fires 16 (12/17)
+  addressed_gawah      5/5  false fires 1 (1/17)
+  closing_judge        14/18  false fires 0 (0/17)
+  latency {'median_ms': 1291, 'p95_ms': 1707, 'n': 477}
+
+== decide generated
+  topic_left_unclear   6/10  false fires 11 (8/17)
+  balance_skipped      4/4  false fires 16 (9/15)
+  unclear_any          9/10  false fires 25 (12/17)
+  addressed_gawah      5/5  false fires 2 (1/17)
+  closing_judge        14/18  false fires 0 (0/17)
+  latency {'median_ms': 1262, 'p95_ms': 1633, 'n': 477}
+
+== decide spike6_luna
+  topic_left_unclear   6/10  false fires 11 (7/17)
+  balance_skipped      4/4  false fires 14 (10/15)
+  unclear_any          9/10  false fires 23 (14/17)
+  addressed_gawah      5/5  false fires 1 (1/17)
+  closing_judge        14/18  false fires 0 (0/17)
+
+== decide sage2
+  topic_left_unclear   3/10  false fires 4 (3/17)
+  balance_skipped      3/4  false fires 2 (2/15)
+  unclear_any          6/10  false fires 6 (5/17)
+  addressed_gawah      5/5  false fires 2 (2/17)
+  closing_judge        18/18  false fires 10 (8/17)
+
+== items static
+  spike_painter_call: work_agreed 29/29  amount_agreed 22/22  advance_agreed 29/29  balance_when 30/30  dates_agreed 27/27  late_terms 30/30
+  holdout_carpenter_call: work_agreed 15/15  amount_agreed 11/11  advance_agreed 15/15  balance_when 15/15  dates_agreed 16/16  late_terms 16/16
+
+== items generated
+  spike_painter_call: work_agreed 29/29  amount_agreed 21/22  advance_agreed 29/29  balance_when 30/30  dates_agreed 27/27  late_terms 30/30
+  holdout_carpenter_call: work_agreed 15/15  amount_agreed 11/11  advance_agreed 15/15  balance_when 15/15  dates_agreed 16/16  late_terms 16/16
+
+usage {
+ "gen-luna": {
+  "requests": 85,
+  "tokens": {
+   "input": 120895,
+   "cached": 95284,
+   "output": 25125
+  },
+  "usd": 0.0372
+ },
+ "gen-luna6": {
+  "requests": 88,
+  "tokens": {
+   "input": 124602,
+   "cached": 98728,
+   "output": 24825
+  },
+  "usd": 0.016
+ },
+ "gen-luna-v1": {
+  "requests": 78,
+  "tokens": {
+   "input": 95198,
+   "cached": 0,
+   "output": 24198
+  },
+  "usd": 0.0481
+ },
+ "gen-mini-v1": {
+  "requests": 70,
+  "tokens": {
+   "input": 86373,
+   "cached": 0,
+   "output": 33521
+  },
+  "usd": 0.2156
+ },
+ "gen-luna6-v1": {
+  "requests": 80,
+  "tokens": {
+   "input": 97384,
+   "cached": 0,
+   "output": 23659
+  },
+  "usd": 0.0216
+ },
+ "refresh-luna6": {
+  "requests": 69,
+  "tokens": {
+   "input": 116253,
+   "cached": 78064,
+   "output": 35525
+  },
+  "usd": 0.0224
+ },
+ "decide-static": {
+  "requests": 477,
+  "tokens": {
+   "input": 453758,
+   "cached": 0,
+   "output": 19557
+  },
+  "usd": 0.1142
+ },
+ "decide-generated": {
+  "requests": 477,
+  "tokens": {
+   "input": 462891,
+   "cached": 0,
+   "output": 19557
+  },
+  "usd": 0.116
+ },
+ "items-static": {
+  "requests": 46,
+  "tokens": {
+   "input": 35038,
+   "cached": 0,
+   "output": 1932
+  },
+  "usd": 0.0093
+ },
+ "items-generated": {
+  "requests": 44,
+  "tokens": {
+   "input": 31650,
+   "cached": 0,
+   "output": 1932
+  },
+  "usd": 0.0086
+ },
+ "total": {
+  "requests": 1516,
+  "usd": 0.609
+ }
+}

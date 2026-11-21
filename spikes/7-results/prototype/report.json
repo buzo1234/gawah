@@ -1,0 +1,64 @@
+{
+ "cook": {
+  "facts": 28,
+  "static": [
+   "Work",
+   "Amount",
+   "Advance",
+   "Balance",
+   "Dates",
+   "If late or unfinished"
+  ],
+  "generated": [
+   "Meals and timings",
+   "Monthly pay",
+   "Advance",
+   "Monthly payment",
+   "Work dates",
+   "If work falls short",
+   "Monthly days off",
+   "Household groceries"
+  ],
+  "asks": {
+   "work": "Ask {who} what meals to cook and when to make them.",
+   "amount": "Ask {who} how much the monthly pay covers.",
+   "advance": "Ask {who} whether any money is paid before the work starts, and how much and when.",
+   "balance": "Ask {who} when the monthly pay is paid and what it is paid against.",
+   "dates": "Ask {who} when the work starts and finishes.",
+   "late_or_unfinished": "Ask {who} what happens if the work is late, unfinished, or not done as agreed."
+  }
+ },
+ "painter": {
+  "facts": 19,
+  "static": [
+   "Work",
+   "Amount",
+   "Advance",
+   "Balance",
+   "Dates",
+   "If late or unfinished"
+  ],
+  "generated": [
+   "Coats and putty touch-up",
+   "Total painting cost",
+   "Advance",
+   "Balance",
+   "Painting dates",
+   "If painting is late"
+  ],
+  "asks": {
+   "work": "Ask both speakers to confirm what painting work is included",
+   "amount": "Ask both speakers to confirm the total price and what it covers",
+   "advance": "Ask both speakers to confirm the advance amount and when it is paid",
+   "balance": "Ask both speakers to confirm when the rest of the payment is paid and against what",
+   "dates": "Ask both speakers to confirm when the painting starts and finishes",
+   "late_or_unfinished": "Ask both speakers to confirm what happens if the painting is late, unfinished, or not done right"
+  }
+ },
+ "errors": [
+  "log: Failed to load resource: the server responded with a status of 404 (Not Found) http://127.0.0.1:8765/actor/status?deal_id=labels-cook",
+  "log: Failed to load resource: the server responded with a status of 404 (Not Found) http://127.0.0.1:8765/actor/status?deal_id=labels-cook",
+  "log: Failed to load resource: the server responded with a status of 404 (Not Found) http://127.0.0.1:8765/actor/status?deal_id=labels-painter",
+  "log: Failed to load resource: the server responded with a status of 404 (Not Found) http://127.0.0.1:8765/actor/status?deal_id=labels-painter"
+ ]
+}
