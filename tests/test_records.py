@@ -1,7 +1,7 @@
 import pytest
 from whatsapp_world import BASE, GEETA, MOHAN, RAMESH, SCREENSHOT, SUNITA, world  # noqa: F401
 
-from app.contracts import Backing, RecordKind, Role, callback_path
+from app.contracts import Backing, RecordConfirmed, RecordKind, Role, callback_path
 from app.records import words as record_words
 from app.records.intake import yes_or_no
 from app.whatsapp import words
@@ -64,6 +64,26 @@ async def test_the_other_person_can_say_no(world):
     assert (confirmed.confirmed, confirmed.confirmed_by) == (False, Role.HIRER)
     assert world.texts_to(RAMESH)[-1] == 'Kaam dene wale ne nahi kaha. "kaam poora ho gaya" record mein bina confirm ke likha hai.'
     assert [r.confirmed for r in await world.store.records(deal_id)] == [False]
+
+
+async def test_a_yes_on_the_call_back_closes_the_question_and_tells_the_sender(world):
+    deal_id = await world.start_deal()
+    await world.say(SUNITA, "2000 cash diya", name="Sunita")
+    [asked] = world.named("record.confirm_requested")
+    to_ramesh = len(world.sent_to(RAMESH))
+
+    # What mouth publishes when Ramesh says yes on his call-back.
+    record = asked.record.model_copy(update={"confirmed": True})
+    world.bus.publish(RecordConfirmed(deal_id=deal_id, record_id=asked.record_id, confirmed_by=Role.WORKER, record=record))
+    await world.settle()
+    assert world.texts_to(SUNITA)[-1] == 'Kaam karne wale ne haan kaha. "2000 cash diya" record mein confirm ho gaya.'
+    assert len(world.sent_to(RAMESH)) == to_ramesh  # he was on the call: nothing to tell him
+
+    await world.say(RAMESH, "haan")  # the question is closed, so this is not taken as a second answer
+    assert len(world.named("record.confirmed")) == 1
+    await world.clock.advance(1000)
+    await world.settle()
+    assert world.named("reply.timeout") == []
 
 
 async def test_no_answer_in_time_raises_reply_timeout_and_sends_one_follow_up(world):

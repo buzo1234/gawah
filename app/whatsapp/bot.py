@@ -197,12 +197,13 @@ class Bot:
                 url = url or (await self._sign(key) if key else None)
             except Exception as error:
                 log.error("could not make a link for %s: %s", key, type(error).__name__)
-            if url:
-                files.append((url, kind or mimetypes.guess_type(urlsplit(url).path)[0]))
-        if not files:
+            files.append((url, kind or mimetypes.guess_type(urlsplit(url).path)[0]) if url else None)
+        if not any(files):
             log.warning("contract.ready carried no file to send")
+        line = words.contract(pdf=files[0] is not None, voice=files[1] is not None)
+        files = [f for f in files if f]
         for person in await self._people(event.deal_id, []):
-            self.outbox.send(event.deal_id, person.phone, person.role, words.CONTRACT)
+            self.outbox.send(event.deal_id, person.phone, person.role, line)
             # Sent as separate messages: WhatsApp gives a document or a voice note no caption.
             for url, media_type in files:
                 self.outbox.send(event.deal_id, person.phone, person.role, media_url=url, media_type=media_type)

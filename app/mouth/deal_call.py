@@ -146,6 +146,12 @@ class DealCall:
     def _drop(self, job: _Job, why: str) -> None:
         self.log.info("not said (%s): %s", why, job.what)
         self.outcomes.append({"what": job.what, "said": False, "why": why})
+        if job.speak:
+            # No words and no start time: nothing went into the room. The brain stops waiting for it.
+            speak = job.speak
+            self.bus.publish(JudgeSpoke(
+                deal_id=self.deal_id, text="", speak_id=speak.event_id, to=speak.to, reason=speak.reason, item=speak.item,
+            ))
 
     async def _say(self, job: _Job) -> None:
         def late() -> bool:

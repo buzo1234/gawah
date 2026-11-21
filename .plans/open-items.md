@@ -11,7 +11,7 @@ Last updated: 21 November 2026.
 | 1 | **Real WhatsApp sends are refused.** Twilio answers error 21654 ("ContentSid Required") to every free-form message to the real phone. Nothing has reached a real phone. Next step: tunnel up, sandbox webhook address set in the Twilio console, the real phone sends a normal message, then retry. Fallback: Meta's test number. | PR 3 | Open |
 | 2 | **Speech detection fails on real microphones.** A plain loudness threshold treats room noise as speech: Gawah was cut off 3 times out of 3 with nobody speaking. Earphones were in, so this was room noise and not echo. Both `bridge` and `mouth` now use a speech detector plus each person's own noise floor: no false cut-offs on noise and clicks in their tests. Needs the phone check repeated once both are merged. | The user's phone check | In review (PRs 10, 11) |
 | 3 | **`bridge` and `mouth` are built, not merged.** No real call has run through the whole product yet. | - | In review (PRs 10, 11) |
-| 4 | **The streams have never run together on a real call.** The whole-flow test covers WhatsApp, brain, and records on fakes. | PR 9 | Open |
+| 4 | **The streams have never run together on a real call.** The whole-flow test now covers every stream on fakes, and one dry run walked the demo on the real services with simulated phones (see `REPORT.md` of the e2e branch). A run with a person is still to do. | PR 9 | In progress |
 
 ## Should fix before the demo
 
@@ -21,12 +21,12 @@ Last updated: 21 November 2026.
 | 11 | **Wrap-up is detected late on one practice call**, about two seconds before the call ends. | PR 4 | Open |
 | 12 | **An amount said only once can be misheard.** "Seventeen thousand" came back as "seventy thousand" in 42 of 43 runs. The read-back and the call-back are the protection; check the Judge really reads figures back. | PR 7 | Open |
 | 13 | **The phone mutes its microphone** when the screen locks or the page goes to the background. The call page should keep the screen awake and say so. | The user's phone check | In progress |
-| 14 | **WhatsApp says "PDF below" with nothing attached** when the contract event has no usable file. | PR 9 | Open |
+| 14 | **WhatsApp says "PDF below" with nothing attached** when the contract event has no usable file. Now the line names only what is attached, and says so when nothing could be. | PR 9 | Fixed (e2e) |
 | 15 | **Nobody has listened to the contract's voice summary.** It was checked by transcribing it back. | PR 6 | Open |
 | 16 | **Echo.** Whether Gawah's own voice coming out of a loudspeaker cuts it off has not been tested. The user's check had earphones in, so it is still open. | PR 8, PR 11 | Open |
 | 17 | **A sudden jump in room noise** (a fan switching on) while Gawah speaks can still cut it off. | PR 11 | Open |
-| 18 | **A record confirmed on the call-back is not reported on WhatsApp.** `app/records` does not listen for `record.confirmed` from the call-back, so the sender is not told, and a later "haan" on WhatsApp would answer it again. | PR 11 | Open |
-| 19 | **A dropped question publishes nothing**, so the brain waits out its 12-second timeout before asking anything else. | PR 11 | Open |
+| 18 | **A record confirmed on the call-back is not reported on WhatsApp.** `app/records` does not listen for `record.confirmed` from the call-back, so the sender is not told, and a later "haan" on WhatsApp would answer it again. Records now closes the question and tells the sender. | PR 11 | Fixed (e2e) |
+| 19 | **A dropped question publishes nothing**, so the brain waits out its 12-second timeout before asking anything else. Mouth now sends an empty `judge.spoke` with no start time; the brain stops waiting and does not count it as heard. | PR 11 | Fixed (e2e) |
 | 20 | **Nobody has listened to Gawah's voice samples** in `fixtures/mouth-samples/`. | PR 11 | Open |
 
 ## Accepted for the demo

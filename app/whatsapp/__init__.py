@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException, Request, Response
 
 from app.bus import Bus
 from app.config import Settings
-from app.contracts import WHATSAPP_WEBHOOK_PATH, CallEnded, ContractReady, ReplyTimeout
+from app.contracts import WHATSAPP_WEBHOOK_PATH, CallEnded, ContractReady, RecordConfirmed, ReplyTimeout
 from app.records.intake import Intake
 from app.records.reader import Reader
 from app.store import S3, Store
@@ -31,6 +31,7 @@ def wire(
     bus.subscribe(CallEnded, bot.on_call_ended)
     bus.subscribe(ContractReady, bot.on_contract_ready)
     bus.subscribe(ReplyTimeout, bot.on_reply_timeout)
+    bus.subscribe(RecordConfirmed, intake.on_confirmed)
     return bot
 
 

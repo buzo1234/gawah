@@ -2,22 +2,28 @@
 in one process with every outside service replaced by a fake (tests/offline.py).
 
 Each stream's own tests pass with the other streams absent. This is the guard for what
-happens between them. When a stream is merged, fill in its step below where the comment
-marks it, and put the fake for its outside service in tests/offline.py.
+happens between them: whatsapp, bridge, brain, mouth (the deal call and the call-back),
+contract, records, and the dashboard, each reached the way the real thing reaches it.
 """
 
 import asyncio
 import logging
+from datetime import UTC, datetime
 
 import httpx
 import pytest
 
+from app.call.session import Limits
 from app.contracts import (
-    WHATSAPP_WEBHOOK_PATH, Backing, ChecklistUpdated, ContractReady, DealRequested, DealStatus,
-    Direction, Event, ItemKey, ItemState, JudgeSpeak, RecordConfirmed, RecordConfirmRequested,
-    RecordReceived, Role, TermsConfirmed, TranscriptLine, WhatsAppMessage, call_path, callback_path,
+    WHATSAPP_WEBHOOK_PATH, Backing, CallEnded, CallKind, CallStarted, ChecklistUpdated, ContractReady,
+    DealRequested, DealStatus, Direction, Event, ItemKey, ItemState, JudgeSpeak, JudgeSpoke, RecordConfirmed,
+    RecordConfirmRequested, RecordReceived, ReplyTimeout, Role, TermsConfirmed, TranscriptLine, WhatsAppMessage,
+    call_path, callback_path,
 )
-from fakes.replayer import load, replay
+from app.records import words as record_words
+from app.whatsapp import words
+from fakes.replayer import load
+from tests.mouth import sounds
 from tests.offline import offline_app
 from tests.whatsapp_world import FakeClock
 
@@ -31,7 +37,7 @@ class Flow:
 
     def __init__(self, app, client: httpx.AsyncClient, clock: FakeClock) -> None:
         self.app, self.client, self.clock = app, client, clock
-        self.bus, self.store = app.state.bus, app.state.store
+        self.bus, self.store, self.voice = app.state.bus, app.state.store, app.state.fake_voice
         self.events: list[Event] = []
         self.bus.subscribe_all(self._keep)
 
@@ -50,15 +56,17 @@ class Flow:
         assert response.status_code == 200, response.text
         await self.settle()
 
-    async def until(self, kind: type[Event]) -> None:
-        """Wait for work a stream does in its own task to end in an event of this kind."""
-        async with asyncio.timeout(5):
-            while not self.of(kind):
+    async def until(self, found, timeout: float = 5.0):
+        """Wait for work a stream does in its own task. found: an event kind, or a test."""
+        test = (lambda: self.of(found)) if isinstance(found, type) else found
+        async with asyncio.timeout(timeout):
+            while not test():
                 await asyncio.sleep(0.01)
         await self.settle()
+        return test()
 
-    def of(self, kind: type[Event]) -> list:
-        return [e for e in self.events if isinstance(e, kind)]
+    def of(self, event_type: type[Event], **match) -> list:
+        return [e for e in self.events if isinstance(e, event_type) and all(getattr(e, k) == v for k, v in match.items())]
 
     def sent_to(self, role: Role) -> list[str]:
         """What Gawah has sent this person on WhatsApp, oldest first: each text, or a file's link."""
@@ -67,11 +75,31 @@ class Flow:
             if m.direction is Direction.OUT and m.phone == PHONE[role]
         ]
 
+    async def call_back(self, deal_id: str, role: Role, answers: list[tuple[str, dict]]) -> CallEnded:
+        """The person opens their call-back link and taps join; the test plays the voice model,
+        which greets them, reports each answer with a tool, and says goodbye."""
+        page = await self.client.get(callback_path(deal_id, role))
+        assert page.status_code == 200
+        joined = await self.client.post(callback_path(deal_id, role) + "/join")
+        assert joined.status_code == 200, joined.text
+        seat, link = self.voice.seats[-1], self.voice.links[-1]
+        assert joined.json()["token"] == f"token:{seat.room}:{role.value}"
+        seat.hears(role.value, sounds.silence(0.1))  # their microphone comes on
+        await self.until(lambda: link.of("response.create"))
+        await link.says("Namaste, main Gawah hoon.")
+        for name, args in answers:
+            await link.calls(name, said="haan ji", **args)
+        await link.says("Shukriya, namaste.")
+        [ended] = await self.until(lambda: self.of(CallEnded, kind=CallKind.CALLBACK, room=seat.room))
+        assert seat.gone and seat.room in self.voice.rooms.deleted
+        return ended
+
 
 @pytest.fixture
 async def flow(tmp_path):
     clock = FakeClock()
     app = offline_app(tmp_path / "test.db", clock)
+    app.state.calls.limits = Limits(gone=0.15, empty=0.05, max_age=30)  # real seconds, so short ones
     transport = httpx.ASGITransport(app=app)
     async with app.router.lifespan_context(app), httpx.AsyncClient(transport=transport, base_url="http://gawah.test") as client:
         yield Flow(app, client, clock)
@@ -79,18 +107,39 @@ async def flow(tmp_path):
 
 async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog):
     # whatsapp: the hirer sends the worker's number. That makes the deal, and both get a call link.
-    await flow.whatsapp(Role.HIRER, PHONE[Role.WORKER].removeprefix("+91"), name="Asha")
+    await flow.whatsapp(Role.HIRER, PHONE[Role.WORKER].removeprefix("+91"), name="Sunita")
     [requested] = flow.of(DealRequested)
     deal_id = requested.deal_id
     assert (requested.requested_by.phone, requested.other.phone) == (PHONE[Role.HIRER], PHONE[Role.WORKER])
     for role in Role:
         assert call_path(deal_id, role) in flow.sent_to(role)[-1]
 
-    # bridge (not merged): a practice call replayed into the deal stands in for the real call.
-    # Once bridge is in, also check here that call_path(deal_id, role) serves its call page.
-    await replay(flow.bus, CALL, speed=0, deal_id=deal_id)
+    # bridge: each opens their link and taps join. With both in the room the call starts.
+    for role in Role:
+        assert (await flow.client.get(call_path(deal_id, role))).status_code == 200
+        joined = await flow.client.post(call_path(deal_id, role) + "/join")
+        assert joined.status_code == 200, joined.text
+        flow.app.state.calls.livekit.open[f"deal-{deal_id}"].joined(role.value)
     await flow.settle()
-    assert {e.deal_id for e in flow.of(TranscriptLine)} == {deal_id}
+    [started] = flow.of(CallStarted)
+    assert (started.kind, started.room) == (CallKind.DEAL, f"deal-{deal_id}")
+    assert {p.role: p.phone for p in started.people} == PHONE
+
+    # mouth: Gawah takes its seat in the same room and, once it hears both, says its opening line.
+    seat = (await flow.until(lambda: flow.voice.seats))[0]
+    assert seat.room == started.room
+    for role in Role:
+        seat.hears(role.value, sounds.room_noise(1.0, -50))
+    [opening] = await flow.until(lambda: flow.of(JudgeSpoke))
+    assert opening.speak_id is None and "record ho rahi hai" in flow.voice.links[0].of("response.create")[0]["response"]["instructions"]
+
+    # The practice call's lines, as the ears send them. Whenever the brain asks something,
+    # the next line waits until Gawah has said it, as people do when Gawah speaks.
+    for line in load(CALL)["lines"]:
+        flow.bus.publish(TranscriptLine(deal_id=deal_id, **line))
+        await flow.settle()
+        for speak in flow.of(JudgeSpeak):
+            await flow.until(lambda: flow.of(JudgeSpoke, speak_id=speak.event_id))
 
     # brain: the checklist fills in, and the Judge asks about the balance nobody brought up.
     expected = [e for e in load(CALL)["expected"] if "live" in e["modes"]]
@@ -101,33 +150,46 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     assert final.pop(ItemKey.BALANCE).state is ItemState.PENDING
     assert all(item.state is ItemState.AGREED and item.value for item in final.values())
 
-    # mouth (not merged): every judge.speak above should be answered by a judge.spoke.
+    # mouth: each judge.speak was said in the room, in call seconds counted from call.started.
+    since_start = (datetime.now(UTC) - started.ts).total_seconds()
+    for speak in speaks:
+        [spoke] = flow.of(JudgeSpoke, speak_id=speak.event_id)
+        assert (spoke.item, spoke.reason, spoke.to, spoke.interrupted) == (speak.item, speak.reason, speak.to, False)
+        assert spoke.text and 0 <= opening.end <= spoke.start < spoke.end <= since_start
 
-    # whatsapp: after call.ended both get their call-back link. The deal's people are still
-    # the two who made it on WhatsApp, not the two named in the practice call.
+    # bridge: both hang up, the room closes, and call.ended carries each person's recording.
+    room = flow.app.state.calls.livekit.open[started.room]
+    for role in Role:
+        room.left(role.value)
+    [ended] = await flow.until(lambda: flow.of(CallEnded, kind=CallKind.DEAL))
+    assert set(ended.recording_keys) == {"hirer", "worker"}
+    assert started.room in flow.app.state.calls.livekit.deleted
+    await flow.until(lambda: seat.gone)  # and Gawah left with it
+
+    # whatsapp: after call.ended both get their call-back link. The deal keeps the people who
+    # made it on WhatsApp; the worker's name is still unknown (open item 10).
     for role in Role:
         assert callback_path(deal_id, role) in flow.sent_to(role)[-1]
     deal = await flow.store.deal(deal_id)
     assert deal.status is DealStatus.CALL_ENDED
     assert {p.role: (p.name, p.phone) for p in deal.people} == {
-        Role.HIRER: ("Asha", PHONE[Role.HIRER]), Role.WORKER: ("Ramesh", PHONE[Role.WORKER]),
+        Role.HIRER: ("Sunita", PHONE[Role.HIRER]), Role.WORKER: (None, PHONE[Role.WORKER]),
     }
 
-    # mouth (not merged): each person's call-back ends in terms.confirmed. Published by hand
-    # here; once mouth is in, drive its call-back instead.
+    # mouth: each person's call-back reads every agreed term, they agree, and it ends in terms.confirmed.
+    agreed = [i.key.value for i in flow.of(ChecklistUpdated)[-1].items if i.state is ItemState.AGREED]
     for role in Role:
-        flow.bus.publish(TermsConfirmed(deal_id=deal_id, person=role, said="haan, sab sahi hai"))
+        await flow.call_back(deal_id, role, [("term_answer", {"item": key, "agrees": True}) for key in agreed])
+    assert [(e.person, e.item) for e in flow.of(TermsConfirmed)] == [(Role.HIRER, None), (Role.WORKER, None)]
 
     # contract: both have confirmed, so the contract is written from the brain's checklist,
-    # and whatsapp sends each person the PDF and the spoken summary.
-    await flow.until(ContractReady)
-    [ready] = flow.of(ContractReady)
+    # and whatsapp sends each person a line, the PDF and the spoken summary.
+    [ready] = await flow.until(ContractReady)
     assert {i.key for i in ready.items if i.state is ItemState.AGREED} == set(ItemKey) - {ItemKey.BALANCE}
     assert ready.pdf_url and ready.voice_summary_url and ready.text
     for role in Role:
-        assert flow.sent_to(role)[-2:] == [ready.pdf_url, ready.voice_summary_url]
+        assert flow.sent_to(role)[-3:] == [words.CONTRACT, ready.pdf_url, ready.voice_summary_url]
     assert (await flow.store.deal(deal_id)).status is DealStatus.CONTRACT_READY
-    assert {m.phone for m in flow.of(WhatsAppMessage)} == set(PHONE.values())
 
     # records: cash is one person's word, so the worker is asked, and "haan" confirms it.
     await flow.whatsapp(Role.HIRER, "2000 cash diya")
@@ -140,11 +202,28 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     await flow.whatsapp(Role.WORKER, "haan")
     [confirmed] = flow.of(RecordConfirmed)
     assert (confirmed.record_id, confirmed.confirmed_by, confirmed.confirmed) == (received.record.id, Role.WORKER, True)
-    assert [r.confirmed for r in await flow.store.records(deal_id)] == [True]
+
+    # records and mouth: the worker says the work is done; the hirer does not answer, so she
+    # gets a call-back link, and confirms it there. The worker is told on WhatsApp.
+    await flow.whatsapp(Role.WORKER, "kaam poora ho gaya")
+    [_, done] = flow.of(RecordConfirmRequested)
+    assert done.confirm_by is Role.HIRER
+    await flow.clock.advance(flow.app.state.settings.reply_timeout_seconds)
+    await flow.until(ReplyTimeout)
+    assert callback_path(deal_id, Role.HIRER) in flow.sent_to(Role.HIRER)[-1]
+    await flow.call_back(deal_id, Role.HIRER, [("record_answer", {"confirmed": True})])
+    [_, by_call] = flow.of(RecordConfirmed)
+    assert (by_call.record_id, by_call.confirmed_by, by_call.confirmed) == (done.record_id, Role.HIRER, True)
+    assert flow.sent_to(Role.WORKER)[-1] == record_words.answer_for_sender(
+        deal.person(Role.HIRER), done.record.model_copy(update={"confirmed": True}), True
+    )
+    assert [r.confirmed for r in await flow.store.records(deal_id)] == [True, True]
+    assert {m.phone for m in flow.of(WhatsAppMessage)} == set(PHONE.values())
 
     # dashboard: a fresh page load gets the deal's people and every event above, in order.
+    await flow.settle()
     state = (await flow.client.get("/dashboard/state", params={"deal": deal_id})).json()
-    assert state["deals"][0]["names"] == {"hirer": "Asha", "worker": "Ramesh"}
+    assert state["deals"][0]["names"]["hirer"] == "Sunita"
     assert state["events"] == [e.model_dump(mode="json") for e in flow.events]
 
     # No stream raised on an event or logged an error anywhere along the way.

@@ -129,6 +129,18 @@ async def test_the_contract_goes_to_both_people_as_a_line_a_pdf_and_a_voice_summ
         ]
 
 
+async def test_the_contract_line_names_only_the_files_really_attached(world):
+    deal_id = await world.start_deal()
+    world.bus.publish(ContractReady(deal_id=deal_id, pdf_key="contracts/x.pdf", voice_summary_url="https://s3.example/c.ogg?sig=1"))
+    await world.settle()  # the key cannot be signed here: the test settings have no bucket
+    assert [(e.text, e.media_url) for e in world.sent_to(SUNITA)[1:]] == [
+        (words.CONTRACT_VOICE_ONLY, None), (None, "https://s3.example/c.ogg?sig=1"),
+    ]
+    world.bus.publish(ContractReady(deal_id=deal_id, text="contract"))
+    await world.settle()
+    assert world.texts_to(RAMESH)[-1] == words.CONTRACT_NO_FILE and "PDF" not in words.CONTRACT_NO_FILE
+
+
 def _form(sender: str, body: str) -> dict[str, str]:
     return {"From": f"whatsapp:{sender}", "To": "whatsapp:+17370000000", "Body": body, "NumMedia": "0", "MessageSid": "SM1"}
 

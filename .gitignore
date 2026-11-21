@@ -10,3 +10,4 @@ __pycache__/
 *.sqlite3
 recordings/
 .DS_Store
+runs/

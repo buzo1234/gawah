@@ -46,10 +46,13 @@ LiveKit and Twilio are on free plans with monthly allowances. Using them up in t
 |---|---|
 | Install | `uv sync` |
 | Run the server | `uv run uvicorn app.main:app --reload --port 8000` |
+| Start a real run: fresh database in `runs/`, a tunnel, the server (no `--reload`), every service checked; prints the dashboard and the webhook address for Twilio. Ctrl-C stops it all and deletes rooms it opened. The steps are in `tools/DEMO-RUN.md` | `uv run python tools/demo.py` |
+| Only check the outside services (one read-only call each, nothing billed) | `uv run python tools/demo.py --check` |
+| Rehearse the whole demo with no person, against a running `tools/demo.py`: simulated phones, two headless browsers on the call, one on each call-back (about 25 LiveKit participant-minutes and one Sage2 call) | `uv run python tools/dry_run.py` |
 | Run the tests | `uv run pytest -q` |
 | Replay a practice call into the running server, at real speed | `uv run python -m fakes.replayer fixtures/<call>.json` |
 | Replay it faster (10 = ten times faster, 0 = no waiting) | `uv run python -m fakes.replayer fixtures/<call>.json --speed 10` |
-| Run the server with every outside service faked: no `.env`, no keys, every phone simulated, no Chrome or S3 for the contract | `uv run python -m tests.offline --port 8000` |
+| Run the server with every outside service faked: no `.env`, no keys, every phone simulated, a fake LiveKit and voice model, every call answered from the brain's saved answers, no Chrome or S3 for the contract | `uv run python -m tests.offline --port 8000` |
 | Watch events live | open `http://localhost:8000/dashboard` |
 | Watch events live in a terminal, one JSON object per line | `uv run python -m fakes.tail` |
 | Public address for webhooks | `cloudflared tunnel --url http://localhost:8000` |
@@ -65,7 +68,7 @@ The contract stream prints its PDF with a headless Chrome-family browser already
 
 The practice calls are `fixtures/call_missing_balance.json` and `fixtures/call_two_amounts.json`. The replayer and the tail need the server running, and both take the same `--url` (default `http://localhost:8000`). In a test, replay straight onto a bus instead: `await replay(bus, "fixtures/<call>.json", speed=0)` from `fakes.replayer`.
 
-The brain answers a replayed or fake call (room `replay-...` or `fake-...`) from the saved answers in `tests/brain/recorded/`, so it never reaches live Sage2 or OpenAI. It finds them by what is said: a saved call answers for as long as every line so far is the line it was recorded on. The deal id does not matter, so `--deal-id <id>` replays a practice call into a deal that was started on WhatsApp. That deal keeps its own people: a call fills in a name or phone the deal does not have, and never replaces one.
+The brain answers a replayed or fake call (room `replay-...` or `fake-...`) from the saved answers in `tests/brain/recorded/`, so it never reaches live Sage2 or OpenAI. It finds them by what is said: a saved call answers for as long as every line so far has the words it was recorded on (whoever is named as saying them). The offline app (`tests/offline.py`) gives every call these answers, whatever its room. The deal id does not matter, so `--deal-id <id>` replays a practice call into a deal that was started on WhatsApp. That deal keeps its own people: a call fills in a name or phone the deal does not have, and never replaces one.
 A call that says anything else gets no saved answers and the brain stays quiet: the checklist stays all pending and no `judge.speak` is sent. So if you change a practice call, record it again (`tests/brain/record.py`).
 The mouth stays out of a replayed or fake call (room `replay-...` or `fake-...`): it joins no room, opens no voice connection, and sends no `judge.spoke`.
 To send a replay to the live services, start the server with `BRAIN_LIVE_REPLAYS=1` set in the shell (it is not read from `.env`). Each replayed line is then one billed Sage2 update, so count them.

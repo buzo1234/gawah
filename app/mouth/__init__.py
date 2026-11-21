@@ -1,7 +1,8 @@
 """Stream: mouth. Gawah's voice on the deal call, and the one-to-one call-back.
 
 On the deal call it listens to call.started, call.ended, judge.speak and checklist.updated,
-and sends judge.spoke. On the call-back it sends call.started and call.ended (kind
+and sends judge.spoke (an empty one with no start time for a question it dropped, so the
+brain stops waiting). On the call-back it sends call.started and call.ended (kind
 callback), record.confirmed, terms.confirmed and terms.disputed.
 
 - tuning.py     every delay, threshold and persona
@@ -41,6 +42,7 @@ class Mouth:
 
     def __init__(self, bus: Bus, make_seat: Callable, make_link: Callable) -> None:
         self.bus, self.make_seat, self.make_link = bus, make_seat, make_link
+        self.rooms: Callable = lambda: None  # the call-back's rooms; set by register
         self.calls: dict[str, DealCall] = {}
         self._ending: set[asyncio.Task] = set()
         # One subscription for everything, so a call's events are handled in order.
@@ -108,6 +110,11 @@ def register(app: FastAPI, bus: Bus) -> None:
         return Realtime(settings.require("openai_api_key"), config, on_event, call_log)
 
     mouth = Mouth(bus, make_seat, make_link)
+    mouth.rooms = rooms
     app.state.mouth = mouth
     app.state.on_shutdown.append(mouth.close)
-    callback.register(app, bus, rooms, make_seat, make_link)
+    # Through the Mouth, so tests/offline.py can swap all three for fakes once the app is built.
+    callback.register(
+        app, bus, lambda: mouth.rooms(), lambda log: mouth.make_seat(log),
+        lambda config, on_event, log: mouth.make_link(config, on_event, log),
+    )

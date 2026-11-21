@@ -112,6 +112,10 @@ class Session:
         speak = self.speaks.get(event.speak_id or "") or (list(self.speaks.values()) or [None])[-1]
         if speak is None:
             return
+        if not event.text and event.start is None:
+            # The mouth dropped it unsaid: stop waiting, and do not count it as a question heard.
+            self.judge.waiting_since = None
+            return
         now = self.lines[-1].end if self.lines else 0.0
         self.judge.spoke(max(now, event.end or 0.0), speak.reason is not SpeakReason.ADDRESSED_DIRECTLY)
         if speak.item:
@@ -155,7 +159,12 @@ class Session:
                 k for k in (ItemKey.AMOUNT, ItemKey.ADVANCE)
                 if self.items[k].state is ItemState.AGREED and not yes(self.answers, ITEM_QUESTION[k])
             ]
-            key = dropped[0] if dropped else ItemKey.AMOUNT
+            if not dropped:
+                # Nothing says which term: guessing would wipe a term both agreed. The
+                # read-back and the call-back are there to catch a real second figure.
+                self.log.info("two figures said at line %s, but nothing says for which term: left as is", self.lines[-1].no)
+                return
+            key = dropped[0]
         figures = [f for f in map(lambda v: _text(v, 40), got.get("figures") or []) if f][:2]
         self.conflicts[key] = figures if len(figures) == 2 else []
         self.tries[key] = 0

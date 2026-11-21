@@ -122,6 +122,21 @@ class Intake:
         self.outbox.send(ask.deal_id, ask.answerer.phone, ask.answerer.role, words.ANSWER_NOTED)
         return True
 
+    async def on_confirmed(self, event: RecordConfirmed) -> None:
+        """An answer given somewhere else (the call-back): close the question and tell the
+        sender, as a yes or no on WhatsApp does. An answer taken here has already closed it."""
+        for asks in self._asks.values():
+            ask = next((a for a in asks if a.deal_id == event.deal_id and a.record.id == event.record_id), None)
+            if ask:
+                asks.remove(ask)
+                ask.timer.cancel()
+                record = ask.record.model_copy(update={"confirmed": event.confirmed})
+                self.outbox.send(
+                    ask.deal_id, ask.sender.phone, ask.sender.role,
+                    words.answer_for_sender(ask.answerer, record, event.confirmed),
+                )
+                return
+
     async def _wait(self, ask: Ask) -> None:
         await self.clock.sleep(self.timeout_seconds)
         # The question stays open after this: a late yes or no still counts.

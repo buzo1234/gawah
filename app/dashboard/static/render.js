@@ -111,7 +111,8 @@ function renderWhy(state, entering) {
       h("dl", {},
         after && [h("dt", {}, "Right after"), h("dd", { class: "clamp" }, after)],
         h("dt", {}, "Told to ask"), h("dd", {}, `${d.instruction} (to ${nameOf(state, d.to)})`),
-        d.spoken && [h("dt", {}, "Gawah said"), h("dd", {}, `“${d.spoken}”${d.interrupted ? " (cut off)" : ""}`)]));
+        d.spoken && [h("dt", {}, "Gawah said"), h("dd", {}, `“${d.spoken}”${d.interrupted ? " (cut off)" : ""}`)],
+        d.dropped && [h("dt", {}, "Gawah said"), h("dd", {}, "Nothing: the moment passed")]));
   });
   $("decisions").replaceChildren(...(cards.length ? cards
     : [empty("Gawah has not spoken. It stays silent until it decides a question is needed.")]));
