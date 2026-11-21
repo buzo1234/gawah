@@ -7,7 +7,7 @@
     "item": "work",
     "kind": "other",
     "stance": "recall",
-    "text": "Irfan says the hirer had mentioned a geyser job.",
+    "text": "Irfan says the caller had mentioned a geyser job.",
     "value": null,
     "rupees": null,
     "figure": "whole",
@@ -22,53 +22,40 @@
     "item": "work",
     "kind": "other",
     "stance": "state",
-    "text": "Ramakant says the bathroom geyser is not heating and it is a Racold geyser.",
+    "text": "Ramakant says the bathroom geyser is not heating and it is a Racold geyser six years old.",
     "value": null,
     "rupees": null,
     "figure": "whole",
     "date": null,
-    "quote": "Haan Irfan. Bathroom wala geyser garam hi nahi kar raha. Racold ka hai, chhe saal purana hai.",
+    "quote": "Haan Irfan. Bathroom wala geyser garam hi nahi kar raha. Racold ka hai, chhe saal purana.",
     "accepts_line": null,
     "contradicts": null
    }
   ],
   "Thermostat ya element hoga. Aake dekhna padega. Visit aur thermostat badalne ka 800 lagega.": [
    {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Irfan says he will need to come and check, and the job is replacing the thermostat.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Thermostat ya element hoga. Aake dekhna padega. Visit aur thermostat badalne ka 800 lagega.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
     "item": "amount",
-    "kind": "change",
+    "kind": "term",
     "stance": "offer",
     "text": "Irfan says the visit and thermostat replacement will cost 800 rupees.",
     "value": "800 rupees",
     "rupees": 800,
     "figure": "whole",
     "date": null,
-    "quote": "Visit aur thermostat badalne ka 800 lagega.",
-    "accepts_line": null,
-    "contradicts": null
-   },
-   {
-    "item": "work",
-    "kind": "other",
-    "stance": "state",
-    "text": "Irfan says it will be necessary to come and look at the geyser.",
-    "value": null,
-    "rupees": null,
-    "figure": "whole",
-    "date": null,
-    "quote": "Aake dekhna padega.",
-    "accepts_line": null,
-    "contradicts": null
-   },
-   {
-    "item": "work",
-    "kind": "other",
-    "stance": "state",
-    "text": "Irfan says the problem may be the thermostat or the element.",
-    "value": null,
-    "rupees": null,
-    "figure": "whole",
-    "date": null,
-    "quote": "Thermostat ya element hoga.",
+    "quote": "Thermostat ya element hoga. Aake dekhna padega. Visit aur thermostat badalne ka 800 lagega.",
     "accepts_line": null,
     "contradicts": null
    }
@@ -78,9 +65,9 @@
     "item": "amount",
     "kind": "other",
     "stance": "recall",
-    "text": "Ramakant says 800 is too much, mentioning that someone did it for 500 last time.",
-    "value": "800 rupees",
-    "rupees": 800,
+    "text": "Ramakant says 800 is too much and says someone did it for 500 last time.",
+    "value": "500 rupees",
+    "rupees": 500,
     "figure": "whole",
     "date": null,
     "quote": "800 to bahut zyada hai bhai, pichhli baar 500 mein kiya tha kisi ne.",
@@ -91,14 +78,27 @@
   "Uncle naya thermostat hi 400 ka aata hai. Chaliye 650 kar dijiye.": [
    {
     "item": "amount",
+    "kind": "other",
+    "stance": "state",
+    "text": "Irfan says a new thermostat itself costs 400 rupees.",
+    "value": "400 rupees",
+    "rupees": 400,
+    "figure": "whole",
+    "date": null,
+    "quote": "Uncle naya thermostat hi 400 ka aata hai.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "amount",
     "kind": "change",
     "stance": "offer",
-    "text": "The worker says the job amount should be 650 rupees.",
+    "text": "Irfan offers to do the job for 650 rupees.",
     "value": "650 rupees",
     "rupees": 650,
     "figure": "whole",
     "date": null,
-    "quote": "Uncle naya thermostat hi 400 ka aata hai. Chaliye 650 kar dijiye.",
+    "quote": "Chaliye 650 kar dijiye.",
     "accepts_line": null,
     "contradicts": "amount@1.3"
    }
@@ -108,23 +108,23 @@
     "item": "amount",
     "kind": "change",
     "stance": "accept",
-    "text": "The hirer accepts the 650 rupees price.",
+    "text": "Ramakant accepts the 650 rupees price proposed by Irfan.",
     "value": "650 rupees",
     "rupees": 650,
     "figure": "whole",
     "date": null,
     "quote": "Theek hai, 650. Kal subah aa jaoge?",
     "accepts_line": 5,
-    "contradicts": null
+    "contradicts": "amount@1.5"
    }
   ],
   "Haan kal subah das baje tak aa jaunga. Agar element bhi jala hua nikla to 1,200 alag lagega.": [
    {
     "item": "dates",
-    "kind": "other",
+    "kind": "term",
     "stance": "state",
-    "text": "The worker says he will come tomorrow morning by 10 o'clock.",
-    "value": null,
+    "text": "Irfan says he will come tomorrow morning by 10 a.m.",
+    "value": "start tomorrow morning, finish null",
     "rupees": null,
     "figure": "whole",
     "date": null,
@@ -134,9 +134,9 @@
    },
    {
     "item": "amount",
-    "kind": "other",
-    "stance": "offer",
-    "text": "The worker says that if the element is also burned out, an extra 1,200 rupees will be charged.",
+    "kind": "term",
+    "stance": "state",
+    "text": "Irfan says that if the element is also burnt out, 1,200 rupees will be charged separately.",
     "value": "1,200 rupees extra",
     "rupees": 1200,
     "figure": "addition",
@@ -150,15 +150,28 @@
    {
     "item": "amount",
     "kind": "other",
-    "stance": "recall",
-    "text": "The hirer says the 1,200-rupee charge can be discussed later.",
+    "stance": "state",
+    "text": "Ramakant says the 1,200-rupee extra will be discussed later.",
     "value": "1,200 rupees",
     "rupees": 1200,
+    "figure": "addition",
+    "date": null,
+    "quote": "1,200 wala baad mein dekhenge, pehle thermostat lagao.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "state",
+    "text": "Ramakant says to do the thermostat replacement first.",
+    "value": "thermostat replacement first",
+    "rupees": null,
     "figure": "whole",
     "date": null,
     "quote": "1,200 wala baad mein dekhenge, pehle thermostat lagao.",
     "accepts_line": null,
-    "contradicts": "amount@1.7"
+    "contradicts": null
    }
   ],
   "Theek hai uncle. Aur ek mahine mein phir se band hua to free mein theek karunga.": [
@@ -166,7 +179,7 @@
     "item": "late_or_unfinished",
     "kind": "term",
     "stance": "state",
-    "text": "The worker says that if it stops working again within one month, he will fix it for free.",
+    "text": "Irfan says if it stops working again within one month, he will fix it for free.",
     "value": "free repair if it fails again within one month",
     "rupees": null,
     "figure": "whole",
@@ -180,9 +193,9 @@
    {
     "item": "balance",
     "kind": "term",
-    "stance": "accept",
-    "text": "The hirer says the rest will be paid in cash after the work is done.",
-    "value": "cash after work",
+    "stance": "state",
+    "text": "Ramakant says he will pay cash after the work is done.",
+    "value": "cash after completion",
     "rupees": null,
     "figure": "whole",
     "date": null,
@@ -191,21 +204,7 @@
     "contradicts": null
    }
   ],
-  "Ji uncle, koi baat nahi. Kal milte hain.": [
-   {
-    "item": null,
-    "kind": "other",
-    "stance": "state",
-    "text": "The worker says they will meet tomorrow.",
-    "value": null,
-    "rupees": null,
-    "figure": "whole",
-    "date": null,
-    "quote": "Ji uncle, koi baat nahi. Kal milte hain.",
-    "accepts_line": null,
-    "contradicts": null
-   }
-  ]
+  "Ji uncle, koi baat nahi. Kal milte hain.": []
  },
  "checks": {}
 }

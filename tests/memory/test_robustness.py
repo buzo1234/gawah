@@ -198,3 +198,42 @@ async def test_a_bare_yes_to_a_new_total_does_not_change_it(bus, tmp_path):
     })
     await world.call(lines)
     assert (await amount(world)).value_rupees == 3000, "a change is agreed only with its figure said back"
+
+
+async def test_an_extra_asked_for_and_given_as_a_plain_figure_is_still_an_extra(bus, tmp_path):
+    """The model files "aath hazaar" after "kitna extra lagega?" as a whole figure: far below
+    the agreed total, it is the extra. Accepted twice, it is added once."""
+    lines = [
+        (W, "Poore ghar ki plumbing, 60,000 mein."),
+        (H, "Theek hai, 60,000."),
+        (H, "Chhat ki tanki bhi badalni hai. Kitna extra lagega?"),
+        (W, "Tanki aur fitting milake aath hazaar."),
+        (H, "Saat kar do."),
+        (W, "Saadhe saat, isse kam nahi."),
+        (H, "Saadhe saat theek hai, laga do."),
+        (W, "Ji, saadhe saat pakka."),
+    ]
+    world = World(bus, tmp_path, {
+        lines[0][1]: [claim("amount", "offer", 60000, "60,000 mein")],
+        lines[1][1]: [claim("amount", "accept", 60000, "Theek hai, 60,000", accepts_line=1)],
+        lines[3][1]: [claim("amount", "offer", 8000, "aath hazaar")],
+        lines[4][1]: [claim("amount", "offer", 7000, "Saat kar do", kind="change")],
+        lines[5][1]: [claim("amount", "offer", 7500, "Saadhe saat")],
+        lines[6][1]: [claim("amount", "accept", 7500, "Saadhe saat theek hai", kind="change", accepts_line=6)],
+        lines[7][1]: [claim("amount", "accept", 7500, "saadhe saat pakka", kind="change", accepts_line=7)],
+    })
+    await world.call(lines)
+    assert (await amount(world)).value_rupees == 67500
+    assert world.conflicts == []
+
+
+async def test_asking_what_a_figure_was_contradicts_nothing_saying_it_does(bus, tmp_path):
+    lines = [(W, "Painting 30,000."), (H, "Theek hai, 30,000."), (H, "Kitna bola tha aapne, 32?"), (W, "Total 32 tay hua tha na?")]
+    world = World(bus, tmp_path, {
+        lines[0][1]: [claim("amount", "offer", 30000, "Painting 30,000")],
+        lines[1][1]: [claim("amount", "accept", 30000, "Theek hai, 30,000", accepts_line=1)],
+        lines[2][1]: [claim("amount", "recall", 32000, "Kitna bola tha aapne, 32?", kind="change")],
+        lines[3][1]: [claim("amount", "recall", 32000, "Total 32 tay hua tha na?", kind="change")],
+    })
+    await world.call(lines)
+    assert [c.line_no for c in world.conflicts] == [4]

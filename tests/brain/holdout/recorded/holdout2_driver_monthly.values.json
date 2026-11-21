@@ -1,6 +1,6 @@
 {
  "fixture": "holdout2_driver_monthly",
- "recorded_at": "2026-11-21T18:25:31+00:00",
+ "recorded_at": "2026-11-21T19:23:19+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "ambiguous:dates@5": {
@@ -37,6 +37,18 @@
   "names:-@1": {
    "hirer": "Ananya",
    "worker": "Santosh"
+  },
+  "ambiguous:work@5": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@23": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@27": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }

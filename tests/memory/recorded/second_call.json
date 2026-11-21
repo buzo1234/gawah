@@ -7,7 +7,7 @@
     "item": "dates",
     "kind": "other",
     "stance": "state",
-    "text": "Ramesh asks whether the work is to start from tomorrow.",
+    "text": "Ramesh asks whether the work should start tomorrow.",
     "value": null,
     "rupees": null,
     "figure": "whole",
@@ -22,7 +22,7 @@
     "item": "work",
     "kind": "other",
     "stance": "state",
-    "text": "Sunita says the rooms have had the सामान removed.",
+    "text": "Sunita says the rooms have been cleared of belongings.",
     "value": null,
     "rupees": null,
     "figure": "whole",
@@ -35,9 +35,9 @@
   "Achha madam, ek baat. Labour ka total 14 hazaar tay hua tha na?": [
    {
     "item": "amount",
-    "kind": "change",
+    "kind": "term",
     "stance": "recall",
-    "text": "The worker says the labour total was agreed at 14,000 rupees.",
+    "text": "Ramesh says the labour total was तय as 14,000 rupees, right?",
     "value": "14,000 rupees",
     "rupees": 14000,
     "figure": "whole",
@@ -50,9 +50,9 @@
   "Nahi nahi, 13 hazaar tay hua tha. Aapne khud last bola tha.": [
    {
     "item": "amount",
-    "kind": "change",
-    "stance": "state",
-    "text": "Sunita says the agreed total was 13,000 rupees.",
+    "kind": "term",
+    "stance": "recall",
+    "text": "Sunita says 13,000 rupees was the agreed amount.",
     "value": "13,000 rupees",
     "rupees": 13000,
     "figure": "whole",
@@ -60,19 +60,6 @@
     "quote": "Nahi nahi, 13 hazaar tay hua tha.",
     "accepts_line": null,
     "contradicts": "amount@2.3"
-   },
-   {
-    "item": "amount",
-    "kind": "change",
-    "stance": "recall",
-    "text": "Sunita says Ramesh himself said that last.",
-    "value": null,
-    "rupees": null,
-    "figure": "whole",
-    "date": null,
-    "quote": "Aapne khud last bola tha.",
-    "accepts_line": null,
-    "contradicts": null
    }
   ],
   "Haan haan madam, 13 hi. Galti se bol diya.": [
@@ -80,7 +67,7 @@
     "item": "amount",
     "kind": "change",
     "stance": "accept",
-    "text": "The worker says the agreed amount is 13,000 rupees.",
+    "text": "Ramesh says yes, 13,000 rupees is right.",
     "value": "13,000 rupees",
     "rupees": 13000,
     "figure": "whole",
@@ -95,14 +82,14 @@
     "item": "amount",
     "kind": "change",
     "stance": "accept",
-    "text": "Sunita accepts 13,000 rupees as the labour total.",
-    "value": "13,000 rupees",
-    "rupees": 13000,
+    "text": "Sunita accepts the 14,000 rupees total by saying \"Theek hai.\"",
+    "value": "14,000 rupees",
+    "rupees": 14000,
     "figure": "whole",
     "date": null,
     "quote": "Theek hai.",
-    "accepts_line": 4,
-    "contradicts": "amount@1.11"
+    "accepts_line": 3,
+    "contradicts": null
    },
    {
     "item": "work",
@@ -121,16 +108,16 @@
   "Ji madam. Kal subah 10 baje pahunch jaunga.": [
    {
     "item": "dates",
-    "kind": "other",
+    "kind": "term",
     "stance": "state",
-    "text": "The worker says he will reach at 10 tomorrow morning.",
-    "value": null,
+    "text": "Ramesh says he will arrive tomorrow morning at 10 o'clock.",
+    "value": "start tomorrow morning at 10 o'clock",
     "rupees": null,
     "figure": "whole",
     "date": null,
     "quote": "Ji madam. Kal subah 10 baje pahunch jaunga.",
     "accepts_line": null,
-    "contradicts": null
+    "contradicts": "dates@2.1"
    }
   ],
   "Theek hai, kal milte hain. Bye.": [
@@ -138,7 +125,7 @@
     "item": null,
     "kind": "other",
     "stance": "accept",
-    "text": "Sunita says \"Theek hai\" in response to the worker's 10 AM arrival time, but that is just acknowledgment, not a deal term.",
+    "text": "Sunita says \"Theek hai, kal milte hain.\"",
     "value": null,
     "rupees": null,
     "figure": "whole",
@@ -149,5 +136,10 @@
    }
   ]
  },
- "checks": {}
+ "checks": {
+  "To total 14 hazaar mein se 3 advance, baaki finish hone pe.|Baaki kaam poora hone ke baad, jis din finish karoge usi din. Pehle main kaam dekhungi, phir payment.": {
+   "contradicts": false,
+   "reason": "The fact says the rest is paid after completion on the finish day, after inspection; the claim says the rest is paid when the work is finished."
+  }
+ }
 }

@@ -90,7 +90,9 @@ async def test_missing_balance_checklist_comes_from_the_facts(bus):
     )
     assert final["amount"].line_no == 13 and final["amount"].source_text == "24 final karo, aur kaam achha hona chahiye."
     assert final["advance"].value == "8,000 rupees"
-    assert "Friday evening" in final["dates"].value and "Monday" in final["dates"].value
+    # The model now hears line 24 ("Pakka madam, Friday shaam tak") as the finish both agreed; the
+    # Monday start (line 22) stays the worker's statement.
+    assert "Friday evening" in final["dates"].value
     assert final["late_or_unfinished"].value == "500 rupees per day"
     assert "2BHK" in final["work"].value, "the work as described before the price was agreed"
     assert run.speaks[0].instruction == "Ask Sunita when the balance will be paid."

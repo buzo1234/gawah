@@ -27,14 +27,17 @@ _COMMIT = normed({
 })
 
 
-def doubts(text: str | None) -> bool:
-    """A complaint, a doubt, a hedge, a question or a deferral."""
+def doubts(text: str | None, questions: bool = True) -> bool:
+    """A complaint, a doubt, a hedge or a deferral, and (with `questions`) a question."""
     if not text:
         return False
-    if "?" in text or "..." in text or "…" in text:
+    if (questions and "?" in text) or "..." in text or "…" in text:
         return True
     toks = tokens(text)
-    return any(t in _DOUBT or t in _QUESTION for t in toks) or any(pair in _DOUBT_PAIRS for pair in zip(toks, toks[1:]))
+    return (
+        any(t in _DOUBT or (questions and t in _QUESTION) for t in toks)
+        or any(pair in _DOUBT_PAIRS for pair in zip(toks, toks[1:]))
+    )
 
 
 _CLAUSE = re.compile(r"(?:[^,.।॥!?;…]|(?<=\d)[,.](?=\d))+[,.।॥!?;…]*")
@@ -44,7 +47,7 @@ def _has_figure(clause: str, rupees: int) -> bool:
     return rupees in parse_rupees(clause) or any(round(b * k) == rupees for b in bare_numbers(clause) for k in (1, 1000, 100000))
 
 
-def doubts_figure(text: str | None, rupees: int | None) -> bool:
+def doubts_figure(text: str | None, rupees: int | None, questions: bool = True) -> bool:
     """The clause that says the figure complains, doubts, hedges, asks or defers, with no firm
     yes in it: "9,300 thoda zyada hai", not "theek hai, 9,000, lekin material aapka"."""
     if not text:
@@ -58,7 +61,7 @@ def doubts_figure(text: str | None, rupees: int | None) -> bool:
         return i < len(clauses) and any(t in STRONG_YES for t in tokens(clauses[i])[:head])
 
     # "8 hazaar... theek hai": a firm yes in the clause, or opening the next one, outweighs the doubt.
-    return any(doubts(clauses[i]) and not firm(i) and not firm(i + 1, 3) for i in said)
+    return any(doubts(clauses[i], questions) and not firm(i) and not firm(i + 1, 3) for i in said)
 
 
 def says_figure(text: str | None, rupees: int | None) -> bool:
@@ -104,3 +107,8 @@ def scale(deal: DealBook, line: TranscriptLine, claim: Claim) -> None:
                 claim.value = claim.value.replace(f"{claim.rupees:,}", f"{scaled:,}")
             claim.rupees = scaled
             return
+
+
+def asks_which(text: str | None) -> bool:
+    """Asks what a figure was ("kitna bola tha, do hazaar?"), rather than saying it ("14 tay hua tha na?")."""
+    return bool(text) and any(t in _QUESTION for t in tokens(text))

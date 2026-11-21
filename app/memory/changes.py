@@ -6,7 +6,7 @@ is an added detail, and what was agreed before still stands."""
 from app.contracts import Fact, FactKind, FactStatus, ItemKey, TranscriptLine
 from app.memory.book import DealBook
 from app.memory.claims import MONEY, Claim, schedule
-from app.memory.normalise import format_rupees
+from app.memory.normalise import format_rupees, normed, tokens
 
 BARGAIN_LINES = 6  # a change offered this many lines back can still be accepted
 CLIP_SPAN_S = 20.0
@@ -75,9 +75,16 @@ def shape(deal: DealBook, line: TranscriptLine, claim: Claim) -> None:
         claim.rupees, claim.kind = None, FactKind.OTHER
         return
     base = deal.current(ItemKey.AMOUNT)
-    if claim.item == ItemKey.AMOUNT and claim.figure == "whole" and _bargaining_an_extra(deal, line, base, claim.rupees):
+    if (
+        claim.item == ItemKey.AMOUNT and claim.figure == "whole" and claim.kind in (FactKind.TERM, FactKind.CHANGE)
+        and _bargaining_an_extra(deal, line, base, claim.rupees)
+    ):
         claim.figure = "addition"  # "paanch kar lo" while an extra is bargained: the extra, not a new total
     if claim.item != ItemKey.AMOUNT or claim.figure != "addition" or not claim.rupees:
+        return
+    before = deal.latest.get(base.replaces or "") if base else None
+    if before is not None and base.call_no == line.call_no and base.value_rupees - (before.value_rupees or 0) == claim.rupees:
+        claim.rupees = base.value_rupees  # the extra just agreed, said again: the total as it now stands
         return
     if base is None or base.value_rupees is None or claim.stance == "recall":
         # No agreed total to add it to, or an extra recalled after it was added: a detail, no figure.
@@ -89,10 +96,17 @@ def shape(deal: DealBook, line: TranscriptLine, claim: Claim) -> None:
         claim.kind = FactKind.CHANGE
 
 
+_EXTRA = normed({"extra", "एक्स्ट्रा", "alag", "अलग", "additional", "upar", "ऊपर"})
+
+
 def _bargaining_an_extra(deal: DealBook, line: TranscriptLine, base: Fact | None, rupees: int | None) -> bool:
-    """A figure far below the agreed total, while an extra on top of it is being offered."""
+    """A figure far below the agreed total, while an extra on top of it is asked about ("kitna
+    extra?") or being offered: it is the extra, not a new total for the same job."""
     if not rupees or base is None or not base.value_rupees or rupees * 2 > base.value_rupees:
         return False
+    talk = [deal.lines.get((line.call_no, n)) for n in range(line.line_no, max(0, line.line_no - 4), -1)]
+    if any(t is not None and _EXTRA & set(tokens(t.text)) for t in talk):
+        return True
     return any(
         f.item == ItemKey.AMOUNT and f.kind == FactKind.CHANGE and f.status == FactStatus.SAID and f.call_no == line.call_no
         and 0 < line.line_no - (f.line_no or 0) <= BARGAIN_LINES and (f.value_rupees or 0) > base.value_rupees

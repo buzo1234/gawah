@@ -1,6 +1,6 @@
 {
  "fixture": "call_two_amounts",
- "recorded_at": "2026-11-21T19:12:09+00:00",
+ "recorded_at": "2026-11-21T19:41:37+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "value:work@4": {
@@ -150,6 +150,10 @@
    "readings": null
   },
   "ambiguous:dates@25": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@30": {
    "ambiguous": false,
    "readings": null
   }

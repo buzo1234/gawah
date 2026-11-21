@@ -1,6 +1,6 @@
 {
  "fixture": "demo_script_call",
- "recorded_at": "2026-11-21T19:12:10+00:00",
+ "recorded_at": "2026-11-21T19:41:39+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "names:-@1": {
@@ -97,6 +97,14 @@
    "readings": null
   },
   "ambiguous:work@2": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:balance@12": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@12": {
    "ambiguous": false,
    "readings": null
   }

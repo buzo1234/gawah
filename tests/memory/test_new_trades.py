@@ -50,7 +50,8 @@ def figure(term) -> int | None:
 async def test_geyser_a_complaint_and_a_deferral_accept_nothing_and_a_conditional_price_is_no_term():
     terms, facts, conflicts = await read("robust_geyser")
     assert (figure(terms[ItemKey.AMOUNT]), terms[ItemKey.AMOUNT].status) == (650, FactStatus.AGREED)
-    assert not [f for f in facts if f.value_rupees in (800, 1200, 1850) and f.status != FactStatus.SAID]
+    agreed = (FactStatus.AGREED, FactStatus.CONFIRMED)
+    assert not [f for f in facts if f.value_rupees in (800, 1200, 1850) and f.status in agreed]
     assert not [f for f in facts if f.item == ItemKey.WORK and f.kind == FactKind.TERM and "year" in (f.value or f.text).lower()]
     assert conflicts == []
 

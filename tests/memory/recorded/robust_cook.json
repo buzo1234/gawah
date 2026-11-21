@@ -2,7 +2,21 @@
  "model": "gpt-5.4-mini",
  "effort": "none",
  "replies": {
-  "नमस्ते सरला जी मेघा बोल रही हूं आपका नंबर गुप्ता आंटी ने दिया था": [],
+  "नमस्ते सरला जी मेघा बोल रही हूं आपका नंबर गुप्ता आंटी ने दिया था": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Megha says hello and says that Gupta aunty gave her the number.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "नमस्ते सरला जी मेघा बोल रही हूं आपका नंबर गुप्ता आंटी ने दिया था",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
   "हां जी नमस्ते दीदी खाना बनाने का काम है ना": [
    {
     "item": "work",
@@ -22,22 +36,9 @@
    {
     "item": "work",
     "kind": "term",
-    "stance": "accept",
-    "text": "Megha says yes, it is for cooking food for four people, morning and evening at 7 o'clock.",
-    "value": "cooking job for four people, morning and evening at 7 o'clock",
-    "rupees": null,
-    "figure": "whole",
-    "date": null,
-    "quote": "हां दोनों टाइम का खाना चार लोग हैं सुबह सात बजे और शाम सात बजे",
-    "accepts_line": 2,
-    "contradicts": null
-   },
-   {
-    "item": "work",
-    "kind": "other",
     "stance": "state",
-    "text": "Megha says the job is cooking food for four people, with meals in the morning at 7 and in the evening at 7.",
-    "value": null,
+    "text": "Megha says the cooking job is for two meals for four people, in the morning at 7 and in the evening at 7.",
+    "value": "two meals for four people",
     "rupees": null,
     "figure": "whole",
     "date": null,
@@ -51,7 +52,7 @@
     "item": "amount",
     "kind": "term",
     "stance": "offer",
-    "text": "Sarla says the cooking job will cost 10,000 rupees per month.",
+    "text": "Sarla says the monthly pay for the cooking job is 10,000 rupees.",
     "value": "10,000 rupees per month",
     "rupees": 10000,
     "figure": "whole",
@@ -66,14 +67,14 @@
     "item": "amount",
     "kind": "change",
     "stance": "offer",
-    "text": "Megha says 10,000 rupees is a bit too much and offers 9,000 rupees a month.",
+    "text": "Megha says that 9,000 rupees would be the price.",
     "value": "9,000 rupees",
     "rupees": 9000,
     "figure": "whole",
     "date": null,
     "quote": "दस हज़ार थोड़ा ज़्यादा है नौ में कर दो",
     "accepts_line": null,
-    "contradicts": null
+    "contradicts": "amount@1.4"
    }
   ],
   "नौ हज़ार में दोनों टाइम बर्तन नहीं करूंगी": [
@@ -81,7 +82,7 @@
     "item": "amount",
     "kind": "change",
     "stance": "offer",
-    "text": "Sarla says 9,000 rupees for the job, but without washing dishes for both meal times.",
+    "text": "The worker says 9,000 rupees for both meals, but not washing dishes.",
     "value": "9,000 rupees",
     "rupees": 9000,
     "figure": "whole",
@@ -96,23 +97,23 @@
     "item": "amount",
     "kind": "change",
     "stance": "accept",
-    "text": "Megha accepts 9,000 rupees for the job.",
+    "text": "Megha accepts 9,000 rupees for the cooking job.",
     "value": "9,000 rupees",
     "rupees": 9000,
     "figure": "whole",
     "date": null,
     "quote": "हां बर्तन के लिए अलग बाई है नौ हज़ार ठीक है",
-    "accepts_line": 4,
+    "accepts_line": 6,
     "contradicts": "amount@1.5"
    }
   ],
   "और महीने में दो छुट्टी चाहिए और रविवार शाम को नहीं आऊंगी": [
    {
     "item": "work",
-    "kind": "term",
+    "kind": "change",
     "stance": "state",
-    "text": "The worker says she needs two days off per month and will not come on Sunday evening.",
-    "value": "two days off per month; no Sunday evening",
+    "text": "The worker says she needs two days off in a month and will not come on Sunday evenings.",
+    "value": "two days off per month; no Sunday evening work",
     "rupees": null,
     "figure": "whole",
     "date": null,
@@ -124,15 +125,15 @@
   "ठीक है दो छुट्टी पर बिना बताए नहीं आईं तो उस दिन के पैसे कटेंगे": [
    {
     "item": "late_or_unfinished",
-    "kind": "change",
+    "kind": "term",
     "stance": "accept",
-    "text": "Megha says that if Sarla does not come on her two days off without telling in advance, the pay for that day will be cut.",
-    "value": "pay cut for that day if she is absent without notice on a day off",
+    "text": "Megha says that if Sarla does not come on two days off without informing, the pay for that day will be cut.",
+    "value": "pay cut for unannounced absence on a day off",
     "rupees": null,
     "figure": "whole",
     "date": null,
     "quote": "ठीक है दो छुट्टी पर बिना बताए नहीं आईं तो उस दिन के पैसे कटेंगे",
-    "accepts_line": null,
+    "accepts_line": 8,
     "contradicts": null
    }
   ],
@@ -141,8 +142,8 @@
     "item": "late_or_unfinished",
     "kind": "change",
     "stance": "accept",
-    "text": "Worker Sarla accepts the agreed rule that if she is absent on a day off without notice, that day's pay will be cut.",
-    "value": "pay cut for that day if absent without notice on a day off",
+    "text": "Sarla accepts Megha's term that if she does not come on a day off without informing, that day's pay will be cut.",
+    "value": "pay cut for no-show on day off without informing",
     "rupees": null,
     "figure": "whole",
     "date": null,
@@ -156,12 +157,12 @@
     "item": "balance",
     "kind": "term",
     "stance": "state",
-    "text": "The hirer says she will pay the money on the first date of every month.",
+    "text": "Megha says she will pay the money on the first date of every month.",
     "value": "on the 1st of every month",
     "rupees": null,
     "figure": "whole",
     "date": null,
-    "quote": "पैसे हर महीने एक तारीख को दूंगी और परसों से शुरू कर दो",
+    "quote": "पैसे हर महीने एक तारीख को दूंगी",
     "accepts_line": null,
     "contradicts": null
    },
@@ -169,12 +170,12 @@
     "item": "dates",
     "kind": "term",
     "stance": "state",
-    "text": "The hirer says the work should start the day after tomorrow.",
+    "text": "Megha says the work should start the day after tomorrow.",
     "value": "start the day after tomorrow",
     "rupees": null,
     "figure": "whole",
     "date": null,
-    "quote": "पैसे हर महीने एक तारीख को दूंगी और परसों से शुरू कर दो",
+    "quote": "और परसों से शुरू कर दो",
     "accepts_line": null,
     "contradicts": null
    }
@@ -182,13 +183,13 @@
   "ठीक है दीदी परसों सुबह आ जाऊंगी": [
    {
     "item": "dates",
-    "kind": "term",
+    "kind": "change",
     "stance": "accept",
-    "text": "The worker accepts that the job starts the day after tomorrow and says she will come in the morning.",
+    "text": "The worker accepts starting the job the day after tomorrow.",
     "value": "start the day after tomorrow",
     "rupees": null,
     "figure": "whole",
-    "date": "2026-11-24",
+    "date": null,
     "quote": "ठीक है दीदी परसों सुबह आ जाऊंगी",
     "accepts_line": 11,
     "contradicts": null

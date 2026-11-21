@@ -1,0 +1,508 @@
+{
+ "model": "gpt-5.4-mini",
+ "effort": "none",
+ "replies": {
+  "हेलो हां हेलो कमला जी बोल रही हैं": [],
+  "हां जी बोल रही हूं आप शर्मा जी": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Kamla says she is speaking.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "हां जी बोल रही हूं आप शर्मा जी",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "हां हां मैं शर्मा बोल रहा हूं वो गुप्ता जी की बहू ने बताया था आप खाना बनाती हैं": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Ramesh Chandra Sharma says that Gupta ji's daughter-in-law had told him that Kamla cooks food.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "हां हां मैं शर्मा बोल रहा हूं वो गुप्ता जी की बहू ने बताया था आप खाना बनाती हैं",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "हां जी बनाती हूं तीन घर में बनाती हूं अभी आपके यहां कितने लोग हैं": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Kamla says she cooks at three houses.",
+    "value": "three houses",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "हां जी बनाती हूं तीन घर में बनाती हूं अभी आपके यहां कितने लोग हैं",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "बस हम दो जने हैं मैं और मेरी wife ठीक है बच्चे सब बाहर हैं": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "The hirer says there are two people at the hirer's home, the hirer and the hirer's wife.",
+    "value": "two people",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "बस हम दो जने हैं मैं और मेरी wife ठीक है बच्चे सब बाहर हैं",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "अच्छा तो दोनों टाइम का चाहिए या एक टाइम": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Kamla asks whether the hirer needs food for both times or one time.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "अच्छा तो दोनों टाइम का चाहिए या एक टाइम",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "दोनों टाइम सुबह का नशा और lunch एक साथ और रात का खाना ठीक है": [
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Ramesh Chandra Sharma says the food is needed for both times, together in the morning and at lunch, and also at night.",
+    "value": "both times, morning and lunch together, and dinner",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "दोनों टाइम सुबह का नशा और lunch एक साथ और रात का खाना ठीक है",
+    "accepts_line": 6,
+    "contradicts": "work@1.6"
+   }
+  ],
+  "हां ठीक है सुबह दस बजे तक आ जाऊंगी नाश्ता lunch दोनों बना दूंगी और शाम को सात बजे": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "accept",
+    "text": "Kamla accepts the job for both morning and lunch together and dinner.",
+    "value": "both times, morning and lunch together, and dinner",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "हां ठीक है",
+    "accepts_line": 7,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "Kamla says she will come by 10 a.m. and make breakfast and lunch together, and in the evening at 7.",
+    "value": "come by 10 a.m., make breakfast and lunch, and evening at 7",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "सुबह दस बजे तक आ जाऊंगी नाश्ता lunch दोनों बना दूंगी और शाम को सात बजे",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "ठीक है ठीक है और देखिए हम लोग तीखा नहीं खाते मेरी wife को sugar है तो": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says they do not eat spicy food and that his wife has sugar.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "ठीक है ठीक है और देखिए हम लोग तीखा नहीं खाते मेरी wife को sugar है तो",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "मीठा बिल्कुल नहीं और रात को हल्का दलिया खिचड़ी ऐसा": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says the food at night should be light, like porridge or khichdi, and no sweets at all.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "मीठा बिल्कुल नहीं और रात को हल्का दलिया खिचड़ी ऐसा",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "हां जी समझ गई बुज़ुर्ग लोगों के यहां ऐसा ही बनता है बर्तन भी मुझे करने हैं क्या": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Kamla says she understands and asks whether she also has to wash the utensils.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "हां जी समझ गई बुज़ुर्ग लोगों के यहां ऐसा ही बनता है बर्तन भी मुझे करने हैं क्या",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "नहीं नहीं बर्तन वाली अलग आती है ठीक है": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says the utensils work is separate and another woman does it.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "नहीं नहीं बर्तन वाली अलग आती है ठीक है",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "तो फिर दोनों टाइम का आठ हज़ार महीना": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "offer",
+    "text": "Kamla says the monthly pay for both times is 8,000 rupees.",
+    "value": "8,000 rupees a month",
+    "rupees": 8000,
+    "figure": "whole",
+    "date": null,
+    "quote": "तो फिर दोनों टाइम का आठ हज़ार महीना",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "आठ हज़ार बहुत ज़्यादा है कमला जी हम तो सात दे रहे थे पहले वाली को": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "Ramesh Chandra Sharma says eight thousand is too much and that they were offering seven thousand to the previous worker.",
+    "value": "7,000 rupees a month",
+    "rupees": 7000,
+    "figure": "whole",
+    "date": null,
+    "quote": "आठ हज़ार बहुत ज़्यादा है कमला जी हम तो सात दे रहे थे पहले वाली को",
+    "accepts_line": null,
+    "contradicts": "amount@1.13"
+   }
+  ],
+  "शर्मा जी आजकल सब यही ले रहे हैं दो टाइम का आठ से कम कोई नहीं करेगा": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "Kamla says that nowadays everyone is charging this and no one will do two meals for less than 8,000 rupees a month.",
+    "value": "8,000 rupees a month",
+    "rupees": 8000,
+    "figure": "whole",
+    "date": null,
+    "quote": "शर्मा जी आजकल सब यही ले रहे हैं दो टाइम का आठ से कम कोई नहीं करेगा",
+    "accepts_line": null,
+    "contradicts": "amount@1.14"
+   }
+  ],
+  "अच्छा ठीक है ठीक है वो देख लेंगे आप पहले खाना तो बनाइए फिर बात करते हैं": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "The hirer says that 8,000 rupees a month is okay.",
+    "value": "8,000 rupees a month",
+    "rupees": 8000,
+    "figure": "whole",
+    "date": null,
+    "quote": "अच्छा ठीक है ठीक है वो देख लेंगे आप पहले खाना तो बनाइए फिर बात करते हैं",
+    "accepts_line": 13,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says to make the food first and talk later.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "अच्छा ठीक है ठीक है वो देख लेंगे आप पहले खाना तो बनाइए फिर बात करते हैं",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "और छुट्टी कितनी लेती हैं आप": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer asks how much leave Kamla takes.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "और छुट्टी कितनी लेती हैं आप",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "महीने में दो छुट्टी लेती हूं और पहले से बता देती हूं": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "Kamla says she takes two days off in a month and informs in advance.",
+    "value": "2 days off per month",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "महीने में दो छुट्टी लेती हूं और पहले से बता देती हूं",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "ठीक है दो ठीक है advance वगैरह चाहिए क्या": [
+   {
+    "item": "advance",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer asks whether Kamla needs an advance or anything else.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "ठीक है दो ठीक है advance वगैरह चाहिए क्या",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "नहीं advance नहीं चाहिए महीना पूरा होने पे पूरा दे देना": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says no advance is needed.",
+    "value": "no advance",
+    "rupees": 0,
+    "figure": "whole",
+    "date": null,
+    "quote": "नहीं advance नहीं चाहिए महीना पूरा होने पे पूरा दे देना",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the full amount should be paid when the month is complete.",
+    "value": "pay in full at month end",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "नहीं advance नहीं चाहिए महीना पूरा होने पे पूरा दे देना",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "ठीक है महीने के end में ठीक है कब से आ सकती हैं": [
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The hirer accepts the worker's full-month-end payment arrangement.",
+    "value": "pay in full at month end",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "ठीक है महीने के end में ठीक है",
+    "accepts_line": 21,
+    "contradicts": null
+   },
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "The hirer asks when the worker can start coming.",
+    "value": "start date asked",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "कब से आ सकती हैं",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "कल से आ जाती हूं कल सुबह दस बजे": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "Kamla says she can start from tomorrow, with tomorrow morning at 10 as the start time.",
+    "value": "start tomorrow morning at 10",
+    "rupees": null,
+    "figure": "whole",
+    "date": "2026-11-23",
+    "quote": "कल से आ जाती हूं कल सुबह दस बजे",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "ठीक है कल से एक महीना देखते हैं फिर आगे का सोचेंगे ठीक है": [
+   {
+    "item": "dates",
+    "kind": "change",
+    "stance": "accept",
+    "text": "The hirer accepts the start date as tomorrow morning.",
+    "value": "start tomorrow morning",
+    "rupees": null,
+    "figure": "whole",
+    "date": "2026-11-23",
+    "quote": "ठीक है कल से एक महीना देखते हैं फिर आगे का सोचेंगे ठीक है",
+    "accepts_line": 23,
+    "contradicts": null
+   },
+   {
+    "item": "dates",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says they will see how it goes for one month and then think about what comes next.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "ठीक है कल से एक महीना देखते हैं फिर आगे का सोचेंगे ठीक है",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "हां जी एक महीना देख लीजिए पसंद आए तो रखिए": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says the hirer should watch for one month and keep her if he likes her.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "हां जी एक महीना देख लीजिए पसंद आए तो रखिए",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "ठीक है और राशन सब्ज़ी वो सब घर में रहता है आपको कुछ लाना नहीं है": [
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "state",
+    "text": "The hirer says Kamla does not need to bring any ration or vegetables because those things are already at home.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "ठीक है और राशन सब्ज़ी वो सब घर में रहता है आपको कुछ लाना नहीं है",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "ठीक है जी तो कल आती हूं": [
+   {
+    "item": "dates",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Kamla accepts the start date as tomorrow by saying she'll come tomorrow.",
+    "value": "start tomorrow",
+    "rupees": null,
+    "figure": "whole",
+    "date": "2026-11-23",
+    "quote": "ठीक है जी तो कल आती हूं",
+    "accepts_line": 23,
+    "contradicts": null
+   }
+  ],
+  "हां ठीक है अरे हां वो पैसे वाली बात तो रह गई": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says okay and mentions that the money part was left out.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "हां ठीक है अरे हां वो पैसे वाली बात तो रह गई",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "चलिए ना आपकी ना मेरी साढ़े सात हज़ार कर लेते हैं ठीक है": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "Ramesh Chandra Sharma proposes 7,500 rupees a month.",
+    "value": "7,500 rupees a month",
+    "rupees": 7500,
+    "figure": "whole",
+    "date": null,
+    "quote": "चलिए ना आपकी ना मेरी साढ़े सात हज़ार कर लेते हैं ठीक है",
+    "accepts_line": null,
+    "contradicts": "amount@1.13"
+   }
+  ],
+  "ठीक है शर्मा जी साढ़े सात चलेगा": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Kamla says 7,500 rupees a month will work.",
+    "value": "7,500 rupees a month",
+    "rupees": 7500,
+    "figure": "whole",
+    "date": null,
+    "quote": "ठीक है शर्मा जी साढ़े सात चलेगा",
+    "accepts_line": 30,
+    "contradicts": "amount@1.13"
+   }
+  ],
+  "ठीक है फिर कल मिलते हैं गुप्ता जी की बहू को भी बता दूंगा ठीक है": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says they'll meet tomorrow and that he will also tell Gupta ji's daughter-in-law.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "ठीक है फिर कल मिलते हैं गुप्ता जी की बहू को भी बता दूंगा ठीक है",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ]
+ },
+ "checks": {}
+}

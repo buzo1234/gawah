@@ -1,6 +1,6 @@
 {
  "fixture": "holdout2_car_mechanic",
- "recorded_at": "2026-11-21T18:25:19+00:00",
+ "recorded_at": "2026-11-21T19:23:14+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "ambiguous:amount@6": {
@@ -34,6 +34,10 @@
   "names:-@1": {
    "hirer": "Abhishek",
    "worker": "Salim"
+  },
+  "ambiguous:amount@10": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }

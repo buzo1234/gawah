@@ -1,0 +1,602 @@
+{
+ "model": "gpt-5.4-mini",
+ "effort": "none",
+ "replies": {
+  "Hello, Abdul bhai? Deepak bol raha hoon, Malhotra, woh Greenwood wala flat.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Deepak Malhotra says he is calling about the Greenwood flat.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Hello, Abdul bhai? Deepak bol raha hoon, Malhotra, woh Greenwood wala flat.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan sahab, salaam, pehchaan liya. Kal naap le ke aaya tha na main.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Abdul Karim says he recognized Deepak and that he had come yesterday with measurements.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan sahab, salaam, pehchaan liya. Kal naap le ke aaya tha na main.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan haan. Toh kya bana? Kitna aa raha hai wardrobe ka?": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Deepak asks what has been made and asks the wardrobe amount.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan haan. Toh kya bana? Kitna aa raha hai wardrobe ka?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Dekhiye sahab, saat foot unchi, chhe foot chaudi, teen darwaaze, ek mein sheesha, upar loft. Century ka unnees mm ply, andar white laminate, Hettich ke hinge aur channel.": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "Abdul says the wardrobe should be 7 feet high, 6 feet wide, with 3 doors, one with glass and a loft on top, using 19 mm Century ply, white laminate inside, and Hettich hinges and channels.",
+    "value": "7 feet high, 6 feet wide, 3 doors, one with glass, loft on top, 19 mm Century ply, white laminate, Hettich hinges and channels",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Dekhiye sahab, saat foot unchi, chhe foot chaudi, teen darwaaze, ek mein sheesha, upar loft. Century ka unnees mm ply, andar white laminate, Hettich ke hinge aur channel.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan yahi chahiye tha. Aur bahar ka laminate?": [
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "accept",
+    "text": "The hirer says this is what he wanted.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan yahi chahiye tha.",
+    "accepts_line": 4,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer asks about the outer laminate.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Aur bahar ka laminate?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Bahar ka jo aap pasand karo, showroom mein dekh lo, rate ek hi hai.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "state",
+    "text": "Abdul Karim says whichever outer laminate Deepak likes, the rate is the same.",
+    "value": "same rate",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Bahar ka jo aap pasand karo, showroom mein dekh lo, rate ek hi hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Woh main wife se poochh ke bata dunga, colour woh decide karegi, mera kuch chalta nahi uske aage, haha.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Deepak says he will ask his wife and tell later, and that she will decide the color.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Woh main wife se poochh ke bata dunga, colour woh decide karegi, mera kuch chalta nahi uske aage, haha.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haha, sab ghar mein yahi hai sahab. Toh total sab milake, material, laminate, hardware, labour, adtees hazaar.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the total for everything together is 38,000 rupees.",
+    "value": "38,000 rupees",
+    "rupees": 38000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haha, sab ghar mein yahi hai sahab. Toh total sab milake, material, laminate, hardware, labour, adtees hazaar.",
+    "accepts_line": null,
+    "contradicts": "amount@1.6"
+   }
+  ],
+  "Adtees? Thoda kam karo yaar, paintees kar do.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "Deepak Malhotra offers 35,000 rupees instead of 38,000 rupees.",
+    "value": "35,000 rupees",
+    "rupees": 35000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Adtees? Thoda kam karo yaar, paintees kar do.",
+    "accepts_line": null,
+    "contradicts": "amount@1.8"
+   }
+  ],
+  "Sahab Century ka ply hai. Local daal du toh paintees mein bhi ho jayega, par do saal mein phoolne lagega. Adtees sahi rate hai.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "The worker says 38,000 rupees is the right rate.",
+    "value": "38,000 rupees",
+    "rupees": 38000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Sahab Century ka ply hai. Local daal du toh paintees mein bhi ho jayega, par do saal mein phoolne lagega. Adtees sahi rate hai.",
+    "accepts_line": 9,
+    "contradicts": null
+   }
+  ],
+  "Chalo theek hai, adtees. Local nahi chahiye. Advance kitna?": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Deepak Malhotra accepts 38,000 rupees as the total by saying \"Chalo theek hai, adtees.\"",
+    "value": "38,000 rupees",
+    "rupees": 38000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Chalo theek hai, adtees. Local nahi chahiye. Advance kitna?",
+    "accepts_line": 10,
+    "contradicts": null
+   }
+  ],
+  "Pandrah hazaar de dijiye, kal material uthaunga. Baaki teis hazaar fitting wale din.": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker asks for 15,000 rupees as advance and says he will take the material tomorrow.",
+    "value": "15,000 rupees",
+    "rupees": 15000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Pandrah hazaar de dijiye, kal material uthaunga.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the remaining 23,000 rupees will be paid on the fitting day.",
+    "value": "23,000 rupees on fitting day",
+    "rupees": 23000,
+    "figure": "part",
+    "date": null,
+    "quote": "Baaki teis hazaar fitting wale din.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek hai, kal pandrah bhej dunga. Kab tak ho jayega? Dekho, athaarah ko mere saas sasur aa rahe hain, us se pehle chahiye.": [
+   {
+    "item": "advance",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Deepak Malhotra accepts Abdul Karim's advance of 15,000 rupees.",
+    "value": "15,000 rupees",
+    "rupees": 15000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Theek hai, kal pandrah bhej dunga. Kab tak ho jayega? Dekho, athaarah ko mere saas sasur aa rahe hain, us se pehle chahiye.",
+    "accepts_line": 12,
+    "contradicts": null
+   },
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "state",
+    "text": "Deepak Malhotra says he will send 15,000 rupees tomorrow.",
+    "value": "15,000 rupees",
+    "rupees": 15000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Theek hai, kal pandrah bhej dunga. Kab tak ho jayega? Dekho, athaarah ko mere saas sasur aa rahe hain, us se pehle chahiye.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "Deepak Malhotra asks when the work will be finished and says it is needed before the 18th because his in-laws are coming then.",
+    "value": "finish before the 18th",
+    "rupees": null,
+    "figure": "whole",
+    "date": "2026-12-18",
+    "quote": "Theek hai, kal pandrah bhej dunga. Kab tak ho jayega? Dekho, athaarah ko mere saas sasur aa rahe hain, us se pehle chahiye.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Das din ka kaam hai sahab. Pandrah tareekh tak fit kar dunga.": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the job will take ten days.",
+    "value": "10 days",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Das din ka kaam hai sahab.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says he will finish fitting by the 15th.",
+    "value": "finish by the 15th",
+    "rupees": null,
+    "figure": "whole",
+    "date": "2026-12-15",
+    "quote": "Pandrah tareekh tak fit kar dunga.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Pakka? Agar late hua toh hazaar rupaye roz kaatunga, pehle bata raha hoon.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "term",
+    "stance": "state",
+    "text": "The hirer says that if the work is late, he will deduct 1,000 rupees per day.",
+    "value": "1,000 rupees per day cut for late work",
+    "rupees": 1000,
+    "figure": "rate",
+    "date": null,
+    "quote": "Pakka? Agar late hua toh hazaar rupaye roz kaatunga, pehle bata raha hoon.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek hai sahab, kaat lena, par late hoga nahi, Abdul ka kaam hai.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "change",
+    "stance": "accept",
+    "text": "The worker says the hirer may cut 1,000 rupees per day if the work is late.",
+    "value": "1,000 rupees per day cut for late work",
+    "rupees": 1000,
+    "figure": "rate",
+    "date": null,
+    "quote": "Theek hai sahab, kaat lena, par late hoga nahi, Abdul ka kaam hai.",
+    "accepts_line": 15,
+    "contradicts": null
+   }
+  ],
+  "Badhiya. Kaam ghar pe karoge ya workshop mein?": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Deepak Malhotra asks whether the work will be done at the house or in the workshop.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Badhiya. Kaam ghar pe karoge ya workshop mein?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Kuch workshop mein katai karke laaunga, baaki ghar pe. Thoda shor hoga, padosiyon ko bata dena.": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says he will do some cutting in the workshop and the rest at the house.",
+    "value": "some work in workshop, rest at home",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Kuch workshop mein katai karke laaunga, baaki ghar pe.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says there will be some noise and asks to tell the neighbors.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Thoda shor hoga, padosiyon ko bata dena.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan woh society mein bata dunga. Chalo theek hai Abdul bhai, toh kal milte hain.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Deepak says he will inform the society.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan woh society mein bata dunga.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Deepak says they will meet tomorrow.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Chalo theek hai Abdul bhai, toh kal milte hain.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan sahab, kal subah aata hoon. Aur haan, mirror ka size madam se ek baar confirm kar lena, poora darwaaza ya aadha.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says he will come tomorrow morning.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan sahab, kal subah aata hoon.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker asks the hirer to confirm the mirror size with madam, whether it is the full door or half.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Aur haan, mirror ka size madam se ek baar confirm kar lena, poora darwaaza ya aadha.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Arre haan, woh bhi poochh lunga. Chalo phir.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says he will ask that too and then they can go ahead.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Arre haan, woh bhi poochh lunga. Chalo phir.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Aur sahab, drill ke liye bijli ka point bhi chahiye hoga, bedroom mein socket hai na?": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says a power point will be needed for the drill and asks whether there is a socket in the bedroom.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Aur sahab, drill ke liye bijli ka point bhi chahiye hoga, bedroom mein socket hai na?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan hai, bed ke peeche. Theek hai bhai, aur kuch?": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Deepak Malhotra says there is a power point behind the bed for the drill.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan hai, bed ke peeche.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Deepak Malhotra asks whether there is anything else.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Theek hai bhai, aur kuch?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Bas sahab. Aapka kaam dil se karunga. Aapke pados mein jo Verma ji hain na, unka bhi kiya tha, poochh lena unse.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says he will do the hirer's work with dedication and suggests asking Verma ji, whose work he also did, for reference.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Bas sahab. Aapka kaam dil se karunga. Aapke pados mein jo Verma ji hain na, unka bhi kiya tha, poochh lena unse.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan haan, unhone hi toh number diya tha. Accha chalo phir Abdul bhai.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Deepak says the person gave Abdul Karim's number.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan haan, unhone hi toh number diya tha. Accha chalo phir Abdul bhai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Ji sahab. Bees tarikh tak toh pakka fit karke de dunga, aap befikar raho.": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The worker says the work will be fitted by the 20th and says to be carefree.",
+    "value": "finish by the 20th",
+    "rupees": null,
+    "figure": "whole",
+    "date": "2026-11-20",
+    "quote": "Ji sahab. Bees tarikh tak toh pakka fit karke de dunga, aap befikar raho.",
+    "accepts_line": null,
+    "contradicts": "dates@1.14"
+   }
+  ],
+  "Haan haan theek hai, badhiya. Chalo, kal milte hain phir.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Deepak Malhotra says, \"okay, good,\" and suggests they meet tomorrow.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan haan theek hai, badhiya. Chalo, kal milte hain phir.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Ji sahab, Allah hafiz. Madam ko salaam kehna.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says goodbye and asks to give his regards to madam.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Ji sahab, Allah hafiz. Madam ko salaam kehna.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Zaroor zaroor. Accha suno, laminate ka colour main kal subah tak WhatsApp kar dunga.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Deepak Malhotra says he will send the laminate color on WhatsApp by tomorrow morning.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Zaroor zaroor. Accha suno, laminate ka colour main kal subah tak WhatsApp kar dunga.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek hai sahab, showroom se photo bhej dena. Accha sahab, rakhta hoon.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says the hirer should send the showroom photo.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Theek hai sahab, showroom se photo bhej dena.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says goodbye and ends the call.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Accha sahab, rakhta hoon.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Ji, khuda hafiz sahab.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says goodbye.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Ji, khuda hafiz sahab.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ]
+ },
+ "checks": {}
+}

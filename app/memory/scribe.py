@@ -130,7 +130,9 @@ class Scribe:
         return compare(deal, claim.item, claim.rupees, claim.date, claim.parts, claim.figure == "part")
 
     def _apply(self, deal: DealBook, line: TranscriptLine, claim: Claim, received: float) -> None:
-        if claim.item and echo.echoes(deal, line, claim.rupees) and doubts_figure(line.text, claim.rupees):
+        # A recall with a question tag still says what was agreed ("32 tay hua tha na?").
+        asked = claim.stance != "recall"
+        if claim.item and echo.echoes(deal, line, claim.rupees) and doubts_figure(line.text, claim.rupees, asked):
             # "9,000 thoda zyada hai", "9,000 mein to...", "9,000 wala baad mein": their figure said back
             # with a complaint, a hedge, a question or a deferral accepts nothing and offers nothing,
             # and turns down a change they offered with it.
@@ -166,6 +168,10 @@ class Scribe:
             if claim.kind == FactKind.CHANGE and claim.item == ItemKey.DATES and verdict == "differs":
                 self._conflict(deal, line, claim, against, part, received)  # the brain compares no dates itself
             self._model_conflict(deal, line, claim, fact, received)
+            return
+        if verdict == "differs" and claim.stance == "recall" and echo.asks_which(claim.quote):
+            fact = self.m.record(Fact(**base), received)  # a question about the figure asserts nothing
+            self.m.note("scribe", f"line {line.line_no}: asked about {claim.item.value}, {fact.value or ''}", fact, line)
             return
         if verdict == "differs":
             if claim.stance != "accept":

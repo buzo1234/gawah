@@ -1,0 +1,586 @@
+{
+ "model": "gpt-5.4-mini",
+ "effort": "none",
+ "replies": {
+  "Haan ji, Raju bol raha hoon. Plumber.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Raju says he is Raju and a plumber.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan ji, Raju bol raha hoon. Plumber.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan Raju bhaiya, namaste, main Sunita Khanna, B-block se. Mehra ji ne aapka number diya tha. Woh hamare bathroom mein na leakage ho raha hai.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna says there is a leakage in their bathroom.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan Raju bhaiya, namaste, main Sunita Khanna, B-block se. Mehra ji ne aapka number diya tha. Woh hamare bathroom mein na leakage ho raha hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Kahan se? Tap se ya neeche se?": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Raju asks whether the leakage is from the tap or from below.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Kahan se? Tap se ya neeche se?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Neeche se lagta hai, deewar mein seelan aa gayi hai, aur neeche wale flat mein bhi paani tapak raha hai. Unhone do baar complain kar diya, bahut chik chik karte hain woh log.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna says the leak seems to be from below, there is dampness in the wall, and water is dripping into the flat below.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Neeche se lagta hai, deewar mein seelan aa gayi hai, aur neeche wale flat mein bhi paani tapak raha hai.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna says the downstairs residents have complained twice.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Unhone do baar complain kar diya, bahut chik chik karte hain woh log.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Concealed pipe hoga. Tile todni padegi.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Raju says the problem is likely a concealed pipe and the tile will have to be broken.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Concealed pipe hoga. Tile todni padegi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haaye, tile? Abhi do saal pehle hi toh lagwayi thi. Mere bete ne pasand ki thi woh tiles, Bangalore mein hai woh, aata hi nahi hai.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna says the tiles were installed two years ago.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haaye, tile? Abhi do saal pehle hi toh lagwayi thi. Mere bete ne pasand ki thi woh tiles, Bangalore mein hai woh, aata hi nahi hai.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna says her son liked the tiles and is in Bangalore.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haaye, tile? Abhi do saal pehle hi toh lagwayi thi. Mere bete ne pasand ki thi woh tiles, Bangalore mein hai woh, aata hi nahi hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Do teen tile. Pipe badal ke wapas laga denge. Tile aapki hogi toh wahi lagegi.": [
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "state",
+    "text": "Raju says they will break 2-3 tiles, replace the pipe, and put the tile back.",
+    "value": "2-3 tiles; replace the pipe; reinstall the tile",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Do teen tile. Pipe badal ke wapas laga denge. Tile aapki hogi toh wahi lagegi.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "state",
+    "text": "Raju says the tile used will be the hirer's own tile if it is theirs.",
+    "value": "use your own tile if it is yours",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Do teen tile. Pipe badal ke wapas laga denge. Tile aapki hogi toh wahi lagegi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan haan, extra tiles rakhi hain store mein, kahin toh hongi. Toh kitna lagega sab?": [
+   {
+    "item": "amount",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna says extra tiles are kept in the store and asks how much the whole job will cost.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan haan, extra tiles rakhi hain store mein, kahin toh hongi. Toh kitna lagega sab?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Pipe, fitting, cement, labour, sab milake paintalis sau.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says the total for the job including pipe, fittings, cement, and labour is 4,500 rupees.",
+    "value": "4,500 rupees",
+    "rupees": 4500,
+    "figure": "whole",
+    "date": null,
+    "quote": "Pipe, fitting, cement, labour, sab milake paintalis sau.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Paintalis sau matlab four thousand five hundred? Thoda zyada nahi hai?": [
+   {
+    "item": "amount",
+    "kind": "other",
+    "stance": "recall",
+    "text": "Sunita Khanna asks if Raju means 4,500 rupees.",
+    "value": "4,500 rupees",
+    "rupees": 4500,
+    "figure": "whole",
+    "date": null,
+    "quote": "Paintalis sau matlab four thousand five hundred? Thoda zyada nahi hai?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Concealed kaam hai madam. Itna hi lagega.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "state",
+    "text": "Raju says the job will cost 4,500 rupees.",
+    "value": "4,500 rupees",
+    "rupees": 4500,
+    "figure": "whole",
+    "date": null,
+    "quote": "Concealed kaam hai madam. Itna hi lagega.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Accha theek hai. Mehra ji keh rahe the aap kaam accha karte ho. Woh unke yahan kitchen ka bhi aapne kiya tha na?": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Sunita Khanna accepts Raju's 4,500 rupees for the job.",
+    "value": "4,500 rupees",
+    "rupees": 4500,
+    "figure": "whole",
+    "date": null,
+    "quote": "Accha theek hai.",
+    "accepts_line": 11,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna says Mehra ji said Raju does good work and asks whether he also did their kitchen work.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Mehra ji keh rahe the aap kaam accha karte ho. Woh unke yahan kitchen ka bhi aapne kiya tha na?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan. Kab karwana hai?": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says yes and asks when it should be done.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan. Kab karwana hai?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Jitna jaldi ho sake. Kal aa sakte ho?": [
+   {
+    "item": "dates",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna asks whether Raju can come tomorrow.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Jitna jaldi ho sake. Kal aa sakte ho?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Kal subah das baje. Ek din ka kaam hai, shaam tak ho jayega.": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the work can start tomorrow morning and will be finished by evening.",
+    "value": "start tomorrow morning, finish by evening",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Kal subah das baje. Ek din ka kaam hai, shaam tak ho jayega.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says it is one day's work.",
+    "value": "one day",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Kal subah das baje. Ek din ka kaam hai, shaam tak ho jayega.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek hai das baje. Arre haan, society wale gate pe entry karwate hain, aap guard ko naam bata dena, Sunita Khanna, B-204.": [
+   {
+    "item": "dates",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Sunita Khanna accepts the previously proposed start tomorrow morning and finish by evening.",
+    "value": "start tomorrow morning, finish by evening",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Theek hai das baje. Arre haan, society wale gate pe entry karwate hain, aap guard ko naam bata dena, Sunita Khanna, B-204.",
+    "accepts_line": 15,
+    "contradicts": null
+   },
+   {
+    "item": "dates",
+    "kind": "change",
+    "stance": "state",
+    "text": "Sunita Khanna says the worker should come at ten o'clock and tell the guard her name, Sunita Khanna, B-204, for gate entry.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Theek hai das baje. Arre haan, society wale gate pe entry karwate hain, aap guard ko naam bata dena, Sunita Khanna, B-204.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek hai. Material ke liye pandrah sau pehle dena padega. Aaj hi.": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "state",
+    "text": "Raju says 1,500 rupees must be given first for materials today.",
+    "value": "1,500 rupees",
+    "rupees": 1500,
+    "figure": "whole",
+    "date": null,
+    "quote": "Theek hai. Material ke liye pandrah sau pehle dena padega. Aaj hi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Pandrah sau aaj? Accha chalo, GPay pe bhej deti hoon, yahi number hai na?": [
+   {
+    "item": "advance",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Sunita Khanna accepts the worker's request for a 1,500 rupee advance today by saying she will send it on GPay.",
+    "value": "1,500 rupees today",
+    "rupees": 1500,
+    "figure": "whole",
+    "date": null,
+    "quote": "Pandrah sau aaj? Accha chalo, GPay pe bhej deti hoon, yahi number hai na?",
+    "accepts_line": 17,
+    "contradicts": null
+   },
+   {
+    "item": "advance",
+    "kind": "change",
+    "stance": "state",
+    "text": "Sunita Khanna says she will send the 1,500 rupees by GPay.",
+    "value": "1,500 rupees by GPay",
+    "rupees": 1500,
+    "figure": "whole",
+    "date": null,
+    "quote": "Pandrah sau aaj? Accha chalo, GPay pe bhej deti hoon, yahi number hai na?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan yahi number. Aur baaki ka?": [
+   {
+    "item": "balance",
+    "kind": "other",
+    "stance": "state",
+    "text": "Raju asks about the remaining payment.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan yahi number. Aur baaki ka?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Arre baaki ki tension mat lo bhaiya, mil jayega, main kaun sa bhaag rahi hoon. Waise woh geyser bhi thoda awaaz karta hai, woh bhi dekh loge kal?": [
+   {
+    "item": "balance",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna says the rest of the money will be given, and asks if he will also look at the geyser tomorrow.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Arre baaki ki tension mat lo bhaiya, mil jayega, main kaun sa bhaag rahi hoon. Waise woh geyser bhi thoda awaaz karta hai, woh bhi dekh loge kal?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Dekh lunga. Woh alag hoga.": [
+   {
+    "item": "balance",
+    "kind": "other",
+    "stance": "state",
+    "text": "Raju says the rest will be separate.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Dekh lunga. Woh alag hoga.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan haan, alag de dungi. Aur kitchen ka sink bhi dheere nikalta hai paani, blockage hai shayad.": [
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "accept",
+    "text": "Sunita Khanna says the rest will be separate.",
+    "value": "separate",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan haan, alag de dungi. Aur kitchen ka sink bhi dheere nikalta hai paani, blockage hai shayad.",
+    "accepts_line": 21,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna says the kitchen sink drains water slowly and there may be a blockage.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan haan, alag de dungi. Aur kitchen ka sink bhi dheere nikalta hai paani, blockage hai shayad.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Kal dekh lenge sab.": [
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Raju says they will look at everything tomorrow.",
+    "value": "tomorrow",
+    "rupees": null,
+    "figure": "whole",
+    "date": "2026-11-23",
+    "quote": "Kal dekh lenge sab.",
+    "accepts_line": 20,
+    "contradicts": null
+   }
+  ],
+  "Haan wahi. Pichhle wale plumber ne toh aadha kaam karke chhod diya tha, baad mein phone hi nahi uthata tha.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna says the previous plumber had left the work half done and did not answer the phone afterward.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan wahi. Pichhle wale plumber ne toh aadha kaam karke chhod diya tha, baad mein phone hi nahi uthata tha.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Aapko toh Mehra ji jaante hain, isliye bharosa hai. Accha, cement wagairah aap le aaoge na? Mujhe kuch mangwana toh nahi?": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna says Mehra ji knows Raju, so she trusts him.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Aapko toh Mehra ji jaante hain, isliye bharosa hai.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna asks whether Raju will bring cement and other materials himself and whether she needs to arrange anything.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Accha, cement wagairah aap le aaoge na? Mujhe kuch mangwana toh nahi?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Sab le aaunga. Aap bas tile nikaal ke rakhna.": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says he will bring everything.",
+    "value": "bring all materials",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Sab le aaunga.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker asks Sunita Khanna to just remove the tile and keep it ready.",
+    "value": "keep the tile removed and ready",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Aap bas tile nikaal ke rakhna.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan woh main aaj hi dhoond leti hoon. Bete ko bhi phone karke poochhti hoon kahan rakhi thi.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna says she will look for it today and call her son to ask where it was kept.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan woh main aaj hi dhoond leti hoon. Bete ko bhi phone karke poochhti hoon kahan rakhi thi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Accha chalo phir, main paise bhej deti hoon, baaki kal aap aaoge toh baat karte hain.": [
+   {
+    "item": "advance",
+    "kind": "payment",
+    "stance": "state",
+    "text": "Sunita Khanna says she will send the money now.",
+    "value": "1,500 rupees",
+    "rupees": 1500,
+    "figure": "whole",
+    "date": null,
+    "quote": "Accha chalo phir, main paise bhej deti hoon, baaki kal aap aaoge toh baat karte hain.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita Khanna says the remaining money will be discussed tomorrow when he comes.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Accha chalo phir, main paise bhej deti hoon, baaki kal aap aaoge toh baat karte hain.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan theek hai. Chalo phir baat karte hain.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "accept",
+    "text": "Raju says \"Haan theek hai\" and then \"Chalo phir baat karte hain,\" which accepts nothing about the deal.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Haan theek hai. Chalo phir baat karte hain.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan ji, chalo phir baat karte hain.": []
+ },
+ "checks": {}
+}

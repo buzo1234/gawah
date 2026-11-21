@@ -1,6 +1,6 @@
 {
  "fixture": "holdout2_tailor_lehenga",
- "recorded_at": "2026-11-21T18:25:10+00:00",
+ "recorded_at": "2026-11-21T19:23:29+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "ambiguous:work@12": {
@@ -41,6 +41,14 @@
   "names:-@6": {
    "hirer": "Sunita",
    "worker": null
+  },
+  "ambiguous:work@5": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@10": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }
