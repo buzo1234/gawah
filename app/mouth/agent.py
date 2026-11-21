@@ -45,6 +45,8 @@ class Turn:
     items: list[list] = field(default_factory=list)  # [item id, where its audio starts in ms, its length in ms]
     rounds: int = 0
     use_tools: bool = True
+    first_choice: str = "auto"  # tool_choice for the first request: "required" makes it look up before it speaks
+    then: list[tuple] = field(default_factory=list)  # fixed steps after the model's reply: ("clip", fact_id), ("say", situation)
 
     @property
     def audio_ms(self) -> float:
@@ -90,8 +92,8 @@ class Agent:
 
     # ---- turns ----
 
-    async def turn(self, situation: str, use_tools: bool = True) -> Turn:
-        turn = Turn(situation, use_tools=use_tools)
+    async def turn(self, situation: str, use_tools: bool = True, first_choice: str = "auto", then: list[tuple] = ()) -> Turn:
+        turn = Turn(situation, use_tools=use_tools, first_choice=first_choice, then=list(then))
         await self._respond(turn)
         return turn
 
@@ -116,6 +118,10 @@ class Agent:
             response["input"] = []
         if not turn.use_tools or turn.rounds >= tuning.TOOL_ROUNDS:
             response["tool_choice"] = "none"
+        elif turn.rounds == 0 and turn.first_choice != "auto":
+            # Text only: the model talks while it calls a tool ("let me check the record"), and nobody
+            # should hear that. Its words come in the next request, after the tool's answer.
+            response["tool_choice"], response["output_modalities"] = turn.first_choice, ["text"]
         await self.link.send({"type": "response.create", "event_id": ask, "response": response})
 
     async def cancel(self, turn: Turn, heard_ms: float | None = None) -> None:
@@ -191,8 +197,12 @@ class Agent:
             turn.failed, turn.complete = f"reply {status}", True
             return
         calls = [o for o in response.get("output") or [] if o.get("type") == "function_call"]
+        if not calls and turn.rounds == 0 and turn.first_choice != "auto":
+            turn.rounds = 1  # the lookup round called nothing: ask again, for words this time
+            await self._respond(turn)
+            return
         if not calls:
-            turn.complete = True
+            await self._next(turn)
             return
         turn.rounds += 1
         for call in calls:
@@ -218,3 +228,21 @@ class Agent:
             turn.complete = True  # nothing more to say: stay_silent ends the turn
             return
         await self._respond(turn)
+
+    async def _next(self, turn: Turn) -> None:
+        """The turn's fixed steps, if any are left; else it is complete."""
+        while turn.then and not turn.cancelled:
+            step = turn.then.pop(0)
+            if step[0] == "clip":
+                result = await self.tools.run("play_clip", {"fact_id": step[1]})
+                turn.effects.extend(result.effects)
+                if result.clip:
+                    turn.audio.extend(result.clip)
+                    turn.clip_fact_id = result.clip_fact_id
+                    turn.text = " ".join(filter(None, [turn.text, "[clip]"]))
+                await self.note(result.output)
+            else:
+                turn.situation, turn.use_tools = step[1], False
+                await self._respond(turn)
+                return
+        turn.complete = True

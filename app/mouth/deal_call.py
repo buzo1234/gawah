@@ -250,7 +250,7 @@ class DealCall:
         self.player.finish()
         await self.player.done.wait()
         started = self.player.started_at or self.player.ended_at
-        self.outcomes.append({"what": "ack", "said": True, "text": tuning.ACK, "interrupted": self.player.cut,
+        self.outcomes.append({"what": "ack", "said": True, "text": tuning.ACK, "interrupted": self.player.cut, "at": started,
                               "after_voice_ms": _ms(started - voice_end) if voice_end else None})
         return started
 
@@ -283,7 +283,7 @@ class DealCall:
             end=round(player.ended_at - self._zero, 2), interrupted=cut, clip_fact_id=clip,
         )
         self.outcomes.append({
-            "what": job.what, "said": True, "text": text, "interrupted": cut, "spoken_over": over,
+            "what": job.what, "said": True, "text": text, "interrupted": cut, "spoken_over": over, "at": started,
             "wait_ms": _ms(started - job.arrived),  # the moment arriving to the first sound handed to the room
             "model_ms": _ms(utterance.first_audio_at - utterance.asked_at) if utterance.first_audio_at else None,
             "after_voice_ms": _ms(started - voice_end) if voice_end else None,  # someone's last voice to Gawah's first sound

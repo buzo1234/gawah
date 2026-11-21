@@ -204,7 +204,7 @@ AGENT_PERSONA = (
     "You speak only when you are given a moment to speak; that message says what the moment is. Then say one "
     "short thing, in natural, polite spoken Hindi, the way people in Delhi talk on the phone (everyday English "
     "words like advance, balance or date are fine). Call people by name with 'ji'. One or two short sentences, "
-    "then stop. Never greet, never explain yourself.\n"
+    "then stop. Never greet, never explain yourself, and never start with 'theek hai' or say what you are about to do.\n"
     "Rules you never break:\n"
     "- Facts only. Before you state a figure, a date or what was agreed, look it up with get_term, owed or "
     "search_facts: Memory is the record. If Memory has nothing yet, say what you heard on this call and that it "
@@ -245,18 +245,23 @@ MOMENT_ASK = (
     "Do not answer it yourself."
 )
 MOMENT_ADDRESSED = (
-    "{name} just spoke to you, in line {no}: \"{question}\". Answer {name} in one or two short sentences, from the "
-    "record (look it up first). If they ask to hear the moment something was said, give a short lead-in and call "
+    "{name} just spoke to you, in line {no}: \"{question}\". First look it up (get_term, owed or search_facts), "
+    "without a word. Then answer {name} straight away, in at most two short sentences (about 20 words): the answer "
+    "itself, nothing before it. If they ask to hear the moment something was said, give a short lead-in and call "
     "play_clip. If it is not a question for you, answer in a few words, or call stay_silent. "
-    "\"Haan ji, ek second\" may already have been said, so do not say it again."
+    "\"Haan ji, ek second\" has already been said, so do not say it again."
 )
 MOMENT_CONTRADICTION = (
-    "The Judge's note: {instruction} On record: {facts} Say in one short sentence what was agreed and when, then a "
-    "short lead-in and call play_clip with that fact's id so they hear it in their own voices. After the clip, "
-    "ask {to} in one short sentence which one they mean. Do not say who is right."
+    "The Judge's note: {instruction} On record: {facts} Say in one short sentence what was agreed, by whom and when "
+    "(the date, or which call), and end with a short lead-in such as 'Suniye'. Nothing else: the recording of it "
+    "plays right after you, and then you will ask which one they mean."
+)
+MOMENT_CONTRADICTION_ASK = (
+    "The recording of what was agreed has just played in the call (if there was one). Now ask {to}, in one short "
+    "sentence, which one they mean. Do not repeat the figures at length, and do not say who is right."
 )
 FOLLOW_UP = (
-    "You are waiting for an answer about: {about}. The latest line is above. Decide silently: "
+    "You are waiting for an answer about: {about}. The latest lines are above. Decide, and call a tool first: "
     "if someone now wants to change the agreed term, call propose_change with the new value in their words, and "
     "then ask both of them, in one short sentence, to say haan if they agree to the change. "
     "If the line is a clear yes or no to a proposed change, call confirm_change for that person. "
@@ -278,8 +283,8 @@ CLIP_THEN = "say the rest of what you were going to say, briefly."
 NO_CLIP = "There is no recording of fact {fact}. Say what was agreed in words instead."
 UNKNOWN_FACT = "There is no fact {fact}. Use an id from Memory's notes or from get_term or search_facts."
 PROPOSED = (
-    "Change {change} proposed: {item} from \"{old}\" to \"{new}\". Nothing changes until both say yes. Now ask "
-    "{both} in one short sentence to say haan if they agree to this change."
+    "Change {change} proposed: {item} from \"{old}\" to \"{new}\". Nothing changes until both say yes. Now, in one "
+    "short sentence, say the change (from what to what) and ask {both} to say haan if they both agree."
 )
 CONFIRMED_ONE = "{name}'s {answer} is recorded for change {change}. Still waiting for {other}. Call stay_silent unless {other} needs asking."
 CONFIRMED_BOTH = "Both said yes: change {change} holds, {item} is now \"{new}\". Say so in one short sentence."

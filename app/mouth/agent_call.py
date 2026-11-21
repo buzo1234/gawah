@@ -11,6 +11,7 @@
 """
 
 import asyncio
+import time
 from collections.abc import Callable
 from datetime import UTC, datetime
 
@@ -119,14 +120,28 @@ class AgentCall(DealCall):
     def _wait_s(self, job: _Job) -> float:
         return tuning.WAIT_S.get(job.kind, tuning.PAUSE_WAIT_S)
 
+    async def _say(self, job: _Job) -> None:
+        if job.kind == "follow_up":
+            # It reads every line up to now, so its wait for a pause starts now, not when it was queued.
+            self._follow_queued = False
+            job.arrived = time.monotonic()
+        await super()._say(job)
+
     async def _prepare(self, job: _Job) -> Turn | None:
         if job.kind == "follow_up":
-            self._follow_queued = False
             about = self._waiting_for()
             if about is None:
                 return None
             job.instruction = moments.follow_up(about, self.names)
-        return await self.agent.turn(job.instruction, use_tools=job.kind != "opening")
+        if job.kind == SpeakReason.CONTRADICTS_RECORD.value:
+            # A fixed order, so the clip always comes between what was agreed and the question.
+            facts = job.speak.fact_ids if job.speak else []
+            then = [("clip", facts[0])] if facts else []
+            return await self.agent.turn(job.instruction, use_tools=False, then=then + [("say", moments.contradiction_ask(job.speak, self.names))])
+        if job.kind in (ADDRESSED, "follow_up"):
+            return await self.agent.turn(job.instruction, first_choice="required")  # look it up first, then speak
+        # The opening, and a question the brain wants asked: nothing to look up, only the words to choose.
+        return await self.agent.turn(job.instruction, use_tools=False)
 
     async def _cancel(self, utterance: Turn, heard_ms: float | None = None) -> None:
         await self.agent.cancel(utterance, heard_ms)

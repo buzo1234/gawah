@@ -46,7 +46,7 @@ TOOLS = [
     _tool("propose_change", "Start a change to an agreed term that someone on the call has asked for. Nothing "
           "changes until both people say yes.",
           {"fact_id": {"type": "string", "description": "the fact being changed"},
-           "new_value": {"type": "string", "description": "the new value, in the words used on the call"},
+           "new_value": {"type": "string", "description": "only the new value, short, e.g. '14,000 rupees, labour only'"},
            "proposed_by": _ROLE, "said": _SAID}, ["fact_id", "new_value", "proposed_by", "said"]),
     _tool("confirm_change", "Record one person's spoken yes or no to a proposed change, from a line they said.",
           {"change_id": {"type": "string"}, "person": _ROLE, "agrees": {"type": "boolean"}, "said": _SAID},
@@ -140,6 +140,7 @@ class Tools:
             else:
                 lines.append(f"{tuning.LABEL[row.item]}: agreed {row.agreed_rupees:,}, paid {row.paid_rupees:,}, "
                              f"still owed {row.owed_rupees:,} rupees (payment facts: {', '.join(row.payment_fact_ids) or 'none'}).")
+        lines.append("Each row counts only the payments made towards that term; never add rows up yourself.")
         return Result(" ".join(lines), effects=[self._note("worked out what is owed")])
 
     async def _search_facts(self, query: str) -> Result:

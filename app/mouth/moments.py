@@ -107,6 +107,10 @@ def moment(speak: JudgeSpeak, names: Names, facts: dict[str, Fact], question: st
     return head + body + (f" On record: {on_record}" if known else "")
 
 
+def contradiction_ask(speak: JudgeSpeak, names: Names) -> str:
+    return tuning.MOMENT_CONTRADICTION_ASK.format(to=names.to(speak.to))
+
+
 def addressed(name: str, line_no: int | None, question: str) -> str:
     return tuning.MOMENT_ADDRESSED.format(name=name, no=line_no or "?", question=clean(question))
 

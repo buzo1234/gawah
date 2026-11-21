@@ -101,6 +101,9 @@ async def test_spoken_to_by_name_it_acknowledges_at_once_then_answers_from_memor
     assert answer["tools"] == ["get_term"] and answer["ack_ms"] < 300  # the ack went out at once, in the pause
     assert "3,000 rupees, cash, tomorrow morning" in link.outputs()[0]  # the tool answered from memory
     assert "Ramesh just spoke to you, in line 20" in link.asked()[-2]
+    first, second = link.of("response.create")[-2:]
+    assert first["response"]["tool_choice"] == "required" and first["response"]["output_modalities"] == ["text"]
+    assert "tool_choice" not in second["response"] and second["response"]["output_modalities"] == ["audio"]  # look up, then speak
     ack_frames = len(call._ack) // tuning.FRAME_BYTES
     assert len(seat.played) - played >= ack_frames + 600 // tuning.FRAME_MS  # the ack, then the answer
     await until(lambda: any(n.startswith("said: Haan ji, ek second. Advance 3,000") for n in notes(world)))
@@ -151,8 +154,8 @@ async def test_a_contradiction_says_what_was_agreed_plays_the_clip_and_asks(worl
     seat, link = await world.call()
     for fact in FACTS:
         world.bus.publish(FactRecorded(deal_id="d1", fact=fact))
-    link.replies = [
-        {"text": "21 November ki call mein 13,000 tay hua tha. Suniye.", "ms": 400, "calls": [("play_clip", {"fact_id": "f-amount"})]},
+    link.replies = [  # what was agreed and the lead-in; the clip is played by the turn's fixed step; then the question
+        {"text": "21 November ki call mein 13,000 tay hua tha. Suniye.", "ms": 400},
         {"text": "Aap dono kaunsa matlab rahe hain, 13 ya 14?", "ms": 400},
     ]
     played = len(seat.played)
@@ -160,9 +163,11 @@ async def test_a_contradiction_says_what_was_agreed_plays_the_clip_and_asks(worl
                        reason=SpeakReason.CONTRADICTS_RECORD, item=ItemKey.AMOUNT, fact_ids=["f-amount"], after_line=19)
     world.bus.publish(speak)
     [spoke] = await until(lambda: said(world))
-    situation = link.asked()[-2]
-    assert "something just said does not match the record" in situation and "[f-amount] confirmed" in situation
-    assert "call play_clip" in situation
+    first, then = link.asked()[-2:]
+    assert "something just said does not match the record" in first and "[f-amount] confirmed" in first
+    assert "end with a short lead-in" in first and "ask Sunita and Ramesh, in one short sentence, which one they mean" in then
+    assert all(e["response"]["tool_choice"] == "none" for e in link.of("response.create")[-2:])
+    assert link.items("system")[-1].startswith("The clip of fact f-amount is now playing")
     assert spoke.clip_fact_id == "f-amount" and "[clip]" in spoke.text and spoke.text.endswith("13 ya 14?")
     clip_ms = 1000 + 2 * tuning.CLIP_PAD_MS
     heard = (len(seat.played) - played) * tuning.FRAME_MS
@@ -291,3 +296,19 @@ async def test_the_safety_switch_keeps_the_plain_voice(bus):
     await asyncio.sleep(0.3)
     assert not link.of("conversation.item.create") and "tools" not in link.config
     assert len(link.of("response.create")) == 1 and not world.of(AgentNote)  # the opening line, and nothing else
+
+
+async def test_an_answer_said_while_gawah_is_still_talking_is_checked_after(world):
+    seat, link = await world.call()
+    world.bus.publish(FactRecorded(deal_id="d1", fact=FACTS[1]))
+    link.replies = [{"text": "13,000 tay hua tha. Suniye.", "ms": 1500}, {"text": "Kaunsa sahi hai?", "ms": 300}]
+    world.bus.publish(JudgeSpeak(deal_id="d1", instruction="Two totals.", to=Audience.BOTH, reason=SpeakReason.CONTRADICTS_RECORD,
+                                 item=ItemKey.AMOUNT, fact_ids=["f-amount"]))
+    call = world.mouth.calls["d1"]
+    await until(lambda: call.player.active)
+    link.replies.append({"calls": [("stay_silent", {})]})
+    world.bus.publish(line(22, Role.WORKER, "Haan, 13 hi sahi hai."))  # lands while Gawah is mid-sentence
+    await until(lambda: any("You are waiting for an answer about" in a for a in link.asked()), timeout=8)
+    await settle(world, link)
+    assert call.outcomes[-1] == {"what": "follow_up", "said": False, "why": "stayed silent"}
+    assert link.of("response.create")[-1]["response"]["tool_choice"] == "required"
