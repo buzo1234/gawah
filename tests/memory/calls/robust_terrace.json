@@ -1,0 +1,103 @@
+{
+ "id": "robust_terrace",
+ "description": "A society secretary and a waterproofing contractor. A rate per square foot is not the total; the total is agreed at 26,000 and paid as 10,000 before, 10,000 after the first coat and 6,000 at the end; then a parapet is added, bargained 4,000, 3,000, 3,500, agreed, and put into the last payment.",
+ "people": [
+  {
+   "role": "hirer",
+   "name": "Joshi",
+   "phone": "+910000000101"
+  },
+  {
+   "role": "worker",
+   "name": "Bablu",
+   "phone": "+910000000102"
+  }
+ ],
+ "call_date": "2026-11-23",
+ "lines": [
+  {
+   "line_no": 1,
+   "speaker": "hirer",
+   "text": "Bablu ji, terrace ki waterproofing ka hisaab bataiye. Neeche wale flat mein seelan aa rahi hai.",
+   "start": 0.5,
+   "end": 7.3
+  },
+  {
+   "line_no": 2,
+   "speaker": "worker",
+   "text": "Sir chemical coating karenge, do coat. 28 rupaye square foot padta hai, aapki chhat hazaar square foot hai.",
+   "start": 7.9,
+   "end": 15.5
+  },
+  {
+   "line_no": 3,
+   "speaker": "hirer",
+   "text": "Matlab 28,000? Society ka budget 25 hai.",
+   "start": 16.1,
+   "end": 19.0
+  },
+  {
+   "line_no": 4,
+   "speaker": "worker",
+   "text": "Sir 26,000 mein kar deta hoon, material mera.",
+   "start": 19.6,
+   "end": 22.8
+  },
+  {
+   "line_no": 5,
+   "speaker": "hirer",
+   "text": "Chaliye 26,000 final. Paisa kaise loge?",
+   "start": 23.4,
+   "end": 26.2
+  },
+  {
+   "line_no": 6,
+   "speaker": "worker",
+   "text": "10,000 pehle, 10,000 pehla coat lagne ke baad, aur 6,000 kaam poora hone par.",
+   "start": 26.8,
+   "end": 32.3
+  },
+  {
+   "line_no": 7,
+   "speaker": "hirer",
+   "text": "Theek hai, das das aur chhe, chalega.",
+   "start": 32.9,
+   "end": 35.5
+  },
+  {
+   "line_no": 8,
+   "speaker": "worker",
+   "text": "Sir parapet ki deewar pe bhi crack hai. Woh bhi karna ho to 4,000 extra lagega.",
+   "start": 36.1,
+   "end": 41.8
+  },
+  {
+   "line_no": 9,
+   "speaker": "hirer",
+   "text": "Teen hazaar mein karo parapet.",
+   "start": 42.4,
+   "end": 44.9
+  },
+  {
+   "line_no": 10,
+   "speaker": "worker",
+   "text": "Sir saadhe teen kar dijiye, material bhi lagega.",
+   "start": 45.5,
+   "end": 48.9
+  },
+  {
+   "line_no": 11,
+   "speaker": "hirer",
+   "text": "Theek hai saadhe teen, kar do. Aakhri payment ke saath de denge.",
+   "start": 49.5,
+   "end": 54.1
+  },
+  {
+   "line_no": 12,
+   "speaker": "worker",
+   "text": "Ji sir, to aakhri payment 9,500, pakka. Somvar se shuru.",
+   "start": 54.7,
+   "end": 58.7
+  }
+ ]
+}

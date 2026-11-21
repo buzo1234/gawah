@@ -1,0 +1,103 @@
+{
+ "id": "robust_cook",
+ "description": "A working couple hires a cook by the month, speech to text in Devanagari with no punctuation. 9,000 a month is the amount, not a rate; two days' leave and Sundays off are the work, not the late term; a day missed without telling is cut, which is the late term. A question saying the figure back is not acceptance.",
+ "people": [
+  {
+   "role": "hirer",
+   "name": "मेघा",
+   "phone": "+910000000101"
+  },
+  {
+   "role": "worker",
+   "name": "सरला",
+   "phone": "+910000000102"
+  }
+ ],
+ "call_date": "2026-11-23",
+ "lines": [
+  {
+   "line_no": 1,
+   "speaker": "hirer",
+   "text": "नमस्ते सरला जी मेघा बोल रही हूं आपका नंबर गुप्ता आंटी ने दिया था",
+   "start": 0.5,
+   "end": 5.1
+  },
+  {
+   "line_no": 2,
+   "speaker": "worker",
+   "text": "हां जी नमस्ते दीदी खाना बनाने का काम है ना",
+   "start": 5.7,
+   "end": 8.7
+  },
+  {
+   "line_no": 3,
+   "speaker": "hirer",
+   "text": "हां दोनों टाइम का खाना चार लोग हैं सुबह सात बजे और शाम सात बजे",
+   "start": 9.3,
+   "end": 13.7
+  },
+  {
+   "line_no": 4,
+   "speaker": "worker",
+   "text": "दोनों टाइम का दस हज़ार महीना लगेगा दीदी",
+   "start": 14.3,
+   "end": 17.1
+  },
+  {
+   "line_no": 5,
+   "speaker": "hirer",
+   "text": "दस हज़ार थोड़ा ज़्यादा है नौ में कर दो",
+   "start": 17.7,
+   "end": 20.4
+  },
+  {
+   "line_no": 6,
+   "speaker": "worker",
+   "text": "नौ हज़ार में दोनों टाइम बर्तन नहीं करूंगी",
+   "start": 21.0,
+   "end": 23.9
+  },
+  {
+   "line_no": 7,
+   "speaker": "hirer",
+   "text": "हां बर्तन के लिए अलग बाई है नौ हज़ार ठीक है",
+   "start": 24.5,
+   "end": 27.6
+  },
+  {
+   "line_no": 8,
+   "speaker": "worker",
+   "text": "और महीने में दो छुट्टी चाहिए और रविवार शाम को नहीं आऊंगी",
+   "start": 28.2,
+   "end": 32.2
+  },
+  {
+   "line_no": 9,
+   "speaker": "hirer",
+   "text": "ठीक है दो छुट्टी पर बिना बताए नहीं आईं तो उस दिन के पैसे कटेंगे",
+   "start": 32.8,
+   "end": 37.3
+  },
+  {
+   "line_no": 10,
+   "speaker": "worker",
+   "text": "हां दीदी बता के ही लूंगी",
+   "start": 37.9,
+   "end": 40.4
+  },
+  {
+   "line_no": 11,
+   "speaker": "hirer",
+   "text": "पैसे हर महीने एक तारीख को दूंगी और परसों से शुरू कर दो",
+   "start": 41.0,
+   "end": 44.9
+  },
+  {
+   "line_no": 12,
+   "speaker": "worker",
+   "text": "ठीक है दीदी परसों सुबह आ जाऊंगी",
+   "start": 45.5,
+   "end": 48.0
+  }
+ ]
+}

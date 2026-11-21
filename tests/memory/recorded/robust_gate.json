@@ -1,0 +1,166 @@
+{
+ "model": "gpt-5.4-mini",
+ "effort": "none",
+ "replies": {
+  "Madam, main gate ka naap le liya. Dus foot chauda, chhe foot ooncha, design wala. 14,500 lagega paint samet.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Raju says he has taken the measurements of the main gate and it is a design gate, 12 feet wide and 6 feet high.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Madam, main gate ka naap le liya. Dus foot chauda, chhe foot ooncha, design wala.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "state",
+    "text": "Raju says the job will cost 14,500 rupees including paint.",
+    "value": "14,500 rupees",
+    "rupees": 14500,
+    "figure": "whole",
+    "date": null,
+    "quote": "14,500 lagega paint samet.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "13 mein karo bhaiya.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "Nirmala offers to do the job for 13,000 rupees.",
+    "value": "13,000 rupees",
+    "rupees": 13000,
+    "figure": "whole",
+    "date": null,
+    "quote": "13 mein karo bhaiya.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "13 mein to patli pipe lagegi madam, mazboot nahi rahega.": [
+   {
+    "item": "amount",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says that for 13,000 rupees the gate would need thin pipe and would not be strong.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "13 mein to patli pipe lagegi madam, mazboot nahi rahega.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Achha 14 final, isse upar nahi.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "The hirer accepts 14,000 rupees as final and says nothing above that.",
+    "value": "14,000 rupees",
+    "rupees": 14000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Achha 14 final, isse upar nahi.",
+    "accepts_line": 2,
+    "contradicts": "amount@1.2"
+   }
+  ],
+  "Chalo 14, pakka. Das din mein laga dunga.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "The worker accepts the agreed price of 14,000 rupees.",
+    "value": "14,000 rupees",
+    "rupees": 14000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Chalo 14, pakka. Das din mein laga dunga.",
+    "accepts_line": 4,
+    "contradicts": null
+   },
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says he will install it in ten days.",
+    "value": "start null, finish in ten days",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Chalo 14, pakka. Das din mein laga dunga.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Advance kitna?": [
+   {
+    "item": "advance",
+    "kind": "other",
+    "stance": "state",
+    "text": "Nirmala asks how much advance there is.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Advance kitna?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "4,000 de dijiye, lohe ke liye.": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says to give 4,000 rupees as advance for iron.",
+    "value": "4,000 rupees",
+    "rupees": 4000,
+    "figure": "whole",
+    "date": null,
+    "quote": "4,000 de dijiye, lohe ke liye.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "4,000 kal bhej dungi.": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "state",
+    "text": "Nirmala says she will send the 4,000 rupees tomorrow as advance.",
+    "value": "4,000 rupees",
+    "rupees": 4000,
+    "figure": "whole",
+    "date": "2026-11-23",
+    "quote": "4,000 kal bhej dungi.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "advance",
+    "kind": "payment",
+    "stance": "state",
+    "text": "Nirmala says she will send the 4,000 rupees tomorrow.",
+    "value": "4,000 rupees",
+    "rupees": 4000,
+    "figure": "whole",
+    "date": "2026-11-23",
+    "quote": "4,000 kal bhej dungi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ]
+ },
+ "checks": {}
+}

@@ -74,19 +74,19 @@ def commits(text: str | None, rupees: int | None = None) -> bool:
     return any(t in STRONG_YES or t in _PLAIN_YES or t in _COMMIT for t in tokens(text))
 
 
+def _recent(deal: DealBook, line: TranscriptLine, speaker=None) -> list[str]:
+    said = [deal.lines.get((line.call_no, n)) for n in range(line.line_no - 1, max(0, line.line_no - 5), -1)]
+    return [s.text for s in said if s is not None and speaker in (None, s.speaker)]
+
+
 def recent_rupees(deal: DealBook, line: TranscriptLine, speaker=None) -> set[int]:
     """Every amount stated outright in the last few lines, by `speaker` if given."""
-    found: set[int] = set()
-    for n in range(line.line_no - 1, max(0, line.line_no - 5), -1):
-        said = deal.lines.get((line.call_no, n))
-        if said is not None and speaker in (None, said.speaker):
-            found |= set(parse_rupees(said.text))
-    return found
+    return {r for text in _recent(deal, line, speaker) for r in parse_rupees(text)}
 
 
 def echoes(deal: DealBook, line: TranscriptLine, rupees: int | None) -> bool:
-    """The figure is one the other person said in the last few lines."""
-    return bool(rupees) and rupees in recent_rupees(deal, line, line.speaker.other)
+    """The figure is one the other person said in the last few lines, at any scale ("800", "pandrah")."""
+    return bool(rupees) and any(_has_figure(text, rupees) for text in _recent(deal, line, line.speaker.other))
 
 
 def scale(deal: DealBook, line: TranscriptLine, claim: Claim) -> None:

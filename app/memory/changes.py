@@ -32,6 +32,15 @@ def offered(deal: DealBook, line: TranscriptLine, item: ItemKey | None, rupees: 
     return max(found, key=lambda f: f.line_no or 0) if found else None
 
 
+def turn_down(memory, deal: DealBook, line: TranscriptLine, claim: Claim, received: float) -> None:
+    """The other person's change, said back with a complaint or put off ("1,200 wala baad mein"):
+    it is no longer on the table."""
+    offer = offered(deal, line, claim.item, claim.rupees)
+    if offer is not None:
+        memory.record(offer.model_copy(update={"status": FactStatus.DISPUTED}), received)
+        memory.note("scribe", f"line {line.line_no}: change to {offer.item.value} turned down or put off", offer, line)
+
+
 def carry(memory, deal: DealBook, line: TranscriptLine, claim: Claim, received: float) -> bool:
     """An extra agreed on this call goes into one payment of the balance when someone says so
     ("the last 50 becomes 65"): the schedule takes the new payment. True if it did."""

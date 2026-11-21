@@ -1,0 +1,75 @@
+{
+ "id": "robust_gate",
+ "description": "A homeowner and a welder: a hedge before a counter is not acceptance, and the figure finally agreed is 14,000.",
+ "people": [
+  {
+   "role": "hirer",
+   "name": "Nirmala",
+   "phone": "+910000000101"
+  },
+  {
+   "role": "worker",
+   "name": "Raju",
+   "phone": "+910000000102"
+  }
+ ],
+ "call_date": "2026-11-23",
+ "lines": [
+  {
+   "line_no": 1,
+   "speaker": "worker",
+   "text": "Madam, main gate ka naap le liya. Dus foot chauda, chhe foot ooncha, design wala. 14,500 lagega paint samet.",
+   "start": 0.5,
+   "end": 8.2
+  },
+  {
+   "line_no": 2,
+   "speaker": "hirer",
+   "text": "13 mein karo bhaiya.",
+   "start": 8.8,
+   "end": 11.3
+  },
+  {
+   "line_no": 3,
+   "speaker": "worker",
+   "text": "13 mein to patli pipe lagegi madam, mazboot nahi rahega.",
+   "start": 11.9,
+   "end": 15.9
+  },
+  {
+   "line_no": 4,
+   "speaker": "hirer",
+   "text": "Achha 14 final, isse upar nahi.",
+   "start": 16.5,
+   "end": 19.0
+  },
+  {
+   "line_no": 5,
+   "speaker": "worker",
+   "text": "Chalo 14, pakka. Das din mein laga dunga.",
+   "start": 19.6,
+   "end": 22.5
+  },
+  {
+   "line_no": 6,
+   "speaker": "hirer",
+   "text": "Advance kitna?",
+   "start": 23.1,
+   "end": 25.6
+  },
+  {
+   "line_no": 7,
+   "speaker": "worker",
+   "text": "4,000 de dijiye, lohe ke liye.",
+   "start": 26.2,
+   "end": 28.7
+  },
+  {
+   "line_no": 8,
+   "speaker": "hirer",
+   "text": "4,000 kal bhej dungi.",
+   "start": 29.3,
+   "end": 31.8
+  }
+ ]
+}
