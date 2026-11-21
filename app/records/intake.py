@@ -19,6 +19,7 @@ from app.records import words
 from app.records.reader import Reader
 
 if TYPE_CHECKING:  # app.whatsapp imports this package, never the other way round
+    from app.records.sentinel import Sentinel
     from app.whatsapp.clock import Clock
     from app.whatsapp.outbox import Outbox
 
@@ -51,9 +52,11 @@ class Ask:
 
 class Intake:
     def __init__(
-        self, bus: Bus, outbox: "Outbox", reader: Reader, clock: "Clock", timeout_seconds: float
+        self, bus: Bus, outbox: "Outbox", reader: Reader, clock: "Clock", timeout_seconds: float,
+        sentinel: "Sentinel | None" = None,
     ) -> None:
         self.bus, self.outbox, self.reader, self.clock = bus, outbox, reader, clock
+        self.sentinel = sentinel  # checks records against the deal; None when there is no memory
         self.timeout_seconds = timeout_seconds
         self._asks: dict[str, list[Ask]] = {}  # the answerer's phone -> their open questions, oldest first
 
@@ -78,10 +81,13 @@ class Intake:
         deal_log("gawah.records", deal.id).info(
             "record %s from %s: %s, %s", record.id, mask_phone(sender.phone), record.kind.value, record.backing.value
         )
+        check = await self.sentinel.check(deal.id, record) if self.sentinel else None
         self.bus.publish(RecordReceived(deal_id=deal.id, record=record))
         other = deal.person(sender.role.other)
         if backed or other is None or not other.phone:
             self.outbox.send(deal.id, sender.phone, sender.role, words.logged(record))
+            if check:
+                await self.sentinel.logged(deal.id, record, check)
             return True
 
         question = words.confirm_question(sender, record)
@@ -90,6 +96,8 @@ class Intake:
                 deal_id=deal.id, record_id=record.id, confirm_by=other.role, record=record, question=question
             )
         )
+        if check and check.line:
+            await self.sentinel.disagrees(deal.id, record, check, other.role)
         self.outbox.send(deal.id, other.phone, other.role, question)
         self.outbox.send(deal.id, sender.phone, sender.role, words.asking_other(other))
         ask = Ask(deal.id, record, sender, other, question)

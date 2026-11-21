@@ -12,3 +12,4 @@ recordings/
 .DS_Store
 runs/
 memory-cache/
+*.sentinel.json

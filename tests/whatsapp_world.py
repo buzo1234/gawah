@@ -2,6 +2,7 @@
 clock, and a World that wires the real bot to them on a real bus and store."""
 
 import asyncio
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -16,6 +17,7 @@ from app.whatsapp.bot import Inbound
 REAL = "+919999900000"  # the one number in VERIFIED_NUMBERS
 SUNITA, RAMESH, GEETA, MOHAN = "+919811100001", "+919822200002", "+919833300003", "+919844400004"
 BASE = "https://gawah.example"
+WALL = datetime(2026, 11, 22, 4, 30, tzinfo=UTC)  # 10 am in India, the day after the practice calls
 SCREENSHOT = "https://api.twilio.com/2010-04-01/Accounts/AC0/Messages/MM0/Media/ME0"
 
 
@@ -96,7 +98,7 @@ class FakeReader:
 
 
 class World:
-    def __init__(self, bus: Bus, store: Store, settings: Settings) -> None:
+    def __init__(self, bus: Bus, store: Store, settings: Settings, memory=None) -> None:
         self.bus, self.store = bus, store
         self.clock = FakeClock()
         self.twilio = FakeTwilio(self.clock)
@@ -104,7 +106,15 @@ class World:
         self.events: list[Event] = []
         bus.subscribe_all(store.record_event)
         bus.subscribe_all(self._collect)
-        self.bot = wire(settings, bus, store, twilio=self.twilio, reader=self.reader, clock=self.clock)
+        self.settings, self.memory = settings, memory
+        self.bot = self.wire()
+
+    def wire(self):
+        """The bot on this world's fakes; the wall clock moves with the fake clock."""
+        return wire(
+            self.settings, self.bus, self.store, twilio=self.twilio, reader=self.reader, clock=self.clock,
+            memory=self.memory, wall=lambda: WALL + timedelta(seconds=self.clock.time),
+        )
 
     async def _collect(self, event: Event) -> None:
         self.events.append(event)

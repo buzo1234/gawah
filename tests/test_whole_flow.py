@@ -15,11 +15,13 @@ import pytest
 
 from app.call.session import Limits
 from app.contracts import (
-    MEMORY_STATE, WHATSAPP_WEBHOOK_PATH, AgentNote, Backing, CallEnded, CallKind, CallStarted, ChecklistUpdated, ContractReady,
-    DealRequested, DealStatus, Direction, Event, FactRecorded, FactStatus, ItemKey, ItemState, JudgeSpeak, JudgeSpoke, RecordConfirmed,
+    MEMORY_STATE, WHATSAPP_WEBHOOK_PATH, AgentNote, Backing, CallEnded, CallKind, CallOpened, CallStarted, ChecklistUpdated,
+    ContractReady, DealRequested, DealStatus, Direction, Event, FactRecorded, FactStatus, ItemKey, ItemState, JudgeSpeak,
+    JudgeSpoke, RecordConfirmed,
     RecordConfirmRequested, RecordReceived, ReplyTimeout, Role, TermsConfirmed, TranscriptLine, WhatsAppMessage,
     call_path, callback_path,
 )
+from app.records import tuning
 from app.records import words as record_words
 from app.whatsapp import words
 from fakes.replayer import load
@@ -242,6 +244,10 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     [confirmed] = flow.of(RecordConfirmed)
     assert (confirmed.record_id, confirmed.confirmed_by, confirmed.confirmed) == (received.record.id, Role.WORKER, True)
 
+    # sentinel: once the cash stands, both hear what is still owed, from memory's sums.
+    for role in Role:
+        assert flow.sent_to(role)[-1] == "₹2,000 mil gaya. Baaki ₹22,000."
+
     # records and mouth: the worker says the work is done; the hirer does not answer, so she
     # gets a call-back link, and confirms it there. The worker is told on WhatsApp.
     await flow.whatsapp(Role.WORKER, "kaam poora ho gaya")
@@ -253,9 +259,18 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     await flow.call_back(deal_id, Role.HIRER, [("record_answer", {"confirmed": True})])
     [_, by_call] = flow.of(RecordConfirmed)
     assert (by_call.record_id, by_call.confirmed_by, by_call.confirmed) == (done.record_id, Role.HIRER, True)
-    assert flow.sent_to(Role.WORKER)[-1] == record_words.answer_for_sender(
+    assert record_words.answer_for_sender(
         deal.person(Role.HIRER), done.record.model_copy(update={"confirmed": True}), True
-    )
+    ) in flow.sent_to(Role.WORKER)[-2:]
+
+    # sentinel: the work is done and money is still owed, so after the delay the hirer is
+    # reminded once, and the worker is told she was.
+    done_line = "Kaam poora ho gaya, dono ne confirm kiya. Deal ke hisaab se baaki ₹22,000."
+    assert done_line in flow.sent_to(Role.HIRER)[-2:] and done_line in flow.sent_to(Role.WORKER)[-2:]
+    await flow.clock.advance(tuning.BALANCE_REMINDER_SECONDS)
+    await flow.until(lambda: flow.sent_to(Role.WORKER)[-1].startswith("Gawah ne"))
+    assert flow.sent_to(Role.HIRER)[-1] == record_words.remind_after_work(22000)
+    assert flow.sent_to(Role.WORKER)[-1] == "Gawah ne Sunita ji ko ₹22,000 baaki ki yaad dila di hai."
     assert [r.confirmed for r in await flow.store.records(deal_id)] == [True, True]
     assert {m.phone for m in flow.of(WhatsAppMessage)} == set(PHONE.values())
 
@@ -306,7 +321,20 @@ async def test_a_second_call_on_the_same_deal_from_the_same_links(flow, caplog):
     late = await flow.client.post(call_path(deal_id, Role.HIRER) + "/join?after=0")
     assert late.status_code == 410
 
+    # sentinel: the first call ended, so both got their call-back link.
+    for role in Role:
+        assert callback_path(deal_id, role) in flow.sent_to(role)[-1]
+    sent = {role: len(flow.sent_to(role)) for role in Role}
+
     second, ended = await call(1, f"deal-{deal_id}-2")
+    # sentinel: the hirer opened call 2 first, so the worker was told, with his own link.
+    [opened] = flow.of(CallOpened)
+    assert (opened.call_no, opened.opened_by) == (2, Role.HIRER)
+    assert flow.sent_to(Role.WORKER)[sent[Role.WORKER]] == words.call_opened(
+        requested.requested_by, "http://localhost:8000" + call_path(deal_id, Role.WORKER)
+    )
+    # Nothing was changed on call 2, so no call-back links this time.
+    assert len(flow.sent_to(Role.WORKER)) == sent[Role.WORKER] + 1 and len(flow.sent_to(Role.HIRER)) == sent[Role.HIRER]
     assert (first.call_no, second.call_no, ended.call_no) == (1, 2, 2)
     assert set(ended.recording_keys.values()) == {f"recordings/{deal_id}/2/{r.value}.wav" for r in Role}
     assert [s.room for s in flow.voice.seats] == [first.room, second.room]  # Gawah's voice joined both

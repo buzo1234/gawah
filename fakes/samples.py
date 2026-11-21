@@ -3,7 +3,7 @@
 from datetime import UTC, date, datetime
 
 from app.contracts import (
-    AgentNote, Audience, Backing, CallEnded, CallStarted, ChangeStatus, ChecklistItem, ChecklistUpdated,
+    AgentNote, Audience, Backing, CallEnded, CallOpened, CallStarted, ChangeStatus, ChecklistItem, ChecklistUpdated,
     ContractReady, CrewAgent, DealRequested, Direction, Event, Fact, FactChanged, FactConflict, FactKind,
     FactRecorded, FactSource, FactStatus, ItemKey, ItemState, JudgeSpeak, JudgeSpoke, Person, Record,
     RecordConfirmed, RecordConfirmRequested, RecordKind, RecordReceived, ReplyTimeout, Role,
@@ -79,6 +79,7 @@ def sample_events(deal_id: str = "sample") -> list[Event]:
             deal_id=deal_id, agent=CrewAgent.MEMORY, text="found 1 fact about the advance",
             fact_ids=[advance.id], line_nos=[16],
         ),
+        CallOpened(deal_id=deal_id, call_no=2, opened_by=Role.HIRER, room=f"deal-{deal_id}-2"),
         WhatsAppMessage(
             deal_id=deal_id, direction=Direction.OUT, phone=RAMESH.phone, role=Role.WORKER,
             text="Ramesh ji, yeh aapka contract hai.", media_url="https://example.invalid/contract.pdf",
