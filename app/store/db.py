@@ -8,6 +8,7 @@ import threading
 from datetime import UTC, datetime
 
 from app.contracts import (
+    NO_DEAL,
     AnyEvent,
     CallEnded,
     CallKind,
@@ -111,6 +112,8 @@ class Store:
                 "INSERT INTO events (event_id, name, deal_id, ts, payload) VALUES (?, ?, ?, ?, ?)",
                 (event.event_id, event.name, event.deal_id, event.ts.isoformat(), event.model_dump_json()),
             )
+            if event.deal_id == NO_DEAL:
+                return
             db.execute(
                 "INSERT OR IGNORE INTO deals (id, status, created_at) VALUES (?, ?, ?)",
                 (event.deal_id, DealStatus.REQUESTED, datetime.now(UTC).isoformat()),

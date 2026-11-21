@@ -112,6 +112,11 @@ class Backing(StrEnum):
     UNBACKED = "unbacked"  # one person's word; the other must confirm
 
 
+class Direction(StrEnum):
+    IN = "in"  # from a person to Gawah
+    OUT = "out"  # from Gawah to a person
+
+
 class Record(BaseModel):
     id: str = Field(default_factory=new_id)
     sender: Role
@@ -133,6 +138,10 @@ class Record(BaseModel):
 # Served by whatsapp. The dashboard's second-phone panel posts here too, in the shape
 # the real provider sends, instead of publishing record events itself.
 WHATSAPP_WEBHOOK_PATH = "/whatsapp/webhook"
+
+# The deal_id of an event that belongs to no deal yet: a person's first WhatsApp messages
+# arrive before deal.requested makes the deal id. The store keeps no deal under this id.
+NO_DEAL = "no-deal"
 
 
 def call_path(deal_id: str, role: Role) -> str:
@@ -314,6 +323,22 @@ class ReplyTimeout(Event):
     waited_seconds: float | None = None
 
 
+class WhatsAppMessage(Event):
+    """Sent by whatsapp for every WhatsApp message in or out, so the conversation is in the
+    event log. deal_id is NO_DEAL until the deal exists. Listened to by dashboard (the
+    second-phone panel shows what Gawah sent to a simulated number)."""
+
+    name: Literal["whatsapp.message"] = "whatsapp.message"
+    direction: Direction
+    phone: str  # the person's number, with country code
+    role: Role | None = None  # None before a deal exists
+    text: str | None = None
+    media_url: str | None = None  # a screenshot, a document, or a voice note
+    media_type: str | None = None  # its content type, e.g. image/jpeg
+    simulated: bool = False  # True: a simulated second phone, so nothing went through the provider
+    provider_id: str | None = None  # the provider's message id
+
+
 AnyEvent = Annotated[
     DealRequested
     | CallStarted
@@ -328,7 +353,8 @@ AnyEvent = Annotated[
     | RecordReceived
     | RecordConfirmRequested
     | RecordConfirmed
-    | ReplyTimeout,
+    | ReplyTimeout
+    | WhatsAppMessage,
     Field(discriminator="name"),
 ]
 

@@ -63,6 +63,7 @@ tests/
 | `record.received` | whatsapp | deal, sender, type, backed or unbacked, extracted fields |
 | `record.confirm_requested` / `record.confirmed` | whatsapp | deal, record, who must confirm |
 | `reply.timeout` | whatsapp | deal, person to follow up with, what to ask |
+| `whatsapp.message` | whatsapp | every WhatsApp message in or out: direction, phone, text or media, simulated or really sent. Deal is `NO_DEAL` before one exists |
 
 Changing `contracts.py` after the scaffold needs one named person to approve it on `main`. Everyone else then rebases.
 

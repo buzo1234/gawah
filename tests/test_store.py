@@ -1,12 +1,14 @@
 import pytest
 
-from app.contracts import Backing, DealStatus, Role
+from app.contracts import NO_DEAL, Backing, DealStatus, Direction, Role
 from app.log import deal_log, mask_phone
 from app.store import Store
 from fakes import RAMESH, SUNITA
 from fakes.call import end_call, say, start_call
 from fakes.replayer import replay
-from fakes.whatsapp import ask_to_confirm, confirm_record, reply_timed_out, request_deal, send_record
+from fakes.whatsapp import (
+    ask_to_confirm, confirm_record, reply_timed_out, request_deal, send_record, whatsapp_message,
+)
 
 
 @pytest.fixture
@@ -61,6 +63,32 @@ async def test_records_and_the_fake_whatsapp_flow(bus, store):
         "reply.timeout", "record.confirmed",
     ]
     assert len(await store.events(deal_id, "record.received")) == 2
+
+
+async def test_whatsapp_messages_are_logged_before_and_after_the_deal_exists(bus, store, settings):
+    first = whatsapp_message(
+        bus, NO_DEAL, Direction.IN, SUNITA.phone, "Ramesh painter se deal karni hai", provider_id="SM1"
+    )
+    deal_id = request_deal(bus).deal_id
+    link = whatsapp_message(
+        bus, deal_id, Direction.OUT, RAMESH.phone, "Call ka link", role=Role.WORKER, simulated=True
+    )
+    proof = whatsapp_message(
+        bus, deal_id, Direction.IN, SUNITA.phone, role=Role.HIRER, provider_id="SM2",
+        media_url="https://example.invalid/screenshot.jpg", media_type="image/jpeg",
+    )
+    await bus.drain()
+
+    assert await store.events(NO_DEAL) == [first]
+    assert await store.deal(NO_DEAL) is None
+    assert await store.events(deal_id, "whatsapp.message") == [link, proof]
+    assert (first.role, first.simulated, link.simulated, link.provider_id) == (None, False, True, None)
+
+    await store.close()
+    reopened = Store(settings.database_path)
+    await reopened.open()
+    assert await reopened.events(name="whatsapp.message") == [first, link, proof]
+    await reopened.close()
 
 
 async def test_a_replayed_call_lands_in_the_log_and_survives_reopening(bus, store, settings):

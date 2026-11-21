@@ -4,8 +4,8 @@ from typing import Any
 
 from app.bus import Bus
 from app.contracts import (
-    Backing, DealRequested, Person, Record, RecordConfirmed, RecordConfirmRequested,
-    RecordKind, RecordReceived, ReplyTimeout, Role, new_id,
+    Backing, DealRequested, Direction, Person, Record, RecordConfirmed, RecordConfirmRequested,
+    RecordKind, RecordReceived, ReplyTimeout, Role, WhatsAppMessage, new_id,
 )
 from fakes import RAMESH, SUNITA
 
@@ -56,5 +56,15 @@ def reply_timed_out(
     bus: Bus, deal_id: str, person: Role, ask: str, record_id: str | None = None, waited_seconds: float = 120
 ) -> ReplyTimeout:
     event = ReplyTimeout(deal_id=deal_id, person=person, ask=ask, record_id=record_id, waited_seconds=waited_seconds)
+    bus.publish(event)
+    return event
+
+
+def whatsapp_message(
+    bus: Bus, deal_id: str, direction: Direction, phone: str, text: str | None = None, **fields: Any
+) -> WhatsAppMessage:
+    """fields are WhatsAppMessage fields: role, media_url, media_type, simulated, provider_id.
+    Pass deal_id=NO_DEAL for a message that arrives before the deal exists."""
+    event = WhatsAppMessage(deal_id=deal_id, direction=direction, phone=phone, text=text, **fields)
     bus.publish(event)
     return event
