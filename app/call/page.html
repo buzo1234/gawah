@@ -36,7 +36,7 @@
   #status, #timer { font-size: 17px; line-height: 1.35; color: var(--soft); margin: 6px 0 0; min-height: 23px; }
   #timer { font-variant-numeric: tabular-nums; display: none; }
   body[data-state="on"] #timer, body[data-state="actor"] #timer:not(:empty) { display: block; }
-  body[data-state="on"] #status { display: none; }
+  body[data-state="on"] #status, body[data-state="actor"] #status:empty { display: none; }
   #gawah { display: none; align-items: center; justify-content: center; gap: 7px; margin: 10px 0 0; font-size: 14px; color: var(--faint); }
   body[data-state="waiting"] #gawah, body[data-state="on"] #gawah, body[data-state="reconnecting"] #gawah,
   body[data-state="actor"] #gawah { display: flex; }
@@ -51,7 +51,7 @@
   .note { font-size: 15px; line-height: 1.45; border-radius: 14px; padding: 12px 14px; margin: 10px 0 0; text-align: left;
           background: rgba(255,255,255,.1); color: var(--soft); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
   #mic-quiet { background: rgba(255,59,48,.24); color: #fff; }
-  #keep-open { font-size: 13px; color: var(--faint); margin: 0; }
+  #keep-open { font-size: 13px; color: var(--faint); margin: auto 0 18px; max-width: 280px; }
   #next { display: none; }
   body[data-state="ended"] #next { display: block; }
   #mic-help b { color: #fff; }
@@ -133,6 +133,7 @@
       </ol>
       <button id="copy">Copy link</button>
     </div>
+    <p id="keep-open" hidden>Keep this page open and your phone unlocked during the call.</p>
   </section>
 
   <div class="grid" id="controls" hidden>
@@ -143,7 +144,6 @@
     <button class="key" disabled aria-label="FaceTime (not available)"><span class="disc"><svg><use href="#i-video"/></svg></span><span class="label">FaceTime</span></button>
     <button class="key" disabled aria-label="contacts (not available)"><span class="disc"><svg><use href="#i-contacts"/></svg></span><span class="label">contacts</span></button>
   </div>
-  <p id="keep-open" hidden>Keep this page open and your phone unlocked during the call.</p>
 
   <footer class="end">
     <button class="key" id="join"><span class="disc"><svg><use href="#i-phone"/></svg></span><span class="label" id="join-label">Join</span></button>
@@ -393,7 +393,8 @@ document.body.addEventListener('click', () => { if (room) room.startAudio().catc
 // The browser drops the screen lock whenever the page is hidden: ask again when it is back.
 document.addEventListener('visibilitychange', keepAwake);
 show(cfg.ended ? 'ended' : 'idle');
-watchActor();
+// Only inside the dashboard's phone frame: a real phone never asks. (__watchActor is for tests/call_page_shots.py.)
+if (window.top !== window || window.__watchActor) watchActor();
 </script>
 </body>
 </html>

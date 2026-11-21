@@ -5,12 +5,15 @@ own join, speaking, mute and leave code runs; no room is opened.
 
     PYTHONPATH=. uv run python tests/call_page_shots.py
 
-Saves fixtures/call-page-shots/<width>x<height>/<page>-<n>-<state>.png and checks what each
-state says. A real room is proved by tests/bridge_live.py.
+Saves fixtures/call-page-shots/ios/<width>x<height>/<page>-<n>-<state>.png and checks what each
+state says, including the two the scripts cannot reach in a real room: a phone that refuses to play
+sound until it is tapped (the call must stay up), and an AI playing this person (app/actor), from a
+stand-in for /actor/status. A real room is proved by tests/bridge_live.py.
 """
 
 import asyncio
 import json
+from urllib.parse import quote
 import tempfile
 from pathlib import Path
 
@@ -23,8 +26,9 @@ from fakes import RAMESH, SUNITA
 from tests.offline import offline_app
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "fixtures" / "call-page-shots"
+OUT = ROOT / "fixtures" / "call-page-shots" / "ios"
 SIZES = [(390, 844), (360, 640)]
+ACTOR = {"active": True, "kind": "deal", "state": "on", "seconds": 83, "room": "deal-shots-1"}
 
 # Stands in for window.LivekitClient. The real bundle still loads, but its global is ignored.
 FAKE_LIVEKIT = """
@@ -36,7 +40,10 @@ FAKE_LIVEKIT = """
     AudioPlaybackStatusChanged: 'audioPlaybackChanged' };
   const DisconnectReason = { CLIENT_INITIATED: 1, DUPLICATE_IDENTITY: 2, ROOM_DELETED: 5 };
   const refused = () => new DOMException('Permission denied', 'NotAllowedError');
-  const fake = window.__fake = { micRefused: false, fakeJoin: false, hold: null, room: null, calls: [],
+  // An actor's status for /actor/status, kept across a reload, as the page asks for it as it loads.
+  const actor = JSON.parse(localStorage.getItem('fakeActor') || 'null');
+  if (actor) window.__watchActor = true;
+  const fake = window.__fake = { micRefused: false, audioRefused: false, fakeJoin: false, hold: null, room: null, calls: [],
     arrive(id) { const p = { identity: id }; this.room.remoteParticipants.set(id, p); this.room.emit('participantConnected', p); },
     speak(...ids) { this.room.emit('activeSpeakersChanged', ids.map((identity) => ({ identity }))); },
     end() { this.room.state = 'disconnected'; this.room.emit('disconnected', DisconnectReason.ROOM_DELETED); } };
@@ -51,7 +58,13 @@ FAKE_LIVEKIT = """
     on(e, f) { (this.handlers[e] ||= []).push(f); return this; }
     emit(e, ...a) { (this.handlers[e] || []).forEach((f) => f(...a)); }
     async connect() { if (fake.hold) await fake.hold; this.state = 'connected'; }
-    async startAudio() {}
+    async startAudio() {
+      fake.calls.push('startAudio');
+      const before = this.canPlaybackAudio;
+      this.canPlaybackAudio = !fake.audioRefused;
+      if (before !== this.canPlaybackAudio) this.emit('audioPlaybackChanged', this.canPlaybackAudio);
+      if (fake.audioRefused) throw refused();
+    }
     async disconnect() { this.state = 'disconnected'; this.emit('disconnected', DisconnectReason.CLIENT_INITIATED); }
   }
   const client = { Room, RoomEvent, DisconnectReason,
@@ -62,9 +75,12 @@ FAKE_LIVEKIT = """
     } };
   Object.defineProperty(window, 'LivekitClient', { get: () => client, set() {} });
   const realFetch = window.fetch.bind(window);
-  window.fetch = (url, init) => fake.fakeJoin && String(url).endsWith('/join')
-    ? Promise.resolve(new Response(JSON.stringify({ url: 'wss://fake.invalid', token: 't' }), { status: 200 }))
-    : realFetch(url, init);
+  window.fetch = (url, init) => {
+    if (actor && String(url).includes('/actor/status')) return Promise.resolve(new Response(JSON.stringify(actor), { status: 200 }));
+    return fake.fakeJoin && String(url).endsWith('/join')
+      ? Promise.resolve(new Response(JSON.stringify({ url: 'wss://fake.invalid', token: 't' }), { status: 200 }))
+      : realFetch(url, init);
+  };
 })();
 """
 
@@ -111,85 +127,146 @@ async def main(port: int = 8771) -> None:
             async def shot(name: str) -> None:
                 await chrome.shot(folder / f"{name}.png")
 
-            # The deal call, as Sunita: Ramesh is the other person.
+            async def actor(status: dict | None) -> None:
+                await chrome.js(f"localStorage.setItem('fakeActor', {json.dumps(json.dumps(status))})")
+                await chrome.reload()
+
+            async def tapped() -> list:
+                return await chrome.js("[document.body.dataset.state, !document.getElementById('tap-audio').hidden]")
+
+            # The deal call, as Sunita: Ramesh is the other person. Before joining: the incoming call.
             await chrome.goto(url + call_path("shots", Role.HIRER))
+            await actor(None)
             v = await at("idle")
-            check(v["title"] == "Ramesh ji" and v["join"] == "Judiye" and not v["leave"], f"deal idle: {v}")
-            await shot("deal-1-before")
+            check(v["title"] == "Ramesh" and v["join"] == "Join" and not v["leave"]
+                  and v["status"] == "Gawah will witness this call. It will be recorded.", f"deal idle: {v}")
+            await shot("deal-1-incoming")
             await chrome.js("document.getElementById('join').click()")
             v = await at("waiting")
-            check(v["status"] == "Ramesh ji ka intezaar..." and v["leave"] and v["join"] is None, f"deal waiting: {v}")
-            asked = await chrome.js("JSON.stringify(__fake.calls[0])")
-            check('"echoCancellation":true' in asked and '"noiseSuppression":true' in asked, f"microphone asked with {asked}")
+            check(v["status"] == "Waiting for Ramesh..." and v["leave"] and v["join"] is None, f"deal waiting: {v}")
+            asked = await chrome.js("JSON.stringify(__fake.calls.slice(0, 2))")
+            check(asked.startswith('["startAudio",["createLocalAudioTrack"') and '"echoCancellation":true' in asked
+                  and '"noiseSuppression":true' in asked, f"sound unlocked and microphone asked inside the tap: {asked}")
             await shot("deal-2-waiting")
             await chrome.js("__fake.arrive('worker'); __fake.arrive('gawah'); __fake.speak('gawah'); startedAt = Date.now() - 154000")
             await asyncio.sleep(1.1)
             v = await at("on")
             timer = await chrome.js("document.getElementById('timer').textContent")
-            check(v["talking"] == ["gawah"] and v["gawah"] == "Gawah bol raha hai" and timer.startswith("2:3"), f"deal on, Gawah speaking: {v} timer {timer}")
+            check(v["talking"] == ["gawah"] and v["gawah"] == "Gawah is speaking" and timer.startswith("02:3"), f"deal on, Gawah speaking: {v} timer {timer}")
             await shot("deal-3-on-gawah-speaking")
             await chrome.js("__fake.speak('worker'); document.getElementById('mute').click()")
             await asyncio.sleep(0.6)
             v = await at("on")
             muted = await chrome.js("[document.getElementById('mute').getAttribute('aria-pressed'), __fake.calls.includes('mute'), document.getElementById('mic-quiet').hidden]")
-            check(v["talking"] == ["them"] and v["gawah"] == "Gawah sun raha hai" and muted == ["true", True, True],
+            check(v["talking"] == ["them"] and v["gawah"] == "Gawah is listening" and muted == ["true", True, True],
                   f"deal on, Ramesh speaking, muted by hand (no notice): {v} {muted}")
-            await shot("deal-4-on-ramesh-speaking-muted")
+            await shot("deal-4-on-muted")
             await chrome.js("document.getElementById('mute').click(); __fake.speak(); mic.mediaStreamTrack.dispatchEvent(new Event('mute'))")
             await asyncio.sleep(0.6)
             notice = await chrome.js("document.getElementById('mic-quiet').hidden ? null : document.getElementById('mic-quiet').textContent")
-            check(bool(notice) and notice.startswith("Aapka microphone band ho gaya hai"), f"phone muted the microphone: {notice!r}")
+            check(bool(notice) and notice.startswith("Your microphone went off"), f"phone muted the microphone: {notice!r}")
             await shot("deal-5-on-phone-muted-mic")
             await chrome.js("__fake.end()")
             v = await at("ended")
             length = await chrome.js("document.getElementById('length').textContent")
-            check(v["title"] == "Call khatam ho gaya" and v["join"] == "Phir se baat karein" and "2 minute" in length, f"deal ended: {v} {length!r}")
+            check(v["title"] == "Ramesh" and v["status"] == "Call ended" and v["join"] == "Call again" and length.startswith("2 min"),
+                  f"deal ended: {v} {length!r}")
             await shot("deal-6-ended")
             await chrome.reload()
             await chrome.js("__fake.micRefused = true; document.getElementById('join').click()")
             v = await at("mic")
-            check(v["title"] == "Microphone nahi chal raha" and v["join"] == "Phir se judiye", f"deal mic refused: {v}")
-            await shot("deal-7-mic-refused")
+            check(v["title"] == "Microphone blocked" and v["join"] == "Rejoin", f"deal mic refused: {v}")
+            await shot("deal-7-mic-blocked")
+            # The phone will not play sound outside a tap: the call stays up and asks for a tap.
+            await chrome.reload()
+            await chrome.js("__fake.audioRefused = true; document.getElementById('join').click()")
+            await at("waiting")
+            await chrome.js("__fake.arrive('worker'); __fake.arrive('gawah')")
+            await asyncio.sleep(0.6)
+            check(await tapped() == ["on", True], f"deal: sound refused, still on the call, asks for a tap: {await tapped()}")
+            await shot("deal-8-tap-to-hear")
+            await chrome.js("__fake.audioRefused = false; document.body.click()")
+            await asyncio.sleep(0.3)
+            check(await tapped() == ["on", False], f"deal: a tap starts the sound: {await tapped()}")
+            await chrome.js("__fake.end()")
+            # An AI plays Sunita (app/actor): the page shows the call instead of joining it.
+            await actor({**ACTOR, "role": "hirer"})
+            v = await at("actor")
+            timer = await chrome.js("document.getElementById('timer').textContent")
+            check(v["join"] is None and v["gawah"] == "AI is playing Sunita" and timer == "01:23", f"deal, AI playing Sunita: {v} {timer}")
+            await shot("deal-9-ai-playing")
+            await actor(None)
 
             await chrome.goto(url + call_path("noname", Role.HIRER))
             v = await at("idle")
-            check(v["title"] == "Kaam karne wale", f"deal idle, the worker's name not known: {v}")
-            await shot("deal-8-before-no-name")
+            check(v["title"] == "The worker", f"deal idle, the worker's name not known: {v}")
+            await shot("deal-10-incoming-no-name")
 
             # The call-back, as Ramesh.
             await chrome.goto(url + callback_path("shots", Role.WORKER))
             v = await at("idle")
-            check(v["join"] == "Baat shuru karein" and not v["leave"], f"call-back idle: {v}")
-            await shot("callback-1-before")
+            check(v["join"] == "Join" and not v["leave"], f"call-back idle: {v}")
+            await shot("callback-1-incoming")
             await chrome.js("__fake.fakeJoin = true; let go; __fake.hold = new Promise((r) => { go = r; }); window.go = go;"
                             " document.getElementById('join').click()")
             v = await at("connecting")
-            check(v["join"] == "Jud rahe hain...", f"call-back connecting (waiting for Gawah): {v}")
-            await shot("callback-2-waiting")
+            check(v["join"] == "Connecting...", f"call-back connecting (waiting for Gawah): {v}")
+            await shot("callback-2-connecting")
+            first = await chrome.js("JSON.stringify(__fake.calls.slice(0, 2))")
+            check(first.startswith('["startAudio",["createLocalAudioTrack"') and '"echoCancellation":true' in first,
+                  f"call-back: sound and microphone asked for inside the tap, before anything is awaited: {first}")
             await chrome.js("go()")
             v = await at("on")
             await chrome.js("__fake.arrive('gawah'); __fake.speak('gawah'); startedAt = Date.now() - 48000")
             await asyncio.sleep(1.1)
             v = await at("on")
-            mic = await chrome.js("JSON.stringify(__fake.calls.find((c) => c[0] === 'setMicrophoneEnabled'))")
-            check(v["talking"] == ["gawah"] and v["leave"] and '"echoCancellation":true' in mic, f"call-back on, Gawah speaking: {v} {mic}")
+            check(v["talking"] == ["gawah"] and v["leave"] and v["gawah"] == "Gawah is speaking", f"call-back on, Gawah speaking: {v}")
             await shot("callback-3-on-gawah-speaking")
             await chrome.js("__fake.end()")
             v = await at("ended")
-            check(v["title"] == "Baat poori ho gayi" and v["join"] == "Phir se baat karein", f"call-back ended: {v}")
+            check(v["title"] == "Gawah" and v["status"] == "Call ended" and v["join"] == "Call again", f"call-back ended: {v}")
             await shot("callback-4-ended")
             await chrome.reload()
             await chrome.js("__fake.fakeJoin = true; __fake.micRefused = true; document.getElementById('join').click()")
             v = await at("mic")
-            check(v["title"] == "Microphone nahi chal raha", f"call-back mic refused: {v}")
-            await shot("callback-5-mic-refused")
+            check(v["title"] == "Microphone blocked", f"call-back mic refused: {v}")
+            await shot("callback-5-mic-blocked")
+            # The live bug: WhatsApp's browser refused the sound after the awaits, and the page dropped the call.
+            await chrome.reload()
+            await chrome.js("__fake.fakeJoin = true; __fake.audioRefused = true; document.getElementById('join').click()")
+            await at("on")
+            await chrome.js("__fake.arrive('gawah')")
+            await asyncio.sleep(0.6)
+            check(await tapped() == ["on", True] and await chrome.js("room !== null"),
+                  f"call-back: sound refused, still on the call, asks for a tap: {await tapped()}")
+            await shot("callback-6-tap-to-hear")
+            await chrome.js("__fake.audioRefused = false; document.body.click()")
+            await asyncio.sleep(0.3)
+            check(await tapped() == ["on", False], f"call-back: a tap starts the sound: {await tapped()}")
+            await chrome.js("__fake.end()")
             await chrome.reload()
             await chrome.js("document.getElementById('join').click()")  # the real route: nothing to confirm yet
             v = await at("error")
-            check(v["status"] == "Abhi aapse confirm karne ke liye kuch nahi hai.", f"call-back with nothing to ask (real route): {v}")
-            await shot("callback-6-nothing-to-confirm")
+            check(v["status"] == "There is nothing to confirm with you yet.", f"call-back with nothing to ask (real route): {v}")
+            await shot("callback-7-nothing-to-confirm")
+            await actor({**ACTOR, "kind": "callback", "role": "worker", "name": "Ramesh"})
+            v = await at("actor")
+            check(v["join"] is None and v["gawah"] == "AI is playing Ramesh", f"call-back, AI playing Ramesh: {v}")
+            await shot("callback-8-ai-playing")
+            await actor(None)
             errors = [e for e in chrome.errors if not e.endswith("/callback/shots/worker/join")]  # the 404 just above
             check(not errors, f"no page errors: {errors}")
+            if width == 390:
+                frame = ('<body style="margin:0;background:#e5e5ea;display:grid;place-items:center;height:100vh">'
+                         f'<iframe src="{call_path("shots", Role.WORKER)}" allow="microphone; autoplay" '
+                         'style="width:300px;height:650px;border:10px solid #111;border-radius:44px"></iframe></body>')
+                await chrome.goto(url + "/health")  # any page of the app, so the frame is the same origin
+                await chrome.js(f"document.open(); document.write({json.dumps(frame)}); document.close()")
+                await asyncio.sleep(1.5)
+                framed = await chrome.js("(() => { const d = document.querySelector('iframe').contentDocument;"
+                                         " return [d.body.dataset.state, d.getElementById('title').textContent]; })()")
+                check(framed == ["idle", "Sunita"], f"the page works inside the dashboard's phone frame: {framed}")
+                await shot("framed-deal-incoming")
 
     server.should_exit = True
     await serving
