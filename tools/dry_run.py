@@ -79,11 +79,14 @@ async def gawah_moment(run: Run, players, call_no: int, line: dict) -> dict:
             if (heard() and quiet >= (0.5 if players.offline else RESUME_S)) or quiet >= 12:
                 break
             await asyncio.sleep(0.25)
-    said = heard()
-    result = "worked" if said else ("optional, nothing said" if then.get("optional") else "broke")
+    said, asked = heard(), run.speaks_since(t0)
+    # Offline, the stand-in voice model calls no tools, and a change_proposed turn speaks only after
+    # propose_change: the brain sending change_proposed here is the step working (the stand-in for
+    # the change by voice is checked as its own step).
+    proposed = players.offline and any(a["reason"] == "change_proposed" for a in asked)
+    result = "worked" if said or proposed else ("optional, nothing said" if then.get("optional") else "broke")
     return run.step(f"call {call_no} line {line['line_no']}: Gawah {then['gawah']}", result,
-                    started_after_s=round(started - t0, 1) if started else None, said=said,
-                    asked=run.speaks_since(t0))
+                    started_after_s=round(started - t0, 1) if started else None, said=said, asked=asked)
 
 
 async def deal_call(run: Run, players, call_no: int) -> None:
