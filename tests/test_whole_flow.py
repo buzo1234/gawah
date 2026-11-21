@@ -6,15 +6,16 @@ happens between them. When a stream is merged, fill in its step below where the 
 marks it, and put the fake for its outside service in tests/offline.py.
 """
 
+import asyncio
 import logging
 
 import httpx
 import pytest
 
 from app.contracts import (
-    WHATSAPP_WEBHOOK_PATH, Backing, ChecklistUpdated, DealRequested, DealStatus, Direction, Event,
-    ItemKey, ItemState, JudgeSpeak, RecordConfirmed, RecordConfirmRequested, RecordReceived, Role,
-    TranscriptLine, WhatsAppMessage, call_path, callback_path,
+    WHATSAPP_WEBHOOK_PATH, Backing, ChecklistUpdated, ContractReady, DealRequested, DealStatus,
+    Direction, Event, ItemKey, ItemState, JudgeSpeak, RecordConfirmed, RecordConfirmRequested,
+    RecordReceived, Role, TermsConfirmed, TranscriptLine, WhatsAppMessage, call_path, callback_path,
 )
 from fakes.replayer import load, replay
 from tests.offline import offline_app
@@ -49,13 +50,20 @@ class Flow:
         assert response.status_code == 200, response.text
         await self.settle()
 
+    async def until(self, kind: type[Event]) -> None:
+        """Wait for work a stream does in its own task to end in an event of this kind."""
+        async with asyncio.timeout(5):
+            while not self.of(kind):
+                await asyncio.sleep(0.01)
+        await self.settle()
+
     def of(self, kind: type[Event]) -> list:
         return [e for e in self.events if isinstance(e, kind)]
 
     def sent_to(self, role: Role) -> list[str]:
-        """What Gawah has sent this person on WhatsApp, oldest first."""
+        """What Gawah has sent this person on WhatsApp, oldest first: each text, or a file's link."""
         return [
-            m.text or "" for m in self.of(WhatsAppMessage)
+            m.text or m.media_url or "" for m in self.of(WhatsAppMessage)
             if m.direction is Direction.OUT and m.phone == PHONE[role]
         ]
 
@@ -93,20 +101,33 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     assert final.pop(ItemKey.BALANCE).state is ItemState.PENDING
     assert all(item.state is ItemState.AGREED and item.value for item in final.values())
 
-    # mouth (not merged): every judge.speak above should be answered by a judge.spoke, and the
-    # call-back should end in terms.confirmed.
-    # contract (not merged): contract.ready should follow, and both people get the PDF.
+    # mouth (not merged): every judge.speak above should be answered by a judge.spoke.
 
     # whatsapp: after call.ended both get their call-back link. The deal's people are still
     # the two who made it on WhatsApp, not the two named in the practice call.
     for role in Role:
         assert callback_path(deal_id, role) in flow.sent_to(role)[-1]
-    assert {m.phone for m in flow.of(WhatsAppMessage)} == set(PHONE.values())
     deal = await flow.store.deal(deal_id)
     assert deal.status is DealStatus.CALL_ENDED
     assert {p.role: (p.name, p.phone) for p in deal.people} == {
         Role.HIRER: ("Asha", PHONE[Role.HIRER]), Role.WORKER: ("Ramesh", PHONE[Role.WORKER]),
     }
+
+    # mouth (not merged): each person's call-back ends in terms.confirmed. Published by hand
+    # here; once mouth is in, drive its call-back instead.
+    for role in Role:
+        flow.bus.publish(TermsConfirmed(deal_id=deal_id, person=role, said="haan, sab sahi hai"))
+
+    # contract: both have confirmed, so the contract is written from the brain's checklist,
+    # and whatsapp sends each person the PDF and the spoken summary.
+    await flow.until(ContractReady)
+    [ready] = flow.of(ContractReady)
+    assert {i.key for i in ready.items if i.state is ItemState.AGREED} == set(ItemKey) - {ItemKey.BALANCE}
+    assert ready.pdf_url and ready.voice_summary_url and ready.text
+    for role in Role:
+        assert flow.sent_to(role)[-2:] == [ready.pdf_url, ready.voice_summary_url]
+    assert (await flow.store.deal(deal_id)).status is DealStatus.CONTRACT_READY
+    assert {m.phone for m in flow.of(WhatsAppMessage)} == set(PHONE.values())
 
     # records: cash is one person's word, so the worker is asked, and "haan" confirms it.
     await flow.whatsapp(Role.HIRER, "2000 cash diya")
