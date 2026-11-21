@@ -33,6 +33,7 @@ class _Person:
     voice_ms: float = 0.0  # recent voice: up on a voiced frame, down on any other
     quiet_ms: float = 0.0  # since voice was last sustained
     talking: bool = False
+    has_talked: bool = False
     over_ms: float = 0.0  # the same count, by the stricter rule used while Gawah speaks
     may_cut_in: bool = True
 
@@ -46,6 +47,11 @@ class Hearing:
 
     def talking(self) -> list[str]:
         return [who for who, p in self.people.items() if p.talking]
+
+    def since_voice_ms(self) -> float | None:
+        """How long since anyone last sustained voice, in ms of their audio. None before anyone has talked."""
+        quiet = [p.quiet_ms for p in self.people.values() if p.has_talked]
+        return min(quiet) if quiet else None
 
     def forget(self, who: str) -> None:
         """They left, or their track was muted or ended: no frames may follow, so stop counting them."""
@@ -82,7 +88,7 @@ class Hearing:
 
         p.voice_ms = _count(p.voice_ms, voiced, tuning.START_MS)
         if p.voice_ms >= tuning.START_MS:
-            p.talking, p.quiet_ms = True, 0.0
+            p.talking, p.has_talked, p.quiet_ms = True, True, 0.0
         else:
             p.quiet_ms += tuning.FRAME_MS
             if p.quiet_ms >= tuning.PAUSE_MS:

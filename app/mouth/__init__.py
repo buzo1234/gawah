@@ -1,8 +1,10 @@
 """Stream: mouth. Gawah's voice on the deal call, and the one-to-one call-back.
 
-On the deal call it listens to call.started, call.ended, judge.speak and checklist.updated,
-and sends judge.spoke (an empty one with no start time for a question it dropped, so the
-brain stops waiting). On the call-back it sends call.started and call.ended (kind
+On the deal call it listens to call.started, call.ended, judge.speak, checklist.updated,
+transcript.line, fact.recorded and fact.conflict, and sends judge.spoke (an empty one with
+no start time for a question it dropped, so the brain stops waiting), fact.changed for a
+change agreed by voice, and agent.note for the dashboard. With JUDGE_MODE=live Gawah is
+an agent with tools over memory (app.state.memory); with wrapup it is the plain voice. On the call-back it sends call.started and call.ended (kind
 callback), record.confirmed, terms.confirmed and terms.disputed.
 
 - tuning.py     every delay, threshold and persona
@@ -10,8 +12,12 @@ callback), record.confirmed, terms.confirmed and terms.disputed.
 - realtime.py   OpenAI: the connection to the realtime voice model
 - hearing.py    who is talking, from loudness
 - player.py     speech into the room at the speed it is spoken
-- voice.py      one instruction in, one spoken reply out (the deal call)
-- deal_call.py  one deal call: pick the moment, speak, stop if talked over
+- voice.py      one instruction in, one spoken reply out (the deal call, JUDGE_MODE=wrapup)
+- agent.py      Gawah the agent: the call as text, a turn per moment, tool calls (JUDGE_MODE=live)
+- tools.py      the agent's tools: memory lookups, clips, changes agreed by voice
+- moments.py    the words the agent is given: lines, facts, moments to speak
+- deal_call.py  one deal call: pick the moment, speak, stop if talked over (the plain voice)
+- agent_call.py the same, with Gawah as the agent: follows the call, answers when spoken to
 - script.py     the call-back's steps and what came of them
 - callback.py   one call-back: a real conversation, with tools to report the outcome
 
@@ -26,8 +32,12 @@ from collections.abc import Callable
 from fastapi import FastAPI
 
 from app.bus import Bus
-from app.contracts import CallEnded, CallKind, CallStarted, ChecklistUpdated, Event, JudgeSpeak
+from app.contracts import (
+    MEMORY_STATE, CallEnded, CallKind, CallStarted, ChecklistUpdated, Event, FactConflict, FactRecorded, JudgeSpeak,
+    MemoryQueries, TranscriptLine,
+)
 from app.mouth import callback
+from app.mouth.agent_call import AgentCall
 from app.mouth.deal_call import DealCall
 from app.mouth.realtime import Realtime
 from app.mouth.room import Rooms, Seat
@@ -40,8 +50,12 @@ PRACTICE = ("replay-", "fake-")
 class Mouth:
     """The deal calls Gawah is on, by deal."""
 
-    def __init__(self, bus: Bus, make_seat: Callable, make_link: Callable) -> None:
+    def __init__(
+        self, bus: Bus, make_seat: Callable, make_link: Callable, mode: str = "live",
+        memory: Callable[[], MemoryQueries | None] = lambda: None,
+    ) -> None:
         self.bus, self.make_seat, self.make_link = bus, make_seat, make_link
+        self.mode, self.memory = mode, memory  # mode is JUDGE_MODE: "live" makes Gawah an agent
         self.rooms: Callable = lambda: None  # the call-back's rooms; set by register
         self.calls: dict[str, DealCall] = {}
         self._seen: set[str] = set()  # deal-call rooms already started
@@ -59,6 +73,10 @@ class Mouth:
             call.checklist = event
         elif isinstance(event, JudgeSpeak):
             call.on_speak(event)
+        elif isinstance(event, TranscriptLine):
+            await call.on_line(event)
+        elif isinstance(event, (FactRecorded, FactConflict)):
+            await call.on_fact(event)
         elif isinstance(event, CallEnded) and event.kind is CallKind.DEAL:
             await self._end(call)
 
@@ -74,7 +92,10 @@ class Mouth:
         if running:
             await self._end(running)
         try:
-            call = DealCall(started, self.bus, self.make_seat, self.make_link)
+            if self.mode == "live":
+                call = AgentCall(started, self.bus, self.make_seat, self.make_link, memory=self.memory)
+            else:
+                call = DealCall(started, self.bus, self.make_seat, self.make_link)
             call.on_over = self._over
             await call.start()
         except Exception as e:
@@ -114,7 +135,7 @@ def register(app: FastAPI, bus: Bus) -> None:
     def make_link(config: dict, on_event, call_log: logging.LoggerAdapter) -> Realtime:
         return Realtime(settings.require("openai_api_key"), config, on_event, call_log)
 
-    mouth = Mouth(bus, make_seat, make_link)
+    mouth = Mouth(bus, make_seat, make_link, settings.judge_mode, lambda: getattr(app.state, MEMORY_STATE, None))
     mouth.rooms = rooms
     app.state.mouth = mouth
     app.state.on_shutdown.append(mouth.close)

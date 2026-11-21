@@ -1,6 +1,10 @@
-"""Gawah's voice on the deal call, with a fake room and a fake voice model."""
+"""Gawah on the deal call, with a fake room and a fake voice model: when it speaks, and
+when it stops. Each test runs twice: as the agent (JUDGE_MODE=live) and as the plain voice
+(JUDGE_MODE=wrapup), so the safety switch keeps all of this."""
 
 import asyncio
+
+import pytest
 from datetime import UTC, datetime, timedelta
 
 from app.contracts import (
@@ -10,7 +14,12 @@ from app.contracts import (
 from app.mouth import tuning
 from fakes import RAMESH, SUNITA
 from tests.mouth import sounds
-from tests.mouth.world import until
+from tests.mouth.world import World, until
+
+
+@pytest.fixture(params=["live", "wrapup"])
+async def world(request, bus) -> World:
+    return World(bus, mode=request.param)
 
 
 def speak(deal_id="d1", item=ItemKey.BALANCE, reason=SpeakReason.TERM_UNCLEAR, to=Audience.HIRER) -> JudgeSpeak:
@@ -32,11 +41,15 @@ async def test_opening_line_is_the_only_thing_said_unasked(world):
     assert seat.room == "deal-d1" and link.open_
     opening = world.of(JudgeSpoke)[0]
     assert opening.speak_id is None and opening.reason is None and not opening.interrupted
-    said = link.of("response.create")[0]["response"]
-    assert "record ho rahi hai" in said["instructions"] and "Sunita ji aur Ramesh ji" in said["instructions"]
-    assert said["conversation"] == "none" and said["input"] == []  # one reply per instruction, nothing remembered
+    [said] = [e["response"] for e in link.of("response.create") if "record ho rahi hai" in e["response"]["instructions"]]
+    assert "Sunita ji aur Ramesh ji" in said["instructions"]
+    if world.mode == "wrapup":
+        assert said["conversation"] == "none" and said["input"] == []  # one reply per instruction, nothing remembered
+    else:
+        assert said["conversation"] == "auto" and said["tool_choice"] == "none"  # the agent remembers what it said
     await asyncio.sleep(0.2)
-    assert len(world.of(JudgeSpoke)) == 1 and len(link.of("response.create")) == 1
+    made = 2 if world.mode == "live" else 1  # the agent also makes its "Haan ji, ek second" once, out of the conversation
+    assert len(world.of(JudgeSpoke)) == 1 and len(link.of("response.create")) == made
 
 
 async def test_the_model_never_hears_the_room_and_never_replies_by_itself(world):

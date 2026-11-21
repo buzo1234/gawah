@@ -97,6 +97,9 @@ class FakeLink:
         self.pieces = [300]  # ms of speech in each piece the model sends
         self.gap = 0.0  # seconds between pieces
         self.silent = False  # the model never answers
+        # The agent's replies, in order: {"text", "ms", "calls": [(tool, args)]}. When it runs out, the
+        # model just says self.text. Speech outside the conversation (the acknowledgement) never takes one.
+        self.replies: list[dict] = []
         self._n = 0
 
     async def open(self) -> None:
@@ -108,21 +111,43 @@ class FakeLink:
     async def send(self, event: dict) -> None:
         self.sent.append(event)
         if event["type"] == "response.create" and self.auto and not self.silent:
-            asyncio.get_running_loop().create_task(self._speak(event["response"].get("metadata")))
+            response = event["response"]
+            reply = self.replies.pop(0) if self.replies and response.get("conversation") != "none" else {}
+            asyncio.get_running_loop().create_task(self._speak(response.get("metadata"), reply))
 
     def of(self, kind: str) -> list[dict]:
         return [e for e in self.sent if e["type"] == kind]
 
-    async def _speak(self, metadata: dict | None) -> None:
+    def items(self, role: str) -> list[str]:
+        """The text of every message of this role added to the conversation."""
+        return [e["item"]["content"][0]["text"] for e in self.of("conversation.item.create")
+                if e["item"]["type"] == "message" and e["item"]["role"] == role]
+
+    def outputs(self) -> list[str]:
+        """What each tool call told the model."""
+        return [e["item"]["output"] for e in self.of("conversation.item.create") if e["item"]["type"] == "function_call_output"]
+
+    def asked(self) -> list[str]:
+        """The instructions of every reply asked for in the conversation."""
+        return [e["response"]["instructions"] for e in self.of("response.create") if e["response"].get("conversation") != "none"]
+
+    async def _speak(self, metadata: dict | None, reply: dict) -> None:
         self._n += 1
-        rid = f"resp_{self._n}"
+        rid, item = f"resp_{self._n}", f"item_{self._n}"
         await self.on_event({"type": "response.created", "response": {"id": rid, "metadata": metadata}})
-        for i, ms in enumerate(self.pieces):
+        pieces = [reply.get("ms", 0)] if reply else self.pieces  # a reply of tool calls alone has no speech
+        for i, ms in enumerate(p for p in pieces if p):
             if i:
                 await asyncio.sleep(self.gap)
-            await self.on_event({"type": "response.output_audio.delta", "response_id": rid, "delta": audio(ms)})
-        await self.on_event({"type": "response.output_audio_transcript.done", "response_id": rid, "transcript": self.text})
-        await self.on_event({"type": "response.done", "response": {"id": rid, "status": "completed"}})
+            await self.on_event({"type": "response.output_audio.delta", "response_id": rid, "item_id": item, "delta": audio(ms)})
+        text = reply.get("text", self.text if "calls" not in reply else "")
+        if text:
+            await self.on_event({"type": "response.output_audio_transcript.done", "response_id": rid, "transcript": text})
+        output = [
+            {"type": "function_call", "status": "completed", "name": name, "call_id": f"call_{self._n}_{i}", "arguments": json.dumps(args)}
+            for i, (name, args) in enumerate(reply.get("calls", []))
+        ]
+        await self.on_event({"type": "response.done", "response": {"id": rid, "status": "completed", "output": output}})
 
     # the call-back: the test plays the model
 
@@ -151,14 +176,15 @@ class FakeLink:
 
 
 class World:
-    """A mouth on a bus, with fake rooms and a fake voice model."""
+    """A mouth on a bus, with fake rooms and a fake voice model. mode is JUDGE_MODE; memory is
+    what app.state.memory would hold."""
 
-    def __init__(self, bus: Bus) -> None:
-        self.bus = bus
+    def __init__(self, bus: Bus, mode: str = "live", memory=None) -> None:
+        self.bus, self.mode, self.memory = bus, mode, memory
         self.seats: list[FakeSeat] = []
         self.links: list[FakeLink] = []
         self.events: list[Event] = []
-        self.mouth = Mouth(bus, self.make_seat, self.make_link)
+        self.mouth = Mouth(bus, self.make_seat, self.make_link, mode, lambda: self.memory)
         bus.subscribe_all(self._collect)
 
     def make_seat(self, log=None) -> FakeSeat:
@@ -178,7 +204,8 @@ class World:
     async def call(self, deal_id: str = "d1", opening: bool = True, room_db: float = -50.0, **started) -> tuple[FakeSeat, FakeLink]:
         """Start a deal call and wait until Gawah is in the room and has said its opening line."""
         before = len(self.seats)
-        self.bus.publish(CallStarted(deal_id=deal_id, people=[SUNITA, RAMESH], room=f"deal-{deal_id}", **started))
+        started.setdefault("room", f"deal-{deal_id}")
+        self.bus.publish(CallStarted(deal_id=deal_id, people=[SUNITA, RAMESH], **started))
         await until(lambda: deal_id in self.mouth.calls)
         for who in ("hirer", "worker"):  # both are in the room, and quiet
             self.seats[before].hears(who, sounds.room_noise(1.0, room_db))
