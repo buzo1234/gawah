@@ -1,6 +1,8 @@
 // The whole dashboard is a fold over the event log: apply(state, event) is the only
 // place state changes, and it runs the same way for a reload and for a live event.
 
+import { applyCrew, emptyCrew } from "./crew-state.js";
+
 export const NO_DEAL = "no-deal";
 
 export const ITEMS = [
@@ -18,15 +20,23 @@ export const clock = (s) =>
 export const nameOf = (state, role) =>
   state.people[role]?.name || { hirer: "Hirer", worker: "Worker", both: "both" }[role] || role;
 
+// A deal-call line, by its call and its line number (line numbers start again each call).
+export const lineAt = (state, lineNo, callNo = state.currentCall) => state.lines[`${callNo}:${lineNo}`];
+
 export function emptyState(dealId) {
   return {
+    ...emptyCrew(),
     dealId,
     people: {}, // role -> { name, phone }
     status: dealId ? "requested" : "none",
     callback: null, // the role on a call-back right now
-    duration: null,
     flow: [], // the conversation: lines, Gawah's lines, and call marks
-    lines: {}, // line_no -> the deal-call line, for "when was it said"
+    lines: {}, // "call:line" -> the deal-call line, for "when was it said"
+    calls: {}, // call_no -> { ended, duration }
+    currentCall: 1,
+    itemCall: {}, // item -> the call it was last changed on, to find its line
+    earlier: {}, // item -> its last agreed value on an earlier call, with callNo
+    view: "phones", // the right-hand column: "phones", or "graph" (the crew) once a call starts
     items: ITEMS.map(([key]) => ({ key, state: "pending" })),
     decisions: [], // each judge.speak, with what was then said
     records: [], // { record, askedOf, answer, timedOut }
@@ -54,9 +64,12 @@ function record(state, r) {
   return entry;
 }
 
-// Returns what the page has to redraw: { panels, flow, agreed, decision }.
+const onCall = (state) => state.status === "in_call" || state.callback != null;
+
+// Returns what the page has to redraw: { panels, flow, agreed, decision, fact, ... }.
 export function apply(state, e) {
   const change = { panels: [], flow: null, agreed: [], decision: null };
+  if (applyCrew(state, e, change)) return change;
   const say = (entry) => {
     state.flow.push(entry);
     change.flow = entry;
@@ -73,9 +86,15 @@ export function apply(state, e) {
       if (e.kind === "callback") {
         state.callback = e.people?.[0]?.role || null;
         say({ type: "mark", text: `Call-back with ${e.people?.[0] ? nameOf(state, e.people[0].role) : "one person"}: confirming the terms alone` });
-      } else if (state.status !== "in_call") {
+      } else if (!state.calls[e.call_no ?? 1]) {
+        const no = e.call_no ?? 1;
+        // The brain starts each call with a fresh checklist, so keep what was agreed so far.
+        for (const i of state.items) if (i.state === "agreed") state.earlier[i.key] = { ...i, callNo: state.itemCall[i.key] ?? state.currentCall };
+        state.calls[no] = { ended: false, duration: null };
+        state.currentCall = no;
         state.status = "in_call";
-        say({ type: "mark", text: "Call started" });
+        state.view = "graph";
+        say({ type: "call", callNo: no, text: no === 1 ? "The deal call" : "A follow-up call on the same deal" });
       } // else: the brain sent it again with a name learned on the call
       change.panels = ["all"];
       break;
@@ -85,22 +104,27 @@ export function apply(state, e) {
         state.callback = null;
         say({ type: "mark", text: "Call-back ended" });
       } else {
-        if (state.status === "in_call" || state.status === "requested") state.status = "call_ended";
-        state.duration = e.duration;
-        say({ type: "mark", text: `Call ended${e.duration != null ? ` after ${clock(e.duration)}` : ""}` });
+        const no = e.call_no ?? 1;
+        if (state.calls[no]) Object.assign(state.calls[no], { ended: true, duration: e.duration });
+        if (state.status === "in_call" || state.status === "requested") state.status = state.contract ? "contract_ready" : "call_ended";
+        say({ type: "mark", text: `Call ${no} ended${e.duration != null ? ` after ${clock(e.duration)}` : ""}` });
       }
       change.panels = ["header"];
       break;
 
     case "transcript.line":
-      if (e.kind !== "callback" && e.line_no != null) state.lines[e.line_no] = e;
-      say({ type: "line", speaker: e.speaker, text: e.text, start: e.start, lineNo: e.line_no });
+      if (e.kind !== "callback" && e.line_no != null) state.lines[`${e.call_no ?? 1}:${e.line_no}`] = e;
+      say({
+        type: "line", speaker: e.speaker, text: e.text, start: e.start, lineNo: e.line_no,
+        callNo: e.kind === "callback" ? null : e.call_no ?? 1,
+      });
       break;
 
     case "checklist.updated": {
       const before = Object.fromEntries(state.items.map((i) => [i.key, i]));
       const now = Object.fromEntries(e.items.map((i) => [i.key, i]));
       state.items = ITEMS.map(([key]) => now[key] || before[key]);
+      for (const key of e.changed || []) state.itemCall[key] = state.currentCall;
       change.agreed = state.items
         .filter((i) => i.state === "agreed" && (before[i.key].state !== "agreed" || before[i.key].value !== i.value))
         .map((i) => i.key);
@@ -111,7 +135,7 @@ export function apply(state, e) {
     case "judge.speak":
       state.decisions.push({
         id: e.event_id, reason: e.reason, item: e.item, to: e.to,
-        instruction: e.instruction, afterLine: e.after_line, spoken: null, interrupted: false,
+        instruction: e.instruction, afterLine: e.after_line, callNo: state.currentCall, spoken: null, interrupted: false,
       });
       change.decision = e.event_id;
       change.panels = ["why"];
@@ -131,7 +155,7 @@ export function apply(state, e) {
       if (dropped) break;
       say({
         type: "gawah", text: e.text, start: e.start, interrupted: e.interrupted,
-        reason: e.reason || decision?.reason, item: e.item || decision?.item,
+        reason: e.reason || decision?.reason, item: e.item || decision?.item, clip: e.clip_fact_id,
       });
       break;
     }
@@ -148,13 +172,14 @@ export function apply(state, e) {
       break;
 
     case "contract.ready":
-      state.status = "contract_ready";
+      if (state.status !== "in_call") state.status = "contract_ready";
       state.contract = { url: e.pdf_url, text: e.text };
       change.panels = ["header"];
       break;
 
     case "record.received":
       record(state, e.record);
+      if (!onCall(state)) state.view = "phones";
       change.panels = ["ledger"];
       break;
 

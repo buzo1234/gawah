@@ -7,6 +7,7 @@
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="/dashboard/static/style.css">
 <link rel="stylesheet" href="/dashboard/static/ledger-and-phones.css">
+<link rel="stylesheet" href="/dashboard/static/crew.css">
 </head>
 <body>
 <header id="top">
@@ -39,7 +40,16 @@
     </section>
   </div>
 
-  <div class="column">
+  <section class="panel" id="crew">
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="tab-graph" aria-controls="graph-view">Fact graph <span id="graph-count" class="count"></span> <span id="conflict-count" class="conflicts"></span></button>
+      <button type="button" role="tab" id="tab-phones" aria-controls="phones-view">Phones and records</button>
+    </div>
+    <div id="graph-view" class="view" role="tabpanel">
+      <div id="graph" class="scroll"></div>
+      <div id="chain" class="chain"></div>
+    </div>
+    <div id="phones-view" class="view column" role="tabpanel" hidden>
     <div class="phones">
       <section class="panel phone" id="second-phone">
         <h2>Second phone <span id="second-name" class="count"></span></h2>
@@ -69,7 +79,12 @@
       <h2>Record ledger <span id="record-count" class="count"></span></h2>
       <div id="records" class="scroll"></div>
     </section>
-  </div>
+    </div>
+  </section>
+
+  <section id="crew-lanes" aria-label="The crew">
+    <div id="lanes"></div>
+  </section>
 </main>
 
 <dialog id="contract-text">

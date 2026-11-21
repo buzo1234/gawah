@@ -1,6 +1,8 @@
 // Draws the panels from the state. Text only ever goes in through h(), as text nodes.
 
-import { ITEMS, clock, nameOf, otherRole } from "./state.js";
+import { ITEMS, clock, lineAt, nameOf, otherRole } from "./state.js";
+import { clipButton, relink, renderGraph } from "./graph.js";
+import { renderLanes } from "./lanes.js";
 
 const $ = (id) => document.getElementById(id);
 const ITEM_LABEL = Object.fromEntries(ITEMS);
@@ -10,6 +12,8 @@ const REASONS = {
   term_unclear: "A term was left unclear",
   conflicting_figures: "Two different figures were said",
   wrapping_up: "They are wrapping up",
+  ambiguous: "An agreement could mean two things",
+  contradicts_record: "It contradicts the record",
 };
 const KINDS = {
   advance: "Advance", payment: "Payment", work_day: "Day of work",
@@ -38,18 +42,25 @@ function nearBottom(box) {
 
 // ---------- conversation ----------
 
+const conflictAt = (state, f) =>
+  f.lineNo != null && f.callNo != null && state.conflicts.findLast((c) => c.lineNo === f.lineNo && (c.callNo ?? 1) === f.callNo);
+
 function flowRow(state, f, live) {
   if (f.type === "mark") return h("div", { class: "mark" }, f.text);
+  if (f.type === "call") return h("div", { class: "callband" }, h("b", {}, `Call ${f.callNo}`), f.text);
   if (f.type === "gawah") {
     const why = [REASONS[f.reason], ITEM_LABEL[f.item]].filter(Boolean).join(" · ");
     return h("div", { class: `turn gawah${live ? " enter" : ""}` },
       h("div", { class: "who" }, "Gawah", h("span", { class: "when" }, clock(f.start))),
       h("div", { class: "said" }, f.text, f.interrupted && h("span", { class: "cut" }, " (cut off)"),
-        why && h("div", { class: "because" }, why)));
+        why && h("div", { class: "because" }, why),
+        f.clip && h("div", { class: "because" }, "Played the clip: ", clipButton(f.clip, "Play it again"))));
   }
-  return h("div", { class: `turn ${f.speaker}` },
+  const conflict = conflictAt(state, f);
+  return h("div", { class: `turn ${f.speaker}${conflict ? " contradicts" : ""}` },
     h("div", { class: "who" }, nameOf(state, f.speaker), h("span", { class: "when" }, clock(f.start))),
-    h("div", { class: "said" }, f.text));
+    h("div", { class: "said" }, f.text,
+      conflict && h("div", { class: "against" }, `Contradicts the record: ${conflict.explanation}`)));
 }
 
 function renderFlow(state) {
@@ -80,20 +91,32 @@ function termChips(state, key) {
   });
 }
 
+function changeChip(state, key) {
+  const c = state.changeOrder.map((id) => state.changes[id]).findLast((x) => x.item === key && x.status !== "withdrawn");
+  if (!c) return null;
+  if (c.status === "confirmed_both") return h("div", { class: "chip ok" }, `Changed to ${c.new_value} · both said yes`);
+  const yes = c.confirmed_by?.length ? ` · ${c.confirmed_by.map((r) => nameOf(state, r)).join(", ")} said yes` : "";
+  return h("div", { class: "chip warn" }, `Change proposed: ${c.new_value}${yes}`);
+}
+
 function renderChecklist(state, flash = []) {
   const agreed = state.items.filter((i) => i.state === "agreed").length;
-  $("agreed-count").textContent = `${agreed} of ${state.items.length} agreed`;
+  const before = state.items.filter((i) => i.state !== "agreed" && state.earlier[i.key]).length;
+  $("agreed-count").textContent = before ? `${agreed} of ${state.items.length} now · ${before} earlier` : `${agreed} of ${state.items.length} agreed`;
   $("items").replaceChildren(...state.items.map((item) => {
     const on = item.state === "agreed";
-    const line = state.lines[item.line_no];
+    const earlier = !on && state.earlier[item.key];
+    const line = lineAt(state, item.line_no, state.itemCall[item.key]);
     const when = item.line_no == null ? "" : line ? `said at ${clock(line.start)} · line ${item.line_no}` : `line ${item.line_no}`;
-    return h("li", { class: `item ${on ? "agreed" : "pending"}${flash.includes(item.key) ? " flash" : ""}`, title: item.source_text },
-      h("div", { class: "tick" }, on ? "✓" : ""),
+    return h("li", { class: `item ${on ? "agreed" : earlier ? "earlier" : "pending"}${flash.includes(item.key) ? " flash" : ""}`, title: item.source_text },
+      h("div", { class: "tick" }, on || earlier ? "✓" : ""),
       h("div", { class: "body" },
-        h("div", { class: "head" }, h("span", { class: "label" }, ITEM_LABEL[item.key]), on && h("span", { class: "when" }, when)),
-        h("div", { class: "value" }, on ? item.value || "Agreed" : "Not agreed yet"),
+        h("div", { class: "head" }, h("span", { class: "label" }, ITEM_LABEL[item.key]),
+          on && h("span", { class: "when" }, when),
+          earlier && h("span", { class: "when" }, `from call ${earlier.callNo}`)),
+        h("div", { class: "value" }, on ? item.value || "Agreed" : earlier ? earlier.value || "Agreed" : "Not agreed yet"),
         item.note && h("div", { class: "note" }, item.note),
-        termChips(state, item.key)));
+        termChips(state, item.key), changeChip(state, item.key)));
   }));
 }
 
@@ -102,7 +125,7 @@ function renderChecklist(state, flash = []) {
 function renderWhy(state, entering) {
   $("spoke-count").textContent = state.decisions.length ? `${state.decisions.length} time${state.decisions.length > 1 ? "s" : ""}` : "";
   const cards = state.decisions.toReversed().map((d, i) => {
-    const line = state.lines[d.afterLine];
+    const line = lineAt(state, d.afterLine, d.callNo);
     const after = d.afterLine == null ? null
       : line ? `${nameOf(state, line.speaker)} at ${clock(line.start)}, line ${d.afterLine}: “${line.text}”`
       : `line ${d.afterLine}`;
@@ -170,12 +193,16 @@ function renderHeader(state) {
   $("people").replaceChildren(...(state.dealId ? roles.map((role) =>
     h("span", { class: `person ${role}` }, h("b", {}, nameOf(state, role)), state.people[role]?.name ? ` ${role}` : "")) : []));
 
+  // Across calls: which call is on, and each finished call's own length.
+  const calls = Object.entries(state.calls);
+  const lengths = calls.filter(([, c]) => c.ended && c.duration != null).map(([, c]) => clock(c.duration));
+  const ran = lengths.length ? ` · ${lengths.join(" + ")}` : "";
   const status = {
     none: "No deal yet",
     requested: "Waiting for the call",
-    in_call: "On the call",
-    call_ended: `Call over${state.duration != null ? ` · ${clock(state.duration)}` : ""}`,
-    contract_ready: "Contract ready",
+    in_call: calls.length > 1 ? `On call ${state.currentCall}` : "On the call",
+    call_ended: `${calls.length > 1 ? `${calls.length} calls over` : "Call over"}${ran}`,
+    contract_ready: `Contract ready${calls.length > 1 ? ran : ""}`,
   }[state.status];
   $("status").textContent = state.callback ? `Call-back with ${nameOf(state, state.callback)}` : status;
   $("status").className = `pill ${state.callback ? "in_call" : state.status}`;
@@ -197,21 +224,39 @@ function renderHeader(state) {
 
 // ---------- entry points ----------
 
+let shown = null;
+
+export function renderView(state) {
+  if (state.view === shown) return;
+  shown = state.view;
+  for (const view of ["graph", "phones"]) {
+    $(`${view}-view`).hidden = state.view !== view;
+    $(`tab-${view}`).setAttribute("aria-selected", String(state.view === view));
+  }
+  if (state.view === "graph") relink();
+}
+
 export function renderAll(state) {
   renderHeader(state);
   renderFlow(state);
   renderChecklist(state);
   renderWhy(state);
   renderLedger(state);
+  renderGraph(state);
+  renderLanes(state);
+  renderView(state);
 }
 
 export function renderChange(state, change) {
   const all = change.panels.includes("all");
   const wants = (panel) => all || change.panels.includes(panel);
   if (wants("header")) renderHeader(state);
-  if (all) renderFlow(state);
+  if (all || wants("flow")) renderFlow(state);
   else if (change.flow) addToFlow(state, change.flow);
   if (wants("checklist")) renderChecklist(state, change.agreed);
   if (wants("why")) renderWhy(state, change.decision);
   if (wants("ledger")) renderLedger(state);
+  if (wants("graph")) renderGraph(state, change);
+  if (wants("lanes")) renderLanes(state, change.note);
+  renderView(state);
 }
