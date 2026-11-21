@@ -215,6 +215,8 @@ class Scribe:
         # A change to a figure is agreed only by saying the figure (or the extra) back with a yes
         # or a promise: a bare "haan theek hai" to a new total changes nothing.
         figure = claim.added or claim.rupees
+        if figure is not None and not says_figure(line.text, figure):
+            return  # a new figure nobody said here or just before: no change was proposed
         if figure is None:
             accepting = claim.stance == "accept"
         else:

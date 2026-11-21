@@ -26,6 +26,12 @@ CLOSE_MIN_DISCUSSED = 5
 # speaking. Lines in a lively call arrive 5 to 8 s apart (the dry run).
 CLOSING_SILENCE_S = 10.0
 
+# --- Changes ---
+# A change offered to an agreed term is held while they bargain ("bees", "baarah", "pandrah"). With this
+# many lines since the last offer and no counter or acceptance, the bargaining is over: Gawah asks both
+# to agree to it (change_proposed). Accepted with its figure said back, the memory records it, nothing is asked.
+CHANGE_SETTLE_LINES = 2
+
 # --- How often it may ask ---
 MAX_ASKS_PER_ITEM = 2  # in practice one mid-call and one at wrap-up
 # A question the mouth dropped (no pause came) was never heard, so it does not count as an

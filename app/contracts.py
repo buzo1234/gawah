@@ -95,6 +95,7 @@ class SpeakReason(StrEnum):
     WRAPPING_UP = "wrapping_up"  # they are wrapping up (items pending, or the final read-back)
     AMBIGUOUS = "ambiguous"  # an agreement that can mean two things, e.g. "Monday tak"
     CONTRADICTS_RECORD = "contradicts_record"  # contradicts a fact already agreed or confirmed
+    CHANGE_PROPOSED = "change_proposed"  # a change to an agreed term, no longer bargained: both should agree to it
 
 
 class CallKind(StrEnum):

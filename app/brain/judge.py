@@ -118,7 +118,8 @@ class View:
     names: dict[Role, str]
     proposals: dict[ItemKey, Proposal] = field(default_factory=dict)  # for pending items
     conflicts: list[Conflict] = field(default_factory=list)  # open, oldest first
-    held: list[Conflict] = field(default_factory=list)  # changes said and not agreed: raised at wrap-up, not mid-call
+    held: list[Conflict] = field(default_factory=list)  # changes offered and not agreed: raised at wrap-up
+    due: list[Conflict] = field(default_factory=list)  # of those, the ones no longer bargained: raised mid-call
     ambiguities: list[Ambiguity] = field(default_factory=list)
     closing: bool = False  # this line (or the silence after it) says they are wrapping up
     follow_up: bool = False  # a second or later call on the deal
@@ -164,12 +165,13 @@ class Judge:
             return None
         self.waiting_since = view.now
         self.waiting_on_question = speak.reason is not SpeakReason.ADDRESSED_DIRECTLY
+        at_wrapup = speak.instruction.startswith(WRAPPING_UP)
         for topic in speak.topics:
             self.asked[topic] = self.asked.get(topic, 0) + 1
-            (self.asked_at_wrapup if speak.reason is SpeakReason.WRAPPING_UP else self.asked_mid_call).add(topic)
+            (self.asked_at_wrapup if at_wrapup else self.asked_mid_call).add(topic)
         if not speak.topics and speak.reason is SpeakReason.WRAPPING_UP:
             self.read_back_done = True
-        if speak.reason is SpeakReason.WRAPPING_UP:
+        if at_wrapup:
             self.wrapup_until = view.now + tuning.WRAPUP_HOLD_S
         return speak
 
@@ -207,7 +209,7 @@ class Judge:
     def _choose(self, view: View) -> Speak | None:
         live = self.mode == "live"
         if live and self._gap_ok(view, tuning.MIN_GAP_S):
-            for conflict in view.conflicts:
+            for conflict in [*view.conflicts, *view.due]:
                 if conflict.topic not in self.asked_mid_call:
                     return _contradiction(conflict, view, SpeakReason.CONTRADICTS_RECORD)
             for ambiguity in view.ambiguities:
@@ -222,9 +224,13 @@ class Judge:
             # With no facts from the memory, every term would look open: asking about
             # each, or reading back nothing, would be wrong. Only answering stays on.
             return None
+        # A change gets a turn of its own, once: Gawah proposes it and records each yes as it comes.
+        asked = self.asked_at_wrapup | self.asked_mid_call
+        for change in [c for c in [*view.conflicts, *view.held] if c.change and c.topic not in asked]:
+            return _contradiction(change, view, SpeakReason.WRAPPING_UP)
         parts: list[Speak] = [
-            _contradiction(c, view, SpeakReason.WRAPPING_UP) for c in [*view.conflicts, *view.held]
-            if c.topic not in self.asked_at_wrapup
+            _contradiction(c, view, SpeakReason.WRAPPING_UP) for c in view.conflicts
+            if not c.change and c.topic not in self.asked_at_wrapup
         ] + [
             _two_ways(a, view, SpeakReason.WRAPPING_UP) for a in view.ambiguities
             if a.topic not in self.asked_mid_call | self.asked_at_wrapup
@@ -303,10 +309,10 @@ def _contradiction(conflict: Conflict, view: View, reason: SpeakReason) -> Speak
             f"Tell {both} that this differs from what was agreed, and ask them which is right. "
             "Do not say which one is right."
         )
-    return Speak(
-        (WRAPPING_UP if reason is SpeakReason.WRAPPING_UP else "") + text, Audience.BOTH, reason, conflict.item,
-        [conflict.topic], list(conflict.fact_ids),
-    )
+    wrap = WRAPPING_UP if reason is SpeakReason.WRAPPING_UP else ""
+    if conflict.change:
+        reason = SpeakReason.CHANGE_PROPOSED  # not a contradiction: both are asked to agree, and Gawah records it
+    return Speak(wrap + text, Audience.BOTH, reason, conflict.item, [conflict.topic], list(conflict.fact_ids))
 
 
 def _two_ways(ambiguity: Ambiguity, view: View, reason: SpeakReason) -> Speak:

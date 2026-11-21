@@ -310,11 +310,26 @@ async def test_a_change_being_bargained_is_held_and_raised_at_wrap_up_only_if_ne
     await call.say(takes=20.0)
     assert call.spoken == [], "no question while they bargain"
     await call.say(takes=20.0)
-    assert call.spoken == [(5, "wrapping_up", "amount")]
+    assert call.spoken == [(5, "change_proposed", "amount")], "its own turn, so Gawah can propose it and record each yes"
     speak = call.speaks[0]
+    assert speak.instruction.startswith("They are about to hang up.")
     assert speak.fact_ids == [agreed.id, last.id], "the latest offer, not every one"
     assert "now said as 30,000 rupees" in speak.instruction and "29,000" not in speak.instruction
     assert "whether they both agree to this change" in speak.instruction
+
+
+async def test_a_change_no_longer_bargained_is_put_to_both_mid_call(bus):
+    """Offered, then two lines with no counter and no figure said back: the bargaining is over.
+    It is a change both should agree to (change_proposed), never a contradiction."""
+    call = Call(bus, Scripted({"amount_agreed", "work_agreed"}, set(), set(), set()), mouth=True)
+    await call.say(takes=20.0)
+    offer = call.record(_change("27,000 rupees", 27000, 2, "chhat ke 2,000 extra lagenge"))
+    await call.say(takes=20.0)
+    await call.say("Theek hai.", takes=20.0)
+    assert call.spoken == []
+    await call.say("Aur paint kab aayega?", takes=20.0)
+    assert call.spoken == [(4, "change_proposed", "amount")]
+    assert call.speaks[0].fact_ids[1] == offer.id and "whether they both agree to this change" in call.speaks[0].instruction
 
 
 async def test_a_change_both_accepted_is_not_raised_and_is_read_back(bus):
@@ -341,7 +356,7 @@ async def test_a_change_to_a_term_both_confirmed_is_raised_at_once(bus):
     await call.say(takes=20.0)
     change = call.record(_change("28,000 rupees", 28000, 2, "28 lagega ab"))
     await call.say(takes=20.0)
-    assert call.spoken == [(2, "contradicts_record", "amount")], "raised as soon as the change fact came"
+    assert call.spoken == [(2, "change_proposed", "amount")], "raised as soon as the change fact came"
     speak = call.speaks[0]
     assert speak.fact_ids == [confirmed.id, change.id]
     assert "That would change the total amount: confirmed as 25,000 rupees (call 1, line 1); now said as 28,000 rupees." in speak.instruction

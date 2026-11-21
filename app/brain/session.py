@@ -203,6 +203,11 @@ class Session:
                 still.append(change)
         return still
 
+    def _due(self, held: list[Conflict]) -> list[Conflict]:
+        """Held changes no longer bargained: CHANGE_SETTLE_LINES lines since the last offer, and no counter."""
+        last = self.lines[-1].no if self.lines else 0
+        return [c for c in held if c.line_no is not None and last - c.line_no >= tuning.CHANGE_SETTLE_LINES]
+
     def _open(self, conflict: Conflict) -> None:
         self.conflicts.append(conflict)
         item = conflict.item
@@ -397,7 +402,8 @@ class Session:
         line = self.lines[-1]
         view = View(
             now=line.end + silence, closing=self.closing, speaker=line.speaker, text=line.text, answers=self.answers,
-            items=self.items, unclear=self.unclear, names=self.who.names, conflicts=self.conflicts, held=self._held(),
+            items=self.items, unclear=self.unclear, names=self.who.names, conflicts=self.conflicts, held=(held := self._held()),
+            due=self._due(held),
             proposals=self._proposals(),
             ambiguities=self.ambiguities, follow_up=self.call_no > 1, changed=self._changed(),
             memory_silent=self.facts_heard == 0 and len(self.lines) >= tuning.MEMORY_SILENT_LINES,
