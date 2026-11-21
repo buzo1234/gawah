@@ -1,0 +1,92 @@
+[
+ {
+  "model": "amazon-transcribe-streaming",
+  "setting": "hi-IN",
+  "run": 1,
+  "line": "paint-06",
+  "text": "पेंट कौन-सा लगवाना है पील्स का रॉयल या नॉर्मल डक्टर इमरजेंट।",
+  "script": "deva",
+  "final_after_audio_s": 0.44
+ },
+ {
+  "model": "amazon-transcribe-streaming",
+  "setting": "hi-IN",
+  "run": 1,
+  "line": "paint-08",
+  "text": "दो कोट और पत्ते काट के साथ ₹25,000 लग।",
+  "script": "deva",
+  "final_after_audio_s": 0.452
+ },
+ {
+  "model": "amazon-transcribe-streaming",
+  "setting": "hi-IN",
+  "run": 1,
+  "line": "paint-10",
+  "text": "मदम लीज है नहीं हो पाएगा लेबर ही तीन आदमी का है। चलो ₹22,000 फाइनल कर लो।",
+  "script": "deva",
+  "final_after_audio_s": 0.521
+ },
+ {
+  "model": "amazon-transcribe-streaming",
+  "setting": "hi-IN",
+  "run": 1,
+  "line": "paint-16",
+  "text": "और बैलेंस सेवेंटीन थाउजेंड का पूरा होने के बाद सेम के दे दूँगी",
+  "script": "deva",
+  "final_after_audio_s": 0.468
+ },
+ {
+  "model": "amazon-transcribe-streaming",
+  "setting": "hi-IN",
+  "run": 1,
+  "line": "paint-24",
+  "text": "तो फाइनल टोटल ₹22,000 5 एडवांस सा बीच में और 10 काम के बाद सोमवार को मिलते हैं।",
+  "script": "deva",
+  "final_after_audio_s": 0.438
+ },
+ {
+  "model": "amazon-transcribe-streaming",
+  "setting": "hi-IN+en-IN",
+  "run": 1,
+  "line": "paint-06",
+  "text": "पेंट कौन-सा लगवाना है पील्स का रॉयल या नॉर्मल डक्टर इमरजेंट।",
+  "script": "deva",
+  "final_after_audio_s": 0.341
+ },
+ {
+  "model": "amazon-transcribe-streaming",
+  "setting": "hi-IN+en-IN",
+  "run": 1,
+  "line": "paint-08",
+  "text": "Doo दो और काट के साथ ₹25,000 लगेंगे।",
+  "script": "mix",
+  "final_after_audio_s": 0.314
+ },
+ {
+  "model": "amazon-transcribe-streaming",
+  "setting": "hi-IN+en-IN",
+  "run": 1,
+  "line": "paint-10",
+  "text": "मदम लीज है नहीं हो पाएगा लेबर ही तीन आदमी का है। चलो ₹22,000 फाइनल कर लो।",
+  "script": "deva",
+  "final_after_audio_s": 0.33
+ },
+ {
+  "model": "amazon-transcribe-streaming",
+  "setting": "hi-IN+en-IN",
+  "run": 1,
+  "line": "paint-16",
+  "text": "और बैलेंस सेवेंटीन थाउजेंड का पूरा होने के बाद सेम के दे दूँगी",
+  "script": "deva",
+  "final_after_audio_s": 0.441
+ },
+ {
+  "model": "amazon-transcribe-streaming",
+  "setting": "hi-IN+en-IN",
+  "run": 1,
+  "line": "paint-24",
+  "text": "तो फाइनल टोटल ₹22,000 5 एडवांस सा बीच में और 10 काम के बाद सोमवार को मिलते हैं।",
+  "script": "deva",
+  "final_after_audio_s": 0.503
+ }
+]

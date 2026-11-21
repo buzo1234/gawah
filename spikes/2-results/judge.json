@@ -1,0 +1,8946 @@
+[
+ {
+  "key": "batch-webm|gpt-transcribe|hi+en+prompt|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "बाहर",
+    "note": "balcony changed"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "प्रोडक्ट पॉजिटिव लगता है, आप ट्राई करना चाहिए",
+    "note": "different sentence"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "दो कमरों",
+    "note": "coat/amount changed"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज नहीं हो पाएगा",
+    "note": "20k missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "बजट सेवेंटी थाउज़ंड",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch-webm|gpt-transcribe|hi+en+prompt|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "थोड़ा पॉजिटिव रखो, आप टाइम करना चाहिए, लेकिन दो फुट होनी चाहिए",
+    "note": "meaning changed"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो कमरों",
+    "note": "do coat missing"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज नहीं हो पाएगा",
+    "note": "20k changed"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "सेवेंटी थाउज़ंड",
+    "note": "17k changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch-webm|gpt-transcribe|prompt|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "प्रोडक्ट पॉजिटिव लगेगा, आप टाइम का मैच नहीं रहेगा",
+    "note": "Tractor Emulsion missing"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो कमरों",
+    "note": "do coat changed"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज",
+    "note": "20k missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "बजट सेवेंटी थाउज़ंड",
+    "note": "seventeen thousand changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch-webm|gpt-transcribe|prompt|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "प्रोडक्ट पॉजिटिव, टाइम का मैच नहीं रहेगा",
+    "note": "wrong content"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो कमरों",
+    "note": "coats changed"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज",
+    "note": "20k missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "सेवेंटी थाउज़ंड",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-4o-mini-transcribe|hi|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "second floor",
+    "note": "indirapuram missing; extra second floor"
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "sir, chaka kaam, baiskar ki grade",
+    "note": "question changed"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "main kaun sa",
+    "note": "brands missing"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "very bad, don't keep",
+    "note": "brand names unclear"
+   },
+   "paint-08": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-09": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "25k omitted"
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "three lakh",
+    "note": "bees changed"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "seventy thousand",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "Thursday",
+    "note": "Friday changed"
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "아까",
+    "note": "different word"
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "bye",
+    "note": "different meaning"
+   },
+   "paint-24": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "do fighter, hotel",
+    "note": "nonsense added"
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-4o-mini-transcribe|hi|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "बाइकिंग की ग्रेड",
+    "note": "different question"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "مین کونسا لگوانا ہے",
+    "note": "brands missing"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "رائینٹرڈ کو آسکتے ہیں آپ ٹنبالیشن نہیں رکھو گے",
+    "note": "brand changed/missing"
+   },
+   "paint-08": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     true,
+     false,
+     false
+    ],
+    "invented": "चेक करें",
+    "note": "GPay/UPI changed"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "سیونٹی تھاؤزنڈ کم کرنے کے بعد سیونگ میں دے دو",
+    "note": "amount/time changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "아까?",
+    "note": "wrong word"
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "他幹嘛",
+    "note": "wrong word"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "ہوٹل",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-4o-mini-transcribe|none|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "place changed"
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "बाइक की गरे दिखा दो",
+    "note": "meaning off"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "مین کون سا لگوانا ہے",
+    "note": "brands missing"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "brand names distorted"
+   },
+   "paint-08": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "25k omitted"
+   },
+   "paint-10": {
+    "meaning_same": true,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": "20k not explicit"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "아까?",
+    "note": "wrong word"
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "Пока.",
+    "note": "wrong word"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "दो फाइटर होटल",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-4o-mini-transcribe|none|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "انبرا براہت",
+    "note": "place wrong"
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "چکا کام ہے بائک کی گرپ دکھا",
+    "note": "meaning changed"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "مین کون سا لگوانا ہے",
+    "note": "brands missing"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "رویٹرا کو آپ ٹائم ٹرنیشن میں دیکھیں",
+    "note": "brand names off"
+   },
+   "paint-08": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "پٹی کاٹا تھا",
+    "note": ""
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "اچھی حدال بہت زیادہ ہے",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": true,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "چیز ہے نہیں ہو پائے گا",
+    "note": "20k missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "ایڈوانس کی طرح",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     false,
+     false
+    ],
+    "invented": "اس میں پیک کر دی جیپ کے نمبر ہے",
+    "note": "missing tomorrow/UPI"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "ایک نمبر تک کرتے ہیں",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false
+    ],
+    "invented": "کم ہونے کے بعد سیم کے لیے",
+    "note": "same day missing"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "아까",
+    "note": "different word"
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "他感。",
+    "note": "different word"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "होटल",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-4o-mini-transcribe|prompt|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "आपका काम है आपका एक्रिलिक की ग्रे दिखा दूँगा",
+    "note": "wrong meaning"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     true,
+     false
+    ],
+    "invented": "",
+    "note": "missing option"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "रोइंट थोड़ा पॉजिटिव है, आप टाइम के अंदर से नहीं रखोगे",
+    "note": "garbled"
+   },
+   "paint-08": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "इस्टाइल",
+    "note": "missing amount"
+   },
+   "paint-11": {
+    "meaning_same": false,
+    "facts": [
+     true
+    ],
+    "invented": "material अलग होगा",
+    "note": "material changed"
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "Hello?",
+    "note": "wrong utterance"
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "Apka",
+    "note": "wrong utterance"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "दो फाइनल पर डे",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-4o-mini-transcribe|prompt|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "आइकर की ग्रे दिखानी है",
+    "note": "different meaning"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "Ambiance",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "रॉयल टायप बिल्कुल",
+    "note": "missing key details"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "दो फोदर हटी कट",
+    "note": "garbled"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "लेबर की तीन हज़ार हैगा",
+    "note": "wrong amount"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "seventy thousand",
+    "note": "wrong amount"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "Hello",
+    "note": "wrong word"
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "फबका",
+    "note": "not clear"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-4o-transcribe|hi|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "missing flat details"
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "کام ہے بائیکر کی",
+    "note": "garbled"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "بینک کونسا لگوانا ہے",
+    "note": "wrong topic"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "ٹائم ٹریولر نہیں لگو",
+    "note": "unrelated"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "دو پودوں پر تیس ہزار لگیں گے",
+    "note": "wrong amount"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": "missing 20k refusal"
+   },
+   "paint-11": {
+    "meaning_same": false,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": "missing material clause"
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     false,
+     false
+    ],
+    "invented": "یعنی یہ نمبر",
+    "note": "missing GPay/tomorrow"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "سیو کے دے دینا",
+    "note": "missing amount/date"
+   },
+   "paint-17": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "missing split amounts"
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "سفر",
+    "note": "wrong day"
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "Hakka",
+    "note": "wrong word"
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "ہوٹل",
+    "note": "one wrong word"
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-4o-transcribe|hi|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     false
+    ],
+    "invented": "",
+    "note": "missing names"
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "missing location/floor"
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "wrong phrase"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "unrelated wording"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "brand changed"
+   },
+   "paint-08": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "missing labour count"
+   },
+   "paint-11": {
+    "meaning_same": false,
+    "facts": [
+     false
+    ],
+    "invented": "",
+    "note": "amount missing"
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "missing key details"
+   },
+   "paint-15": {
+    "meaning_same": false,
+    "facts": [
+     false
+    ],
+    "invented": "",
+    "note": "name changed"
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "wrong amount"
+   },
+   "paint-17": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": "7,000 missing"
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "day changed"
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "wrong word"
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     false
+    ],
+    "invented": "",
+    "note": "Monday missing"
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-4o-transcribe|none|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     false
+    ],
+    "invented": "",
+    "note": "missing Ramesh, Sharma"
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "missing flat details"
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "bike ki grip",
+    "note": "wrong topic"
+   },
+   "paint-05": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "missing balcony grill"
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "pencil",
+    "note": "paint brands changed"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "tranjekshan",
+    "note": "wrong content"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "missing putty/material"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "missing three men"
+   },
+   "paint-11": {
+    "meaning_same": false,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": "missing material clause"
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     false,
+     false
+    ],
+    "invented": "ups",
+    "note": "missing tomorrow and GPay"
+   },
+   "paint-15": {
+    "meaning_same": false,
+    "facts": [
+     false
+    ],
+    "invented": "introduce yourself",
+    "note": "wrong wording"
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "70000 count karne ke baad safe mein",
+    "note": "amount wrong"
+   },
+   "paint-17": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "missing baaki 10k"
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "safar",
+    "note": "next Monday changed"
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "hakka",
+    "note": "not pakka"
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "different word"
+   },
+   "paint-24": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     false
+    ],
+    "invented": "15",
+    "note": "Monday missing, extra 15"
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-4o-transcribe|none|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     false
+    ],
+    "invented": "",
+    "note": "missing Ramesh/Sharma"
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "missing flat details"
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "बाइक की ग्रिप",
+    "note": "wrong topic"
+   },
+   "paint-05": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "missing hall, kitchen, grill"
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "पेंसिल का राइट हो गया",
+    "note": "garbled unrelated"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "आप टाइम टेबल से नहीं रहो گے",
+    "note": "wrong meaning"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "दो कोड़ा पटी काटने",
+    "note": "amount missing"
+   },
+   "paint-09": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false
+    ],
+    "invented": "",
+    "note": "missing budget amount"
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "missing labour detail"
+   },
+   "paint-11": {
+    "meaning_same": false,
+    "facts": [
+     false
+    ],
+    "invented": "",
+    "note": "amount missing"
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "missing GPay/tomorrow"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "balance seventy thousand",
+    "note": "wrong amount"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "अगले सफर",
+    "note": "day changed"
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "Hakkı",
+    "note": "not understood"
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "Habka",
+    "note": "not understood"
+   },
+   "paint-24": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true,
+     true,
+     false
+    ],
+    "invented": "",
+    "note": "wrong total; missing Monday"
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-4o-transcribe|prompt|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "Indirapuram missing"
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "अच्छा काम है",
+    "note": "grill question missing"
+   },
+   "paint-05": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "balcony grill missing"
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     true,
+     false
+    ],
+    "invented": "",
+    "note": "do coat missing"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "do coat missing"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     false,
+     false
+    ],
+    "invented": "चेक है",
+    "note": "GPay changed"
+   },
+   "paint-15": {
+    "meaning_same": false,
+    "facts": [
+     true
+    ],
+    "invented": "पेंटिंग करते करते",
+    "note": "reply garbled"
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "सत्तर हज़ार चेक में",
+    "note": "amount and timing changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "आपका",
+    "note": "wrong response"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-4o-transcribe|prompt|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "Indirapuram missing"
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "grill question missing"
+   },
+   "paint-05": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "balcony grill missing"
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "brand/options missing"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "brand advice missing"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": "putty/material missing"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-11": {
+    "meaning_same": false,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": "extra charge missing"
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     true,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "GPay missing"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "pakka missing"
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": "total changed"
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-transcribe|hi+en+keywords|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "सर, आपका काम है, अब करने की",
+    "note": "question changed"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "रॉयल प्रोडक्ट पॉजिटिव लगता है, आप ट्राई करना चाहिए, दो फुट",
+    "note": "meaning changed"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो क्वार्टर",
+    "note": "do coat lost"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज नए नहीं हो पाएगा",
+    "note": "20k missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "सेवेंटी थाउजंड, कम कराने के बाद सेंड कर देना",
+    "note": "amount/time changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-transcribe|hi+en+keywords|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "आपका काम है, अब करने की ... करनी है",
+    "note": "question lost"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "रॉयल प्रोडक्ट पॉजिटिव लगता है, आप ट्राई करना चाहिए",
+    "note": "wrong choice"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो क्वार्टर पट्टिका",
+    "note": "do coat changed"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "प्लीज नए नहीं हो पाएगा",
+    "note": ""
+   },
+   "paint-11": {
+    "meaning_same": false,
+    "facts": [
+     true
+    ],
+    "invented": "टन",
+    "note": "unit changed"
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "सेवेंटी थाउजंड",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-transcribe|hi+en+prompt|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "balcony vs outside grill"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "Tractor Emulsion misheard"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "two coats changed"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": "bees amount missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "seventeen changed to seventy"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-transcribe|hi+en+prompt|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "ग्रेविंग",
+    "note": "balcony grill changed"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो कमरों",
+    "note": "do coat missing"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "नए",
+    "note": "20 thousand missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "सेवेंटी थाउज़ंड",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-transcribe|hi+en|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "एसटी",
+    "note": "Ramesh missing/wrong"
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "एक तरफ पूरा",
+    "note": "place missing"
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "आपका काम है, आप करके",
+    "note": "question lost"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     false
+    ],
+    "invented": "एजेंट्स का ओपी डॉल्फिन",
+    "note": "brand names wrong"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "थोड़ा पॉजिटिव लगेगा, टाइम का मैच नहीं रहेगा",
+    "note": "Tractor missing"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो क्विंटल पटीकट",
+    "note": "do coat missing"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज नहीं, नहीं हो पाएगा",
+    "note": "20k missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "सेवेंटी थाउजंड सेंड कर देना",
+    "note": "amount wrong"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-transcribe|hi+en|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "एसटी",
+    "note": "name changed"
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     false
+    ],
+    "invented": "एक तरफ पुरा",
+    "note": "place/floor changed"
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "आपका काम है, अब करने की ... करनी है",
+    "note": "different meaning"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "एजेंट का रॉयल लॉबी",
+    "note": "brands changed"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     false
+    ],
+    "invented": "पॉजिटिव लगेगा, टाइम का मैच नहीं रहेगा",
+    "note": "brand/coat changed"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो क्विंटल पट्टी कट",
+    "note": "coat missing"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज नहीं",
+    "note": "amount changed"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "बजट सेवेंटी थाउज़ंड",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "तबका",
+    "note": "different word"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-transcribe|hi|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "एसटी",
+    "note": "Ramesh changed"
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "आपका काम है, अब करने की ...",
+    "note": "missing question"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "एजेंट्स का रॉयल ओके",
+    "note": "brand changed"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "पॉजिटिव रखो, आप टाइम का मैच नहीं रखो",
+    "note": "brand issue"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो क्विंटल",
+    "note": "do coat missing"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "70,000 काम पूरा होने के बाद सैलरी दे दूँगा",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "तबका",
+    "note": "wrong word"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-transcribe|hi|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "एसटी",
+    "note": "name mismatch"
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "आपका काम है, अब करने की",
+    "note": "question missing"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "एजेंट का रॉडरोगे या नॉर्मल डॉक्टर",
+    "note": "brands changed"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "थोड़ा पॉजिटिव रखो",
+    "note": "off topic"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "दो क्विंटल मटेरियल",
+    "note": "amount wrong"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज नहीं",
+    "note": "20k missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "बजट सेवेंटी थाउज़ंड का प्रो होने के बाद",
+    "note": "amount wrong"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "तबका",
+    "note": "wrong word"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-transcribe|none|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "एसटी",
+    "note": "Ramesh changed"
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "आपका काम है, आप करके कीजिए",
+    "note": "different meaning"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     false
+    ],
+    "invented": "ओपी और डॉल्फिन",
+    "note": "brand changed"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "प्रोफाइल थोड़ा पॉजिटिव लगता है",
+    "note": "nonsense"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो क्विंटल पटीकट",
+    "note": "coat changed"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": true,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज नहीं",
+    "note": "20k not preserved"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "टन",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     true,
+     true,
+     false
+    ],
+    "invented": "UPS",
+    "note": "UPI changed"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "सेवेंटी थाउजंड",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "अगले सुबह",
+    "note": "Monday missing"
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "아까",
+    "note": "wrong language"
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "تبکہ",
+    "note": "not pakka"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-transcribe|none|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "एसटी",
+    "note": "Ramesh changed"
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "आपका काम है, आप करके",
+    "note": "different response"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     false
+    ],
+    "invented": "ओपी और डॉल्फिन",
+    "note": "brands changed"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "प्रोफाइल थोड़ा पॉजिटिव लगता है",
+    "note": "wrong content"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो क्विंटल पतीखाट, अट्ठाईस पैसा",
+    "note": "missing do coat"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": true,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "पहले 70,000",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "अगले सुबह",
+    "note": "Monday changed"
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "아까",
+    "note": "not pakka"
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "تب کا",
+    "note": "not pakka"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-transcribe|prompt|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "आपका काम है, अब पेंटिंग की ... करनी है",
+    "note": "missing grill question"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-08": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज नए नहीं हो पाएगा",
+    "note": "20k missing/garbled"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "बजट सेवेंटी थाउज़ंड",
+    "note": "amount wrong"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|gpt-transcribe|prompt|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "इसका काम है, अभी करेंगे",
+    "note": "grill omitted"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो कमरों पुट्टी कट",
+    "note": "coat/touch-up changed"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज नए नहीं हो पाएगा",
+    "note": "amount phrase changed"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "बजट सेवेंटी थाउज़ंड, सेम डे दे दूँगा",
+    "note": "amount and speaker changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|whisper-1|hi|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "प्रबेश जी; सुनीदा; टंबर",
+    "note": "names changed"
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "ड्रैल में लग़ना है",
+    "note": "brand options missing"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "टाइम जन्दाईश",
+    "note": "brand choice changed"
+   },
+   "paint-08": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-09": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "प्रजेक्ट",
+    "note": "25,000 missing"
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "20 कर नहीं हो पाएगा",
+    "note": "22,000 vs 20 mismatch"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     false
+    ],
+    "invented": "वीडियोस",
+    "note": "UPI not stated"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "70,000; प्राउने; सेव",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "अपका",
+    "note": "not pakka"
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|whisper-1|hi|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "names/number changed"
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "brands missing"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "brands changed"
+   },
+   "paint-08": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-09": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "25k missing"
+   },
+   "paint-10": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     false
+    ],
+    "invented": "",
+    "note": "UPI not explicit"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "wrong word"
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|whisper-1|none|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "प्रबेश जी, सुनीदा, टंबर",
+    "note": "names changed"
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "गप anytime, अस्ट पास, बाड़ा गना, भात",
+    "note": "paint brands missing"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "पहसली पड़ता है, टाइम जन्दाईश",
+    "note": "brands changed"
+   },
+   "paint-08": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-09": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "25k missing"
+   },
+   "paint-10": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "70,000",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "I'll go",
+    "note": "different meaning"
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "Пока",
+    "note": "different meaning"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|whisper-1|none|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "names changed"
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "brand names missing"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "brands missing"
+   },
+   "paint-08": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-09": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "",
+    "note": "25k missing"
+   },
+   "paint-10": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     true,
+     true,
+     false
+    ],
+    "invented": "",
+    "note": "UPI missing"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "I'll go",
+    "note": "different meaning"
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "different meaning"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|whisper-1|prompt|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "रूपी अश्क्या",
+    "note": "wrong meaning"
+   },
+   "paint-04": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "Store-bought Indian Paints in Indian dollar",
+    "note": "brand mismatch"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "Thanks for watching!",
+    "note": "wrong content"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false
+    ],
+    "invented": "",
+    "note": "amount missing"
+   },
+   "paint-09": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "اعشيز ہزار گھویز",
+    "note": "garbled"
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": "20k missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false,
+     false
+    ],
+    "invented": "Thanks for watching!",
+    "note": "missing reply"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "wrong amount"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "missing"
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "Thank you",
+    "note": "wrong content"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "batch|whisper-1|prompt|2",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "flight; paint kar raha tha; roopi ashkya",
+    "note": "wrong items"
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "takat; crep gard gard",
+    "note": "garbled"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "http://dearAzirappu.com",
+    "note": "unrelated text"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "rahin; tyang jandar",
+    "note": "brand/cost changed"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false
+    ],
+    "invented": "patte saha",
+    "note": "amount missing"
+   },
+   "paint-09": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false
+    ],
+    "invented": "rozer; p ejk meiti azai kar",
+    "note": "20k missing"
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "बीज कर नहीं हो पाएगा; फाइल कर लो",
+    "note": "20k changed"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true,
+     true
+    ],
+    "invented": "प्रेट करेंग",
+    "note": "tomorrow missing"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "70,000; सेव के लिए बाते हैं",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "missing reply"
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "Thank you",
+    "note": "wrong reply"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "stream|gpt-live-transcribe|hi+en+prompt|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "",
+    "note": "question changed"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "थोड़ा थोड़ा पॉजिटिव लग रहा है आप ट्रांसजेंडर नहीं रहोगे",
+    "note": "brands lost"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "पच्चीस घंटे",
+    "note": "putty missing"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "please",
+    "note": "amounts wrong"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "seventy thousand",
+    "note": "amount wrong"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "कल से",
+    "note": "statement changed"
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true,
+     true,
+     true
+    ],
+    "invented": "पांच सौ",
+    "note": "total and advance wrong"
+   }
+  }
+ },
+ {
+  "key": "stream|gpt-live-transcribe|hi+en,delay-xhigh|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "सर इसका काम है, क्लिक की ग्रेड",
+    "note": "grill mangled"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     false
+    ],
+    "invented": "एजेंट्स, नॉर्मल",
+    "note": "brand changed/missed"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "पॉजिटिव, टाइम जनरेशन",
+    "note": "tractor missing"
+   },
+   "paint-08": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "please",
+    "note": "bees missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     false,
+     false
+    ],
+    "invented": "elements में कई जीपीटी UPS",
+    "note": "GPay/UPI lost"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "सेवेंटी थाउजेंड, सेंड",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "पांच घंटे",
+    "note": "days changed to hours"
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false,
+     false,
+     true
+    ],
+    "invented": "hotel, पांच सौ, सात बीच में",
+    "note": "final numbers wrong"
+   }
+  }
+ },
+ {
+  "key": "stream|gpt-live-transcribe|hi+en|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "click",
+    "note": "question changed"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "brands missing/changed"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "positive, time generation",
+    "note": "coat/brand changed"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "hotel, patesh, ater",
+    "note": "do coat unclear"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "please",
+    "note": "20 thousand omitted"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false,
+     true
+    ],
+    "invented": "5800",
+    "note": "amount changed"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "seventy thousand, send",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "Hablé",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "hours",
+    "note": "days changed"
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "tabka",
+    "note": "different word"
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "hotel",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "stream|gpt-realtime-whisper|none|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "सुनीला",
+    "note": "name changed"
+   },
+   "paint-02": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "하지마라 알았어",
+    "note": "greeting altered"
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "एक्दम पुराना",
+    "note": "missing details"
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "ठीक है",
+    "note": "gibberish"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "",
+    "note": "brands missing"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     true
+    ],
+    "invented": "थोड़ा थोड़ा पॉजिटिव",
+    "note": "brands changed"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "どこから持ってかれた",
+    "note": "unrelated"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "please play",
+    "note": "20k missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true,
+     true
+    ],
+    "invented": "अडल्स",
+    "note": "kal missing"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "70,000",
+    "note": "amount wrong"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "कल से",
+    "note": "start time changed"
+   },
+   "paint-19": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "Hablé con वहाँ से शुरू कर देखो",
+    "note": "day missing"
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "hotel",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "stream|gpt-transcribe|hi+en+prompt,server_vad-700|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     true
+    ],
+    "invented": "एक तला पुरा",
+    "note": "place missing"
+   },
+   "paint-04": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "रंग थोड़ा पॉजिटिव लगता है, आप ट्राई करना ऐसे नहीं रहेगा",
+    "note": "wrong words"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "दो कमरों पुट्टी कट",
+    "note": "do coat missing"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज",
+    "note": "amount 20 missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "हिंदी।",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "सेवेंटी थाउज़ंड",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "stream|gpt-transcribe|hi+en+prompt,server_vad|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "सर",
+    "note": ""
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "हिंदी",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "रंग थोड़ा पॉजिटिव लगता है। आप ट्राई करना ऐसे नहीं रहेगा",
+    "note": "wrong content"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "दो कमर पुट्टी कट",
+    "note": "amount ok, rest wrong"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": true,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीस",
+    "note": "20k missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     true,
+     false,
+     false
+    ],
+    "invented": "यूपीएस",
+    "note": "GPay/UPI changed"
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "बजट सेवेंटी थाउजंड कांप्रोमाइज़ के बाद, सैंपल दे दूँगा",
+    "note": "wrong meaning"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "stream|gpt-transcribe|hi+en+prompt|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "बाहर के भी",
+    "note": "balcony/grill changed"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     false
+    ],
+    "invented": "प्रोडक्ट पॉजिटिव लगेगा, टाइम का मैच नहीं रहेगा",
+    "note": "Tractor missing"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो कमरों पुट्टी कट",
+    "note": "do coat missing"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज नहीं हो पाएगा",
+    "note": "20k missing/changed"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "सेवेंटी थाउज़ंड",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "stream|gpt-transcribe|hi+en|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "रवेश",
+    "note": "name changed"
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": false,
+    "facts": [],
+    "invented": "सिर्फ काम है, बाकी की ...",
+    "note": "question incomplete"
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "बेल; इमेज का रॉयल ओके",
+    "note": "brand changed"
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false,
+     false
+    ],
+    "invented": "प्रोडक्ट पॉजिटिव लगेगा; टाइम क्रम में रखो; दो पुट",
+    "note": "meaning altered"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो क्वार्टर पट्टी का टेनिस के साथ",
+    "note": "material phrase changed"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज",
+    "note": "20k missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "एड्रेस",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "सेवेंटी थाउजंड; सेंड कर देना",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ },
+ {
+  "key": "stream|gpt-transcribe|prompt|1",
+  "lines": {
+   "paint-01": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-02": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-03": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-04": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-05": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-06": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-07": {
+    "meaning_same": false,
+    "facts": [
+     true,
+     false,
+     false
+    ],
+    "invented": "प्रोडक्ट पॉजिटिव लगता है; टाइम का मैच नहीं रहेगा",
+    "note": "wrong brands/coat"
+   },
+   "paint-08": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true
+    ],
+    "invented": "दो कमरों; पट्टी कट",
+    "note": "coat changed"
+   },
+   "paint-09": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-10": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     true,
+     true
+    ],
+    "invented": "प्लीज",
+    "note": "20k missing"
+   },
+   "paint-11": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-12": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-13": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-14": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-15": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-16": {
+    "meaning_same": false,
+    "facts": [
+     false,
+     false
+    ],
+    "invented": "बजट सेवेंटी थाउज़ंड; सेंड कर दे दूँगा",
+    "note": "amount changed"
+   },
+   "paint-17": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-18": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-19": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-20": {
+    "meaning_same": true,
+    "facts": [
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-21": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   },
+   "paint-22": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-23": {
+    "meaning_same": true,
+    "facts": [],
+    "invented": "",
+    "note": ""
+   },
+   "paint-24": {
+    "meaning_same": true,
+    "facts": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "invented": "",
+    "note": ""
+   }
+  }
+ }
+]
