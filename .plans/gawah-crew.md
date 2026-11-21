@@ -21,11 +21,55 @@ Gawah is not one bot. It is a small crew of agents in the call with the two peop
 
 They talk through the existing event bus, which acts as their shared blackboard. The dashboard shows each agent's lane, so the audience sees the crew work.
 
+## The fact layer: RAG, knowledge graph, or neither?
+
+Decided 21 November, after the user asked. Worked through the scenarios Gawah must handle, then chose the simplest store that serves all of them.
+
+### Scenarios
+
+| # | Scenario | What it really needs | Plain RAG | Full knowledge graph |
+|---|---|---|---|---|
+| 1 | "Gawah, advance kitna tay hua tha?" | The *current agreed* value of one term, with who said it and the clip | Weak: returns every mention, including offers that were turned down | Works, but overkill |
+| 2 | Call 2: "aapne 25 bola tha" | The term's history: 25 was Ramesh's offer, 22 was agreed by both. Gawah says exactly that | Fails: cannot tell an offer from an agreement | Works if versions are kept |
+| 3 | "Balcony ke 2,000 extra" | A new version of a term that replaces the old one, confirmed by both, with the history kept | Fails | Works |
+| 4 | "3000 cash diya" | Which term the payment counts towards, and what is still owed: arithmetic | Fails: a model cannot be trusted to add up retrieved snippets | Works if values are numbers |
+| 5 | "Paint ke baare mein kya baat hui thi?" | Open-ended recall of details that are not one of the six terms (brand, who buys it) | Works well | Weak: needs every detail extracted into the graph first |
+| 6 | "Maine screenshot bheja tha na?" | Records and their evidence, linked to the term | Partly | Works |
+| 7 | Work marked done three days ago, no balance paid | A schedule: what is due, and when | Fails | Needs rules on top |
+| 8 | "Kaam Monday tak" | Interpretation of one line, not retrieval | n/a | n/a |
+| 9 | The same worker across many deals | People as entities across deals | Weak | Works |
+
+### Decision: a small versioned fact graph, with vector search on the side
+
+Not plain RAG: retrieval returns mentions, not truth. It cannot tell an offer from an agreement, cannot follow a term's history, and cannot add up payments. Those are scenarios 1 to 4, the core of the product.
+
+Not a full knowledge graph: a deal has tens of facts, not thousands; the queries are one or two hops; extracting every detail of noisy Hinglish speech into a general ontology would produce errors; and a graph database is another service to run. It only pays off across deals (scenario 9), which is parked.
+
+What we build, inside SQLite, no new service:
+- **The event log stays the source of truth.** Everything else is built from it and can be rebuilt. The hash chain runs over it.
+- **Facts** are typed and versioned: the term they belong to, the value in words and normalised (whole rupees; a date when it can be pinned down), status (said, agreed, confirmed, disputed, superseded), who said and who confirmed it, when it became true and when it was replaced, and the evidence (transcript line and seconds for the clip, or a record and its screenshot).
+- **Links between facts**, few and fixed: replaces (a term's history), counts towards (a payment and the term it settles), contradicts (from `fact.conflict`), evidenced by (line, clip, screenshot). This is the "graph": a handful of edge types, followed in plain SQL.
+- **Vectors on the side**: embeddings (`text-embedding-3-small`) for every fact and every transcript line, searched by brute force in numpy. Used for open-ended recall (scenario 5) and for finding which confirmed fact a new claim might contradict.
+
+How Gawah's tools use it:
+- `get_term(item)`: structured. Current agreed or confirmed value, its history, and the clip. Answers scenarios 1 and 2.
+- `owed()`: computed in code from the terms and payments. Scenario 4.
+- `search_facts(query)`: hybrid. Semantic search over facts and lines, ranked so confirmed beats agreed beats said, each result with who, when, and the clip. Scenario 5.
+- A contradiction check on every new claim: first in code (same term, different normalised value from the confirmed one); only if that cannot decide, a small model judges the claim against the nearest confirmed facts, and must cite them.
+
+Inspiration: temporal knowledge graphs used as agent memory, where a fact carries the time it was valid and a newer fact invalidates an older one (for example Zep's Graphiti). We take the idea, not the infrastructure. Not evaluated today.
+
+### Acceptance tests for the memory stream
+
+Each scenario above (1 to 7) becomes a test on fakes, written before the code. Scenario 2 is the showpiece: on a second call, "aapne 25 bola tha" must produce "25 was your offer; 22 was agreed by both, on 21 November", with the clip.
+
 ## Gawah's tools
 
 The voice agent never changes the deal by itself. It acts only through tools:
 
-- `search_facts(query)` - semantic search across the deal's facts. Returns facts with who said them, when, and whether they were confirmed.
+- `get_term(item)` - the current agreed or confirmed value of one term, its history, and the clip.
+- `owed()` - what has been paid towards each term and what is still owed, computed in code.
+- `search_facts(query)` - semantic search across the deal's facts and transcript lines. Returns facts with who said them, when, and whether they were confirmed.
 - `play_clip(fact_id)` - plays the original few seconds of audio into the call.
 - `propose_change(fact_id, new_value)` - starts an amendment; nothing changes until both people confirm by voice.
 - `confirm_change(change_id)` - records one person's spoken confirmation.
