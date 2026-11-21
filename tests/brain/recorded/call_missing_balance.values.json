@@ -1,0 +1,57 @@
+{
+ "fixture": "call_missing_balance",
+ "recorded_at": "2026-11-21T11:32:10+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "value:work@5": {
+   "value": "paint the whole 2BHK flat, including both bedrooms, hall, kitchen, balcony grill, ceilings, and putty in one bedroom for dampness",
+   "source_text": "Poora flat paint karwana hai - dono bedroom, hall, kitchen, aur balcony ki grill bhi.",
+   "line_no": 3
+  },
+  "value:amount@14": {
+   "value": "24,000 rupees for labour, material, and putty",
+   "source_text": "Theek hai ji, 24 hazaar final. Labour, material, putty, sab ismein.",
+   "line_no": 14
+  },
+  "value:advance@17": {
+   "value": "8,000 rupees in the morning on the day the work starts by GPay",
+   "source_text": "8 hazaar... theek hai, jis din kaam shuru karoge us din subah GPay kar dungi.",
+   "line_no": 17
+  },
+  "value:dates@22": {
+   "value": "Monday 23 November 2026 to Friday 27 November 2026",
+   "source_text": "Paanch din ka kaam hai ji. Monday shuru, Friday shaam tak poora finish.",
+   "line_no": 22
+  },
+  "value:late_or_unfinished@26": {
+   "value": "If it is late, 500 rupees will be deducted for each day",
+   "source_text": "Phir bhi agar late hua to har din ka 500 rupaye kaat lena aap.",
+   "line_no": 26
+  },
+  "value:amount@30": {
+   "value": "24,000 rupees for labour, material and putty",
+   "source_text": "Theek hai ji, 24 hazaar final. Labour, material, putty, sab ismein.",
+   "line_no": 14
+  },
+  "value:late_or_unfinished@30": {
+   "value": "500 rupees deducted per day if the work is late",
+   "source_text": "Phir bhi agar late hua to har din ka 500 rupaye kaat lena aap.",
+   "line_no": 26
+  },
+  "value:dates@30": {
+   "value": "Monday 23 November 2026 to Friday 27 November 2026",
+   "source_text": "Paanch din ka kaam hai ji. Monday shuru, Friday shaam tak poora finish.",
+   "line_no": 22
+  },
+  "value:advance@30": {
+   "value": "8,000 rupees, paid by GPay in the morning on the day the work starts",
+   "source_text": "8 hazaar... theek hai, jis din kaam shuru karoge us din subah GPay kar dungi.",
+   "line_no": 17
+  },
+  "value:work@30": {
+   "value": "Paint the whole 2BHK flat, including both bedrooms, hall, kitchen, balcony grill and ceiling, and do putty on the damp bedroom wall with normal emulsion paint",
+   "source_text": "Mera 2BHK flat hai, Indirapuram mein. Poora flat paint karwana hai - dono bedroom, hall, kitchen, aur balcony ki grill bhi.",
+   "line_no": 3
+  }
+ }
+}
