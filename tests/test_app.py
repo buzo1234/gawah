@@ -29,6 +29,9 @@ def test_published_event_reaches_the_dashboard_socket_and_the_event_log(settings
             assert response.status_code == 200, response.text
         received = [parse_event(ws.receive_text()) for _ in events]
         assert received == events
+        # The socket and the event log are separate subscriptions: the socket having
+        # the last event does not mean the log has written it yet.
+        client.portal.call(app.state.bus.drain)
         logged = client.portal.call(app.state.store.events, "d-app")
         assert logged == events
 

@@ -58,20 +58,24 @@ async def test_raising_handler_does_not_break_others_or_the_publisher(bus, caplo
 
 
 async def test_slow_handler_does_not_delay_others_or_the_publisher(bus):
-    fast, release = [], asyncio.Event()
+    fast, release, quick_done = [], asyncio.Event(), asyncio.Event()
 
     async def slow(event):
         await release.wait()
 
     async def quick(event):
         fast.append(event.text)
+        if len(fast) == 2:
+            quick_done.set()
 
     bus.subscribe(TranscriptLine, slow)
     bus.subscribe(TranscriptLine, quick)
     say(bus, "d1", "hirer", "one")
     say(bus, "d1", "hirer", "two")
-    await asyncio.sleep(0.05)
+    # The slow handler is still stuck on its first event while the quick one finishes both.
+    await asyncio.wait_for(quick_done.wait(), timeout=5)
     assert fast == ["one", "two"]
+    assert not release.is_set()
     release.set()
     await bus.drain()
 
