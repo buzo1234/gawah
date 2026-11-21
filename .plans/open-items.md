@@ -9,7 +9,7 @@ Last updated: 21 November 2026.
 | # | Item | Found in | Status |
 |---|---|---|---|
 | 1 | **Real WhatsApp sends are refused.** Twilio answers error 21654 ("ContentSid Required") to every free-form message to the real phone. Nothing has reached a real phone. Next step: tunnel up, sandbox webhook address set in the Twilio console, the real phone sends a normal message, then retry. Fallback: Meta's test number. | PR 3 | Open |
-| 2 | **Speech detection fails on real microphones.** A plain loudness threshold treats room noise as speech: Gawah was cut off 3 times out of 3 with nobody speaking. Both `bridge` and `mouth` are replacing it with a real voice-activity detector. | The user's phone check | In progress |
+| 2 | **Speech detection fails on real microphones.** A plain loudness threshold treats room noise as speech: Gawah was cut off 3 times out of 3 with nobody speaking. Earphones were in, so this was room noise and not echo. Both `bridge` and `mouth` are replacing it with a real voice-activity detector. | The user's phone check | In progress |
 | 3 | **`bridge` and `mouth` are not built yet.** No real call has run through the product. | - | In progress |
 | 4 | **The streams have never run together on a real call.** The whole-flow test covers WhatsApp, brain, and records on fakes. | PR 9 | Open |
 
