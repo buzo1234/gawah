@@ -10,7 +10,8 @@
 - normalise.py  rupees, dates, and lines with nothing to extract
 
 Set on app.state.memory (MEMORY_STATE). The clip is served at clip_path(fact_id), the chain
-check at /memory/chain/<deal_id>, the deal's facts at /memory/state?deal=<deal_id>.
+check at /memory/chain/<deal_id>; for the dashboard and checks by hand, /memory/term/<deal_id>/<item>,
+/memory/search/<deal_id>?q=..., and /memory/state?deal=<deal_id> (facts, conflicts, owed, timings).
 A replayed or fake call (room replay-... or fake-...) gets the Scribe's saved replies in
 tests/memory/recorded/; MEMORY_LIVE_REPLAYS=1 in the shell sends it to the live model.
 """
@@ -22,7 +23,7 @@ from fastapi import FastAPI, HTTPException, Response
 
 from app.bus import Bus
 from app.config import ROOT
-from app.contracts import MEMORY_STATE, clip_path
+from app.contracts import MEMORY_STATE, ItemKey, clip_path
 from app.memory import chain
 from app.memory.extract import LiveExtractor, RecordedExtractor, Routed
 from app.memory.memory import Memory
@@ -74,6 +75,14 @@ def register(app: FastAPI, bus: Bus) -> None:
         """The witness chain checked end to end; the formula is in app/memory/chain.py."""
         return chain.report(memory.book.deal(deal_id).versions)
 
+    @app.get("/memory/term/{deal_id}/{item}")
+    async def term(deal_id: str, item: ItemKey) -> dict:
+        return (await memory.get_term(deal_id, item)).model_dump(mode="json")
+
+    @app.get("/memory/search/{deal_id}")
+    async def search(deal_id: str, q: str, k: int = 5) -> list[dict]:
+        return [f.model_dump(mode="json") for f in await memory.search(deal_id, q, k)]
+
     @app.get("/memory/state")
     async def state(deal: str) -> dict:
         """The deal's facts as they stand, every version, the conflicts, and whether the chain holds."""
@@ -85,4 +94,7 @@ def register(app: FastAPI, bus: Bus) -> None:
             "chain_ok": memory.chain_break(deal) is None,
             "fingerprint": book.versions[-1].hash if book.versions else None,
             "conflicts": [c.model_dump(mode="json") for c in memory.conflicts if c.deal_id == deal],
+            "owed": [r.model_dump(mode="json") for r in await memory.owed(deal)],
+            "latency_s": memory.latency_summary(),
+            "openai_calls": dict(client.calls) if client else {},
         }

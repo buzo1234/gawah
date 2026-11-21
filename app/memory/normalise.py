@@ -209,3 +209,29 @@ def filler_kind(text: str, names: set[str] = frozenset()) -> str | None:
     if not toks or not all(t in _YES or t in _FILLER for t in toks):
         return None if toks else "greeting"
     return "yes" if any(t in _YES for t in toks) else "greeting"
+
+
+# ---------- search words ----------
+
+_STOP = {
+    "kya", "hai", "tha", "thi", "the", "hua", "hui", "kitna", "kitni", "kab", "kaun", "kaise", "ke", "ki",
+    "ka", "mein", "baare", "aur", "hoga", "hogi", "was", "what", "how", "when", "who", "about", "baat",
+    "tay", "gawah", "maine", "aapne", "bola", "kaha", "tha", "na", "and", "for", "with", "that", "this",
+    "said", "says", "rupees", "will", "are", "has", "ji", "madam",
+}
+ITEM_WORDS = {
+    "advance": "advance", "एडवांस": "advance", "pehle": "advance",
+    "baaki": "balance", "baki": "balance", "बाकी": "balance", "balance": "balance", "remaining": "balance",
+    "total": "amount", "price": "amount", "rate": "amount", "kharcha": "amount", "amount": "amount",
+    "shuru": "dates", "khatam": "dates", "date": "dates", "start": "dates", "finish": "dates",
+    "late": "late_or_unfinished", "deri": "late_or_unfinished", "adhoora": "late_or_unfinished",
+    "chhod": "late_or_unfinished", "unfinished": "late_or_unfinished",
+}
+
+
+def search_words(text: str) -> set[str]:
+    return {t for t in _tokens(text) if len(t) > 2 and t not in _STOP and not t.isdigit()}
+
+
+def items_named(text: str) -> set[str]:
+    return {ITEM_WORDS[t] for t in _tokens(text) if t in ITEM_WORDS}

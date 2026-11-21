@@ -228,3 +228,37 @@ async def test_scenario_7_work_done_days_ago_and_the_balance_still_owed(bus, tmp
     assert balance.value == "on the day the work is finished" and balance.status == FactStatus.AGREED
     rows = {r.item: r for r in await world.memory.owed(DEAL)}
     assert (rows[ItemKey.BALANCE].owed_rupees, rows[ItemKey.BALANCE].payment_fact_ids) == (10000, [])
+
+
+async def test_a_filler_theek_hai_agrees_to_nothing_and_no_advance_is_settled(bus, tmp_path):
+    lines = [
+        (H, "Kaam kab se shuru karoge?"), (W, "Theek hai."),
+        (W, "Advance nahi chahiye madam, kaam ke baad sab dena."), (H, "Theek hai."),
+    ]
+    world = World(bus, tmp_path, {
+        lines[2][1]: [claim("advance", "state", 0, "Advance nahi chahiye madam", value="no advance")],
+    })
+    await world.call(lines)
+    advance = (await world.memory.get_term(DEAL, ItemKey.ADVANCE)).current
+    assert (advance.value_rupees, advance.status, advance.agreed_by) == (0, FactStatus.AGREED, [H])
+    assert [f.line_no for f in world.versions] == [3, 3]  # the first "theek hai" followed a question
+
+
+async def test_a_contradiction_code_cannot_compare_goes_to_one_short_check(bus, tmp_path):
+    lines = [(H, "Material aap laoge."), (W, "Haan ji.")]
+    later = [(W, "Material to aap laogi na madam?"), (W, "Paint aapka, putty main lunga.")]
+    world = World(bus, tmp_path, {
+        lines[0][1]: [claim("work", "state", None, "Material aap laoge", value="worker brings the material")],
+        later[0][1]: [claim("work", "recall", None, "Material to aap laogi na", value="hirer brings the material", contradicts="work@1.1")],
+        later[1][1]: [claim("work", "state", None, "putty main lunga", value="worker brings putty", contradicts="work@1.1")],
+    })
+    world.extractor.checks = {
+        "Material to aap laogi na": {"contradicts": True, "reason": "Agreed: the worker brings the material; now says the hirer does."},
+        "putty main lunga": {"contradicts": False, "reason": "Putty is part of the material the worker brings."},
+    }
+    await world.call(lines)
+    await world.call(later, call_no=2, at=DAY1 + timedelta(days=1))
+    [conflict] = world.conflicts
+    assert (conflict.line_no, conflict.call_no, conflict.confidence) == (1, 2, 0.7)
+    assert conflict.explanation.startswith("Agreed: the worker brings the material")
+    assert conflict.fact_ids == [world.fact_from_line(1, 1).id]

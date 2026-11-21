@@ -3,6 +3,7 @@ events that move a fact's status. Everything here is rebuilt from the event log.
 
 import asyncio
 import logging
+import statistics
 import time
 from pathlib import Path
 
@@ -18,7 +19,7 @@ from app.memory import clips
 from app.memory.book import IST, Book, DealBook
 from app.memory.chain import first_break
 from app.memory.extract import Extractor
-from app.memory.normalise import format_rupees
+from app.memory.normalise import format_rupees, items_named, search_words
 from app.memory.scribe import Scribe
 from app.memory.status import Status
 from app.memory.vectors import Embedder, Vectors
@@ -221,8 +222,13 @@ class Memory:
         texts = [self.fact_text(f) for f in found]
         matrix = await self.vectors.matrix([*texts, query])
         sims = matrix[:-1] @ matrix[-1]
-        scores = sims + np.array([RANK_BONUS[f.status] for f in found])
-        order = [i for i in np.argsort(-scores, kind="stable") if sims[i] > 0][:k]
+        # Hybrid: meaning, the words themselves (Hinglish embeds loosely), the term the question
+        # names, and then confirmed above agreed above said.
+        asked, named = search_words(query), items_named(query)
+        words = np.array([len(asked & search_words(t)) / len(asked) if asked else 0.0 for t in texts])
+        item = np.array([0.1 if f.item and f.item.value in named else 0.0 for f in found])
+        scores = sims + 0.25 * words + item + np.array([RANK_BONUS[f.status] for f in found])
+        order = [i for i in np.argsort(-scores, kind="stable") if sims[i] > 0 or words[i] > 0][:k]
         best = [found[i] for i in order]
         if best:
             self.note("memory", f"searched \"{query[:60]}\": {len(best)} found", best[0])
@@ -248,6 +254,13 @@ class Memory:
             except (KeyError, ValueError):
                 return None
         return self.book.fact(fact_id)
+
+    def latency_summary(self) -> dict:
+        """Seconds from a transcript line to its fact.recorded, and to its fact.conflict."""
+        return {
+            name: {"median": round(statistics.median(xs), 2), "worst": round(max(xs), 2), "count": len(xs)}
+            for name, xs in self.latency.items() if xs
+        }
 
     def chain_break(self, deal_id: str) -> int | None:
         return first_break(self.book.deal(deal_id).versions)

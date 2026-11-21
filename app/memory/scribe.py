@@ -148,7 +148,10 @@ class Scribe:
         except Exception as e:
             log.warning("deal=%s line %s: the model gave no claims (%s)", line.deal_id, line.line_no, e)
             return []
-        return [c for c in (parse_claim(r, line, today) for r in raw or []) if c]
+        claims = [c for c in (parse_claim(r, line, today) for r in raw or []) if c]
+        if line.text.rstrip().endswith("?"):  # a question with no value in it settles nothing
+            claims = [c for c in claims if c.value or c.rupees is not None or c.date]
+        return claims
 
     def _with_total(self, deal: DealBook, line: TranscriptLine, claims: list[Claim]) -> list[Claim]:
         """Once an amount is agreed, a total stated in the words is an amount claim, whatever the
