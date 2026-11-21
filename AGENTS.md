@@ -48,6 +48,7 @@ LiveKit and Twilio are on free plans with monthly allowances. Using them up in t
 | Run the tests | `uv run pytest -q` |
 | Replay a practice call into the running server, at real speed | `uv run python -m fakes.replayer fixtures/<call>.json` |
 | Replay it faster (10 = ten times faster, 0 = no waiting) | `uv run python -m fakes.replayer fixtures/<call>.json --speed 10` |
+| Run the server with every outside service faked: no `.env`, no keys, every phone simulated | `uv run python -m tests.offline --port 8000` |
 | Watch events live | open `http://localhost:8000/dashboard` |
 | Watch events live in a terminal, one JSON object per line | `uv run python -m fakes.tail` |
 | Public address for webhooks | `cloudflared tunnel --url http://localhost:8000` |
@@ -91,6 +92,7 @@ We are not chasing coverage. These are required:
 
 - Each stream has at least one test that passes with only the fakes present.
 - The brain has repeatable tests on both practice calls: the right question, at the right line.
+- `tests/test_whole_flow.py` walks one deal through every merged stream in one process, on the fakes in `tests/offline.py`. When your stream is merged, fill in its step there, and add the fake for its outside service.
 - Tests never call a real outside service. Real calls happen in `spikes/` and in manual checks.
 
 ## Safety
