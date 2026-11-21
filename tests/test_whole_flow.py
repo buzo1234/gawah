@@ -8,6 +8,7 @@ call-back), contract, records, and the dashboard, each reached the way the real 
 
 import asyncio
 import logging
+import shutil
 from datetime import UTC, datetime, timedelta
 
 import httpx
@@ -283,6 +284,8 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     # offline Meta has no way to fetch the phone's file) promising a 5,000 advance is heard,
     # read by the Scribe, and found to contradict the advance agreed: both are told.
     if not flow.app.state.whatsapp.outbox.rich:
+        if shutil.which("ffmpeg") is None:
+            pytest.fail("ffmpeg is not installed: the app needs it to hear a voice note (apt-get install ffmpeg)")
         ogg = (VOICE_NOTES / "paint-14.ogg").read_bytes()
         up = (await flow.client.post("/dashboard/media", content=ogg, headers={"content-type": "audio/ogg"})).json()
         sent = await flow.client.post("/dashboard/phone/send", json={
