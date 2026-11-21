@@ -1,0 +1,1039 @@
+{
+ "summary": {
+  "engine": "sage2",
+  "script": "holdout",
+  "tag": "v2",
+  "lines": 16,
+  "right": 147,
+  "scored": 150,
+  "extra_flips": 5,
+  "wall_ms_median": 488,
+  "wall_ms_max": 676,
+  "vendor_ms_median": 180.0,
+  "ping_ms_median": 290,
+  "calls": 17,
+  "extract_calls": 0,
+  "usage": {
+   "update": 17,
+   "input_tokens": 16294,
+   "document_tokens": 382,
+   "question_tokens": 15912,
+   "output_tokens": 12138
+  }
+ },
+ "per_question": {
+  "work_agreed": {
+   "got": "NYYYYYYYYYYYYYYY",
+   "right": 14,
+   "scored": 15,
+   "wrong_lines": [
+    2
+   ],
+   "flips": 1,
+   "expected_flips": 1
+  },
+  "amount_agreed": {
+   "got": "NNNNNNNNYYYYNNNN",
+   "right": 11,
+   "scored": 11,
+   "wrong_lines": [],
+   "flips": 2,
+   "expected_flips": 1
+  },
+  "advance_agreed": {
+   "got": "NNNNNNNNNNYY-YYY",
+   "right": 14,
+   "scored": 15,
+   "wrong_lines": [
+    13
+   ],
+   "flips": 3,
+   "expected_flips": 1
+  },
+  "balance_when": {
+   "got": "NNNNNNNNNNYYNYYY",
+   "right": 14,
+   "scored": 15,
+   "wrong_lines": [
+    13
+   ],
+   "flips": 3,
+   "expected_flips": 1
+  },
+  "dates_agreed": {
+   "got": "NNNNNNNNNNNNNNNN",
+   "right": 16,
+   "scored": 16,
+   "wrong_lines": [],
+   "flips": 0,
+   "expected_flips": 0
+  },
+  "late_terms": {
+   "got": "NNNNNNNNNNNNNNNN",
+   "right": 16,
+   "scored": 16,
+   "wrong_lines": [],
+   "flips": 0,
+   "expected_flips": 0
+  },
+  "addressed_gawah": {
+   "got": "NNNNYNNNNNNNNNNN",
+   "right": 15,
+   "scored": 15,
+   "wrong_lines": [],
+   "flips": 2,
+   "expected_flips": 2
+  },
+  "topic_left_unclear": {
+   "got": "NNNNNNNNNYYYYYYY",
+   "right": 16,
+   "scored": 16,
+   "wrong_lines": [],
+   "flips": 1,
+   "expected_flips": 1
+  },
+  "conflicting_figures": {
+   "got": "NNNNNNNNNNNNYYYY",
+   "right": 16,
+   "scored": 16,
+   "wrong_lines": [],
+   "flips": 1,
+   "expected_flips": 1
+  },
+  "wrapping_up": {
+   "got": "NNNNNNNNNNNNNNYY",
+   "right": 15,
+   "scored": 15,
+   "wrong_lines": [],
+   "flips": 1,
+   "expected_flips": 1
+  }
+ },
+ "questions": {
+  "work_agreed": "Have both speakers agreed on what work is to be done (the scope of the job)? Answer yes only if one person has described the work and the other has accepted it.",
+  "amount_agreed": "Have both speakers agreed on the total price for the whole job? Answer yes only if one final total amount has been accepted by both. An offer or counter-offer that the other person has not accepted is not an agreement.",
+  "advance_agreed": "Have both speakers agreed on an advance payment amount (money paid before the work starts)? Answer yes only if both have accepted the same advance amount.",
+  "balance_when": "Have both speakers agreed on when the remaining balance (the total minus the advance) will be paid? Answer yes only if a specific time or condition for paying the balance was stated and accepted. If the question was asked but brushed aside or not answered, answer no.",
+  "dates_agreed": "Have both speakers agreed on both the start date and the finish date of the work?",
+  "late_terms": "Have the speakers agreed on what happens if the work is finished late or left unfinished, such as a penalty, a deduction or a refund? A promise to finish on time is not enough; answer yes only if a consequence was agreed.",
+  "addressed_gawah": "In the last line of the transcript, is the speaker talking directly to Gawah, the AI witness, for example by calling it by name?",
+  "topic_left_unclear": "Is there a contract term (price, advance, when the balance is paid, or dates) that one speaker asked about, where the other speaker has already replied without giving a clear answer and moved on to a different topic? A question in the last line that the other speaker has not yet had a chance to answer does not count. Answer yes only if that term is still unsettled.",
+  "conflicting_figures": "Has a figure that both speakers had already accepted (for example the total price or the advance) later been stated as a different number for that same term? Answer no for bargaining: an offer, a counter-offer, or a lower or higher number proposed before both speakers accepted is not a conflict.",
+  "wrapping_up": "Is the call ending right now? Answer yes only if, in the last two lines, a speaker says goodbye, says they are hanging up, or thanks the other person to close the conversation. Agreeing to a term (for example 'theek hai', 'pakka', 'done') or promising to finish the work on time is not ending the call."
+ },
+ "rows": [
+  {
+   "line": 1,
+   "wall_ms": 483,
+   "vendor_ms": 187.2,
+   "changed": [
+    "work_agreed",
+    "amount_agreed",
+    "advance_agreed",
+    "balance_when",
+    "dates_agreed",
+    "late_terms",
+    "topic_left_unclear",
+    "wrapping_up"
+   ],
+   "answers": {
+    "work_agreed": [
+     "N",
+     0.07510502437271123
+    ],
+    "amount_agreed": [
+     "N",
+     0.005677437505510079
+    ],
+    "advance_agreed": [
+     "N",
+     0.0010505649458823394
+    ],
+    "balance_when": [
+     "N",
+     0.060791694620006984
+    ],
+    "dates_agreed": [
+     "N",
+     0.020293201164065838
+    ],
+    "late_terms": [
+     "N",
+     0.0043067306002407225
+    ],
+    "addressed_gawah": [
+     "N",
+     7.039114031093e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.001062505234796108
+    ],
+    "conflicting_figures": [
+     "N",
+     0.03463815855959065
+    ],
+    "wrapping_up": [
+     "N",
+     0.00014859400947647025
+    ]
+   },
+   "usage": {
+    "update": 2,
+    "input_tokens": 957,
+    "document_tokens": 21,
+    "question_tokens": 936,
+    "output_tokens": 737
+   }
+  },
+  {
+   "line": 2,
+   "wall_ms": 463,
+   "vendor_ms": 166.7,
+   "changed": [
+    "work_agreed"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9896050266544048
+    ],
+    "amount_agreed": [
+     "N",
+     0.00013266265146821908
+    ],
+    "advance_agreed": [
+     "N",
+     0.000159258366681578
+    ],
+    "balance_when": [
+     "N",
+     0.003105786845541621
+    ],
+    "dates_agreed": [
+     "N",
+     0.0008163405074733725
+    ],
+    "late_terms": [
+     "N",
+     8.182930414758336e-05
+    ],
+    "addressed_gawah": [
+     "N",
+     6.901454195173045e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.0006993165014436076
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0016454753368116838
+    ],
+    "wrapping_up": [
+     "N",
+     6.570053970319126e-05
+    ]
+   },
+   "usage": {
+    "update": 3,
+    "input_tokens": 954,
+    "document_tokens": 18,
+    "question_tokens": 936,
+    "output_tokens": 716
+   }
+  },
+  {
+   "line": 3,
+   "wall_ms": 676,
+   "vendor_ms": 383.1,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9833080115387661
+    ],
+    "amount_agreed": [
+     "N",
+     0.0006134555250855112
+    ],
+    "advance_agreed": [
+     "N",
+     0.00023509300685998707
+    ],
+    "balance_when": [
+     "N",
+     0.007649728104055312
+    ],
+    "dates_agreed": [
+     "N",
+     0.0037627173444537247
+    ],
+    "late_terms": [
+     "N",
+     0.0001392945685087845
+    ],
+    "addressed_gawah": [
+     "N",
+     8.009083015449788e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.0021738819161341147
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0004887410137809086
+    ],
+    "wrapping_up": [
+     "N",
+     9.440813623310234e-05
+    ]
+   },
+   "usage": {
+    "update": 4,
+    "input_tokens": 953,
+    "document_tokens": 17,
+    "question_tokens": 936,
+    "output_tokens": 712
+   }
+  },
+  {
+   "line": 4,
+   "wall_ms": 556,
+   "vendor_ms": 263.7,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9935677632997186
+    ],
+    "amount_agreed": [
+     "N",
+     0.0032087898394339504
+    ],
+    "advance_agreed": [
+     "N",
+     0.0002202877065827048
+    ],
+    "balance_when": [
+     "N",
+     0.008150549245723046
+    ],
+    "dates_agreed": [
+     "N",
+     0.003575342164786149
+    ],
+    "late_terms": [
+     "N",
+     0.00033507976688101665
+    ],
+    "addressed_gawah": [
+     "N",
+     0.00012890296736815798
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.0035418470359449674
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0018244001522876743
+    ],
+    "wrapping_up": [
+     "N",
+     0.0013731635737965922
+    ]
+   },
+   "usage": {
+    "update": 5,
+    "input_tokens": 966,
+    "document_tokens": 30,
+    "question_tokens": 936,
+    "output_tokens": 709
+   }
+  },
+  {
+   "line": 5,
+   "wall_ms": 457,
+   "vendor_ms": 164.0,
+   "changed": [
+    "addressed_gawah"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9960839787419449
+    ],
+    "amount_agreed": [
+     "N",
+     0.00038099179792809427
+    ],
+    "advance_agreed": [
+     "N",
+     7.486678592506305e-05
+    ],
+    "balance_when": [
+     "N",
+     0.001660040370003782
+    ],
+    "dates_agreed": [
+     "N",
+     0.0018816359648307108
+    ],
+    "late_terms": [
+     "N",
+     0.0001637280171004037
+    ],
+    "addressed_gawah": [
+     "Y",
+     0.9998500335243458
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.011146210272842553
+    ],
+    "conflicting_figures": [
+     "N",
+     0.00033941373074987716
+    ],
+    "wrapping_up": [
+     "N",
+     9.023580637760342e-05
+    ]
+   },
+   "usage": {
+    "update": 6,
+    "input_tokens": 951,
+    "document_tokens": 15,
+    "question_tokens": 936,
+    "output_tokens": 715
+   }
+  },
+  {
+   "line": 6,
+   "wall_ms": 470,
+   "vendor_ms": 175.8,
+   "changed": [
+    "addressed_gawah"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9964716410147285
+    ],
+    "amount_agreed": [
+     "N",
+     0.043410844204523465
+    ],
+    "advance_agreed": [
+     "N",
+     0.00047430125096668363
+    ],
+    "balance_when": [
+     "N",
+     0.007308480441663888
+    ],
+    "dates_agreed": [
+     "N",
+     0.00203387602837633
+    ],
+    "late_terms": [
+     "N",
+     0.00018933864456181153
+    ],
+    "addressed_gawah": [
+     "N",
+     0.0008515696243688439
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.011975217206667645
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0021085276505093515
+    ],
+    "wrapping_up": [
+     "N",
+     0.0006392995631303146
+    ]
+   },
+   "usage": {
+    "update": 7,
+    "input_tokens": 962,
+    "document_tokens": 26,
+    "question_tokens": 936,
+    "output_tokens": 712
+   }
+  },
+  {
+   "line": 7,
+   "wall_ms": 480,
+   "vendor_ms": 187.7,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.996498423825216
+    ],
+    "amount_agreed": [
+     "N",
+     0.00018562124658476133
+    ],
+    "advance_agreed": [
+     "N",
+     0.00010735795783608787
+    ],
+    "balance_when": [
+     "N",
+     0.0010469221912190125
+    ],
+    "dates_agreed": [
+     "N",
+     0.0015059643419192813
+    ],
+    "late_terms": [
+     "N",
+     9.659818784962359e-05
+    ],
+    "addressed_gawah": [
+     "N",
+     0.0003823999911449598
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.042215716970084485
+    ],
+    "conflicting_figures": [
+     "N",
+     0.002480331668562427
+    ],
+    "wrapping_up": [
+     "N",
+     7.198502320529818e-05
+    ]
+   },
+   "usage": {
+    "update": 8,
+    "input_tokens": 950,
+    "document_tokens": 14,
+    "question_tokens": 936,
+    "output_tokens": 710
+   }
+  },
+  {
+   "line": 8,
+   "wall_ms": 520,
+   "vendor_ms": 223.2,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.998475726054896
+    ],
+    "amount_agreed": [
+     "N",
+     0.0035530188334997404
+    ],
+    "advance_agreed": [
+     "N",
+     0.00043767305096422364
+    ],
+    "balance_when": [
+     "N",
+     0.0075978727113227
+    ],
+    "dates_agreed": [
+     "N",
+     0.003425421259799489
+    ],
+    "late_terms": [
+     "N",
+     0.00015443949526586391
+    ],
+    "addressed_gawah": [
+     "N",
+     0.00023385672168272514
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.05632382196270117
+    ],
+    "conflicting_figures": [
+     "N",
+     0.006272484877724929
+    ],
+    "wrapping_up": [
+     "N",
+     0.0002291725904721324
+    ]
+   },
+   "usage": {
+    "update": 9,
+    "input_tokens": 953,
+    "document_tokens": 17,
+    "question_tokens": 936,
+    "output_tokens": 706
+   }
+  },
+  {
+   "line": 9,
+   "wall_ms": 501,
+   "vendor_ms": 174.4,
+   "changed": [
+    "amount_agreed"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.99797317515244
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9986874286551826
+    ],
+    "advance_agreed": [
+     "N",
+     0.00029642050555716973
+    ],
+    "balance_when": [
+     "N",
+     0.0028207397900469815
+    ],
+    "dates_agreed": [
+     "N",
+     0.005813804685847598
+    ],
+    "late_terms": [
+     "N",
+     0.0005210933665046436
+    ],
+    "addressed_gawah": [
+     "N",
+     0.00022493992875796014
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.020264344633953657
+    ],
+    "conflicting_figures": [
+     "N",
+     0.006380456228895784
+    ],
+    "wrapping_up": [
+     "N",
+     0.0001083039373201249
+    ]
+   },
+   "usage": {
+    "update": 10,
+    "input_tokens": 959,
+    "document_tokens": 23,
+    "question_tokens": 936,
+    "output_tokens": 710
+   }
+  },
+  {
+   "line": 10,
+   "wall_ms": 561,
+   "vendor_ms": 192.8,
+   "changed": [
+    "topic_left_unclear"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9988746981508105
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9993674086800206
+    ],
+    "advance_agreed": [
+     "N",
+     0.11501663707084879
+    ],
+    "balance_when": [
+     "N",
+     0.0007727171397628104
+    ],
+    "dates_agreed": [
+     "N",
+     0.006591538690752233
+    ],
+    "late_terms": [
+     "N",
+     0.00024241651956969032
+    ],
+    "addressed_gawah": [
+     "N",
+     0.00020955575034610862
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9624160022336694
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0019320898377075408
+    ],
+    "wrapping_up": [
+     "N",
+     0.0015045410155473068
+    ]
+   },
+   "usage": {
+    "update": 11,
+    "input_tokens": 967,
+    "document_tokens": 31,
+    "question_tokens": 936,
+    "output_tokens": 712
+   }
+  },
+  {
+   "line": 11,
+   "wall_ms": 495,
+   "vendor_ms": 177.7,
+   "changed": [
+    "advance_agreed",
+    "balance_when"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9989135527416502
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9994948331541029
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9996094454596027
+    ],
+    "balance_when": [
+     "Y",
+     0.9687086716788263
+    ],
+    "dates_agreed": [
+     "N",
+     0.009701409856343204
+    ],
+    "late_terms": [
+     "N",
+     0.0002957985802771268
+    ],
+    "addressed_gawah": [
+     "N",
+     0.0003206389347950322
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.966271714700658
+    ],
+    "conflicting_figures": [
+     "N",
+     0.003401214018366043
+    ],
+    "wrapping_up": [
+     "N",
+     0.00727741770495474
+    ]
+   },
+   "usage": {
+    "update": 12,
+    "input_tokens": 966,
+    "document_tokens": 30,
+    "question_tokens": 936,
+    "output_tokens": 710
+   }
+  },
+  {
+   "line": 12,
+   "wall_ms": 460,
+   "vendor_ms": 165.1,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9992727505175979
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9997030111974303
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9997889835965691
+    ],
+    "balance_when": [
+     "Y",
+     0.9986849485752815
+    ],
+    "dates_agreed": [
+     "N",
+     0.011316250359469992
+    ],
+    "late_terms": [
+     "N",
+     0.0003115346187630885
+    ],
+    "addressed_gawah": [
+     "N",
+     0.00019499135842380812
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.959301796843754
+    ],
+    "conflicting_figures": [
+     "N",
+     0.006187809526924852
+    ],
+    "wrapping_up": [
+     "N",
+     0.00535894046726149
+    ]
+   },
+   "usage": {
+    "update": 13,
+    "input_tokens": 960,
+    "document_tokens": 24,
+    "question_tokens": 936,
+    "output_tokens": 703
+   }
+  },
+  {
+   "line": 13,
+   "wall_ms": 539,
+   "vendor_ms": 240.7,
+   "changed": [
+    "amount_agreed",
+    "advance_agreed",
+    "balance_when",
+    "conflicting_figures"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9777027151887233
+    ],
+    "amount_agreed": [
+     "N",
+     0.006291386547135166
+    ],
+    "advance_agreed": [
+     "-",
+     0.3392476216776533
+    ],
+    "balance_when": [
+     "N",
+     0.20120019839460473
+    ],
+    "dates_agreed": [
+     "N",
+     0.008002403788576147
+    ],
+    "late_terms": [
+     "N",
+     0.000536275110763697
+    ],
+    "addressed_gawah": [
+     "N",
+     0.0038472009741181874
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9709334217687349
+    ],
+    "conflicting_figures": [
+     "Y",
+     0.9970522275119789
+    ],
+    "wrapping_up": [
+     "N",
+     0.0007054828828823204
+    ]
+   },
+   "usage": {
+    "update": 14,
+    "input_tokens": 958,
+    "document_tokens": 22,
+    "question_tokens": 936,
+    "output_tokens": 720
+   }
+  },
+  {
+   "line": 14,
+   "wall_ms": 486,
+   "vendor_ms": 182.3,
+   "changed": [
+    "advance_agreed",
+    "balance_when"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9926893466809894
+    ],
+    "amount_agreed": [
+     "N",
+     0.007385221520843541
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9945718623121867
+    ],
+    "balance_when": [
+     "Y",
+     0.9771061068790449
+    ],
+    "dates_agreed": [
+     "N",
+     0.012460509858678222
+    ],
+    "late_terms": [
+     "N",
+     0.0002464150969701006
+    ],
+    "addressed_gawah": [
+     "N",
+     0.0006007430523350968
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9337244886313156
+    ],
+    "conflicting_figures": [
+     "Y",
+     0.9978248227124284
+    ],
+    "wrapping_up": [
+     "N",
+     0.012716181324601611
+    ]
+   },
+   "usage": {
+    "update": 15,
+    "input_tokens": 954,
+    "document_tokens": 18,
+    "question_tokens": 936,
+    "output_tokens": 712
+   }
+  },
+  {
+   "line": 15,
+   "wall_ms": 491,
+   "vendor_ms": 166.1,
+   "changed": [
+    "wrapping_up"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9840658627950106
+    ],
+    "amount_agreed": [
+     "N",
+     0.013326476854087764
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9968024461906173
+    ],
+    "balance_when": [
+     "Y",
+     0.9901774094160448
+    ],
+    "dates_agreed": [
+     "N",
+     0.012801554253494113
+    ],
+    "late_terms": [
+     "N",
+     0.00015432217184517652
+    ],
+    "addressed_gawah": [
+     "N",
+     0.0002025150711086982
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9425301782967624
+    ],
+    "conflicting_figures": [
+     "Y",
+     0.998024887726179
+    ],
+    "wrapping_up": [
+     "Y",
+     0.9974245107795534
+    ]
+   },
+   "usage": {
+    "update": 16,
+    "input_tokens": 954,
+    "document_tokens": 18,
+    "question_tokens": 936,
+    "output_tokens": 708
+   }
+  },
+  {
+   "line": 16,
+   "wall_ms": 469,
+   "vendor_ms": 170.0,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9919172072338377
+    ],
+    "amount_agreed": [
+     "N",
+     0.014274927357499596
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9974376232788634
+    ],
+    "balance_when": [
+     "Y",
+     0.991935163278359
+    ],
+    "dates_agreed": [
+     "N",
+     0.012584072190262089
+    ],
+    "late_terms": [
+     "N",
+     0.0001591633329204487
+    ],
+    "addressed_gawah": [
+     "N",
+     0.00018165973871615224
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.943187580729633
+    ],
+    "conflicting_figures": [
+     "Y",
+     0.9976746747088957
+    ],
+    "wrapping_up": [
+     "Y",
+     0.9992445857288201
+    ]
+   },
+   "usage": {
+    "update": 17,
+    "input_tokens": 947,
+    "document_tokens": 11,
+    "question_tokens": 936,
+    "output_tokens": 703
+   }
+  }
+ ],
+ "extracts": []
+}

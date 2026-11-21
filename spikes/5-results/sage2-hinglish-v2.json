@@ -1,0 +1,1934 @@
+{
+ "summary": {
+  "engine": "sage2",
+  "script": "hinglish",
+  "tag": "v2",
+  "lines": 30,
+  "right": 286,
+  "scored": 286,
+  "extra_flips": 2,
+  "wall_ms_median": 570,
+  "wall_ms_max": 784,
+  "vendor_ms_median": 269.9,
+  "ping_ms_median": 252,
+  "calls": 31,
+  "extract_calls": 5,
+  "usage": {
+   "update": 31,
+   "input_tokens": 29760,
+   "document_tokens": 744,
+   "question_tokens": 29016,
+   "output_tokens": 22074
+  }
+ },
+ "per_question": {
+  "work_agreed": {
+   "got": "NNNNYYYYYYYYYYYYYYYYYYYYYYYYYY",
+   "right": 29,
+   "scored": 29,
+   "wrong_lines": [],
+   "flips": 1,
+   "expected_flips": 1
+  },
+  "amount_agreed": {
+   "got": "NNNNNNNNNNYYYYYYYYYYYYY-NNNNNN",
+   "right": 22,
+   "scored": 22,
+   "wrong_lines": [],
+   "flips": 3,
+   "expected_flips": 1
+  },
+  "advance_agreed": {
+   "got": "NNNNNNNNNNNNNNNYYYYYYYYYYYYYYY",
+   "right": 29,
+   "scored": 29,
+   "wrong_lines": [],
+   "flips": 1,
+   "expected_flips": 1
+  },
+  "balance_when": {
+   "got": "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNN",
+   "right": 30,
+   "scored": 30,
+   "wrong_lines": [],
+   "flips": 0,
+   "expected_flips": 0
+  },
+  "dates_agreed": {
+   "got": "NNNNNNNNNNNNNNNNNNNYYYYYYYYYYY",
+   "right": 27,
+   "scored": 27,
+   "wrong_lines": [],
+   "flips": 1,
+   "expected_flips": 1
+  },
+  "late_terms": {
+   "got": "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNN",
+   "right": 30,
+   "scored": 30,
+   "wrong_lines": [],
+   "flips": 0,
+   "expected_flips": 0
+  },
+  "addressed_gawah": {
+   "got": "NNNNNNNNNNNNNNNNNNNNNNYNNNNNNN",
+   "right": 29,
+   "scored": 29,
+   "wrong_lines": [],
+   "flips": 2,
+   "expected_flips": 2
+  },
+  "topic_left_unclear": {
+   "got": "NNNNNNNNNNNNNNNNNYYYYYYYYYYYYY",
+   "right": 30,
+   "scored": 30,
+   "wrong_lines": [],
+   "flips": 1,
+   "expected_flips": 1
+  },
+  "conflicting_figures": {
+   "got": "NNNNNNNNNNNNNNNNNNNNNNNYYYYYYY",
+   "right": 30,
+   "scored": 30,
+   "wrong_lines": [],
+   "flips": 1,
+   "expected_flips": 1
+  },
+  "wrapping_up": {
+   "got": "NNNNNNNNNNNNNNNNNNNNNNNNNNYYYY",
+   "right": 30,
+   "scored": 30,
+   "wrong_lines": [],
+   "flips": 1,
+   "expected_flips": 1
+  }
+ },
+ "questions": {
+  "work_agreed": "Have both speakers agreed on what work is to be done (the scope of the job)? Answer yes only if one person has described the work and the other has accepted it.",
+  "amount_agreed": "Have both speakers agreed on the total price for the whole job? Answer yes only if one final total amount has been accepted by both. An offer or counter-offer that the other person has not accepted is not an agreement.",
+  "advance_agreed": "Have both speakers agreed on an advance payment amount (money paid before the work starts)? Answer yes only if both have accepted the same advance amount.",
+  "balance_when": "Have both speakers agreed on when the remaining balance (the total minus the advance) will be paid? Answer yes only if a specific time or condition for paying the balance was stated and accepted. If the question was asked but brushed aside or not answered, answer no.",
+  "dates_agreed": "Have both speakers agreed on both the start date and the finish date of the work?",
+  "late_terms": "Have the speakers agreed on what happens if the work is finished late or left unfinished, such as a penalty, a deduction or a refund? A promise to finish on time is not enough; answer yes only if a consequence was agreed.",
+  "addressed_gawah": "In the last line of the transcript, is the speaker talking directly to Gawah, the AI witness, for example by calling it by name?",
+  "topic_left_unclear": "Is there a contract term (price, advance, when the balance is paid, or dates) that one speaker asked about, where the other speaker has already replied without giving a clear answer and moved on to a different topic? A question in the last line that the other speaker has not yet had a chance to answer does not count. Answer yes only if that term is still unsettled.",
+  "conflicting_figures": "Has a figure that both speakers had already accepted (for example the total price or the advance) later been stated as a different number for that same term? Answer no for bargaining: an offer, a counter-offer, or a lower or higher number proposed before both speakers accepted is not a conflict.",
+  "wrapping_up": "Is the call ending right now? Answer yes only if, in the last two lines, a speaker says goodbye, says they are hanging up, or thanks the other person to close the conversation. Agreeing to a term (for example 'theek hai', 'pakka', 'done') or promising to finish the work on time is not ending the call."
+ },
+ "rows": [
+  {
+   "line": 1,
+   "wall_ms": 523,
+   "vendor_ms": 256.1,
+   "changed": [
+    "work_agreed",
+    "amount_agreed",
+    "advance_agreed",
+    "balance_when",
+    "dates_agreed",
+    "late_terms",
+    "wrapping_up"
+   ],
+   "answers": {
+    "work_agreed": [
+     "N",
+     0.024642594109619703
+    ],
+    "amount_agreed": [
+     "N",
+     0.010718656497471701
+    ],
+    "advance_agreed": [
+     "N",
+     0.002191457502788414
+    ],
+    "balance_when": [
+     "N",
+     0.1447620923185513
+    ],
+    "dates_agreed": [
+     "N",
+     0.013076346599570757
+    ],
+    "late_terms": [
+     "N",
+     0.004575736071885616
+    ],
+    "addressed_gawah": [
+     "N",
+     6.959971569560499e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.0007479360101139162
+    ],
+    "conflicting_figures": [
+     "N",
+     0.016275903373080294
+    ],
+    "wrapping_up": [
+     "N",
+     0.00010656210136847712
+    ]
+   },
+   "usage": {
+    "update": 2,
+    "input_tokens": 971,
+    "document_tokens": 35,
+    "question_tokens": 936,
+    "output_tokens": 732
+   }
+  },
+  {
+   "line": 2,
+   "wall_ms": 507,
+   "vendor_ms": 240.8,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "N",
+     0.22137813902572773
+    ],
+    "amount_agreed": [
+     "N",
+     0.0002851324716834037
+    ],
+    "advance_agreed": [
+     "N",
+     0.0002602596295128951
+    ],
+    "balance_when": [
+     "N",
+     0.002252149419439262
+    ],
+    "dates_agreed": [
+     "N",
+     0.001075600149175498
+    ],
+    "late_terms": [
+     "N",
+     0.00022912976731108298
+    ],
+    "addressed_gawah": [
+     "N",
+     0.00010152416005510589
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.0003996346193630397
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0023347449590479822
+    ],
+    "wrapping_up": [
+     "N",
+     6.651356186574373e-05
+    ]
+   },
+   "usage": {
+    "update": 3,
+    "input_tokens": 959,
+    "document_tokens": 23,
+    "question_tokens": 936,
+    "output_tokens": 710
+   }
+  },
+  {
+   "line": 3,
+   "wall_ms": 551,
+   "vendor_ms": 262.0,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "N",
+     0.10804953971105928
+    ],
+    "amount_agreed": [
+     "N",
+     0.003981655358504256
+    ],
+    "advance_agreed": [
+     "N",
+     0.0011230069712714523
+    ],
+    "balance_when": [
+     "N",
+     0.03268470988266666
+    ],
+    "dates_agreed": [
+     "N",
+     0.005496210975183784
+    ],
+    "late_terms": [
+     "N",
+     0.00037367252199136845
+    ],
+    "addressed_gawah": [
+     "N",
+     8.329714349957999e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.0020921911181060134
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0017251248882068197
+    ],
+    "wrapping_up": [
+     "N",
+     0.00012065562357712089
+    ]
+   },
+   "usage": {
+    "update": 4,
+    "input_tokens": 968,
+    "document_tokens": 32,
+    "question_tokens": 936,
+    "output_tokens": 709
+   }
+  },
+  {
+   "line": 4,
+   "wall_ms": 553,
+   "vendor_ms": 247.1,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "N",
+     0.005208975045079747
+    ],
+    "amount_agreed": [
+     "N",
+     0.00019013502159237334
+    ],
+    "advance_agreed": [
+     "N",
+     0.00018882662367204677
+    ],
+    "balance_when": [
+     "N",
+     0.002658391840121712
+    ],
+    "dates_agreed": [
+     "N",
+     0.0009188315856280374
+    ],
+    "late_terms": [
+     "N",
+     6.0341434154007894e-05
+    ],
+    "addressed_gawah": [
+     "N",
+     5.304856329771368e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.0003708671140078679
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0004548658262357964
+    ],
+    "wrapping_up": [
+     "N",
+     4.938721536907337e-05
+    ]
+   },
+   "usage": {
+    "update": 5,
+    "input_tokens": 961,
+    "document_tokens": 25,
+    "question_tokens": 936,
+    "output_tokens": 714
+   }
+  },
+  {
+   "line": 5,
+   "wall_ms": 546,
+   "vendor_ms": 269.0,
+   "changed": [
+    "work_agreed"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.8849194738440679
+    ],
+    "amount_agreed": [
+     "N",
+     0.0004625817534687273
+    ],
+    "advance_agreed": [
+     "N",
+     0.00015974139360016667
+    ],
+    "balance_when": [
+     "N",
+     0.005841525093835791
+    ],
+    "dates_agreed": [
+     "N",
+     0.0036555611866533875
+    ],
+    "late_terms": [
+     "N",
+     0.0001066067195634077
+    ],
+    "addressed_gawah": [
+     "N",
+     7.37871840799823e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.0024930158801361423
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0002435187354412861
+    ],
+    "wrapping_up": [
+     "N",
+     7.188487075982689e-05
+    ]
+   },
+   "usage": {
+    "update": 6,
+    "input_tokens": 972,
+    "document_tokens": 36,
+    "question_tokens": 936,
+    "output_tokens": 716
+   }
+  },
+  {
+   "line": 6,
+   "wall_ms": 529,
+   "vendor_ms": 251.4,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9990678028646349
+    ],
+    "amount_agreed": [
+     "N",
+     0.00026128073097055646
+    ],
+    "advance_agreed": [
+     "N",
+     0.0001425859517732725
+    ],
+    "balance_when": [
+     "N",
+     0.001717450763830614
+    ],
+    "dates_agreed": [
+     "N",
+     0.0011795593377275006
+    ],
+    "late_terms": [
+     "N",
+     0.00012513593318935447
+    ],
+    "addressed_gawah": [
+     "N",
+     7.105930361808212e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.001792626865998355
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0003118722048499136
+    ],
+    "wrapping_up": [
+     "N",
+     8.860395785983736e-05
+    ]
+   },
+   "usage": {
+    "update": 7,
+    "input_tokens": 970,
+    "document_tokens": 34,
+    "question_tokens": 936,
+    "output_tokens": 711
+   }
+  },
+  {
+   "line": 7,
+   "wall_ms": 525,
+   "vendor_ms": 248.2,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9996615601408962
+    ],
+    "amount_agreed": [
+     "N",
+     0.00024450703995615355
+    ],
+    "advance_agreed": [
+     "N",
+     0.0003656677374266177
+    ],
+    "balance_when": [
+     "N",
+     0.005078162327862146
+    ],
+    "dates_agreed": [
+     "N",
+     0.0013198031250465992
+    ],
+    "late_terms": [
+     "N",
+     0.00010868310412221838
+    ],
+    "addressed_gawah": [
+     "N",
+     6.597484076934061e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.0016197067250853308
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0006342756604026925
+    ],
+    "wrapping_up": [
+     "N",
+     6.569734448804966e-05
+    ]
+   },
+   "usage": {
+    "update": 8,
+    "input_tokens": 957,
+    "document_tokens": 21,
+    "question_tokens": 936,
+    "output_tokens": 712
+   }
+  },
+  {
+   "line": 8,
+   "wall_ms": 522,
+   "vendor_ms": 243.2,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9996903663637012
+    ],
+    "amount_agreed": [
+     "N",
+     0.02309051152046098
+    ],
+    "advance_agreed": [
+     "N",
+     0.0013783349734613171
+    ],
+    "balance_when": [
+     "N",
+     0.028406196458463498
+    ],
+    "dates_agreed": [
+     "N",
+     0.006314723710434982
+    ],
+    "late_terms": [
+     "N",
+     0.0003659753322416136
+    ],
+    "addressed_gawah": [
+     "N",
+     0.00011373281193955464
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.009580406509810728
+    ],
+    "conflicting_figures": [
+     "N",
+     0.00150431610104966
+    ],
+    "wrapping_up": [
+     "N",
+     0.00014656063860218443
+    ]
+   },
+   "usage": {
+    "update": 9,
+    "input_tokens": 953,
+    "document_tokens": 17,
+    "question_tokens": 936,
+    "output_tokens": 706
+   }
+  },
+  {
+   "line": 9,
+   "wall_ms": 546,
+   "vendor_ms": 260.4,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9998618099700526
+    ],
+    "amount_agreed": [
+     "N",
+     0.0014269120721188435
+    ],
+    "advance_agreed": [
+     "N",
+     0.0004992625206488601
+    ],
+    "balance_when": [
+     "N",
+     0.0047632856359344534
+    ],
+    "dates_agreed": [
+     "N",
+     0.0044711978205555685
+    ],
+    "late_terms": [
+     "N",
+     0.0001286604374682874
+    ],
+    "addressed_gawah": [
+     "N",
+     5.483883587823008e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.016671323425978817
+    ],
+    "conflicting_figures": [
+     "N",
+     0.002607298895018261
+    ],
+    "wrapping_up": [
+     "N",
+     6.164096098731816e-05
+    ]
+   },
+   "usage": {
+    "update": 10,
+    "input_tokens": 957,
+    "document_tokens": 21,
+    "question_tokens": 936,
+    "output_tokens": 711
+   }
+  },
+  {
+   "line": 10,
+   "wall_ms": 532,
+   "vendor_ms": 248.6,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.999872304884582
+    ],
+    "amount_agreed": [
+     "N",
+     0.005002203842192871
+    ],
+    "advance_agreed": [
+     "N",
+     0.0007020402533906723
+    ],
+    "balance_when": [
+     "N",
+     0.018246229464530087
+    ],
+    "dates_agreed": [
+     "N",
+     0.004410546735689671
+    ],
+    "late_terms": [
+     "N",
+     0.00016921105260690413
+    ],
+    "addressed_gawah": [
+     "N",
+     8.917603196663315e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.08423984493036137
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0036597004234048603
+    ],
+    "wrapping_up": [
+     "N",
+     0.00011497371249851845
+    ]
+   },
+   "usage": {
+    "update": 11,
+    "input_tokens": 962,
+    "document_tokens": 26,
+    "question_tokens": 936,
+    "output_tokens": 708
+   }
+  },
+  {
+   "line": 11,
+   "wall_ms": 549,
+   "vendor_ms": 258.7,
+   "changed": [
+    "amount_agreed"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9997028724232537
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9993744652375081
+    ],
+    "advance_agreed": [
+     "N",
+     0.0008966633235997854
+    ],
+    "balance_when": [
+     "N",
+     0.01914709180573809
+    ],
+    "dates_agreed": [
+     "N",
+     0.006374853982934986
+    ],
+    "late_terms": [
+     "N",
+     0.0003036599150688316
+    ],
+    "addressed_gawah": [
+     "N",
+     6.802970451687361e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.008401505199148245
+    ],
+    "conflicting_figures": [
+     "N",
+     0.001009400822858378
+    ],
+    "wrapping_up": [
+     "N",
+     0.0001559749221068178
+    ]
+   },
+   "usage": {
+    "update": 12,
+    "input_tokens": 958,
+    "document_tokens": 22,
+    "question_tokens": 936,
+    "output_tokens": 712
+   }
+  },
+  {
+   "line": 12,
+   "wall_ms": 594,
+   "vendor_ms": 293.8,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9998487176404471
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9998586102202338
+    ],
+    "advance_agreed": [
+     "N",
+     0.000979936852352607
+    ],
+    "balance_when": [
+     "N",
+     0.0007307599272910474
+    ],
+    "dates_agreed": [
+     "N",
+     0.0022255628468391725
+    ],
+    "late_terms": [
+     "N",
+     0.00013487748347176795
+    ],
+    "addressed_gawah": [
+     "N",
+     3.841465191401536e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.02309700914428896
+    ],
+    "conflicting_figures": [
+     "N",
+     0.00021579648434945356
+    ],
+    "wrapping_up": [
+     "N",
+     2.409923157531099e-05
+    ]
+   },
+   "usage": {
+    "update": 13,
+    "input_tokens": 973,
+    "document_tokens": 37,
+    "question_tokens": 936,
+    "output_tokens": 711
+   }
+  },
+  {
+   "line": 13,
+   "wall_ms": 571,
+   "vendor_ms": 287.8,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9998654989516267
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9998049033813348
+    ],
+    "advance_agreed": [
+     "N",
+     0.0006951608869982782
+    ],
+    "balance_when": [
+     "N",
+     0.0004948048236554675
+    ],
+    "dates_agreed": [
+     "N",
+     0.0021398723345245293
+    ],
+    "late_terms": [
+     "N",
+     7.6185909137329e-05
+    ],
+    "addressed_gawah": [
+     "N",
+     3.983286843786395e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.007834814522559751
+    ],
+    "conflicting_figures": [
+     "N",
+     0.00017306772690860398
+    ],
+    "wrapping_up": [
+     "N",
+     6.260300683390987e-05
+    ]
+   },
+   "usage": {
+    "update": 14,
+    "input_tokens": 943,
+    "document_tokens": 7,
+    "question_tokens": 936,
+    "output_tokens": 713
+   }
+  },
+  {
+   "line": 14,
+   "wall_ms": 563,
+   "vendor_ms": 265.6,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9998447931358032
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9997064914739667
+    ],
+    "advance_agreed": [
+     "N",
+     0.009055700633401182
+    ],
+    "balance_when": [
+     "N",
+     0.0019796706174817352
+    ],
+    "dates_agreed": [
+     "N",
+     0.00363505920946404
+    ],
+    "late_terms": [
+     "N",
+     0.00020542837568409303
+    ],
+    "addressed_gawah": [
+     "N",
+     7.640184274314533e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.02089843670973378
+    ],
+    "conflicting_figures": [
+     "N",
+     0.00041580044674957697
+    ],
+    "wrapping_up": [
+     "N",
+     7.229169541825535e-05
+    ]
+   },
+   "usage": {
+    "update": 15,
+    "input_tokens": 950,
+    "document_tokens": 14,
+    "question_tokens": 936,
+    "output_tokens": 710
+   }
+  },
+  {
+   "line": 15,
+   "wall_ms": 572,
+   "vendor_ms": 281.4,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9998859276622376
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9997607131826268
+    ],
+    "advance_agreed": [
+     "N",
+     0.033530427107341366
+    ],
+    "balance_when": [
+     "N",
+     0.0023863146574169686
+    ],
+    "dates_agreed": [
+     "N",
+     0.012150500674950427
+    ],
+    "late_terms": [
+     "N",
+     0.00022659894477884088
+    ],
+    "addressed_gawah": [
+     "N",
+     6.226352606914571e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.10646920054778815
+    ],
+    "conflicting_figures": [
+     "N",
+     0.011540631973263944
+    ],
+    "wrapping_up": [
+     "N",
+     0.00045945501678901484
+    ]
+   },
+   "usage": {
+    "update": 16,
+    "input_tokens": 957,
+    "document_tokens": 21,
+    "question_tokens": 936,
+    "output_tokens": 708
+   }
+  },
+  {
+   "line": 16,
+   "wall_ms": 784,
+   "vendor_ms": 492.3,
+   "changed": [
+    "advance_agreed"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9998227292874914
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9997946354685106
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9996576928512959
+    ],
+    "balance_when": [
+     "N",
+     0.0003961710818362217
+    ],
+    "dates_agreed": [
+     "N",
+     0.004025019740258674
+    ],
+    "late_terms": [
+     "N",
+     0.00015518511062856012
+    ],
+    "addressed_gawah": [
+     "N",
+     5.5442962351725824e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.10373071542665854
+    ],
+    "conflicting_figures": [
+     "N",
+     0.00051526863116469
+    ],
+    "wrapping_up": [
+     "N",
+     0.0015184040037186232
+    ]
+   },
+   "usage": {
+    "update": 17,
+    "input_tokens": 958,
+    "document_tokens": 22,
+    "question_tokens": 936,
+    "output_tokens": 713
+   }
+  },
+  {
+   "line": 17,
+   "wall_ms": 562,
+   "vendor_ms": 270.9,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9997984135084872
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9997357687011365
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9998476315806019
+    ],
+    "balance_when": [
+     "N",
+     0.01175067884756908
+    ],
+    "dates_agreed": [
+     "N",
+     0.009420195334453648
+    ],
+    "late_terms": [
+     "N",
+     0.00033085505799236223
+    ],
+    "addressed_gawah": [
+     "N",
+     6.764150876372926e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.005409074988150339
+    ],
+    "conflicting_figures": [
+     "N",
+     0.00046787495337188996
+    ],
+    "wrapping_up": [
+     "N",
+     0.00011576149410635681
+    ]
+   },
+   "usage": {
+    "update": 18,
+    "input_tokens": 949,
+    "document_tokens": 13,
+    "question_tokens": 936,
+    "output_tokens": 708
+   }
+  },
+  {
+   "line": 18,
+   "wall_ms": 634,
+   "vendor_ms": 288.7,
+   "changed": [
+    "topic_left_unclear"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9998251495020491
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9997585060113473
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9998290167164858
+    ],
+    "balance_when": [
+     "N",
+     0.00043028135766660155
+    ],
+    "dates_agreed": [
+     "N",
+     0.002664206137633833
+    ],
+    "late_terms": [
+     "N",
+     9.615127288485598e-05
+    ],
+    "addressed_gawah": [
+     "N",
+     6.822818283012184e-05
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9783601288410574
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0004158674392356669
+    ],
+    "wrapping_up": [
+     "N",
+     8.364889285404963e-05
+    ]
+   },
+   "usage": {
+    "update": 19,
+    "input_tokens": 967,
+    "document_tokens": 31,
+    "question_tokens": 936,
+    "output_tokens": 716
+   }
+  },
+  {
+   "line": 19,
+   "wall_ms": 555,
+   "vendor_ms": 263.3,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9996073043800178
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9996921953041401
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9997471446755313
+    ],
+    "balance_when": [
+     "N",
+     0.0005351680648474628
+    ],
+    "dates_agreed": [
+     "N",
+     0.007546351873950758
+    ],
+    "late_terms": [
+     "N",
+     0.0001447372879262621
+    ],
+    "addressed_gawah": [
+     "N",
+     0.00014121812241972242
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9853318663079599
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0013673264210737758
+    ],
+    "wrapping_up": [
+     "N",
+     0.001611490864940999
+    ]
+   },
+   "usage": {
+    "update": 20,
+    "input_tokens": 952,
+    "document_tokens": 16,
+    "question_tokens": 936,
+    "output_tokens": 707
+   }
+  },
+  {
+   "line": 20,
+   "wall_ms": 585,
+   "vendor_ms": 291.7,
+   "changed": [
+    "dates_agreed"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9997291923566347
+    ],
+    "amount_agreed": [
+     "Y",
+     0.999769281094981
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9997749669714937
+    ],
+    "balance_when": [
+     "N",
+     0.0002916196239443113
+    ],
+    "dates_agreed": [
+     "Y",
+     0.9930665316065748
+    ],
+    "late_terms": [
+     "N",
+     0.00013369483917987285
+    ],
+    "addressed_gawah": [
+     "N",
+     7.031526229636985e-05
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9744172233495585
+    ],
+    "conflicting_figures": [
+     "N",
+     0.000542408004532556
+    ],
+    "wrapping_up": [
+     "N",
+     0.0014067902972312821
+    ]
+   },
+   "usage": {
+    "update": 21,
+    "input_tokens": 969,
+    "document_tokens": 33,
+    "question_tokens": 936,
+    "output_tokens": 711
+   }
+  },
+  {
+   "line": 21,
+   "wall_ms": 569,
+   "vendor_ms": 273.1,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9996044523357065
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9996847479854934
+    ],
+    "advance_agreed": [
+     "Y",
+     0.99959092183451
+    ],
+    "balance_when": [
+     "N",
+     0.0004042317142101687
+    ],
+    "dates_agreed": [
+     "Y",
+     0.9816790171983233
+    ],
+    "late_terms": [
+     "N",
+     0.0011392967926286226
+    ],
+    "addressed_gawah": [
+     "N",
+     7.874719212978135e-05
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9672381041276177
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0015783394194320006
+    ],
+    "wrapping_up": [
+     "N",
+     0.0002644427476535143
+    ]
+   },
+   "usage": {
+    "update": 22,
+    "input_tokens": 958,
+    "document_tokens": 22,
+    "question_tokens": 936,
+    "output_tokens": 708
+   }
+  },
+  {
+   "line": 22,
+   "wall_ms": 578,
+   "vendor_ms": 272.6,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9998352777861577
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9999056668257469
+    ],
+    "advance_agreed": [
+     "Y",
+     0.99989567541003
+    ],
+    "balance_when": [
+     "N",
+     0.00015710020714434475
+    ],
+    "dates_agreed": [
+     "Y",
+     0.9995851948431853
+    ],
+    "late_terms": [
+     "N",
+     9.481249669351345e-05
+    ],
+    "addressed_gawah": [
+     "N",
+     2.9185129632791988e-05
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9647919736126125
+    ],
+    "conflicting_figures": [
+     "N",
+     0.000264964910161119
+    ],
+    "wrapping_up": [
+     "N",
+     0.0009257914391468422
+    ]
+   },
+   "usage": {
+    "update": 23,
+    "input_tokens": 955,
+    "document_tokens": 19,
+    "question_tokens": 936,
+    "output_tokens": 709
+   }
+  },
+  {
+   "line": 23,
+   "wall_ms": 721,
+   "vendor_ms": 422.0,
+   "changed": [
+    "addressed_gawah"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9998557450874851
+    ],
+    "amount_agreed": [
+     "Y",
+     0.9998795700128424
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9999095790010801
+    ],
+    "balance_when": [
+     "N",
+     0.000217606653567615
+    ],
+    "dates_agreed": [
+     "Y",
+     0.9997686594759111
+    ],
+    "late_terms": [
+     "N",
+     9.281999007438838e-05
+    ],
+    "addressed_gawah": [
+     "Y",
+     0.9999621773188604
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9790901641954336
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0006163500523392236
+    ],
+    "wrapping_up": [
+     "N",
+     0.0008956147849442647
+    ]
+   },
+   "usage": {
+    "update": 24,
+    "input_tokens": 952,
+    "document_tokens": 16,
+    "question_tokens": 936,
+    "output_tokens": 712
+   }
+  },
+  {
+   "line": 24,
+   "wall_ms": 575,
+   "vendor_ms": 273.2,
+   "changed": [
+    "amount_agreed",
+    "addressed_gawah",
+    "conflicting_figures"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9982520045627135
+    ],
+    "amount_agreed": [
+     "-",
+     0.3092145508163349
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9933871011978415
+    ],
+    "balance_when": [
+     "N",
+     0.00034179192299996284
+    ],
+    "dates_agreed": [
+     "Y",
+     0.9836884197333726
+    ],
+    "late_terms": [
+     "N",
+     0.00029824863672750154
+    ],
+    "addressed_gawah": [
+     "N",
+     0.00913954891271439
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9756970066074778
+    ],
+    "conflicting_figures": [
+     "Y",
+     0.9987391198203531
+    ],
+    "wrapping_up": [
+     "N",
+     0.001380217313191031
+    ]
+   },
+   "usage": {
+    "update": 25,
+    "input_tokens": 960,
+    "document_tokens": 24,
+    "question_tokens": 936,
+    "output_tokens": 719
+   }
+  },
+  {
+   "line": 25,
+   "wall_ms": 596,
+   "vendor_ms": 286.8,
+   "changed": [
+    "amount_agreed"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9983521196454755
+    ],
+    "amount_agreed": [
+     "N",
+     0.007822140511888233
+    ],
+    "advance_agreed": [
+     "Y",
+     0.995473629139
+    ],
+    "balance_when": [
+     "N",
+     0.0002970298616460573
+    ],
+    "dates_agreed": [
+     "Y",
+     0.9971166606487714
+    ],
+    "late_terms": [
+     "N",
+     0.0001295348219470721
+    ],
+    "addressed_gawah": [
+     "N",
+     0.022285853060089705
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9623575227181853
+    ],
+    "conflicting_figures": [
+     "Y",
+     0.9997681250743689
+    ],
+    "wrapping_up": [
+     "N",
+     0.0017608057489037925
+    ]
+   },
+   "usage": {
+    "update": 26,
+    "input_tokens": 964,
+    "document_tokens": 28,
+    "question_tokens": 936,
+    "output_tokens": 708
+   }
+  },
+  {
+   "line": 26,
+   "wall_ms": 576,
+   "vendor_ms": 273.7,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9991260979175455
+    ],
+    "amount_agreed": [
+     "N",
+     0.013486369483880946
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9985051911562555
+    ],
+    "balance_when": [
+     "N",
+     0.0002467425883311257
+    ],
+    "dates_agreed": [
+     "Y",
+     0.9992116886395137
+    ],
+    "late_terms": [
+     "N",
+     8.908908121549627e-05
+    ],
+    "addressed_gawah": [
+     "N",
+     0.0009630636835664714
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9617491690776097
+    ],
+    "conflicting_figures": [
+     "Y",
+     0.9997734509578832
+    ],
+    "wrapping_up": [
+     "N",
+     0.0009611259022975663
+    ]
+   },
+   "usage": {
+    "update": 27,
+    "input_tokens": 959,
+    "document_tokens": 23,
+    "question_tokens": 936,
+    "output_tokens": 708
+   }
+  },
+  {
+   "line": 27,
+   "wall_ms": 585,
+   "vendor_ms": 260.3,
+   "changed": [
+    "wrapping_up"
+   ],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9996341997704289
+    ],
+    "amount_agreed": [
+     "N",
+     0.017315163644755993
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9990640766186607
+    ],
+    "balance_when": [
+     "N",
+     0.0001769206623212339
+    ],
+    "dates_agreed": [
+     "Y",
+     0.9995485295127039
+    ],
+    "late_terms": [
+     "N",
+     7.861926213998977e-05
+    ],
+    "addressed_gawah": [
+     "N",
+     0.0006945410668290298
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9742266089748391
+    ],
+    "conflicting_figures": [
+     "Y",
+     0.9996755783710074
+    ],
+    "wrapping_up": [
+     "Y",
+     0.9989826506644608
+    ]
+   },
+   "usage": {
+    "update": 28,
+    "input_tokens": 962,
+    "document_tokens": 26,
+    "question_tokens": 936,
+    "output_tokens": 711
+   }
+  },
+  {
+   "line": 28,
+   "wall_ms": 578,
+   "vendor_ms": 266.6,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9997526008870812
+    ],
+    "amount_agreed": [
+     "N",
+     0.02243602211967688
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9993031463664593
+    ],
+    "balance_when": [
+     "N",
+     0.00024369897455693167
+    ],
+    "dates_agreed": [
+     "Y",
+     0.9994695058932238
+    ],
+    "late_terms": [
+     "N",
+     6.856865848254894e-05
+    ],
+    "addressed_gawah": [
+     "N",
+     0.00023089253446806208
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9581976699773639
+    ],
+    "conflicting_figures": [
+     "Y",
+     0.999629420215107
+    ],
+    "wrapping_up": [
+     "Y",
+     0.9990590211812977
+    ]
+   },
+   "usage": {
+    "update": 29,
+    "input_tokens": 962,
+    "document_tokens": 26,
+    "question_tokens": 936,
+    "output_tokens": 706
+   }
+  },
+  {
+   "line": 29,
+   "wall_ms": 587,
+   "vendor_ms": 275.9,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9996688789330884
+    ],
+    "amount_agreed": [
+     "N",
+     0.0191817075508917
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9992127291155165
+    ],
+    "balance_when": [
+     "N",
+     0.00015666773480281564
+    ],
+    "dates_agreed": [
+     "Y",
+     0.9993203948462324
+    ],
+    "late_terms": [
+     "N",
+     6.725123106576716e-05
+    ],
+    "addressed_gawah": [
+     "N",
+     0.00024385586317401066
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.973986812709144
+    ],
+    "conflicting_figures": [
+     "Y",
+     0.999565373650503
+    ],
+    "wrapping_up": [
+     "Y",
+     0.9980361611736335
+    ]
+   },
+   "usage": {
+    "update": 30,
+    "input_tokens": 953,
+    "document_tokens": 17,
+    "question_tokens": 936,
+    "output_tokens": 705
+   }
+  },
+  {
+   "line": 30,
+   "wall_ms": 662,
+   "vendor_ms": 282.5,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "Y",
+     0.9995694601565769
+    ],
+    "amount_agreed": [
+     "N",
+     0.023058071645506065
+    ],
+    "advance_agreed": [
+     "Y",
+     0.9990994357679746
+    ],
+    "balance_when": [
+     "N",
+     0.00019301744192223378
+    ],
+    "dates_agreed": [
+     "Y",
+     0.9993269486875259
+    ],
+    "late_terms": [
+     "N",
+     6.460508029934823e-05
+    ],
+    "addressed_gawah": [
+     "N",
+     0.0005218319770801436
+    ],
+    "topic_left_unclear": [
+     "Y",
+     0.9633580643184512
+    ],
+    "conflicting_figures": [
+     "Y",
+     0.9996292513081041
+    ],
+    "wrapping_up": [
+     "Y",
+     0.9984043179794189
+    ]
+   },
+   "usage": {
+    "update": 31,
+    "input_tokens": 945,
+    "document_tokens": 9,
+    "question_tokens": 936,
+    "output_tokens": 707
+   }
+  }
+ ],
+ "extracts": [
+  {
+   "wall_ms": 1370,
+   "vendor_ms": 113.7,
+   "usage": {
+    "input_tokens": 368,
+    "output_tokens": 208
+   },
+   "fields": {
+    "work": {
+     "value": null,
+     "text": null,
+     "probability": 0.4619
+    }
+   },
+   "item": "work_agreed",
+   "at_line": 5
+  },
+  {
+   "wall_ms": 421,
+   "vendor_ms": 104.3,
+   "usage": {
+    "input_tokens": 544,
+    "output_tokens": 177
+   },
+   "fields": {
+    "total_amount": {
+     "value": {
+      "amount": 42,
+      "currency": null
+     },
+     "text": "42 hazaar",
+     "probability": 0.9438
+    }
+   },
+   "item": "amount_agreed",
+   "at_line": 11
+  },
+  {
+   "wall_ms": 432,
+   "vendor_ms": 125.5,
+   "usage": {
+    "input_tokens": 636,
+    "output_tokens": 179
+   },
+   "fields": {
+    "advance_amount": {
+     "value": {
+      "amount": 10,
+      "currency": null
+     },
+     "text": "10",
+     "probability": 0.4688
+    }
+   },
+   "item": "advance_agreed",
+   "at_line": 16
+  },
+  {
+   "wall_ms": 738,
+   "vendor_ms": 135.7,
+   "usage": {
+    "input_tokens": 751,
+    "output_tokens": 290
+   },
+   "fields": {
+    "start_date": {
+     "value": "--11-23",
+     "text": "23 November",
+     "probability": 0.9623
+    },
+    "finish_date": {
+     "value": "--11-30",
+     "text": "30 November",
+     "probability": 0.9013
+    },
+    "work_duration": {
+     "value": null,
+     "text": null,
+     "probability": 1.0,
+     "parse_error": "no candidate parses as duration: \"Saat din\""
+    }
+   },
+   "item": "dates_agreed",
+   "at_line": 20
+  },
+  {
+   "wall_ms": 1836,
+   "vendor_ms": 184.2,
+   "usage": {
+    "input_tokens": 1103,
+    "output_tokens": 838
+   },
+   "fields": {
+    "work": {
+     "value": "2BHK andar se",
+     "text": "2BHK andar se",
+     "probability": 0.5137
+    },
+    "total_amount": {
+     "value": {
+      "amount": 42,
+      "currency": null
+     },
+     "text": "42",
+     "probability": 0.7904
+    },
+    "advance_amount": {
+     "value": {
+      "amount": 10,
+      "currency": null
+     },
+     "text": "10 hazaar",
+     "probability": 0.3063
+    },
+    "start_date": {
+     "value": "--11-23",
+     "text": "23 November",
+     "probability": 0.9822
+    },
+    "finish_date": {
+     "value": "--11-30",
+     "text": "30 November",
+     "probability": 0.8509
+    },
+    "work_duration": {
+     "value": null,
+     "text": null,
+     "probability": 1.0,
+     "parse_error": "no candidate parses as duration: \"Saat din\""
+    }
+   },
+   "item": "final_all",
+   "at_line": 30
+  }
+ ]
+}

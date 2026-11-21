@@ -1,0 +1,295 @@
+{
+ "summary": {
+  "engine": "sage2",
+  "script": "hinglish",
+  "tag": "probe",
+  "lines": 3,
+  "right": 30,
+  "scored": 30,
+  "extra_flips": 0,
+  "wall_ms_median": 530,
+  "wall_ms_max": 589,
+  "vendor_ms_median": 255.8,
+  "ping_ms_median": 248,
+  "calls": 4,
+  "extract_calls": 0,
+  "usage": {
+   "update": 10,
+   "input_tokens": 3514,
+   "document_tokens": 138,
+   "question_tokens": 3376,
+   "output_tokens": 2895
+  }
+ },
+ "per_question": {
+  "work_agreed": {
+   "got": "NNN",
+   "right": 3,
+   "scored": 3,
+   "wrong_lines": [],
+   "flips": 0,
+   "expected_flips": 0
+  },
+  "amount_agreed": {
+   "got": "NNN",
+   "right": 3,
+   "scored": 3,
+   "wrong_lines": [],
+   "flips": 0,
+   "expected_flips": 0
+  },
+  "advance_agreed": {
+   "got": "NNN",
+   "right": 3,
+   "scored": 3,
+   "wrong_lines": [],
+   "flips": 0,
+   "expected_flips": 0
+  },
+  "balance_when": {
+   "got": "NNN",
+   "right": 3,
+   "scored": 3,
+   "wrong_lines": [],
+   "flips": 0,
+   "expected_flips": 0
+  },
+  "dates_agreed": {
+   "got": "NNN",
+   "right": 3,
+   "scored": 3,
+   "wrong_lines": [],
+   "flips": 0,
+   "expected_flips": 0
+  },
+  "late_terms": {
+   "got": "NNN",
+   "right": 3,
+   "scored": 3,
+   "wrong_lines": [],
+   "flips": 0,
+   "expected_flips": 0
+  },
+  "addressed_gawah": {
+   "got": "NNN",
+   "right": 3,
+   "scored": 3,
+   "wrong_lines": [],
+   "flips": 0,
+   "expected_flips": 0
+  },
+  "topic_left_unclear": {
+   "got": "NNN",
+   "right": 3,
+   "scored": 3,
+   "wrong_lines": [],
+   "flips": 0,
+   "expected_flips": 0
+  },
+  "conflicting_figures": {
+   "got": "NNN",
+   "right": 3,
+   "scored": 3,
+   "wrong_lines": [],
+   "flips": 0,
+   "expected_flips": 0
+  },
+  "wrapping_up": {
+   "got": "NNN",
+   "right": 3,
+   "scored": 3,
+   "wrong_lines": [],
+   "flips": 0,
+   "expected_flips": 0
+  }
+ },
+ "questions": {
+  "work_agreed": "Have both speakers agreed on what work is to be done (the scope of the job)? Answer yes only if one person has described the work and the other has accepted it.",
+  "amount_agreed": "Have both speakers agreed on the total price for the whole job? Answer yes only if one final total amount has been accepted by both. An offer or counter-offer that the other person has not accepted is not an agreement.",
+  "advance_agreed": "Have both speakers agreed on an advance payment amount (money paid before the work starts)? Answer yes only if both have accepted the same advance amount.",
+  "balance_when": "Have both speakers agreed on when the remaining balance (the total minus the advance) will be paid? Answer yes only if a specific time or condition for paying the balance was stated and accepted. If the question was asked but brushed aside or not answered, answer no.",
+  "dates_agreed": "Have both speakers agreed on both the start date and the finish date of the work?",
+  "late_terms": "Have the speakers agreed on what happens if the work is finished late or left unfinished, such as a penalty, a deduction or a refund? A promise to finish on time is not enough; answer yes only if a consequence was agreed.",
+  "addressed_gawah": "In the last line of the transcript, is the speaker talking directly to Gawah, the AI witness, for example by calling it by name?",
+  "topic_left_unclear": "Did a speaker ask about a contract term (such as price, advance, balance payment, or dates) and get no clear answer before the conversation moved on to a different topic, and is that term still unanswered?",
+  "conflicting_figures": "After the speakers agreed on a figure for a term (for example the total price or the advance), has a different figure been stated later for that same term? Offers and counter-offers made while bargaining, before the agreement, do not count.",
+  "wrapping_up": "Are the speakers ending the call now, for example by saying goodbye, thanking each other, or saying they will talk or meet later?"
+ },
+ "rows": [
+  {
+   "line": 1,
+   "wall_ms": 589,
+   "vendor_ms": 319.8,
+   "changed": [
+    "work_agreed",
+    "amount_agreed",
+    "advance_agreed",
+    "balance_when",
+    "dates_agreed",
+    "late_terms",
+    "topic_left_unclear",
+    "wrapping_up"
+   ],
+   "answers": {
+    "work_agreed": [
+     "N",
+     0.024642594109619703
+    ],
+    "amount_agreed": [
+     "N",
+     0.010718656497471701
+    ],
+    "advance_agreed": [
+     "N",
+     0.002191457502788414
+    ],
+    "balance_when": [
+     "N",
+     0.1447620923185513
+    ],
+    "dates_agreed": [
+     "N",
+     0.013076346599570757
+    ],
+    "late_terms": [
+     "N",
+     0.004575736071885616
+    ],
+    "addressed_gawah": [
+     "N",
+     6.959971569560499e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.002415616546399161
+    ],
+    "conflicting_figures": [
+     "N",
+     0.17028367194444946
+    ],
+    "wrapping_up": [
+     "N",
+     0.00042895935752809835
+    ]
+   },
+   "usage": {
+    "update": 2,
+    "input_tokens": 879,
+    "document_tokens": 35,
+    "question_tokens": 844,
+    "output_tokens": 736
+   }
+  },
+  {
+   "line": 2,
+   "wall_ms": 512,
+   "vendor_ms": 236.1,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "N",
+     0.22137813902572773
+    ],
+    "amount_agreed": [
+     "N",
+     0.0002851324716834037
+    ],
+    "advance_agreed": [
+     "N",
+     0.0002602596295128951
+    ],
+    "balance_when": [
+     "N",
+     0.002252149419439262
+    ],
+    "dates_agreed": [
+     "N",
+     0.001075600149175498
+    ],
+    "late_terms": [
+     "N",
+     0.00022912976731108298
+    ],
+    "addressed_gawah": [
+     "N",
+     0.00010152416005510589
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.0006981944273277746
+    ],
+    "conflicting_figures": [
+     "N",
+     0.0933950750670462
+    ],
+    "wrapping_up": [
+     "N",
+     0.0005227659301846741
+    ]
+   },
+   "usage": {
+    "update": 3,
+    "input_tokens": 867,
+    "document_tokens": 23,
+    "question_tokens": 844,
+    "output_tokens": 708
+   }
+  },
+  {
+   "line": 3,
+   "wall_ms": 530,
+   "vendor_ms": 255.8,
+   "changed": [],
+   "answers": {
+    "work_agreed": [
+     "N",
+     0.10804953971105928
+    ],
+    "amount_agreed": [
+     "N",
+     0.003981655358504256
+    ],
+    "advance_agreed": [
+     "N",
+     0.0011230069712714523
+    ],
+    "balance_when": [
+     "N",
+     0.03268470988266666
+    ],
+    "dates_agreed": [
+     "N",
+     0.005496210975183784
+    ],
+    "late_terms": [
+     "N",
+     0.00037367252199136845
+    ],
+    "addressed_gawah": [
+     "N",
+     8.329714349957999e-05
+    ],
+    "topic_left_unclear": [
+     "N",
+     0.0008409626499298446
+    ],
+    "conflicting_figures": [
+     "N",
+     0.1449516987400601
+    ],
+    "wrapping_up": [
+     "N",
+     0.00046793828845782614
+    ]
+   },
+   "usage": {
+    "update": 4,
+    "input_tokens": 876,
+    "document_tokens": 32,
+    "question_tokens": 844,
+    "output_tokens": 708
+   }
+  }
+ ],
+ "extracts": []
+}
