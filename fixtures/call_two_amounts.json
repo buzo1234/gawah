@@ -252,7 +252,7 @@
       "after_line": 19,
       "by_line": 21,
       "item": "amount",
-      "reason": "conflicting_figures",
+      "reason": "contradicts_record",
       "to": "both",
       "modes": [
         "live"

@@ -1,21 +1,31 @@
-"""One deal call: follows the transcript, keeps the checklist, asks the Judge rules
-what to say. Everything here runs on the event loop, one event at a time."""
+"""One deal call: follows the transcript and the memory's facts, keeps the checklist, asks
+the Judge rules what to say. Everything here runs on the event loop, one event at a time.
+
+The checklist comes from the facts (facts.py). Sage2 only says when to look: someone spoke
+to Gawah, a topic was left, the balance was skipped, they are wrapping up. Contradictions
+come from the memory as fact.conflict. Whether a newly agreed term can be heard two ways
+is one small model call, off the line's path.
+"""
 
 import asyncio
 from dataclasses import dataclass
 
 from app.brain import sage, tuning
 from app.brain.closing import Closing
-from app.brain.judge import Judge, View
+from app.brain.facts import Terms
+from app.brain.judge import Ambiguity, Conflict, Judge, Proposal, View
 from app.brain.names import People
 from app.brain.sage import Answers, Decisions, yes
-from app.brain.values import Kind, Values
+from app.brain.values import TERMS, Kind, Values
 from app.bus import Bus
 from app.contracts import (
     CallKind,
     CallStarted,
-    ChecklistItem,
     ChecklistUpdated,
+    Fact,
+    FactConflict,
+    FactKind,
+    FactStatus,
     ItemKey,
     ItemState,
     JudgeSpeak,
@@ -26,15 +36,6 @@ from app.contracts import (
     TranscriptLine,
 )
 from app.log import deal_log
-
-ITEM_QUESTION: dict[ItemKey, str] = {
-    ItemKey.WORK: "work_agreed",
-    ItemKey.AMOUNT: "amount_agreed",
-    ItemKey.ADVANCE: "advance_agreed",
-    ItemKey.BALANCE: "balance_when",
-    ItemKey.DATES: "dates_agreed",
-    ItemKey.LATE_OR_UNFINISHED: "late_terms",
-}
 
 
 @dataclass
@@ -60,27 +61,33 @@ def _item(value: object) -> ItemKey | None:
 
 
 class Session:
-    def __init__(self, started: CallStarted, bus: Bus, decisions: Decisions, values: Values, mode: str) -> None:
+    def __init__(
+        self, started: CallStarted, bus: Bus, decisions: Decisions, values: Values, mode: str,
+        terms: Terms, checked: set[str],
+    ) -> None:
         self.deal_id = started.deal_id
+        self.call_no = started.call_no
         self.log = deal_log("gawah.brain", self.deal_id)
         self.bus, self.decisions, self.values = bus, decisions, values
         self.room = started.room
         self.who = People(started.people)
         self.naming = False
         self.judge = Judge(mode)
-        self.items: dict[ItemKey, ChecklistItem] = {key: ChecklistItem(key=key) for key in ItemKey}
+        self.terms = terms
+        self.checked = checked  # fact ids already checked for two meanings, on any call of the deal
+        self.at_start = {key: terms.signature(key) for key in ItemKey}
+        self.items = {key: terms.item(key) for key in ItemKey}
+        self.current_ids = {key: (f.id if (f := terms.current(key)) else None) for key in ItemKey}
+        self.conflict_against: dict[str, str | None] = {}  # conflict id -> the term's current fact then
+        self.facts_heard = 0  # facts the memory sent from this call's lines
         self.lines: list[_Line] = []
         self.answers: Answers = {}
-        self.conflicts: dict[ItemKey, list[str]] = {}
-        self.conflict_seen = False
+        self.conflicts: list[Conflict] = []
+        self.ambiguities: list[Ambiguity] = []
         self.unclear: ItemKey | None = None
         self.unclear_looked_up = False
         self.speaks: dict[str, JudgeSpeak] = {}
-        self.asked_at_line: dict[ItemKey, int] = {}  # the line count when the Judge finished asking
-        self.tries: dict[ItemKey, int] = {}
-        self.tried_at_line: dict[ItemKey, int] = {}
-        self.fetching: set[ItemKey] = set()
-        self.refreshed: set[ItemKey] = set()
+        self.topics_of: dict[str, list[str]] = {}  # judge.speak id -> its topics
         self.wrapping_up = False
         self.closing = False  # the latest line, or the silence after it, says they are wrapping up
         self.ending = Closing()
@@ -91,6 +98,9 @@ class Session:
 
     async def start(self) -> None:
         self.answers = await self.decisions.open(sage.preamble(self.who.all)) or {}
+        agreed = [key.value for key, item in self.items.items() if item.state is ItemState.AGREED]
+        if self.call_no > 1:
+            self.log.info("call %s starts with %s agreed: %s", self.call_no, len(agreed), ", ".join(agreed) or "nothing")
         self._publish_checklist([])
 
     async def on_line(self, event: TranscriptLine) -> None:
@@ -105,31 +115,92 @@ class Session:
             self.log.info("line %s: sage2 yes to %s", line.no, ", ".join(q for q in got if yes(got, q)) or "nothing")
         self.answers = got
 
-        self._latch_agreed_items()
         self._closing_signal()
-        if yes(got, "conflicting_figures") and not self.conflict_seen:
-            self.conflict_seen = True  # Sage2 keeps saying yes from here on, so one conflict a call
-            await self._open_conflict()
         await self._find_unclear_item()
-        self._fetch_missing_values()
         self._look_for_names()
         self._decide()
         self._wait_for_silence()
-        # A value that is already there (a recorded one) lands before the next line.
+        # A reply that is already there (a recorded one) lands before the next line.
         await asyncio.sleep(0)
 
+    def on_fact(self, fact: Fact) -> None:
+        """A fact.recorded for this deal, already taken into self.terms."""
+        if fact.call_no == self.call_no and fact.line_no is not None:
+            self.facts_heard += 1
+        if fact.kind is FactKind.CHANGE:
+            self._said_change(fact)
+        if fact.item is None or fact.kind is not FactKind.TERM:
+            return
+        key = fact.item
+        current = self.terms.current(key)
+        settled = current is not None and (current.status is FactStatus.CONFIRMED or current.replaces is not None)
+        moved = [c for c in self.conflicts if c.item == key and settled and current.id != self.conflict_against[c.id]]
+        if moved:
+            # Both confirmed a value since (a change both confirmed, or a confirmation): the
+            # record settles it. A plain "theek hai" to the different figure does not.
+            self.conflicts = [c for c in self.conflicts if c not in moved]
+            self.log.info("%s confirmed after the contradiction: no longer open", key.value)
+        self._refresh(key)
+        if key is ItemKey.AMOUNT:
+            self._refresh(ItemKey.WORK)  # the work is agreed with the price
+        if current and current.id != self.current_ids[key]:
+            self._check_two_ways(current)
+        self.current_ids[key] = current.id if current else None
+        self._decide()
+
+    def on_conflict(self, event: FactConflict) -> None:
+        held = [self.terms.latest[i] for i in event.fact_ids if i in self.terms.latest]
+        item = next((f.item for f in held if f.item), None)
+        self._open(Conflict(
+            id=event.event_id, item=item, fact_ids=list(event.fact_ids), explanation=event.explanation,
+            said=event.said, speaker=event.speaker, line_no=event.line_no,
+        ))
+
+    def _said_change(self, fact: Fact) -> None:
+        """A change to an agreed term's figure, said on this call and not yet confirmed by both.
+        Added details ("do ladke aur lagaunga") are not worth stopping a call for."""
+        current = self.terms.current(fact.item) if fact.item else None
+        cid = f"change:{fact.id}"
+        if current is None or fact.call_no != self.call_no or any(c.id == cid for c in self.conflicts):
+            return
+        rupees = fact.value_rupees is not None and fact.value_rupees != current.value_rupees
+        # The dates term holds a start and a finish, so one day is not compared with another
+        # (memory does not either); a date change comes as a fact.conflict from its model.
+        day = fact.item is not ItemKey.DATES and fact.value_date is not None and current.value_date is not None
+        if not (rupees or (day and fact.value_date != current.value_date)):
+            return
+        if fact.status not in (FactStatus.SAID, FactStatus.AGREED) or cid in self.conflict_against:
+            return
+        was = current.value or current.text
+        where = f" (call {current.call_no}, line {current.line_no})" if current.line_no else ""
+        self._open(Conflict(
+            id=cid, item=fact.item, fact_ids=[current.id, fact.id],
+            explanation=f"agreed as {was}{where}; now said as {fact.value or fact.text}.",
+            said=fact.quote, speaker=fact.said_by, line_no=fact.line_no, change=True,
+        ))
+
+    def _open(self, conflict: Conflict) -> None:
+        self.conflicts.append(conflict)
+        item = conflict.item
+        current = self.terms.current(item) if item else None
+        self.conflict_against[conflict.id] = current.id if current else None
+        what = "change" if conflict.change else "contradiction"
+        self.log.info("%s at line %s about %s: %s", what, conflict.line_no, item.value if item else "-", conflict.explanation)
+        if item:
+            self._refresh(item)
+        self._decide()
+
     def on_spoke(self, event: JudgeSpoke) -> None:
-        speak = self.speaks.get(event.speak_id or "") or (list(self.speaks.values()) or [None])[-1]
+        # Gawah also speaks on its own (answers, follow-ups): only our own judge.speaks count here.
+        speak = self.speaks.get(event.speak_id or "")
         if speak is None:
             return
+        now = self.lines[-1].end if self.lines else 0.0
         if not event.text and event.start is None:
             # The mouth dropped it unsaid: stop waiting, and do not count it as a question heard.
-            self.judge.dropped(speak.item, speak.reason, self.lines[-1].end if self.lines else 0.0)
+            self.judge.dropped(self.topics_of.get(speak.event_id, []), speak.reason, now)
             return
-        now = self.lines[-1].end if self.lines else 0.0
         self.judge.spoke(max(now, event.end or 0.0), speak.reason is not SpeakReason.ADDRESSED_DIRECTLY)
-        if speak.item:
-            self.asked_at_line[speak.item] = len(self.lines)
 
     def meet(self, people: list[Person]) -> None:
         """call.started again for this call: take any name we did not have."""
@@ -143,27 +214,70 @@ class Session:
             _, late = await asyncio.wait(self.tasks, timeout=tuning.END_WAIT_S)
             for task in late:
                 task.cancel()
-        self.log.info("call ended after %s lines; judge spoke %s times", len(self.lines), len(self.speaks))
+        self.log.info("call %s ended after %s lines; judge spoke %s times", self.call_no, len(self.lines), len(self.speaks))
 
     async def idle(self) -> None:
-        """Wait for values still on their way. For tests."""
+        """Wait for model replies still on their way. For tests."""
         while self.tasks:
             await asyncio.wait(self.tasks)
 
     # ---- the checklist ----
 
-    def _latch_agreed_items(self) -> None:
-        """Once Sage2 says an item is agreed it stays agreed: its answers wobble when a
-        second figure is said. An item with two figures stays pending until that is settled."""
-        changed = []
-        for key, question in ITEM_QUESTION.items():
-            item = self.items[key]
-            if item.state is ItemState.PENDING and key not in self.conflicts and yes(self.answers, question):
-                item.state, item.confidence, item.line_no = ItemState.AGREED, self.answers[question], self.lines[-1].no
-                changed.append(key)
-                self.ending.settled_on.add(self.lines[-1].no)
-        if changed:
-            self._publish_checklist(changed)
+    def _refresh(self, key: ItemKey) -> None:
+        note = next((
+            f"{'change said' if c.change else 'contradicted'} at line {c.line_no}: {c.explanation}"
+            for c in self.conflicts if c.item == key
+        ), None)
+        item = self.terms.item(key, note)
+        if item != self.items[key]:
+            if item.state is ItemState.AGREED and self.items[key].state is ItemState.PENDING and self.lines:
+                self.ending.settled_on.add(self.lines[-1].no)  # a term settled is no goodbye (closing.py)
+            self.items[key] = item
+            self._publish_checklist([key])
+
+    def _changed(self) -> set[ItemKey]:
+        return {key for key in ItemKey if self.terms.signature(key) != self.at_start[key]}
+
+    def _agreed(self) -> int:
+        return sum(item.state is ItemState.AGREED for item in self.items.values())
+
+    def _discussed(self) -> int:
+        """Agreed, or stated and waiting only for the other's yes: the Scribe hears fewer
+        yeses than were said. For the silence rule only (CLOSE_MIN_DISCUSSED)."""
+        return sum(item.state is ItemState.AGREED or self.terms.proposal(key) is not None for key, item in self.items.items())
+
+    def _publish_checklist(self, changed: list[ItemKey]) -> None:
+        self.bus.publish(
+            ChecklistUpdated(
+                deal_id=self.deal_id, items=[item.model_copy() for item in self.items.values()], changed=changed
+            )
+        )
+
+    # ---- two meanings ----
+
+    def _check_two_ways(self, fact: Fact) -> None:
+        if fact.id in self.checked or fact.item is None or not self.lines:
+            return
+        self.checked.add(fact.id)
+        self._spawn(self._two_ways(fact, self._transcript(), fact.line_no or self.lines[-1].no))
+
+    async def _two_ways(self, fact: Fact, transcript: str, at_line: int) -> None:
+        assert fact.item is not None
+        value = fact.value or fact.text
+        asked = f'{transcript}\n\nAgreed term: {TERMS[fact.item]}.\nAgreed value: {value}\nWords: "{fact.quote or ""}"'
+        try:
+            got = await self.values.lookup("ambiguous", fact.item, asked, at_line) or {}
+        except Exception as e:
+            self.log.warning("two-meanings check failed for %s (%s: %s)", fact.item.value, type(e).__name__, str(e)[:200])
+            return
+        readings = [r for r in map(lambda v: _text(v, 120), got.get("readings") or []) if r][:2]
+        if got.get("ambiguous") is not True or len(readings) != 2 or self.ended:
+            return
+        if self.terms.current(fact.item) is None or self.terms.current(fact.item).id != fact.id:
+            return  # the term moved on while the model was reading
+        self.log.info("%s can be heard two ways: %s / %s", fact.item.value, *readings)
+        self.ambiguities.append(Ambiguity(fact.item, fact.id, value, readings))
+        self._decide()
 
     # ---- the end of the call ----
 
@@ -173,14 +287,11 @@ class Session:
             self.log.info("wrapping up at line %s", self.lines[-1].no)
         self.wrapping_up = self.wrapping_up or self.closing
 
-    def _agreed(self) -> int:
-        return sum(item.state is ItemState.AGREED for item in self.items.values())
-
     def _wait_for_silence(self) -> None:
         """closing_soon on the latest line: if nobody says anything more, they are done.
         Not while Gawah is about to talk, which is no silence."""
         quiet = not self.closing and self.judge.waiting_since is None
-        due = quiet and Closing.silence_would_close(self.answers, self._agreed())
+        due = quiet and Closing.silence_would_close(self.answers, self._discussed())
         self.ending.wait(self._so_far() if due else None, self.silence_passed)
 
     def _so_far(self) -> tuple[int, int]:
@@ -192,11 +303,10 @@ class Session:
             return
         self.log.info("wrapping up: silence after line %s", self.lines[-1].no)
         self.closing = self.wrapping_up = True
-        self._fetch_missing_values()
         self._decide(silence=tuning.CLOSING_SILENCE_S)
         self.closing = False
 
-    # ---- names ----
+    # ---- names, and the term left unclear ----
 
     def _look_for_names(self) -> None:
         if self.who.unknown() and not self.naming and len(self.lines) <= tuning.NAME_LINES:
@@ -209,42 +319,18 @@ class Session:
         if learned and not self.ended:
             # call.started is the event the store, the dashboard and the mouth take people from.
             # Sent again for the same room it only fills in names (brain, mouth, dashboard).
-            self.bus.publish(CallStarted(deal_id=self.deal_id, people=self.who.all, kind=CallKind.DEAL, room=self.room))
+            self.bus.publish(CallStarted(
+                deal_id=self.deal_id, people=self.who.all, kind=CallKind.DEAL, room=self.room, call_no=self.call_no,
+            ))
 
     def _spawn(self, work) -> None:
         task = asyncio.create_task(work)
         self.tasks.add(task)
         task.add_done_callback(self.tasks.discard)
 
-    async def _open_conflict(self) -> None:
-        got = await self._lookup_now("conflict", None) or {}
-        key = _item(got.get("item"))
-        if key is None:
-            # The model did not say which. Sage2 drops the item's own answer to no when
-            # a second figure is said, so take the agreed money item it no longer says yes to.
-            dropped = [
-                k for k in (ItemKey.AMOUNT, ItemKey.ADVANCE)
-                if self.items[k].state is ItemState.AGREED and not yes(self.answers, ITEM_QUESTION[k])
-            ]
-            if not dropped:
-                # Nothing says which term: guessing would wipe a term both agreed. The
-                # read-back and the call-back are there to catch a real second figure.
-                self.log.info("two figures said at line %s, but nothing says for which term: left as is", self.lines[-1].no)
-                return
-            key = dropped[0]
-        figures = [f for f in map(lambda v: _text(v, 40), got.get("figures") or []) if f][:2]
-        self.conflicts[key] = figures if len(figures) == 2 else []
-        self.tries[key] = 0
-        item = self.items[key]
-        item.state, item.value, item.source_text, item.confidence = ItemState.PENDING, None, None, None
-        item.line_no = self.lines[-1].no
-        item.note = f"two figures said: {figures[0]} and {figures[1]}" if len(figures) == 2 else "two different figures said"
-        self.log.info("two figures said for %s at line %s", key.value, self.lines[-1].no)
-        self._publish_checklist([key])
-
     async def _find_unclear_item(self) -> None:
         """Sage2 says a term was asked about and left unclear, but not which one.
-        It also says so about a term with two figures; that case has its own rule."""
+        It also says so about a term that was contradicted; that case has its own rule."""
         if not yes(self.answers, "topic_left_unclear"):
             self.unclear, self.unclear_looked_up = None, False
             return
@@ -254,58 +340,6 @@ class Session:
         key = _item((await self._lookup_now("unclear", None) or {}).get("item"))
         if key and self.items[key].state is ItemState.PENDING:
             self.unclear = key
-
-    def _fetch_missing_values(self) -> None:
-        n = len(self.lines)
-        for key, item in self.items.items():
-            if key in self.fetching:
-                continue
-            spaced = n - self.tried_at_line.get(key, -99) >= tuning.VALUE_RETRY_LINES
-            may_try = spaced and self.tries.get(key, 0) < tuning.VALUE_TRIES
-            if key in self.conflicts:
-                # Worth a look only after the Judge asked and both have had a turn.
-                asked = self.asked_at_line.get(key)
-                due = may_try and asked is not None and n - asked >= tuning.RESOLVE_AFTER_LINES
-                due = due and yes(self.answers, ITEM_QUESTION[key])
-            elif item.state is not ItemState.AGREED:
-                due = False
-            elif item.value is None:
-                due = may_try
-            else:
-                # A value is taken when the item is first agreed, and details are often
-                # added later. Take each once more at wrap-up, for the read-back and the contract.
-                due = self.wrapping_up and key not in self.refreshed
-                if due:
-                    self.refreshed.add(key)
-            if due:
-                self.tries[key] = self.tries.get(key, 0) + 1
-                self.tried_at_line[key] = n
-                self.fetching.add(key)
-                self._spawn(self._fetch_value(key, self._transcript(), self.lines[-1].no, settles_conflict=key in self.conflicts))
-
-    async def _fetch_value(self, key: ItemKey, transcript: str, at_line: int, settles_conflict: bool) -> None:
-        try:
-            got = await self.values.lookup("value", key, transcript, at_line) or {}
-        except Exception as e:
-            self.log.warning("value lookup failed for %s (%s: %s)", key.value, type(e).__name__, str(e)[:200])
-            got = {}
-        finally:
-            self.fetching.discard(key)
-        value = _text(got.get("value"))
-        if value is None or (key in self.conflicts) != settles_conflict:
-            return  # not settled, or asked before the second figure was said
-        item = self.items[key]
-        if settles_conflict:
-            del self.conflicts[key]
-            item.state, item.note, item.confidence = ItemState.AGREED, None, self.answers.get(ITEM_QUESTION[key])
-            self.tries[key] = 0
-        line_no = got.get("line_no")
-        line_no = line_no if isinstance(line_no, int) and 1 <= line_no <= at_line else at_line
-        new = (value, _text(got.get("source_text")), line_no)
-        if settles_conflict or new != (item.value, item.source_text, item.line_no):
-            item.value, item.source_text, item.line_no = new
-            self._publish_checklist([key])
-        self._decide()  # the read-back waits for values
 
     async def _lookup_now(self, kind: Kind, item: ItemKey | None) -> dict | None:
         """A lookup the Judge's next question waits for, but not for long."""
@@ -320,30 +354,38 @@ class Session:
         head = sage.preamble(self.who.all)
         return head + "\n".join(f"{line.no}. {self.who.names[line.speaker]}: {line.text}" for line in self.lines)
 
-    def _publish_checklist(self, changed: list[ItemKey]) -> None:
-        self.bus.publish(
-            ChecklistUpdated(
-                deal_id=self.deal_id, items=[item.model_copy() for item in self.items.values()], changed=changed
-            )
-        )
-
     # ---- the Judge ----
+
+    def _proposals(self) -> dict[ItemKey, Proposal]:
+        suspect = frozenset((self.call_no, c.line_no) for c in self.conflicts)
+        found = {}
+        for key, item in self.items.items():
+            stated = self.terms.proposal(key, suspect) if item.state is ItemState.PENDING else None
+            if stated:
+                words, facts = stated
+                speakers = {f.said_by for f in facts}
+                found[key] = Proposal(words, speakers.pop() if len(speakers) == 1 else None, facts[0].id)
+        return found
 
     def _decide(self, silence: float = 0.0) -> None:
         if self.ended or not self.lines:
             return
         line = self.lines[-1]
         view = View(
-            now=line.end + silence, closing=self.closing, speaker=line.speaker, text=line.text, answers=self.answers, items=self.items,
-            conflicts=self.conflicts, unclear=self.unclear, values_on_their_way=bool(self.fetching), names=self.who.names,
+            now=line.end + silence, closing=self.closing, speaker=line.speaker, text=line.text, answers=self.answers,
+            items=self.items, unclear=self.unclear, names=self.who.names, conflicts=self.conflicts,
+            proposals=self._proposals(),
+            ambiguities=self.ambiguities, follow_up=self.call_no > 1, changed=self._changed(),
+            memory_silent=self.facts_heard == 0 and len(self.lines) >= tuning.MEMORY_SILENT_LINES,
         )
         speak = self.judge.decide(view)
         if speak is None:
             return
         event = JudgeSpeak(
             deal_id=self.deal_id, instruction=speak.instruction, to=speak.to, reason=speak.reason,
-            item=speak.item, after_line=line.no,
+            item=speak.item, after_line=line.no, fact_ids=speak.fact_ids, question=speak.question,
         )
         self.speaks[event.event_id] = event
+        self.topics_of[event.event_id] = speak.topics
         self.log.info("judge.speak after line %s: %s %s", line.no, speak.reason.value, speak.item.value if speak.item else "-")
         self.bus.publish(event)

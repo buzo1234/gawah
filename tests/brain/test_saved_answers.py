@@ -10,17 +10,22 @@ import pytest
 from app import brain
 from app.brain import sage
 from app.contracts import CallStarted, ChecklistUpdated, JudgeSpeak, Person, Role, TranscriptLine
-from fakes.replayer import load, replay
-from tests.brain.replaying import RECORDINGS
+from fakes.replayer import load, play
+
+events_memory: dict = {}  # bus -> the memory the fixture put beside the brain
+from tests.brain.replaying import RECORDINGS, memory_on
 
 CALL = "fixtures/call_missing_balance.json"
 
 
 @pytest.fixture
 async def heard(bus, settings):
-    """The brain registered on the bus with no keys; returns what it publishes."""
-    brain.register(SimpleNamespace(state=SimpleNamespace(settings=settings, on_shutdown=[])), bus)
+    """The brain registered on the bus with no keys, the memory beside it on its saved
+    replies, as the server has them; returns what the brain publishes."""
+    memory = memory_on(bus)
+    brain.register(SimpleNamespace(state=SimpleNamespace(settings=settings, on_shutdown=[], memory=memory)), bus)
     events: list = []
+    events_memory[id(bus)] = memory
 
     async def keep(event) -> None:
         if isinstance(event, (JudgeSpeak, ChecklistUpdated)):
@@ -43,9 +48,23 @@ def test_each_recording_holds_the_lines_of_its_call(path):
     }
 
 
+async def line_by_line(bus, fixture, deal_id=None) -> None:
+    """The replayer, waiting after each event for the memory and the brain, as time between
+    lines allows on a real call. At speed 0 the brain would hear the whole call, and its end,
+    before the memory's first fact."""
+    memory = events_memory[id(bus)]
+
+    async def emit(event) -> None:
+        bus.publish(event)
+        for _ in range(3):
+            await bus.drain()
+            await memory.settle()
+
+    await play(fixture if isinstance(fixture, dict) else load(fixture), emit, speed=0, deal_id=deal_id)
+
+
 async def test_a_practice_call_gets_its_saved_answers_whatever_the_deal_id(bus, heard):
-    await replay(bus, CALL, speed=0, deal_id="a-deal-made-on-whatsapp")
-    await bus.drain()
+    await line_by_line(bus, CALL, deal_id="a-deal-made-on-whatsapp")
     speaks = [(e.item, e.reason) for e in heard if isinstance(e, JudgeSpeak)]
     assert speaks == [(e["item"], e["reason"]) for e in load(CALL)["expected"] if "live" in e["modes"]]
 
@@ -53,7 +72,7 @@ async def test_a_practice_call_gets_its_saved_answers_whatever_the_deal_id(bus, 
 async def test_saved_answers_stop_where_the_call_stops_being_the_recorded_one(bus, heard, caplog):
     fixture = load(CALL)
     fixture["lines"][24]["text"] = "Ek minute, darwaze pe koi hai."
-    await replay(bus, fixture, speed=0)
+    await line_by_line(bus, fixture)
     await bus.drain()
     speaks = [e for e in heard if isinstance(e, JudgeSpeak)]
     assert [s.reason for s in speaks] == ["term_unclear"] and speaks[0].after_line < 25

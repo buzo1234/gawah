@@ -1,6 +1,6 @@
 {
  "fixture": "call_missing_balance",
- "recorded_at": "2026-11-21T14:45:01+00:00",
+ "recorded_at": "2026-11-21T16:55:48+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "names:-@1": {
@@ -56,6 +56,38 @@
    "value": "500 rupees deducted per day if the work is late",
    "source_text": "Phir bhi agar late hua to har din ka 500 rupaye kaat lena aap.",
    "line_no": 26
+  },
+  "ambiguous:amount@13": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@8": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@16": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@23": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:late_or_unfinished@26": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@20": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@30": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@31": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }

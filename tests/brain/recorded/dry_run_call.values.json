@@ -1,6 +1,6 @@
 {
  "fixture": "dry_run_call",
- "recorded_at": "2026-11-21T14:40:50+00:00",
+ "recorded_at": "2026-11-21T16:55:46+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "names:-@1": {
@@ -61,6 +61,26 @@
    "value": "Monday 23 November 2026 to Friday 27 November 2026",
    "source_text": "अगले सोमवार से शुरू कर देंगे, सुबह नौ बजे तक पहुंच जाएंगे।",
    "line_no": 17
+  },
+  "ambiguous:work@8": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@10": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@16": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@21": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@23": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }

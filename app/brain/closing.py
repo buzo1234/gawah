@@ -23,9 +23,9 @@ class Closing:
         return yes(answers, "wrapping_up") or (quiet_pair and agreed >= tuning.CLOSE_MIN_AGREED)
 
     @staticmethod
-    def silence_would_close(answers: Answers, agreed: int) -> bool:
+    def silence_would_close(answers: Answers, discussed: int) -> bool:
         """True if CLOSING_SILENCE_S with no new line after this one would mean they are done."""
-        return yes(answers, "closing_soon") and agreed >= tuning.CLOSE_MIN_AGREED
+        return yes(answers, "closing_soon") and discussed >= tuning.CLOSE_MIN_DISCUSSED
 
     def wait(self, state: Hashable | None, on_silence: Callable[[], None]) -> None:
         """Start timing a silence from now, or with state None just stop. `state` says what

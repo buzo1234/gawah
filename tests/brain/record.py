@@ -6,8 +6,10 @@
 
 `sage` costs one Sage2 update per line plus one. Sage2's free allowance is small: run it
 once per fixture, and again only if the questions in app/brain/sage.py change.
-`values` replays the saved Sage2 answers through the brain with the real OpenAI model
-and saves what it returned. It uses no Sage2. `values-missing` keeps every reply already
+`values` replays the saved Sage2 answers through the brain, with the memory's Scribe on
+its saved replies (tests/memory/recorded/, record those first with tests.memory.record),
+and the real OpenAI model for names, the term left unclear and two meanings, and saves
+what it returned. It uses no Sage2. `values-missing` keeps every reply already
 saved and asks the model only for lookups the brain now makes that are not saved yet.
 """
 
@@ -21,9 +23,9 @@ from app.brain import Brain, sage, tuning
 from app.brain.values import OpenAIValues, key
 from app.bus import Bus
 from app.config import get_settings
-from app.contracts import Event, Person, Role
+from app.contracts import Person, Role
 from fakes.replayer import load
-from tests.brain.replaying import play
+from tests.brain.replaying import memory_on, play, settling
 
 OUT = Path(__file__).parent / "recorded"
 
@@ -75,19 +77,12 @@ async def record_values(fixture_path: str, keep: bool = False) -> None:
     openai = OpenAIValues(get_settings().require("openai_api_key"))
     saving = _Saving(openai, json.loads(out.read_text())["replies"] if keep and out.exists() else None)
     bus = Bus()
+    memory = memory_on(bus)
     bus.start()
-    brain = Brain(bus, "live", lambda started: (sage.RecordedDecisions(OUT / f"{fixture['id']}.sage.json"), saving))
-
-    async def emit(event: Event | None) -> None:
-        # One event at a time, and wait for its values: the tests replay with replies
-        # that are there at once, so the recording has to settle between lines too.
-        if event:
-            bus.publish(event)
-        await bus.drain(60)
-        await brain.idle()
-        await bus.drain(60)
-
-    await play(fixture, brain, emit, fixture["id"], silence_s)
+    brain = Brain(bus, "live", lambda started: (sage.RecordedDecisions(OUT / f"{fixture['id']}.sage.json"), saving), memory)
+    # One event at a time, and wait for its replies: the tests replay with replies that are
+    # there at once, so the recording has to settle between lines too.
+    await play(fixture, brain, settling(bus, memory, brain, 60), fixture["id"], silence_s)
     await bus.stop()
     await openai.close()
     out.write_text(json.dumps({

@@ -1,6 +1,6 @@
 {
  "fixture": "spike_painter_call",
- "recorded_at": "2026-11-21T11:33:55+00:00",
+ "recorded_at": "2026-11-21T16:55:48+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "value:work@5": {
@@ -51,6 +51,34 @@
    "value": "full inside 2BHK painting, with two coats, putty where needed, Asian Paints Royale paint, covering furniture and cleaning up",
    "source_text": "Poora 2BHK andar se, do coat, putty ke saath, Royale paint.",
    "line_no": 6
+  },
+  "ambiguous:work@5": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@10": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@15": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@19": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@20": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@21": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@28": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }

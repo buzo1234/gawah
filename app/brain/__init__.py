@@ -1,15 +1,28 @@
 """Stream: brain. Follows the deal call, keeps the checklist of six contract items,
 and decides when the Judge speaks and what about.
 
-Listens to call.started, transcript.line, call.ended, judge.spoke (deal calls only).
-Sends checklist.updated and judge.speak, and call.started again (same room) when it
-learns a name on the call that the deal did not have.
+Listens to call.started, transcript.line, call.ended, judge.spoke (deal calls only), and
+fact.recorded and fact.conflict from the memory. Sends checklist.updated and judge.speak,
+and call.started again (same room, same call_no) when it learns a name on the call that
+the deal did not have.
 
-- sage.py     the fast yes/no decisions (Sage2 stream), live or recorded
-- values.py   the value of an agreed term (a small OpenAI model), live or recorded
-- session.py  one call: transcript in, checklist out
+- facts.py    the checklist from the memory's facts: an item is agreed when its current fact is
+- sage.py     the fast yes/no signals (Sage2 stream), live or recorded: when to look
+- values.py   names, the term left unclear, and two meanings of an agreed term (a small OpenAI model)
+- session.py  one call: transcript and facts in, checklist and judge.speak out
 - judge.py    the rules for when to speak, and the instruction text
 - tuning.py   every gap and limit
+
+Sage2's yes/no answers about the terms (work_agreed and the rest) are still asked, so its
+saved answers stay valid, but nothing reads them: only the memory's facts make a term
+agreed. With no memory (app.state.memory missing, as in the brain's own rule tests) the
+brain takes facts only from fact.recorded events; with none of those either, every item
+stays pending and the Judge, seeing the memory silent, asks nothing at wrap-up and only
+answers people who speak to it. There is no fallback to Sage2's answers.
+
+A deal's facts are kept across its calls. On a second call the checklist starts where the
+first left it: agreed terms stay agreed and are not asked again, and the read-back at the
+end covers only what changed on this call, if anything did.
 
 A real call uses live Sage2 and OpenAI. A replayed or fake call (room "replay-..." or
 "fake-...") never does: it uses the answers saved in tests/brain/recorded/ for the
@@ -26,11 +39,15 @@ from pathlib import Path
 
 from fastapi import FastAPI
 
+from app.brain.facts import Terms
 from app.brain.sage import Answers, Decisions, RecordedDecisions, SageStream
 from app.brain.session import Session
 from app.brain.values import OpenAIValues, RecordedValues, Values
 from app.bus import Bus
-from app.contracts import CallEnded, CallKind, CallStarted, Event, JudgeSpoke, TranscriptLine
+from app.contracts import (
+    MEMORY_STATE, CallEnded, CallKind, CallStarted, Event, FactConflict, FactRecorded, JudgeSpoke, MemoryQueries,
+    TranscriptLine,
+)
 from app.log import deal_log
 
 RECORDINGS = Path(__file__).resolve().parents[2] / "tests" / "brain" / "recorded"
@@ -39,27 +56,39 @@ Sources = Callable[[CallStarted], tuple[Decisions, Values]]
 
 
 class Brain:
-    def __init__(self, bus: Bus, mode: str, sources: Sources) -> None:
-        self.bus, self.mode, self.sources = bus, mode, sources
+    def __init__(self, bus: Bus, mode: str, sources: Sources, memory: MemoryQueries | None = None) -> None:
+        self.bus, self.mode, self.sources, self.memory = bus, mode, sources, memory
         self.sessions: dict[str, Session] = {}
+        self.terms: dict[str, Terms] = {}  # deal id -> its facts, across calls
+        self.checked: dict[str, set[str]] = {}  # deal id -> fact ids checked for two meanings
         # One subscription for everything, so a call's events are handled in order.
         bus.subscribe_all(self.on_event)
 
     async def on_event(self, event: Event) -> None:
         session = self.sessions.get(event.deal_id)
-        if isinstance(event, CallStarted) and event.kind is CallKind.DEAL:
+        if isinstance(event, FactRecorded):
+            if self.terms.setdefault(event.deal_id, Terms()).add(event.fact) and session:
+                session.on_fact(event.fact)
+        elif isinstance(event, CallStarted) and event.kind is CallKind.DEAL:
             if session and session.room == event.room:
                 session.meet(event.people)  # sent again with a name learned on the call
                 return
             if session:
                 await session.end()
+            terms = self.terms.setdefault(event.deal_id, Terms())
+            if self.memory is not None:
+                await terms.seed(self.memory, event.deal_id)
             decisions, values = self.sources(event)
-            session = self.sessions[event.deal_id] = Session(event, self.bus, decisions, values, self.mode)
+            session = self.sessions[event.deal_id] = Session(
+                event, self.bus, decisions, values, self.mode, terms, self.checked.setdefault(event.deal_id, set()),
+            )
             await session.start()
         elif session is None:
             return
         elif isinstance(event, TranscriptLine) and event.kind is CallKind.DEAL:
             await session.on_line(event)
+        elif isinstance(event, FactConflict) and event.call_no == session.call_no:
+            session.on_conflict(event)
         elif isinstance(event, JudgeSpoke):
             session.on_spoke(event)
         elif isinstance(event, CallEnded) and event.kind is CallKind.DEAL:
@@ -67,7 +96,7 @@ class Brain:
             await session.end()
 
     async def idle(self) -> None:
-        """Wait for values still on their way. For tests and the recorder."""
+        """Wait for model replies still on their way. For tests and the recorder."""
         for session in list(self.sessions.values()):
             await session.idle()
 
@@ -140,5 +169,6 @@ def register(app: FastAPI, bus: Bus) -> None:
         for client in openai:
             await client.close()
 
-    app.state.brain = Brain(bus, settings.judge_mode, sources)
+    # Memory registers before the brain (app/main.py), so it is there when it is wanted.
+    app.state.brain = Brain(bus, settings.judge_mode, sources, getattr(app.state, MEMORY_STATE, None))
     app.state.on_shutdown.append(close)

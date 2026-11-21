@@ -1,7 +1,6 @@
-"""The small OpenAI model: reads the call so far and reports a term in plain words.
-
-Sage2 says that something is true; this says what it is. Sage2's own extract call is
-not used: it returns wrong values on Hinglish (spikes/5-sage2.md).
+"""The small OpenAI model, for what Sage2's yes/no cannot say: the names said on the
+call, which term was left unclear, and whether a newly agreed term can be heard two ways.
+What a term is comes from the memory's facts, not from here.
 
 The brain talks to `Values`. `OpenAIValues` is the live model; `RecordedValues`
 replays saved replies.
@@ -17,7 +16,7 @@ import httpx
 from app.brain import tuning
 from app.contracts import ItemKey
 
-Kind = Literal["value", "conflict", "unclear", "names"]
+Kind = Literal["unclear", "names", "ambiguous"]
 
 URL = "https://api.openai.com/v1/chat/completions"
 
@@ -41,32 +40,24 @@ _ITEM_NAMES = ", ".join(f'"{key.value}" ({text.split(":")[0].split(",")[0]})' fo
 
 
 def prompt(kind: Kind, item: ItemKey | None) -> str:
-    if kind == "value":
+    if kind == "ambiguous":
         assert item is not None
         return _RULES + (
-            f"Term: {TERMS[item]}.\n"
+            f"Both speakers have just agreed this term: {TERMS[item]}. The agreed value and the words it was "
+            "taken from follow the transcript.\n"
+            "Decide whether the words they agreed on can honestly be heard in two different ways, so that each "
+            "speaker could later remember a different deal and one of them pays or does more than they expected. "
+            "Examples: \"Monday tak\" (the work starts on Monday, or is finished by Monday); a total \"with "
+            "material\" when who buys the material was said both ways earlier in the call. "
+            "It is not ambiguous when the words themselves say which (\"shuru\" or \"start\" for a start, "
+            "\"khatam\", \"finish\" or \"poora\" for a finish), when the meaning is plain from the lines around "
+            "them, when a detail is simply not settled yet, when the same figure is said in two ways, or when a "
+            "later line already made the meaning clear. Both readings must fit the exact words that were agreed. "
+            "When in doubt, it is not ambiguous.\n"
             "Keys:\n"
-            '- "value": what both speakers accepted for this term, as one short phrase written entirely in English: '
-            "translate every Hindi word. Write amounts as rupee figures in digits (\"24,000 rupees\") and dates with "
-            'the day and the date ("Monday 23 November 2026"). Include everything they settled about this term up '
-            "to the last line, and nothing about the other terms of the deal. Never work out a number the speakers "
-            "did not say. null if they have not settled this term.\n"
-            '- "source_text": the one sentence in the transcript the value mainly comes from, copied exactly as said. '
-            "null if value is null.\n"
-            '- "line_no": the number of the line that sentence is on. null if value is null.\n'
-            "Bargaining is not a settled term: use the figure both accepted in the end. "
-            "If a figure both had accepted was later stated as a different number, and they did not then "
-            "say which one is right, value is null."
-        )
-    if kind == "conflict":
-        return _RULES + (
-            "A figure that both speakers had already accepted was later stated as a different number for the same term. Find it.\n"
-            "Keys:\n"
-            f'- "item": which term it is, one of {_ITEM_NAMES}. null if there is no such conflict.\n'
-            '- "figures": the figure they first accepted, then the different one said later, each written in '
-            'digits and nothing else ("13,000 rupees").\n'
-            '- "line_nos": the line each figure was said on, in the same order.\n'
-            "Bargaining before both accepted is not a conflict."
+            '- "ambiguous": true or false.\n'
+            '- "readings": if true, the two ways it can be heard, each a short English phrase; otherwise null. '
+            "Never say which reading is right or more likely."
         )
     if kind == "names":
         return _RULES + (

@@ -16,7 +16,12 @@ WRAPUP_HOLD_S = 30.0  # how long "they are wrapping up" stays true after Sage2 l
 # twice in a row with no term settled on those two lines, or followed by a silence.
 # Either way only once most of the deal is agreed: closing_soon said yes twice mid-call
 # on the dry run with three of six terms agreed.
-CLOSE_MIN_AGREED = 4  # of the six items
+CLOSE_MIN_AGREED = 4  # of the six items, for closing_soon twice in a row
+# For closing_soon then a silence, a term one person stated and nobody accepted yet counts
+# too: the memory's facts hear fewer yeses than were said, and on the dry run only three
+# terms were agreed by its last line, so it never wrapped up. Five, not four: closing_soon
+# said yes mid-call on the dry run at line 17, before a long pause, with four discussed.
+CLOSE_MIN_DISCUSSED = 5
 # closing_soon, then no new line for this long (wall clock) while the Judge is not
 # speaking. Lines in a lively call arrive 5 to 8 s apart (the dry run).
 CLOSING_SILENCE_S = 10.0
@@ -31,22 +36,24 @@ MAX_REASKS = 1
 # A name the call did not start with is looked for after each of the first lines,
 # where Gawah's opening line asks each person to say theirs.
 NAME_LINES = 6
-# An answered question is checked this many lines after the Judge asked it, so that
-# both people have had a turn.
-RESOLVE_AFTER_LINES = 2
 
-# --- Values from the OpenAI model ---
+# --- The memory's facts ---
+# The checklist comes from the memory's facts. If it has sent none from this call's lines
+# by this many lines (its model is down, or there is no memory), every term would look open,
+# so the Judge asks nothing at wrap-up and reads nothing back. On the practice calls the
+# first fact comes by line 7.
+MEMORY_SILENT_LINES = 12
+
+# --- The OpenAI model: names, the term left unclear, two meanings ---
 VALUES_MODEL = "gpt-5.4-mini"
 # "none" is about half a second faster and got dates and sums wrong on the practice calls.
 VALUES_EFFORT = "low"
 VALUES_TIMEOUT_S = 6.0  # wall clock, per try; one retry
 VALUES_RETRY_AFTER_S = 0.5
-VALUE_TRIES = 3  # per item, when the model says the term is not settled yet
-VALUE_RETRY_LINES = 2  # lines to wait before trying again
-# The Judge's question waits this long (wall clock) for the model to name the term and
-# the two figures. After that it asks without them.
+# The Judge's question waits this long (wall clock) for the model to name the term left
+# unclear. After that it does not ask. The two-meanings check never holds a line up.
 LOOKUP_WAIT_S = 4.0
-END_WAIT_S = 8.0  # at call.ended, wait this long for values still on their way
+END_WAIT_S = 8.0  # at call.ended, wait this long for model replies still on their way
 
 # --- Sage2 (wall clock) ---
 SAGE_OPEN_TIMEOUT_S = 10.0
