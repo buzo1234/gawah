@@ -50,7 +50,7 @@ LiveKit, Twilio and Meta's WhatsApp test number are on free plans with monthly a
 | Only check the outside services (one read-only call each, nothing billed) | `uv run python tools/demo.py --check` |
 | Rehearse the two-call demo (`tools/DEMO-RUN.md`, lines in `fixtures/demo/`) with no person, against a running `tools/demo.py`: simulated phones, two headless browsers saying the lines when Gawah is quiet, one on each call-back, both agreement versions, the screenshot, the reminder (about 45 LiveKit participant-minutes and two Sage2 calls); saves events, steps and dashboard screenshots to `runs/dry-<time>/` | `uv run python tools/dry_run.py` |
 | Carry the dry run on from call 2 (or `day7`) on the server's latest deal, to retry a broken step | `uv run python tools/dry_run.py --from call2` |
-| The same story with nothing outside: `tests/offline.py` in-process, Gawah's model faked and its change by voice stood in for | `uv run python tools/dry_run.py --offline` |
+| The same story with nothing outside: `tests/offline.py` in-process, Gawah's model faked and its change by voice stood in for; Meta's message shapes by default, `--whatsapp twilio` for Twilio's | `uv run python tools/dry_run.py --offline` |
 | Run the tests | `uv run pytest -q` |
 | Record the Scribe's replies for a practice call: the live model reads each line (about 31 small-model calls), prints the facts, conflicts and time per line, and saves the replies to `tests/memory/recorded/` | `uv run python -m tests.memory.record fixtures/<call>.json --save` |
 | Replay a practice call into the running server, at real speed | `uv run python -m fakes.replayer fixtures/<call>.json` |

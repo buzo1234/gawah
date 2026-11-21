@@ -104,12 +104,12 @@ class OfflinePlayers:
 
     offline = True
 
-    def __init__(self, folder: Path, port: int) -> None:
+    def __init__(self, folder: Path, port: int, whatsapp: str) -> None:
         from app.records import tuning
         from tests.offline import offline_app
 
         tuning.BALANCE_REMINDER_SECONDS = 15.0  # the offline run need not wait a minute
-        self.app = offline_app(folder / "offline.db")
+        self.app = offline_app(folder / "offline.db", whatsapp=whatsapp)
         self.port, self.url = port, f"http://127.0.0.1:{port}"
         self._read_the_demo_screenshot()
         self.http = httpx.AsyncClient(base_url=self.url, timeout=20)

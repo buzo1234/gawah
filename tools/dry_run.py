@@ -219,7 +219,7 @@ async def main(args) -> None:
     out = ROOT / "runs" / f"dry-{datetime.now():%Y%m%d-%H%M%S}{'-offline' if args.offline else ''}"
     out.mkdir(parents=True)
     if args.offline:
-        players = OfflinePlayers(out, args.port)
+        players = OfflinePlayers(out, args.port, args.whatsapp)
         await players.start()
         url = players.url
     else:
@@ -253,6 +253,8 @@ if __name__ == "__main__":
     parser.add_argument("--url", default="http://localhost:8000")
     parser.add_argument("--offline", action="store_true", help="the offline app in this process: nothing outside is called")
     parser.add_argument("--port", type=int, default=8077, help="--offline: where to serve the offline app")
+    parser.add_argument("--whatsapp", choices=("meta", "twilio"), default="meta",
+                        help="--offline: the provider whose message shapes the bot uses (live, the server's .env decides)")
     parser.add_argument("--from", dest="start", choices=STAGES, default="call1",
                         help="start from this step, on the server's latest deal")
     asyncio.run(main(parser.parse_args()))
