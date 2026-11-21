@@ -5,9 +5,11 @@ recordings go.
 
     PYTHONPATH=. uv run python tests/dashboard_live_shots.py
 
-1. call_missing_balance to line 17, a question put to Gawah, then the shot: mid-call.
+1. call_missing_balance to line 17, then the shot: mid-call.
    The user's recorded lines (fixtures/audio) are laid out as the call's two recordings,
    at the times of the call's lines, so a clip button plays real audio from memory.
+1b. The brain's own spike call to line 23, where Sunita asks Gawah: the page shows the
+   question the brain sent in judge.speak, then Gawah's answer under it.
 2. call_two_amounts to line 21: memory's contradiction on line 19, then the shot.
 3. The first call finished, an advance paid on WhatsApp, and the amount changed by both:
    payments, what they count towards, and a superseded version, then the shot.
@@ -30,7 +32,7 @@ import uvicorn
 from browser import Chrome
 
 from app.contracts import (
-    Audience, CallEnded, CallStarted, ChangeStatus, FactChanged, ItemKey, JudgeSpeak, JudgeSpoke, Person, Record,
+    Audience, CallEnded, CallStarted, ChangeStatus, FactChanged, ItemKey, JudgeSpoke, Person, Record,
     RecordKind, RecordReceived, Role, SpeakReason, TranscriptLine, new_id,
 )
 from fakes.replayer import load
@@ -180,17 +182,7 @@ async def main(port: int, out: Path) -> None:
             await chrome.wait_for(LOADED)
             await play(deal, mb, range(1, 18))
             await settle(deal)
-            asked = JudgeSpeak(
-                deal_id=deal, instruction="Read back the advance agreed on line 16.", to=Audience.HIRER,
-                reason=SpeakReason.ADDRESSED_DIRECTLY, item=ItemKey.ADVANCE, after_line=17, question="Gawah, advance kitna tay hua?",
-            )
-            await publish(asked, JudgeSpoke(
-                deal_id=deal, text="Advance 8,000 rupaye tay hua hai, jis din kaam shuru hoga.", speak_id=asked.event_id,
-                to=Audience.HIRER, reason=SpeakReason.ADDRESSED_DIRECTLY, item=ItemKey.ADVANCE, start=93.0, end=97.0,
-            ))
             await matches_memory(deal)
-            why = await chrome.js("document.querySelector('#decisions .decision').textContent")
-            check("Asked“Gawah, advance kitna tay hua?”Answer“Advance 8,000" in why.replace("Sunita: ", ""), f"why Gawah spoke: {why[:120]!r}")
             await asyncio.sleep(0.5)
             await chrome.shot(out / "1-mid-call.png")
 
@@ -214,6 +206,30 @@ async def main(port: int, out: Path) -> None:
             await chrome.wait_for(f"!{button}.contains('playing')", timeout=seconds + 5)
             check(not await chrome.js(f"{button}.contains('missing')"), f"the clip played to its end ({seconds:.1f} s) and stopped by itself")
             await reload_check("mid-call")
+
+            # ---------- 1b. a question put to Gawah, asked of the real brain ----------
+            print("1b. spike_painter_call to line 23: the brain's own question")
+            sp = load("tests/brain/spike_painter_call.json")
+            deal_sp = f"live-sp-{new_id()[:4]}"
+            await chrome.goto(f"{url}/dashboard?deal={deal_sp}")
+            await chrome.wait_for(LOADED)
+            await play(deal_sp, sp, range(1, 24))
+            await settle(deal_sp)
+            events = (await http.get("/dashboard/state", params={"deal": deal_sp})).json()["events"]
+            speak = next((e for e in events if e["name"] == "judge.speak" and e["reason"] == "addressed_directly"), None)
+            check(speak is not None and speak["after_line"] == 23, f"the brain spoke to a question at line 23: {speak and speak['after_line']}")
+            check(bool(speak and speak.get("question")), f"the brain filled judge.speak.question: {speak and speak.get('question')!r}")
+            if speak and speak.get("question"):
+                why = await chrome.js("document.querySelector('#decisions .decision').textContent")
+                check(f"AskedSunita: “{speak['question']}”Answer" in why and "(not said yet)" in why, f"asked, before Gawah answers: {why[:140]!r}")
+                await publish(JudgeSpoke(
+                    deal_id=deal_sp, text="Haan Sunita ji, sab note kar liya hai.", speak_id=speak["event_id"],
+                    to=Audience.HIRER, reason=SpeakReason.ADDRESSED_DIRECTLY, start=123.0, end=125.0,
+                ))
+                await asyncio.sleep(0.5)
+                why = await chrome.js("document.querySelector('#decisions .decision').textContent")
+                check(f"AskedSunita: “{speak['question']}”Answer“Haan Sunita ji, sab note kar liya hai.”" in why, f"asked and answered: {why[:140]!r}")
+                await chrome.shot(out / "1b-asked-gawah.png")
 
             # ---------- 2. the contradiction on call_two_amounts ----------
             print("2. call_two_amounts, the contradiction")
