@@ -88,6 +88,11 @@ def build_microphones(folder: Path) -> tuple[dict[str, Path], float]:
     return paths, sum(len(p) for p in tracks["hirer"]) / RATE
 
 
+def shown(texts: list[str]) -> list[str]:
+    """For the printout: a signed S3 link carries the temporary AWS session token."""
+    return [re.sub(r"https://\S+\.amazonaws\.com/\S+", "<signed S3 link>", t) for t in texts]
+
+
 class Run:
     def __init__(self, url: str, out: Path) -> None:
         self.url, self.out = url, out
@@ -95,6 +100,11 @@ class Run:
         self.events: list[tuple[float, dict]] = []
         self.steps: list[dict] = []
         self.t0 = now()
+
+    async def load_past(self) -> None:
+        """The events of the deal so far, as a freshly opened dashboard gets them."""
+        state = (await self.http.get("/dashboard/state")).json()
+        self.events += [(now(), e) for e in state["events"]]
 
     async def watch(self) -> None:
         async with connect(self.url.replace("http", "ws", 1) + "/dashboard/ws", max_size=None) as ws:
@@ -139,7 +149,7 @@ class Run:
         (self.out / "steps.json").write_text(json.dumps(self.steps, indent=1, ensure_ascii=False))
 
 
-async def main(url: str) -> None:
+async def main(url: str, resume: bool) -> None:
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     out = ROOT / "runs" / f"dry-{stamp}"
     out.mkdir(parents=True)
@@ -149,6 +159,10 @@ async def main(url: str) -> None:
     browsers: list = []
     try:
         await asyncio.sleep(1)
+        if resume:
+            await run.load_past()
+            await call_backs_and_after(run, url, browsers)
+            return
         mics, call_length = build_microphones(out)
 
         # 1. Sunita sends Ramesh's number. Both get a call link.
@@ -200,45 +214,7 @@ async def main(url: str) -> None:
         if checklist:
             run.step("4b checklist at the end", "seen", items={i["key"]: (i["state"], i.get("value")) for i in checklist[-1]["items"]})
 
-        # 5. The call-back for each person.
-        callback_links = await run.until(lambda: all(run.link(r, "callback") for r in PHONE) and [run.link(r, "callback") for r in PHONE], 30)
-        run.step("5 call-back links sent", "worked" if callback_links else "broke")
-        mic = callback_microphone()
-        for role, link in zip(PHONE, callback_links or []):
-            before = len(run.of("call.ended", kind="callback"))
-            opened = now()
-            browsers.append(rig.chrome(f"{link}?auto=1", mic))
-            done = await run.until(lambda: len(run.of("call.ended", kind="callback")) > before, CALLBACK_CAP_S)
-            browsers.pop().kill()
-            confirmed = [e for e in run.of("terms.confirmed") if e["person"] == role]
-            disputed = [e for e in run.of("terms.disputed") if e["person"] == role]
-            run.step(f"5 call-back {role}", "worked" if confirmed else ("disputed" if disputed else "broke"),
-                     seconds=round(now() - opened), ended=done[-1].get("reason") if done else "still open at our cap",
-                     disputed=[d.get("item") for d in disputed])
-
-        # 6. The contract.
-        ready = await run.until(lambda: run.of("contract.ready"), 150)
-        run.step("6 contract.ready", "worked" if ready else "broke")
-        if ready:
-            await asyncio.sleep(3)
-            run.step("6b contract on WhatsApp", "seen", hirer=run.sent_to("hirer")[-3:], worker=run.sent_to("worker")[-3:])
-
-        # 7. A cash record, confirmed by the worker on WhatsApp.
-        await run.phone("hirer", "2000 cash diya")
-        asked = await run.until(lambda: run.of("record.confirm_requested"), 30)
-        run.step("7 cash record: worker asked", "worked" if asked else "broke", question=asked[0].get("question") if asked else None)
-        if asked:
-            await run.phone("worker", "haan")
-            confirmed = await run.until(lambda: run.of("record.confirmed"), 30)
-            run.step("7b worker said haan, record confirmed", "worked" if confirmed else "broke",
-                     told_hirer=run.sent_to("hirer")[-1:])
-
-        # The dashboard at the end.
-        async with Chrome(port=9555) as chrome:
-            await chrome.goto(f"{url}/dashboard")
-            await asyncio.sleep(3)
-            await chrome.shot(out / "dashboard.png")
-            run.step("dashboard screenshot", "saved", path=str((out / "dashboard.png").relative_to(ROOT)), page_errors=chrome.errors)
+        await call_backs_and_after(run, url, browsers)
     finally:
         for browser in browsers:
             (browser.proc if hasattr(browser, "proc") else browser).kill()
@@ -249,7 +225,55 @@ async def main(url: str) -> None:
         print(f"written to {out.relative_to(ROOT)}")
 
 
+async def call_backs_and_after(run: Run, url: str, browsers: list) -> None:
+    out = run.out
+    # 5. The call-back for each person.
+    callback_links = await run.until(lambda: all(run.link(r, "callback") for r in PHONE) and [run.link(r, "callback") for r in PHONE], 30)
+    run.step("5 call-back links sent", "worked" if callback_links else "broke")
+    mic = callback_microphone()
+    for role, link in zip(PHONE, callback_links or []):
+        if any(e["person"] == role for e in run.of("terms.confirmed")):
+            continue  # done before a --resume
+        before = len(run.of("call.ended", kind="callback"))
+        opened = now()
+        browsers.append(rig.chrome(f"{link}?auto=1", mic))
+        await run.until(lambda: len(run.of("call.ended", kind="callback")) > before, CALLBACK_CAP_S)
+        done = run.of("call.ended", kind="callback")[before:]
+        browsers.pop().kill()
+        confirmed = [e for e in run.of("terms.confirmed") if e["person"] == role]
+        disputed = [e for e in run.of("terms.disputed") if e["person"] == role]
+        run.step(f"5 call-back {role}", "worked" if confirmed else ("disputed" if disputed else "broke"),
+                 seconds=round(now() - opened), ended=done[-1].get("reason") if done else "still open at our cap",
+                 disputed=[d.get("item") for d in disputed])
+
+    # 6. The contract.
+    ready = await run.until(lambda: run.of("contract.ready"), 150)
+    run.step("6 contract.ready", "worked" if ready else "broke")
+    if ready:
+        await asyncio.sleep(3)
+        run.step("6b contract on WhatsApp", "seen", hirer=shown(run.sent_to("hirer")[-3:]), worker=shown(run.sent_to("worker")[-3:]))
+
+    # 7. A cash record, confirmed by the worker on WhatsApp.
+    await run.phone("hirer", "2000 cash diya")
+    asked = await run.until(lambda: run.of("record.confirm_requested"), 30)
+    run.step("7 cash record: worker asked", "worked" if asked else "broke", question=asked[0].get("question") if asked else None)
+    if asked:
+        await run.phone("worker", "haan")
+        confirmed = await run.until(lambda: run.of("record.confirmed"), 30)
+        run.step("7b worker said haan, record confirmed", "worked" if confirmed else "broke",
+                 told_hirer=run.sent_to("hirer")[-1:])
+
+    # The dashboard at the end.
+    async with Chrome(port=9555) as chrome:
+        await chrome.goto(f"{url}/dashboard")
+        await asyncio.sleep(3)
+        await chrome.shot(out / "dashboard.png")
+        run.step("dashboard screenshot", "saved", path=str((out / "dashboard.png").relative_to(ROOT)), page_errors=chrome.errors)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Walk the demo once with no person, on the real services.")
     parser.add_argument("--url", default="http://localhost:8000")
-    asyncio.run(main(parser.parse_args().url))
+    parser.add_argument("--resume", action="store_true", help="carry on the server's latest deal from its call-backs")
+    args = parser.parse_args()
+    asyncio.run(main(args.url, args.resume))

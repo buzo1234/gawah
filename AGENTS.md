@@ -48,6 +48,7 @@ LiveKit and Twilio are on free plans with monthly allowances. Using them up in t
 | Run the server | `uv run uvicorn app.main:app --reload --port 8000` |
 | Start a real run: fresh database in `runs/`, a tunnel, the server (no `--reload`), every service checked; prints the dashboard and the webhook address for Twilio. Ctrl-C stops it all and deletes rooms it opened. The steps are in `tools/DEMO-RUN.md` | `uv run python tools/demo.py` |
 | Only check the outside services (one read-only call each, nothing billed) | `uv run python tools/demo.py --check` |
+| Rehearse the whole demo with no person, against a running `tools/demo.py`: simulated phones, two headless browsers on the call, one on each call-back (about 25 LiveKit participant-minutes and one Sage2 call) | `uv run python tools/dry_run.py` |
 | Run the tests | `uv run pytest -q` |
 | Replay a practice call into the running server, at real speed | `uv run python -m fakes.replayer fixtures/<call>.json` |
 | Replay it faster (10 = ten times faster, 0 = no waiting) | `uv run python -m fakes.replayer fixtures/<call>.json --speed 10` |

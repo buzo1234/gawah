@@ -113,17 +113,23 @@ Nobody has said what happens if the work is late. Gawah may ask when you wrap up
 | Laptop | Late hua to har din ka paanch sau kaat lena. |
 | Phone | Theek hai. |
 
-Wrap up:
+Wrap up. Make it plain that the call is ending, in a few short lines: Gawah reads the terms back only once it hears you wrapping up, and in the dry run one summary line was not enough.
 
 | Device | Say |
 |---|---|
-| Phone | Toh final: baees hazaar, paanch advance, baaki kaam ke baad. Somvaar ko milte hain. |
+| Phone | Chalo theek hai phir. Sab tay ho gaya. |
+| Laptop | Ji madam, Somvaar subah nau baje aa jaunga. |
+| Phone | Theek hai, Somvaar ko milte hain. Bye. |
 
-**Stop again.** Gawah may read the terms back or ask one last thing. Answer "haan" from both.
+**Stop again, for 15 seconds.** Gawah should ask anything still open (what happens if the work is late) and then read the terms back. Answer "haan" from both.
+
+**If Gawah says nothing:** the wrap-up was not detected (it was not in the dry run either). The call-back in step 8 still reads every term to each of you.
 
 Then press **Call chhodein** on both.
 
-**Check the dashboard now:** if a line appears twice, once under each name, the far microphone heard you. Move the devices further apart next time.
+**Check the dashboard now:**
+- If a line appears twice, once under each name, the far microphone heard you. Move the devices further apart next time.
+- The transcript is in Devanagari and not exact: in the dry run "seventeen thousand" came out as "seventy thousand" and "Royale thoda costly" as nonsense. Look at the checklist values, not the words.
 
 ## 8. The call-back, one person at a time
 
@@ -134,6 +140,8 @@ About 3 seconds after you both leave, each person gets a call-back link.
 3. It ends by itself.
 
 Then the same on the laptop: open Ramesh's call-back link from the "Second phone" panel.
+
+At the end Gawah names any term never agreed on the call ("yeh cheezein tay nahi hui thi"). That is expected for anything you did not say.
 
 **You should see:** after each call-back, the dashboard shows that person's terms as confirmed. About 2 to 3 minutes each.
 

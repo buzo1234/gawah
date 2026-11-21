@@ -124,11 +124,12 @@ It changes on every start:
 
   Twilio console > Messaging > Try it out > Send a WhatsApp message > Sandbox settings
 
-What to do first:
-  1. Paste the address above into Twilio and save.
-  2. From your phone, send any short message (like "hi") to the sandbox number.
-     Gawah should answer within a few seconds. If it does not, the address is wrong.
-  3. Then follow tools/DEMO-RUN.md from step 2.
+What to do first (tools/DEMO-RUN.md has every step):
+  1. Paste the address above into Twilio and save.               (step 2)
+  2. Open the dashboard on the laptop.                           (step 3)
+  3. From your phone, send "hi" to the sandbox number. It should
+     show on the dashboard within a few seconds.                 (step 4)
+  4. Go on from step 5.
 
 Database for this run: {db.relative_to(ROOT)}
 Server log:            {server_log.relative_to(ROOT)}   (tail -f it in another terminal)
