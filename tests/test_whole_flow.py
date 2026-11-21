@@ -15,7 +15,7 @@ import pytest
 
 from app.call.session import Limits
 from app.contracts import (
-    MEMORY_STATE, WHATSAPP_WEBHOOK_PATH, Backing, CallEnded, CallKind, CallStarted, ChecklistUpdated, ContractReady,
+    MEMORY_STATE, WHATSAPP_WEBHOOK_PATH, AgentNote, Backing, CallEnded, CallKind, CallStarted, ChecklistUpdated, ContractReady,
     DealRequested, DealStatus, Direction, Event, FactRecorded, FactStatus, ItemKey, ItemState, JudgeSpeak, JudgeSpoke, RecordConfirmed,
     RecordConfirmRequested, RecordReceived, ReplyTimeout, Role, TermsConfirmed, TranscriptLine, WhatsAppMessage,
     call_path, callback_path,
@@ -172,6 +172,26 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
         [spoke] = flow.of(JudgeSpoke, speak_id=speak.event_id)
         assert (spoke.item, spoke.reason, spoke.to, spoke.interrupted) == (speak.item, speak.reason, speak.to, False)
         assert spoke.text and 0 <= opening.end <= spoke.start < spoke.end <= since_start
+
+    # mouth and memory: Ramesh asks Gawah by name. Gawah acknowledges, and its tools answer from
+    # the real memory: the term as it stands, a search, what is owed, and the clip of the amount.
+    gawah.replies = [
+        {"calls": [("get_term", {"item": "amount"}), ("search_facts", {"query": "paint kaunsa lagega"}),
+                   ("owed", {}), ("play_clip", {"fact_id": amount.id})]},
+        {"text": "Total 24,000 tay hua tha.", "ms": 300},
+    ]
+    asked = len(gawah.outputs())
+    question = TranscriptLine(deal_id=deal_id, speaker=Role.WORKER, text="Gawah ji, total kitna tay hua tha?",
+                              start=since_start, end=since_start + 2, line_no=len(load(CALL)["lines"]) + 1)
+    flow.bus.publish(question)
+    await flow.until(lambda: any(n.text.startswith("said: Haan ji, ek second. Total 24,000") for n in flow.of(AgentNote)))
+    term, found, owed, clip = gawah.outputs()[asked:]
+    assert term.startswith(f"the total amount: now [{amount.id}] agreed:") and "24,000" in term
+    assert found.startswith("[") and "paint" in found.lower()
+    assert "the total amount: agreed 24,000" in owed
+    # The fake call carries no audio, so there is nothing to cut a clip from: Gawah is told so and
+    # answers in words. (tests/mouth/test_agent_memory.py plays a real memory's clip.)
+    assert clip == f"There is no recording of fact {amount.id}. Say what was agreed in words instead."
 
     # bridge: both hang up, the room closes, and call.ended carries each person's recording.
     room = flow.app.state.calls.livekit.open[started.room]
