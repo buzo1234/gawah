@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 
 from app.contracts import (
-    AgentNote, Audience, ChangeStatus, FactChanged, FactConflict, FactRecorded, ItemKey, JudgeSpeak, JudgeSpoke,
+    AgentNote, Audience, CallEnded, ChangeStatus, FactChanged, FactConflict, FactRecorded, ItemKey, JudgeSpeak, JudgeSpoke,
     Role, SpeakReason, TranscriptLine,
 )
 from app.mouth import tuning
@@ -336,3 +336,15 @@ async def test_a_check_for_an_answer_never_speaks_after_a_mere_lookup_and_gives_
     await until(lambda: said(world))
     whats = [o["what"] for o in call.outcomes]
     assert "balance" in whats and {"what": "follow_up", "said": False, "why": "superseded"} in call.outcomes
+
+
+async def test_a_second_call_on_the_deal_gets_a_fresh_agent_that_follows_only_its_own_lines(world):
+    seat1, link1 = await world.call(room="deal-d1-1")
+    world.bus.publish(line(5, Role.HIRER, "Pehli call ki baat."))
+    world.bus.publish(CallEnded(deal_id="d1", room="deal-d1-1"))
+    await until(lambda: seat1.gone)
+    seat2, link2 = await world.call(room="deal-d1-2", call_no=2)
+    world.bus.publish(line(1, Role.WORKER, "Doosri call."))  # a stray line of call 1 arriving late
+    world.bus.publish(line(1, Role.WORKER, "Doosri call ki pehli line.").model_copy(update={"call_no": 2}))
+    await world.bus.drain()
+    assert link2 is not link1 and link2.items("user") == ['Ramesh (worker), line 1: "Doosri call ki pehli line."']

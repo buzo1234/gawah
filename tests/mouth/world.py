@@ -204,7 +204,8 @@ class World:
     async def call(self, deal_id: str = "d1", opening: bool = True, room_db: float = -50.0, **started) -> tuple[FakeSeat, FakeLink]:
         """Start a deal call and wait until Gawah is in the room and has said its opening line."""
         before = len(self.seats)
-        self.bus.publish(CallStarted(deal_id=deal_id, people=[SUNITA, RAMESH], room=f"deal-{deal_id}", **started))
+        started.setdefault("room", f"deal-{deal_id}")
+        self.bus.publish(CallStarted(deal_id=deal_id, people=[SUNITA, RAMESH], **started))
         await until(lambda: deal_id in self.mouth.calls)
         for who in ("hirer", "worker"):  # both are in the room, and quiet
             self.seats[before].hears(who, sounds.room_noise(1.0, room_db))
