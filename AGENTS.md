@@ -56,6 +56,10 @@ Python is pinned to 3.12 through `uv`. Do not use the system Python.
 
 The practice calls are `fixtures/call_missing_balance.json` and `fixtures/call_two_amounts.json`. The replayer and the tail need the server running, and both take the same `--url` (default `http://localhost:8000`). In a test, replay straight onto a bus instead: `await replay(bus, "fixtures/<call>.json", speed=0)` from `fakes.replayer`.
 
+The brain answers a replayed or fake call (room `replay-...` or `fake-...`) from the saved answers in `tests/brain/recorded/`, so it never reaches live Sage2 or OpenAI. It finds them by the deal id, which the replayer builds from the fixture's name; leave `--deal-id` alone or start it with that name.
+With no saved answers for a call the brain stays quiet: the checklist stays all pending and no `judge.speak` is sent.
+To send a replay to the live services, start the server with `BRAIN_LIVE_REPLAYS=1` set in the shell (it is not read from `.env`). Each replayed line is then one billed Sage2 update, so count them.
+
 ## How a stream plugs in
 
 - Each stream folder has `register(app, bus)` in its `__init__.py`. `app/main.py` calls it once when the app is built. `app/dashboard/__init__.py` is the worked example.
