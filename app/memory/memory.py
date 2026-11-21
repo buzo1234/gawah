@@ -13,9 +13,9 @@ from app.bus import Bus
 from app.contracts import (
     CallEnded, CallKind, CallStarted, ChecklistUpdated, CrewAgent, AgentNote, Event, Fact, FactChanged,
     FactConflict, FactKind, FactRecorded, FactSource, FactStatus, ItemKey, OwedRow, RecordConfirmed,
-    RecordReceived, Role, TermsConfirmed, TermsDisputed, TermView, TranscriptLine,
+    RecordReceived, Role, TermsConfirmed, TermsDisputed, TermView, TranscriptLine, VoiceNote,
 )
-from app.memory import clips
+from app.memory import clips, voice_notes
 from app.memory.book import IST, Book, DealBook
 from app.memory.chain import first_break
 from app.memory.extract import Extractor
@@ -44,6 +44,7 @@ class Memory:
         self.vectors = Vectors(embedder, cache_dir, embed_model)
         self.scribe = Scribe(self)
         self.status = Status(self)
+        self.voice = voice_notes.VoiceNotes(self)
         self.latency: dict[str, list[float]] = {"fact": [], "conflict": []}
         self.conflicts: list[FactConflict] = []
         self._raised: set[tuple] = set()
@@ -54,7 +55,7 @@ class Memory:
             (CallStarted, self.on_call_started), (CallEnded, self.on_call_ended),
             (TranscriptLine, self.scribe.on_line), (ChecklistUpdated, s.on_checklist),
             (TermsConfirmed, s.on_confirmed), (TermsDisputed, s.on_disputed), (RecordReceived, s.on_record),
-            (RecordConfirmed, s.on_record_confirmed), (FactChanged, s.on_changed),
+            (RecordConfirmed, s.on_record_confirmed), (FactChanged, s.on_changed), (VoiceNote, self.voice.on_note),
         ]:
             bus.subscribe(event_type, handler)
 
@@ -76,6 +77,7 @@ class Memory:
 
     async def settle(self) -> None:
         await self.scribe.settle()
+        await self.voice.settle()
 
     async def close(self) -> None:
         await self.vectors.close()
@@ -116,9 +118,11 @@ class Memory:
         if key in self._raised:
             return
         self._raised.add(key)
+        voice = line.call_no == voice_notes.VOICE_CALL  # said on WhatsApp: no call, no line
         event = FactConflict(
             deal_id=deal.deal_id, fact_ids=[current.id], explanation=explanation or self.explain(deal, line, current, rupees, day, value),
-            said=line.text, speaker=line.speaker, call_no=line.call_no, line_no=line.line_no, confidence=confidence,
+            said=line.text, speaker=line.speaker, call_no=None if voice else line.call_no,
+            line_no=None if voice else line.line_no, confidence=confidence,
         )
         self.conflicts.append(event)
         self.bus.publish(event)
@@ -135,7 +139,7 @@ class Memory:
         text = f"Says {claimed}; the {item} was {current.status.value} at {stands}{both}{when}{where}."
         offer = next((
             f for f in deal.standing()
-            if f.item == current.item and f.status == FactStatus.SAID and rupees is not None
+            if f.item == current.item and f.status == FactStatus.SAID and rupees is not None and f.call_no is not None
             and f.value_rupees == rupees and (f.call_no, f.line_no) != (line.call_no, line.line_no)
         ), None)
         if offer:
@@ -241,6 +245,8 @@ class Memory:
 
     async def clip(self, fact_id: str) -> bytes | None:
         fact = self._clip_fact(fact_id)
+        if voice_notes.is_voice(fact):
+            return await asyncio.to_thread(voice_notes.whole, self.root / fact.media_url)
         if fact is None or fact.call_no is None or fact.start is None or fact.end is None:
             return None
         call = self.book.deal(fact.deal_id).calls.get(fact.call_no)

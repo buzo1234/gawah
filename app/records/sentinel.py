@@ -9,6 +9,8 @@
   still owed: one reminder to the hirer, and the worker is told. Once per deal and term.
 - After a second deal call, who needs the call-back: only those who have not confirmed a
   term that call changed.
+- A voice note memory found contradicting an agreed term, or asking to change one: see
+  heard.py.
 """
 
 import logging
@@ -19,11 +21,11 @@ from datetime import UTC, datetime, time, timedelta, timezone
 
 from app.bus import Bus
 from app.contracts import (
-    AgentNote, CrewAgent, Fact, FactKind, FactRecorded, FactSource, FactStatus, ItemKey, MemoryQueries,
-    OwedRow, Record, RecordConfirmed, RecordKind, Role, clip_path,
+    AgentNote, CrewAgent, Fact, FactConflict, FactKind, FactRecorded, FactSource, FactStatus, ItemKey,
+    MemoryQueries, OwedRow, Record, RecordConfirmed, RecordKind, Role, clip_path,
 )
 from app.log import deal_log
-from app.records import tuning, words
+from app.records import heard, tuning, words
 from app.records.reminders import Reminders
 from app.store import Store
 
@@ -53,10 +55,21 @@ class Sentinel:
         self.reminders = reminders(self)
         self._fact_of: dict[str, str] = {}  # record id -> memory's fact id for it
         self._work_done: set[str] = set()  # deals whose work both have confirmed
+        self._asked: set[str] = set()  # voice-note change facts already put to the other person
+        # Puts a change to the other person (Intake.ask_change); set by the whatsapp stream.
+        self.ask_change: Callable[..., None] | None = None
 
     def subscribe(self) -> None:
         self.bus.subscribe(RecordConfirmed, self.on_record_confirmed)
         self.bus.subscribe(FactRecorded, self.on_fact)
+        self.bus.subscribe(FactConflict, self.on_conflict)
+
+    async def on_conflict(self, event: FactConflict) -> None:
+        await heard.on_conflict(self, event)
+
+    @staticmethod
+    def when(fact: Fact | None) -> str | None:
+        return _when(fact)
 
     # ---------- a record comes in ----------
 
@@ -123,6 +136,10 @@ class Sentinel:
         fact = event.fact
         if fact.record_id:
             self._fact_of[fact.record_id] = fact.id
+        if (fact.source is FactSource.VOICE_NOTE and fact.kind is FactKind.CHANGE and fact.status is FactStatus.SAID
+                and fact.item and fact.said_by and fact.id not in self._asked):
+            self._asked.add(fact.id)
+            await heard.put_change(self, fact)
         if (fact.kind is FactKind.TERM and fact.item in DATED and fact.value_date
                 and fact.status in (FactStatus.AGREED, FactStatus.CONFIRMED)):
             passed = datetime.combine(fact.value_date + timedelta(days=1), time(), IST)
@@ -197,7 +214,7 @@ class Sentinel:
 
     async def _clip(self, fact: Fact | None) -> str | None:
         """A link to the moment, only when memory really has its audio."""
-        if fact is None or fact.call_no is None or fact.start is None:
+        if fact is None or fact.start is None or (fact.call_no is None and fact.source is not FactSource.VOICE_NOTE):
             return None
         return self.link(clip_path(fact.id)) if await self.memory.clip(fact.id) else None
 
@@ -246,6 +263,8 @@ def _when(fact: Fact | None) -> str | None:
     if fact is None or fact.valid_from is None:
         return None
     on = words.day(fact.valid_from.astimezone(IST).date())
+    if fact.source is FactSource.VOICE_NOTE:
+        return f"{on} ke voice note mein"
     return f"{on} ki call mein" if fact.source in (FactSource.CALL, FactSource.CALLBACK) else f"{on} ko"
 
 

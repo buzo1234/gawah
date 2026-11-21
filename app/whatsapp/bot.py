@@ -24,6 +24,7 @@ from app.store import Store
 from app.whatsapp import phone, words
 from app.whatsapp.inbound import Inbound, asks_to_delete
 from app.whatsapp.outbox import Outbox, Provider
+from app.whatsapp.voice import VoiceNotes, is_voice, sender_of
 
 LOCAL_BASE_URL = "http://localhost:8000"  # used for links until PUBLIC_BASE_URL is set
 
@@ -36,6 +37,7 @@ class Bot:
     def __init__(
         self, settings: Settings, bus: Bus, store: Store, provider: Provider, outbox: Outbox,
         intake: Intake, sign: Callable[[str], Awaitable[str]], sentinel: Sentinel | None = None,
+        voice: VoiceNotes | None = None,
     ) -> None:
         self.settings, self.bus, self.store = settings, bus, store
         self.provider, self.outbox, self.intake = provider, outbox, intake
@@ -45,6 +47,7 @@ class Bot:
         self._followed_up: set[tuple[str, str | None]] = set()
         self._opened: set[tuple[str, int]] = set()
         self.sentinel = sentinel
+        self.voice = voice  # None: a voice note is not taken, as before
         self._link = link_for(settings)
 
     # ---------- inbound ----------
@@ -159,12 +162,19 @@ class Bot:
         )
 
     async def _take_record(self, deal: Deal, role: Role, message: Inbound) -> bool:
-        """True if the message was dealt with: logged as a record, or the sender was told
-        it could not be read. False if it is not a record."""
-        if message.media_url and not (message.media_type or "").startswith("image/"):
+        """True if the message was dealt with: logged as a record, a voice note heard, or the
+        sender told it could not be read. False if it is not a record."""
+        voice = bool(message.media_url) and is_voice(message.media_type) and self.voice is not None
+        if message.media_url and not voice and not (message.media_type or "").startswith("image/"):
             return False
-        sender = deal.person(role)
-        sender = sender.model_copy(update={"phone": message.phone, "name": sender.name or message.name})
+        sender = sender_of(deal, role, message)
+        if voice:
+            try:
+                await self.voice.take(deal, sender, message)
+            except Exception as error:
+                deal_log("gawah.whatsapp", deal.id).error("could not hear a voice note: %s", error)
+                self.outbox.send(deal.id, message.phone, role, record_words.VOICE_FAILED)
+            return True
         try:
             image, image_type = None, None
             if message.media_url:
@@ -172,7 +182,7 @@ class Bot:
             return await self.intake.take(
                 deal, sender, message.text, message.media_url, image, message.media_type or image_type,
                 message_id=message.sid,
-            )
+            ) is not None
         except Exception as error:
             deal_log("gawah.whatsapp", deal.id).error("could not read a message: %s", error)
             self.outbox.send(deal.id, message.phone, role, words.READ_FAILED)

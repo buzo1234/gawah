@@ -14,7 +14,7 @@ const SVG = "http://www.w3.org/2000/svg";
 const LANES = [...ITEMS, ["payments", "Payments"], ["other", "Other details"]];
 const MONEY = new Set(["amount", "advance", "balance"]);
 const STATUS = { said: "Said", agreed: "Agreed", confirmed: "Confirmed", disputed: "Disputed", superseded: "Replaced" };
-const SOURCE = { voice_note: "Voice note", text: "WhatsApp", screenshot: "Screenshot", record: "WhatsApp" };
+const SOURCE = { voice_note: "WhatsApp voice note", text: "WhatsApp", screenshot: "Screenshot", record: "WhatsApp" };
 const rupees = (n) => "₹" + Number(n).toLocaleString("en-IN");
 const hasClip = (f) => f && f.start != null && ["call", "callback", "voice_note"].includes(f.source);
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
@@ -52,7 +52,7 @@ function factNode(state, f, amended, stands) {
   return h("div", { class: `fact ${f.status} kind-${f.kind}${stands ? " stands" : ""}`, id: `fact-${f.id}`, title: f.quote ? `“${f.quote}”` : f.text },
     h("div", { class: "status" }, line(label(f, stands), who(state, f))),
     h("div", { class: "value" }, f.value || f.text),
-    amended && h("div", { class: "aside" }, "Changed by voice, both said yes"),
+    amended && h("div", { class: "aside" }, f.source === "voice_note" ? "Changed by voice note, both said yes" : "Changed by voice, both said yes"),
     h("div", { class: "src" },
       hasClip(f) && clipButton(f.id),
       h("span", {}, source(f)),

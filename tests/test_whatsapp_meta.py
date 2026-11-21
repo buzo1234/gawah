@@ -278,7 +278,7 @@ async def test_a_payment_screenshot_is_downloaded_with_the_token_and_gets_a_tick
     assert meta_world.named("record.confirm_requested") == []
 
 
-async def test_a_reaction_a_voice_note_or_a_sticker_is_logged_and_never_read_as_a_record(meta_world):
+async def test_a_reaction_or_a_sticker_is_logged_and_never_read_as_a_record(meta_world):
     await meta_world.start_deal()
     sent = len(meta_world.graph.messages)
     await meta_world.post(webhook(message(RAMESH, "reaction", {"message_id": "wamid.OUT2", "emoji": "🙏"})))
@@ -286,9 +286,8 @@ async def test_a_reaction_a_voice_note_or_a_sticker_is_logged_and_never_read_as_
     inbound = [e for e in meta_world.named("whatsapp.message") if e.direction is Direction.IN]
     assert inbound[-1].text == "🙏 (reaction)"
 
-    await meta_world.post(webhook(message(RAMESH, "audio", {"id": "MEDIA-SHOT", "mime_type": "audio/ogg"})))
     await meta_world.post(webhook(message(RAMESH, "sticker", {"id": "MEDIA-SHOT", "mime_type": "image/webp"})))
-    assert meta_world.texts_to(RAMESH)[-2:] == [words.HELP, words.HELP]
+    assert meta_world.texts_to(RAMESH)[-1:] == [words.HELP]
     assert meta_world.reader.calls == [] and meta_world.graph.gets == []
     await meta_world.post(webhook(message(GEETA, "sticker", {"id": "M9", "mime_type": "image/webp"})))
     assert meta_world.texts_to(GEETA) == [words.HELP_NO_DEAL]

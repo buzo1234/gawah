@@ -2,7 +2,10 @@
 clock, and a World that wires the real bot to them on a real bus and store."""
 
 import asyncio
+import json
+import mimetypes
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 import pytest
 
@@ -10,8 +13,10 @@ from app.bus import Bus
 from app.config import Settings
 from app.contracts import Direction, Event, WhatsAppMessage
 from app.records.reader import Reading
+from app.dashboard.phone import MEDIA_DIR, MEDIA_NAME
 from app.store import Store
 from app.whatsapp import wire
+from app.whatsapp.hearing import HearingError, seconds_of
 from app.whatsapp.inbound import Inbound
 from app.whatsapp.outgoing import Outgoing
 
@@ -20,6 +25,8 @@ SUNITA, RAMESH, GEETA, MOHAN = "+919811100001", "+919822200002", "+919833300003"
 BASE = "https://gawah.example"
 WALL = datetime(2026, 11, 22, 4, 30, tzinfo=UTC)  # 10 am in India, the day after the practice calls
 SCREENSHOT = "https://api.twilio.com/2010-04-01/Accounts/AC0/Messages/MM0/Media/ME0"
+VOICE_NOTES = Path(__file__).resolve().parents[1] / "fixtures" / "voice-notes"
+NOTES = json.loads((VOICE_NOTES / "notes.json").read_text())  # file -> speaker, seconds, what was said
 
 
 async def _let_tasks_run() -> None:
@@ -72,8 +79,44 @@ class FakeTwilio:
         return f"SM{len(self.sent)}"
 
     async def fetch_media(self, url: str) -> tuple[bytes, str | None]:
+        """A voice note from fixtures/voice-notes by its file name in the link, or a file the
+        dashboard's second phone attached; else a picture."""
         self.fetched.append(url)
+        name = url.rsplit("/", 1)[-1]
+        if name in NOTES:
+            return (VOICE_NOTES / name).read_bytes(), "audio/ogg"
+        if "/dashboard/media/" in url and MEDIA_NAME.fullmatch(name) and (MEDIA_DIR / name).is_file():
+            return (MEDIA_DIR / name).read_bytes(), mimetypes.guess_type(name)[0]
         return b"png bytes", "image/png"
+
+
+class FakeTranscriber:
+    """Hears a voice note by its length (to a tenth of a second): the fixtures' notes say what
+    was said; a test can put other words in `heard`."""
+
+    def __init__(self) -> None:
+        self.heard = {round(n["seconds"], 1): n["said"] for n in NOTES.values()}
+        self.calls: list[float] = []
+        self.fail = False
+
+    async def transcribe(self, wav: bytes, prompt: str) -> str:
+        seconds = round(seconds_of(wav), 1)
+        self.calls.append(seconds)
+        if self.fail:
+            raise HearingError("openai is down")
+        return self.heard.get(seconds, "")
+
+
+def note_words(name: str) -> str:
+    return NOTES[name]["said"]
+
+
+def note_seconds(name: str) -> float:
+    return round(NOTES[name]["seconds"], 1)
+
+
+async def keep_key(path: str, key: str, content_type: str) -> str:
+    return key
 
 
 class FakeReader:
@@ -108,6 +151,8 @@ class World:
         self.twilio = FakeTwilio(self.clock)
         self.provider = self.twilio
         self.reader = FakeReader()
+        self.transcriber = FakeTranscriber()
+        self.root = Path(settings.database_path).parent  # voice notes land under root/recordings/
         self.events: list[Event] = []
         bus.subscribe_all(store.record_event)
         bus.subscribe_all(self._collect)
@@ -119,6 +164,7 @@ class World:
         return wire(
             self.settings, self.bus, self.store, provider=self.provider, reader=self.reader, clock=self.clock,
             memory=self.memory, wall=lambda: WALL + timedelta(seconds=self.clock.time),
+            transcriber=self.transcriber, upload=keep_key, root=self.root,
         )
 
     async def _collect(self, event: Event) -> None:
@@ -131,6 +177,13 @@ class World:
     async def say(self, phone: str, text: str = "", media: str | None = None, name: str | None = None) -> None:
         """One inbound WhatsApp message, handled to the end."""
         message = Inbound(phone=phone, text=text, media_url=media, media_type="image/png" if media else None, name=name)
+        await self.bot.on_message(message)
+        await self.settle()
+
+    async def voice_note(self, phone: str, name: str, sid: str | None = None) -> None:
+        """A voice note from fixtures/voice-notes, as Twilio brings one, handled to the end."""
+        url = f"https://api.twilio.com/2010-04-01/Accounts/AC0/Messages/MM0/Media/{name}"
+        message = Inbound(phone=phone, media_url=url, media_type="audio/ogg", sid=sid or f"MM{name}")
         await self.bot.on_message(message)
         await self.settle()
 

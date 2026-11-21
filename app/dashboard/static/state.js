@@ -143,7 +143,7 @@ export function termView(state, key) {
     const fact = settledBy(state, held);
     view.state = "changed";
     view.value = fact?.value || held.new_value;
-    view.when = at(fact?.call_no ?? held.callNo, fact?.start);
+    view.when = fact?.source === "voice_note" ? "WhatsApp voice note" : at(fact?.call_no ?? held.callNo, fact?.start);
     view.note = agreed?.value && agreed.value !== view.value ? `Was ${agreed.value}` : null;
   } else if (confirming.length === ROLES.length && agreed) {
     view.state = "confirmed";

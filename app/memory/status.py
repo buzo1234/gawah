@@ -14,6 +14,7 @@ from app.contracts import (
     Backing, ChangeStatus, ChecklistUpdated, Fact, FactChanged, FactKind, FactSource, FactStatus, ItemKey,
     ItemState, Record, RecordConfirmed, RecordKind, RecordReceived, Role, TermsConfirmed, TermsDisputed,
 )
+from app.memory import voice_notes
 from app.memory.dates import pin_date
 from app.memory.normalise import format_rupees, one_amount
 
@@ -116,12 +117,13 @@ class Status:
         rupees = round(record.amount) if record.amount is not None else None
         if kind == FactKind.PAYMENT and rupees is None:
             kind, item = FactKind.OTHER, None
+        voice = record.extra.get("voice_note")  # a voice note: its words, and the note as its clip
         quote = record.text or ("screenshot" if record.media_url else None)
         if not quote:
             return None
         backed = record.backing == Backing.BACKED or record.confirmed is True
         who = deal.name(record.sender)
-        proof = " (screenshot sent)" if record.media_url else ""
+        proof = " (voice note)" if voice is not None else " (screenshot sent)" if record.media_url else ""
         if kind == FactKind.PAYMENT:
             text = f"{who} paid {format_rupees(rupees)} towards the {item.value}{proof}."
         elif kind == FactKind.WORK:
@@ -133,8 +135,9 @@ class Status:
             deal_id=deal_id, text=text, item=item, kind=kind, value=format_rupees(rupees) if rupees is not None else record.text,
             value_rupees=rupees, said_by=record.sender, confirmed_by=[record.sender.other] if record.confirmed else [],
             status=FactStatus.CONFIRMED if backed else FactStatus.SAID,
-            source=FactSource.SCREENSHOT if record.media_url else FactSource.TEXT, quote=quote,
-            record_id=record.id, media_url=record.media_url, valid_from=ts,
+            source=FactSource.VOICE_NOTE if voice is not None else FactSource.SCREENSHOT if record.media_url else FactSource.TEXT,
+            quote=quote, record_id=record.id, media_url=record.media_url, valid_from=ts,
+            start=0.0 if voice is not None else None, end=(voice or {}).get("seconds") if voice is not None else None,
             counts_towards=target.id if target and kind != FactKind.OTHER else None,
         ))
         towards = f", counted towards {target.item.value}" if target and target.item else ""
@@ -156,23 +159,26 @@ class Status:
         self.m.note("memory", f"record {'confirmed' if event.confirmed else 'denied'} by {deal.name(event.confirmed_by)}", fact)
 
     async def on_changed(self, event: FactChanged) -> None:
+        if event.status not in (ChangeStatus.CONFIRMED_BOTH, ChangeStatus.WITHDRAWN):
+            return
+        await self.m.settle()
+        deal = self.m.book.deal(event.deal_id)
+        voice = voice_notes.settle_change(self.m, deal, event)  # a change asked by voice note: its source and clip
         if event.status != ChangeStatus.CONFIRMED_BOTH:
             return
-        await self.m.scribe.settle()
-        deal = self.m.book.deal(event.deal_id)
         old = deal.latest.get(event.fact_id)
         if old is None:
             log.warning("deal=%s fact.changed for unknown fact %s", event.deal_id, event.fact_id)
             return
         item = event.item or old.item
         rupees = one_amount(event.new_value)
-        new = self.m.record(Fact(
-            deal_id=event.deal_id, text=f"The {item.value.replace('_', ' ') if item else 'term'} is now {event.new_value}.",
-            item=item, kind=old.kind, value=event.new_value, value_rupees=rupees,
-            value_date=pin_date(event.new_value, deal.call_date(deal.last_call_no), None),
-            said_by=event.proposed_by, agreed_by=[r for r in Role if r != event.proposed_by],
-            confirmed_by=sorted(event.confirmed_by or list(Role)), status=FactStatus.CONFIRMED,
-            quote=event.said or event.new_value, call_no=deal.last_call_no, valid_from=event.ts, replaces=old.id,
-        ))
+        new = self.m.record(Fact(**{
+            "deal_id": event.deal_id, "text": f"The {item.value.replace('_', ' ') if item else 'term'} is now {event.new_value}.",
+            "item": item, "kind": old.kind, "value": event.new_value, "value_rupees": rupees,
+            "value_date": pin_date(event.new_value, deal.call_date(deal.last_call_no), None),
+            "said_by": event.proposed_by, "agreed_by": [r for r in Role if r != event.proposed_by],
+            "confirmed_by": sorted(event.confirmed_by or list(Role)), "status": FactStatus.CONFIRMED,
+            "quote": event.said or event.new_value, "call_no": deal.last_call_no, "valid_from": event.ts, "replaces": old.id,
+        } | voice))
         self.m.record(old.model_copy(update={"status": FactStatus.SUPERSEDED, "superseded_at": event.ts}))
         self.m.note("memory", f"{item.value if item else 'term'} changed to {event.new_value}, confirmed by both", new)

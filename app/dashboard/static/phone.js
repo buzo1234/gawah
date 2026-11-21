@@ -52,9 +52,11 @@ function linked(text) {
 
 function bubble(m) {
   const image = isWebLink(m.media_url) && (m.media_type || "").startsWith("image/");
+  const voice = isWebLink(m.media_url) && (m.media_type || "").startsWith("audio/");
   return h("div", { class: `bubble ${m.direction}` },
     image && h("a", { href: m.media_url, target: "_blank", rel: "noopener" }, h("img", { src: m.media_url, alt: "attached image" })),
-    !image && isWebLink(m.media_url) && h("a", { href: m.media_url, target: "_blank", rel: "noopener" },
+    voice && h("audio", { src: m.media_url, controls: true, preload: "none", "aria-label": "voice note" }),
+    !image && !voice && isWebLink(m.media_url) && h("a", { href: m.media_url, target: "_blank", rel: "noopener" },
       `Attachment${m.media_type ? ` (${m.media_type.split("/").pop()})` : ""}`),
     m.text && h("div", { class: "text" }, linked(m.text)),
     h("div", { class: "meta" }, m.direction === "out" ? "Gawah · " : "",
@@ -202,7 +204,7 @@ async function send(event) {
     let media = {};
     if (file) {
       const up = await fetch("/dashboard/media", { method: "POST", headers: { "content-type": file.type }, body: file });
-      if (!up.ok) throw new Error((await up.json()).detail || "the image could not be stored");
+      if (!up.ok) throw new Error((await up.json()).detail || "the file could not be stored");
       media = await up.json();
     }
     const found = personWith(number());

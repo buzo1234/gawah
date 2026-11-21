@@ -1,0 +1,44 @@
+{
+  "paint-05.ogg": {
+    "from": "fixtures/audio/paint-05.wav",
+    "speaker": "hirer",
+    "seconds": 6.36,
+    "said": "Andar ka poora, dono bedroom, hall aur kitchen. Balcony ki grill bhi kar dena.",
+    "use": "agrees: the work, as on the call"
+  },
+  "paint-08.ogg": {
+    "from": "fixtures/audio/paint-08.wav",
+    "speaker": "worker",
+    "seconds": 6.18,
+    "said": "Do coat aur putty ka touch-up, material ke saath pachees hazaar lagega madam.",
+    "use": "a new amount for the job: a change, the hirer is asked"
+  },
+  "paint-11.ogg": {
+    "from": "fixtures/audio/paint-11.wav",
+    "speaker": "hirer",
+    "seconds": 7.56,
+    "said": "Theek hai, twenty two thousand done. Lekin material aapka hoga, upar se koi extra charge nahi.",
+    "use": "contradicts the amount agreed"
+  },
+  "paint-14.ogg": {
+    "from": "fixtures/audio/paint-14.wav",
+    "speaker": "hirer",
+    "seconds": 6.3,
+    "said": "Paanch hazaar advance main kal GPay kar dungi. UPI pe aapka yahi number hai na?",
+    "use": "an advance of 5,000: a record, the worker is asked"
+  },
+  "tts-paid-3000.ogg": {
+    "from": "made with gpt-4o-mini-tts (no recording in fixtures/audio says money was paid)",
+    "speaker": "hirer",
+    "seconds": 5.3,
+    "said": "Ramesh ji, maine aaj subah teen hazaar advance GPay kar diya hai.",
+    "use": "a payment of the 3,000 advance: a record, the worker is asked"
+  },
+  "paint-24.ogg": {
+    "from": "fixtures/audio/paint-24.wav",
+    "speaker": "hirer",
+    "seconds": 8.94,
+    "said": "Toh final: total baees hazaar, paanch advance, saat beech mein, aur das kaam ke baad. Somvaar ko milte hain.",
+    "use": "says the total is 22,000: contradicts the 13,000 agreed"
+  }
+}

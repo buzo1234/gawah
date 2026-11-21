@@ -1,6 +1,7 @@
 """What Gawah says on WhatsApp about records. Short, plain Hinglish in Roman script.
 Gawah never gives an opinion, so none of these do."""
 
+import re
 from datetime import date
 
 from app.contracts import ItemKey, Person, Record, RecordKind, Role
@@ -37,13 +38,37 @@ def logged(record: Record) -> str:
     return f"Record mein likh liya: {describe(record)}."
 
 
-def asking_other(other: Person) -> str:
+def asking_other(other: Person, record: Record | None = None) -> str:
+    if record is not None and record.extra.get("voice_note") is not None and record.text:
+        return f"{heard(record.text)} {who(other)} se confirm kar raha hoon."
     return f"Likh liya. {who(other)} se confirm kar raha hoon."
 
 
 def confirm_question(sender: Person, record: Record) -> str:
-    said = f'ne likha hai: "{record.text}"' if record.text else f"ne ek photo bheji hai: {describe(record)}"
+    if record.extra.get("voice_note") is not None and record.text:
+        said = f'ne voice note mein kaha: "{_short(record.text)}"'
+    else:
+        said = f'ne likha hai: "{record.text}"' if record.text else f"ne ek photo bheji hai: {describe(record)}"
     return f"{who(sender)} {said}. Kya yeh sahi hai? Haan ya nahi likhiye."
+
+
+# ---------- voice notes ----------
+
+VOICE_EMPTY = "Voice note mein kuch sunai nahi diya. Dobara bhejiye, ya likh kar bhejiye."
+VOICE_FAILED = "Abhi voice note sun nahi paaya. Thodi der mein dobara bhejiye, ya likh kar bhejiye."
+
+
+def heard(text: str) -> str:
+    return f'Aapka voice note suna: "{_short(text)}".'
+
+
+def voice_kept(text: str) -> str:
+    """A voice note that is not a payment or work record: what was heard, and that it is kept."""
+    return f"{heard(text)} Deal ke record mein rakh liya."
+
+
+def _short(text: str, limit: int = 160) -> str:
+    return text if len(text) <= limit else text[: limit - 1].rsplit(" ", 1)[0] + "…"
 
 
 def answer_for_sender(answerer: Person, record: Record, confirmed: bool) -> str:
@@ -60,6 +85,9 @@ def _rupees(amount: float | None) -> str | None:
 # ---------- the Sentinel: what is owed, what was agreed, reminders ----------
 
 _TERM = {ItemKey.ADVANCE: "advance", ItemKey.AMOUNT: "kul paisa", ItemKey.BALANCE: "baaki paisa"}
+_ANY_TERM = _TERM | {
+    ItemKey.WORK: "kaam", ItemKey.DATES: "kaam ki tareekh", ItemKey.LATE_OR_UNFINISHED: "der ya adhoore kaam ki shart",
+}
 
 
 def rupees(amount: int) -> str:
@@ -117,3 +145,47 @@ def _still_owed(total: int | None, lead: str, when: str) -> str:
     if total == 0:
         return " Ab kuch baaki nahi."
     return f" Deal se {rupees(-total)} zyada record mein hai."
+
+
+# ---------- a voice note that contradicts the deal, or asks to change it ----------
+
+
+def term_name(item: ItemKey | None) -> str:
+    return _ANY_TERM.get(item, "yeh shart") if item else "yeh shart"
+
+
+def contradicted(speaker: Person, said: str, item: ItemKey | None, value: str, when: str | None, clip: str | None) -> str:
+    """A voice note says something else than what was agreed: both hear what was agreed,
+    when, and the clip. Facts only, no opinion on who is right."""
+    line = (f'{who(speaker)} ne voice note mein kaha: "{_short(said)}". '
+            f"Deal mein {term_name(item)} {value} tay hua tha" + (f" ({when})" if when else "") + ".")
+    if clip:
+        line += f" Wo pal yahan suniye: {clip}"
+    return line
+
+
+def change_question(
+    speaker: Person, said: str, item: ItemKey | None, old: str | None, new: str | None,
+    when: str | None = None, clip: str | None = None,
+) -> str:
+    """old and new are figures (₹13,000) for a money term; for any other term the voice note's
+    own words say what is added, so none are given. when and clip: where the term was agreed."""
+    what = f"{term_name(item)} {old} se badal kar {new} ho jayega" if old and new else f"{term_name(item)} mein yeh jud jayega"
+    agreed = f" Pehle wali shart {when} tay hui thi." if when else ""
+    if clip:
+        agreed += f" Wo pal yahan suniye: {clip}"
+    return (f'{who(speaker)} ne voice note mein kaha: "{_short(said)}". Isse deal mein {what}.{agreed} '
+            "Kya aap maante hain? Haan ya nahi likhiye.")
+
+
+def change_asked(other: Person) -> str:
+    return f"Yeh badlav tabhi hoga jab {who(other)} bhi haan kahenge. Unse pooch raha hoon."
+
+
+def change_answered(answerer: Person, item: ItemKey | None, new: str, confirmed: bool) -> str:
+    if confirmed:
+        figure = re.fullmatch(r"([\d,]+) rupees", new.strip())
+        if figure:
+            return f"{who(answerer)} ne haan kaha. Deal mein {term_name(item)} ab ₹{figure.group(1)} hai."
+        return f"{who(answerer)} ne haan kaha. Deal ke {term_name(item)} mein yeh jud gaya."
+    return f"{who(answerer)} ne nahi kaha. Deal mein {term_name(item)} pehle jaisa hi hai."
