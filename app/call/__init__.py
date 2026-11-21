@@ -2,6 +2,9 @@
 
 GET  /call/{deal_id}/{role}        the call page (a link preview may fetch it: it opens nothing)
 POST /call/{deal_id}/{role}/join   the join button: opens the room if needed, returns a token
+     ?after=<n>                    the number of calls the page knows are over (see Calls.join)
+
+The same link serves every call of the deal. Once a call is over the page offers a new one.
 """
 
 import json
@@ -58,22 +61,23 @@ def register(app: FastAPI, bus: Bus) -> None:
             "name": deal.person(me).name,
             "otherName": deal.person(me.other).name,
             "roleWords": ROLE_WORDS[me],
-            "over": calls.is_over(deal),
+            "ended": await calls.ended_calls(deal),  # 0 while a call is open: join it
         }
         # "<" is escaped so a name cannot close the script tag.
         return HTMLResponse(PAGE.read_text().replace("__CONFIG__", json.dumps(config).replace("<", "\\u003c")))
 
     @app.post("/call/{deal_id}/{role}/join")
-    async def join(deal_id: str, role: str) -> JSONResponse:
+    async def join(deal_id: str, role: str, after: int | None = None) -> JSONResponse:
         found = await find(deal_id, role)
         if found is None:
             return JSONResponse({"error": "not_valid"}, status_code=404)
         deal, me = found
         try:
-            token = await calls.join(deal, me)
+            ticket = await calls.join(deal, me, after)
         except Exception:
             deal_log("gawah.call", deal_id).exception("could not open the room")
             return JSONResponse({"error": "unavailable"}, status_code=503)
-        if token is None:
-            return JSONResponse({"error": "over"}, status_code=410)
-        return JSONResponse({"url": calls.livekit.url, "token": token})
+        if ticket is None:
+            return JSONResponse({"error": "over", "ended": await calls.ended_calls(deal)}, status_code=410)
+        token, call_no = ticket
+        return JSONResponse({"url": calls.livekit.url, "token": token, "call_no": call_no})

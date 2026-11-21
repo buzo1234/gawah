@@ -2,6 +2,10 @@
 
 A session owns one LiveKit room, Gawah's listener in it, the two recordings and the ears.
 Time zero is the moment both people are in the room; call.started is sent then.
+
+A deal can have more than one call. Each has its number (call_no, 1 for the first), its
+own room "deal-<deal id>-<call no>", its own recordings under recordings/<deal id>/<call no>/,
+and transcript lines numbered from 1 with times from its own start.
 """
 
 import asyncio
@@ -14,7 +18,7 @@ from app.bus import Bus
 from app.call.livekit import LiveKit, room_name
 from app.call.recording import Recording
 from app.config import ROOT, Settings
-from app.contracts import CallEnded, CallStarted, Deal, DealStatus, Role
+from app.contracts import AgentNote, CallEnded, CallKind, CallStarted, CrewAgent, Deal, Role
 from app.ears.lines import Ears
 from app.ears.transcribe import Transcriber, prompt_for
 from app.log import deal_log
@@ -38,11 +42,11 @@ class Limits:
 
 class CallSession:
     def __init__(
-        self, deal: Deal, prompt: str, *, bus: Bus, livekit: LiveKit, transcribe: Transcribe,
+        self, deal: Deal, call_no: int, prompt: str, *, bus: Bus, livekit: LiveKit, transcribe: Transcribe,
         upload: Upload, limits: Limits, clock: Callable[[], float], folder: Path,
         on_closing: Callable[["CallSession"], None], on_closed: Callable[["CallSession"], None],
     ) -> None:
-        self.deal, self.room = deal, room_name(deal.id)
+        self.deal, self.call_no, self.room = deal, call_no, room_name(deal.id, call_no)
         self.log = deal_log("gawah.call", deal.id)
         self._prompt, self._bus, self._livekit = prompt, bus, livekit
         self._transcribe, self._upload, self._limits = transcribe, upload, limits
@@ -117,14 +121,17 @@ class CallSession:
 
     def _start(self) -> None:
         self.started_at = started = self._clock()
-        folder = self._folder / self.deal.id
+        folder = self._folder / self.deal.id / str(self.call_no)
         self._recordings = {role: Recording(folder / f"{role.value}.wav") for role in Role}
         self.ears = Ears(
             self.deal.id, self._bus, lambda pcm: self._transcribe(pcm, self._prompt),
-            clock=lambda: self._clock() - started,
+            clock=lambda: self._clock() - started, call_no=self.call_no,
         )
-        self._bus.publish(CallStarted(deal_id=self.deal.id, people=self.deal.people, room=self.room))
-        self.log.info("call started")
+        self._bus.publish(CallStarted(
+            deal_id=self.deal.id, people=self.deal.people, room=self.room, call_no=self.call_no,
+        ))
+        self._note(f"call {self.call_no}: both on the line, recording and listening")
+        self.log.info("call %d started in %s", self.call_no, self.room)
 
     def _absence(self) -> tuple[float, str] | None:
         """How long to wait before ending the call for who is missing now, and why."""
@@ -195,15 +202,21 @@ class CallSession:
             keys = await self._save_recordings(duration)
             self._bus.publish(CallEnded(
                 deal_id=self.deal.id, people=self.deal.people, room=self.room,
-                duration=round(duration, 1), recording_keys=keys, reason=reason,
+                duration=round(duration, 1), recording_keys=keys, reason=reason, call_no=self.call_no,
             ))
-            self.log.info("call ended after %.0fs (%s), recordings: %s", duration, reason, sorted(keys))
+            self._note(f"call {self.call_no} over: {len(keys)} recordings saved, {self.ears.lines} lines heard")
+            self.log.info(
+                "call %d ended after %.0fs (%s), recordings: %s", self.call_no, duration, reason, sorted(keys),
+            )
+
+    def _note(self, text: str) -> None:
+        self._bus.publish(AgentNote(deal_id=self.deal.id, agent=CrewAgent.EARS, text=text))
 
     async def _save_recordings(self, duration: float) -> dict[str, str]:
         async def save(role: Role, recording: Recording) -> tuple[str, str] | None:
             try:
                 recording.close(duration)
-                key = f"recordings/{self.deal.id}/{role.value}.wav"
+                key = f"recordings/{self.deal.id}/{self.call_no}/{role.value}.wav"
                 return role.value, await self._upload(str(recording.path), key, "audio/wav")
             except Exception:
                 self.log.exception("recording of %s not uploaded; it is still at %s", role.value, recording.path)
@@ -231,40 +244,62 @@ class Calls:
         self.folder = ROOT / "recordings"
         self.sessions: dict[str, CallSession] = {}
         self._closing: set[CallSession] = set()  # out of sessions, still saving and uploading
-        self._over: set[str] = set()
+        # deal -> the last of its calls that is over. Ahead of the store while a call is
+        # ending: its call.ended is only sent once the recordings are up.
+        self._over: dict[str, int] = {}
         self._lock = asyncio.Lock()
 
-    def is_over(self, deal: Deal) -> bool:
-        """A deal has one call. Its link stops working once that call has ended."""
-        return deal.id in self._over or deal.status in (DealStatus.CALL_ENDED, DealStatus.CONTRACT_READY)
+    async def numbers(self, deal_id: str) -> tuple[int, int]:
+        """The last deal call that started and the last that is over (0 for none)."""
+        started = ended = self._over.get(deal_id, 0)
+        for event in await self.store.events(deal_id, "call.started"):
+            if event.kind is CallKind.DEAL:
+                started = max(started, event.call_no)
+        for event in await self.store.events(deal_id, "call.ended"):
+            if event.kind is CallKind.DEAL:
+                ended = max(ended, event.call_no)
+        return max(started, ended), ended
 
-    async def join(self, deal: Deal, role: Role) -> str | None:
-        """A join token for this person, opening the room first if it is not open yet.
-        None when the call is already over."""
+    async def ended_calls(self, deal: Deal) -> int:
+        """How many of this deal's calls are over, while none is open; 0 while one is."""
+        if deal.id in self.sessions:
+            return 0
+        return (await self.numbers(deal.id))[1]
+
+    async def join(self, deal: Deal, role: Role, after: int | None = None) -> tuple[str, int] | None:
+        """A join token for this person and the call number, opening a room first if none is
+        open. `after` is how many calls the person's page knows are over: if another one has
+        ended since, they were coming back to a call that is over, and get None instead of a
+        new call they did not ask for. A call already open is always joined."""
         async with self._lock:
-            if self.is_over(deal):
-                return None
             session = self.sessions.get(deal.id)
             if session is None:
+                started, ended = await self.numbers(deal.id)
+                if after is not None and ended > after:
+                    return None
                 asked = await self.store.events(deal.id, "deal.requested")
                 prompt = prompt_for(deal, asked[-1].text if asked else None)
                 session = CallSession(
-                    deal, prompt, bus=self.bus, livekit=self.livekit, transcribe=self.transcribe,
+                    deal, started + 1, prompt, bus=self.bus, livekit=self.livekit, transcribe=self.transcribe,
                     upload=self.upload, limits=self.limits, clock=self.clock, folder=self.folder,
                     on_closing=self._session_closing, on_closed=self._closing.discard,
                 )
                 await session.open()
                 self.sessions[deal.id] = session
+                if started:
+                    self.bus.publish(AgentNote(
+                        deal_id=deal.id, agent=CrewAgent.EARS,
+                        text=f"call {session.call_no}: room open, waiting for both",
+                    ))
         person = deal.person(role)
-        return self.livekit.token(session.room, role.value, name=person.name if person else None)
+        return self.livekit.token(session.room, role.value, name=person.name if person else None), session.call_no
 
     def _session_closing(self, session: CallSession) -> None:
         if self.sessions.get(session.deal.id) is session:
             del self.sessions[session.deal.id]
         self._closing.add(session)
         if session.started_at is not None:
-            self._over.add(session.deal.id)
-
+            self._over[session.deal.id] = max(self._over.get(session.deal.id, 0), session.call_no)
     async def close_all(self) -> int:
         """Server shutdown: never leave a room open or the listener sitting in one, and let
         a call that is already ending finish sending its recordings and call.ended.

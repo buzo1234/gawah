@@ -58,7 +58,7 @@ const WORDS = {
   waiting: `${other} ka intezaar hai. Line par bane rahiye.`,
   on: 'Call chalu hai. Aaram se baat kijiye.',
   reconnecting: 'Network kamzor hai, dobara jud rahe hain...',
-  ended: 'Call khatam ho gaya. Dhanyavaad.',
+  ended: 'Call khatam ho gaya. Dhanyavaad. Dobara baat karni ho to button dabaiye.',
   left: 'Aapne call chhod diya. Wapas aana ho to button dabaiye.',
   nobody: `${other} nahi aaye. Thodi der baad dobara button dabaiye.`,
   elsewhere: 'Yeh call aapke kisi aur phone ya tab mein khul gaya hai.',
@@ -66,8 +66,11 @@ const WORDS = {
   unavailable: 'Abhi call nahi lag pa raha. Thodi der mein dobara button dabaiye.',
   mic: 'Microphone ke bina call nahi ho sakta.',
 };
-const FINAL = ['ended', 'elsewhere'];  // no way back in from these
-let room = null, mic = null, timer = null, callWasOn = false, micQuiet = false, wakeLock = null;
+const FINAL = ['elsewhere'];  // no way back in from this
+// The same link serves every call of the deal. cfg.ended is how many are over as far as this
+// page knows; the server uses it to tell a late rejoin "that call is over" instead of
+// quietly opening a new one. A new call is started from the "ended" state's button.
+let room = null, mic = null, timer = null, callWasOn = false, callNo = null, micQuiet = false, wakeLock = null;
 
 $('who').textContent = `${cfg.name ? cfg.name + ' ji, aap' : 'Aap'} is call mein ${cfg.roleWords} hain. Baat ${other} se hogi.`;
 
@@ -78,6 +81,7 @@ function show(state) {
   $('leave').hidden = !inRoom;
   $('join').hidden = inRoom || FINAL.includes(state);
   $('join').disabled = state === 'connecting';
+  $('join').textContent = state === 'ended' ? 'Phir se baat karein' : 'Call mein judein';
   $('mic-help').hidden = state !== 'mic';
   $('notice').hidden = FINAL.includes(state);
   $('keep-open').hidden = !inRoom;
@@ -106,6 +110,7 @@ function refresh() {
 
 async function join() {
   show('connecting');
+  callWasOn = false;
   const LK = LivekitClient;
   // Gawah's voice comes out of this phone's loudspeaker: it must not go straight back in.
   const audio = { echoCancellation: true, noiseSuppression: true, autoGainControl: true };
@@ -117,10 +122,15 @@ async function join() {
     return show('mic');
   }
   try {
-    const res = await fetch(`${location.pathname.replace(/\/$/, '')}/join`, { method: 'POST' });
-    if (res.status === 410) { mic.stop(); return show('ended'); }
+    const res = await fetch(`${location.pathname.replace(/\/$/, '')}/join?after=${cfg.ended}`, { method: 'POST' });
+    if (res.status === 410) {
+      mic.stop();
+      cfg.ended = (await res.json()).ended ?? cfg.ended + 1;
+      return show('ended');
+    }
     if (!res.ok) throw new Error(`join ${res.status}`);
-    const { url, token } = await res.json();
+    const { url, token, call_no } = await res.json();
+    callNo = call_no;
     room = new LK.Room({ audioCaptureDefaults: audio, adaptiveStream: false, dynacast: false });
     room.on(LK.RoomEvent.TrackSubscribed, (track) => {
       if (track.kind === 'audio') document.body.appendChild(track.attach());
@@ -140,6 +150,7 @@ async function join() {
       micQuiet = false;
       if (wakeLock) wakeLock.release().catch(() => {});
       const R = LK.DisconnectReason;
+      if (reason === R.ROOM_DELETED && callWasOn) cfg.ended = Math.max(cfg.ended, callNo || 0);
       if (reason === R.ROOM_DELETED) show(callWasOn ? 'ended' : 'nobody');
       else if (reason === R.CLIENT_INITIATED) show('left');
       else if (reason === R.DUPLICATE_IDENTITY) show('elsewhere');
@@ -174,7 +185,7 @@ $('copy').onclick = async () => {
 document.body.addEventListener('click', () => { if (room) room.startAudio(); });
 // The browser drops the screen lock whenever the page is hidden: ask again when it is back.
 document.addEventListener('visibilitychange', keepAwake);
-show(cfg.over ? 'ended' : 'idle');
+show(cfg.ended ? 'ended' : 'idle');
 </script>
 </body>
 </html>

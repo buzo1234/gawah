@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 
 from app.bus import Bus
-from app.call.livekit import LiveKit
+from app.call.livekit import LiveKit, deal_of
 from app.call.session import Calls, CallSession, Limits
 from app.config import Settings
 from app.contracts import CallEnded, DealRequested, Event, Person, Role
@@ -138,15 +138,17 @@ class World:
         await self.bus.drain()
         return await self.store.deal(deal_id)
 
-    async def join(self, deal_id: str = "d1", role: Role = Role.HIRER) -> str | None:
+    async def join(self, deal_id: str = "d1", role: Role = Role.HIRER, after: int | None = None) -> str | None:
         """The person taps the join button and their browser connects."""
-        token = await self.calls.join(await self.store.deal(deal_id), role)
-        if token:
+        ticket = await self.calls.join(await self.store.deal(deal_id), role, after)
+        if ticket:
             self.room(deal_id).joined(role.value)
-        return token
+        return ticket and ticket[0]
 
     def room(self, deal_id: str = "d1") -> FakeRoom:
-        return self.livekit.open[f"deal-{deal_id}"]
+        """The deal's room that is open now."""
+        [room] = [name for name in self.livekit.open if deal_of(name) == deal_id]
+        return self.livekit.open[room]
 
     def talk(
         self, deal_id: str = "d1", hirer: bytes = b"", worker: bytes = b"", seconds: float | None = None,
