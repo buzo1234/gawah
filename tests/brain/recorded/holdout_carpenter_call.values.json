@@ -1,0 +1,60 @@
+{
+ "fixture": "holdout_carpenter_call",
+ "recorded_at": "2026-11-21T14:48:49+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "names:-@1": {
+   "hirer": null,
+   "worker": "Vijay"
+  },
+  "value:work@2": {
+   "value": "a wardrobe in the bedroom, floor to ceiling",
+   "source_text": "Vijay bhaiya, bedroom mein ek wardrobe banwana hai, floor se ceiling tak.",
+   "line_no": 1
+  },
+  "value:amount@9": {
+   "value": "55,000 rupees for the wardrobe, with plywood and laminate included",
+   "source_text": "Chalo theek hai, 55 hazaar.",
+   "line_no": 9
+  },
+  "unclear:-@10": {
+   "item": "dates"
+  },
+  "value:balance@11": {
+   "value": "35,000 rupees after the job is complete",
+   "source_text": "20 theek hai, aaj shaam ko bhej dungi. Baaki kaam poora hone ke baad.",
+   "line_no": 11
+  },
+  "value:advance@11": {
+   "value": "20,000 rupees, sent this evening",
+   "source_text": "20 theek hai, aaj shaam ko bhej dungi.",
+   "line_no": 11
+  },
+  "conflict:-@13": {
+   "item": "amount",
+   "figures": [
+    "55 hazaar",
+    "50"
+   ],
+   "line_nos": [
+    9,
+    13
+   ]
+  },
+  "value:work@15": {
+   "value": "a floor-to-ceiling wardrobe, seven feet wide, with three doors, two drawers, with plywood and laminate included",
+   "source_text": "Theek hai, saat foot ka teen door wardrobe, do drawer ke saath, plywood aur laminate mera. Yeh pakka.",
+   "line_no": 4
+  },
+  "value:balance@15": {
+   "value": "35,000 rupees after completion of the work",
+   "source_text": "Haan didi, baaki 35 kaam khatam hone par de dena.",
+   "line_no": 12
+  },
+  "value:advance@15": {
+   "value": "20,000 rupees, this evening today",
+   "source_text": "20 theek hai, aaj shaam ko bhej dungi.",
+   "line_no": 11
+  }
+ }
+}
