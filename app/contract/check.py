@@ -10,8 +10,9 @@ import unicodedata
 
 from app.contracts import ChecklistItem, ItemState
 
-# Read aloud by the speech model, this many words comes to 20-30 seconds.
-SUMMARY_WORDS = (45, 65)
+# Read aloud by the speech model this comes to 20-30 seconds: it measured about half a
+# second a word, figures included.
+SUMMARY_WORDS = (44, 55)
 
 _DEVANAGARI_DIGITS = str.maketrans("०१२३४५६७८९", "0123456789")
 _NUKTA = "़"  # the dot in ज़; dropped before matching so हज़ार and हजार are one word

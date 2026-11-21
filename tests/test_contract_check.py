@@ -61,7 +61,7 @@ def test_amounts_in_words_the_wrong_script_and_a_long_summary_are_rejected():
         "advance.hi is in the wrong script",
         "advance.en is in the wrong script",
         "advance.en spells an amount in words; write figures in digits",
-        "summary_hi has 90 words; it must have 45 to 65",
+        "summary_hi has 90 words; it must have 44 to 55",
     ]
 
 
