@@ -38,6 +38,10 @@ from app.whatsapp.twilio import Twilio
 
 # The same test app/dev.py uses: the tunnel adds these headers, a local request has neither.
 _PROXY_HEADERS = ("cf-connecting-ip", "x-forwarded-for")
+_UNSIGNED = (
+    "META_APP_SECRET IS NOT SET: Meta webhooks are taken WITHOUT checking their signature. "
+    "Set it in .env (App settings > Basic > App secret > Show)."
+)
 
 
 def wire(
@@ -81,6 +85,11 @@ def register(app: FastAPI, bus: Bus) -> None:
     # dashboard's second phone post a form.
     twilio = Twilio(settings)
     meta = bot.provider if hasattr(bot.provider, "signed_by_meta") else Meta(settings)
+    log = deal_log("gawah.whatsapp", NO_DEAL)
+    if settings.whatsapp_provider == "meta" and not settings.meta_app_secret:
+        async def warn() -> None:
+            log.warning(_UNSIGNED)
+        app.state.on_startup.append(warn)
 
     @app.get(WHATSAPP_WEBHOOK_PATH)
     async def verify(request: Request) -> Response:
@@ -96,7 +105,11 @@ def register(app: FastAPI, bus: Bus) -> None:
         body = await request.body()
         from_tunnel = any(h in request.headers for h in _PROXY_HEADERS)
         if request.headers.get("content-type", "").startswith("application/json"):
-            if from_tunnel and not meta.signed_by_meta(body, request.headers.get("x-hub-signature-256")):
+            # With the app secret set, every Meta post must be signed. Without it the demo can
+            # still run, but anyone who finds the address could post as a phone: say so loudly.
+            if not settings.meta_app_secret:
+                log.warning(_UNSIGNED)
+            elif not meta.signed_by_meta(body, request.headers.get("x-hub-signature-256")):
                 raise HTTPException(403, "bad signature")
             try:
                 payload = json.loads(body)
@@ -107,7 +120,7 @@ def register(app: FastAPI, bus: Bus) -> None:
                 bot.receive(message)
             report_failures(statuses, bot.outbox.deal_of)
             if skipped:
-                deal_log("gawah.whatsapp", NO_DEAL).warning("%d message(s) from a person with no phone number skipped", skipped)
+                log.warning("%d message(s) from a person with no phone number skipped", skipped)
             return Response(status_code=200)
         form = dict(parse_qsl(body.decode(), keep_blank_values=True))
         if from_tunnel:

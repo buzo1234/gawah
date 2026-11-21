@@ -16,7 +16,7 @@ With Meta, Gawah:
 - **Free allowance.** Replies inside the window are free for the first 1,000 a month per number. Since 1 October 2026 Meta charges for every reply after that. One demo run sends about 30.
 - **Test number.** It sends only to numbers on its list of allowed recipients. Meta's guides say up to five.
 - **Pacing.** Meta allows 80 messages a second. To any one person it allows about one message every 6 seconds, with short bursts, and error 131056 means too fast. Gawah sends one message at a time, at least a second apart, so they arrive in order. The Twilio sandbox needed 3 seconds.
-- **Access token.** The temporary token on the API Setup page lasts only a few hours. Make a fresh one before each session, or use a System User token, which does not expire (step 1).
+- **Access token.** The temporary token on the API Setup page lasts only a few hours. Make a fresh one before each session, or use a System User token, which does not expire (step 1.5).
 - **The second phone.** The dashboard's "Second phone" panel works as it does on Twilio. Nothing sent to a simulated number reaches Meta. With Meta, the panel shows the buttons as `[Haan, sahi hai]  [Nahi]` under the question, and a reaction as `👍 (reaction)`.
 
 ## 1. On Meta's side (once)
@@ -28,8 +28,16 @@ You do this yourself, signed in to your own Facebook account. Gawah never create
    - **From** shows the test number. Copy its **Phone number ID** (an ID, not the phone number).
    - **To**: click "Manage phone number list" and add your phone. WhatsApp sends it a code; enter the code. Add each real phone you will use. Its number must also be in `VERIFIED_NUMBERS`.
    - Click **Generate access token** and copy it.
-3. Go to **App settings > Basic**, click Show next to **App secret**, and copy it.
-4. Optional, for a token that does not expire: business.facebook.com > Settings > Users > **System users** > Add (Admin).
+   - To check the token and your phone: send the **hello_world** test message from this page. It should arrive on your phone. This has worked on the user's setup.
+3. **App secret:** in the left menu, **App settings > Basic > App secret > Show**. Meta asks for your Facebook password again. Copy the secret.
+4. **Switch the app to Live.** Meta's dashboard will not let you configure webhooks until the app is published, and Meta's docs say some webhooks are not sent in development mode. On **App settings > Basic**, fill in:
+   - an app icon,
+   - a category,
+   - a contact email,
+   - a **privacy policy URL**: a public page. Any page you control that says what Gawah keeps will do.
+
+   Save, then turn the **App mode** switch at the top of the dashboard from Development to **Live**. For your own test number, no app review is expected, but that is not confirmed. If Meta asks for a review, stop and tell the team before submitting anything.
+5. Optional, for a token that does not expire: business.facebook.com > Settings > Users > **System users** > Add (Admin).
    - Assign it your app with full control.
    - Click Generate token and choose your app.
    - Give it the permissions `whatsapp_business_messaging`, `whatsapp_business_management` and `business_management`.
@@ -41,9 +49,11 @@ WHATSAPP_PROVIDER=meta
 META_WHATSAPP_TOKEN=<the access token>
 META_PHONE_NUMBER_ID=<the Phone number ID>
 META_VERIFY_TOKEN=<any string you make up, e.g. gawah-7f3k>
-META_APP_SECRET=<the App secret>
+META_APP_SECRET=<the App secret, step 1.3>
 VERIFIED_NUMBERS=+91XXXXXXXXXX            # your phone, as on the allowed list
 ```
+
+With `META_APP_SECRET` set, Gawah checks Meta's signature on every webhook and refuses one that does not match. Leave it empty only to get a demo running while you find the secret. Gawah then takes webhooks unsigned, and logs `META_APP_SECRET IS NOT SET` at startup and on every webhook: anyone who learns the tunnel address could then post as a phone.
 
 `META_GRAPH_VERSION` can stay empty, which means v27.0. To go back to Twilio, set `WHATSAPP_PROVIDER=twilio` or delete the line.
 
@@ -92,9 +102,11 @@ Stop the server and the tunnel with Ctrl-C. Report how many messages Gawah sent:
 
 | Server log says | Means |
 |---|---|
-| `meta http 401 code 190` | The token has expired. Make a new one (step 1.2) or use a System User token. |
+| `meta http 401 code 190` | The token has expired. Make a new one (step 1.2) or use a System User token (step 1.5). |
+| Meta's webhook settings are greyed out, or no message ever reaches the server | The app is still in Development mode. Switch it to Live (step 1.4). |
+| `META_APP_SECRET IS NOT SET` | Webhooks are taken unsigned. Fine for a quick check; set the secret (step 1.3) before the demo. |
 | `code 131047` (often as `not delivered`, a few seconds after the send) | More than 24 hours since that phone last wrote. Send Gawah any message from it first. |
 | `code 131030` | That phone is not on the test number's allowed list (step 1.2). |
 | `code 131056` | Too many messages to one person too fast. Wait a minute. |
-| `403 bad signature` on `POST /whatsapp/webhook` | `META_APP_SECRET` is wrong, or belongs to another app. |
+| `403 bad signature` on `POST /whatsapp/webhook` | `META_APP_SECRET` is wrong, or belongs to another app. Copy it again from App settings > Basic > App secret > Show. |
 | `message(s) from a person with no phone number skipped` | The person uses a WhatsApp username and hides their number. Gawah knows people only by phone number. |

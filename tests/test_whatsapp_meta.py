@@ -32,6 +32,7 @@ from app.whatsapp import words
 from app.whatsapp.meta import Meta, payload, signature
 from app.whatsapp.meta_inbound import parse_meta, report_failures
 from app.whatsapp.outgoing import Button, Outgoing
+from app.whatsapp.settings import WhatsAppSettings
 from fakes import call as fake_call
 from fakes.memory import FakeMemory, silent_wav
 
@@ -132,14 +133,15 @@ def test_the_webhook_takes_metas_signed_json_and_still_takes_the_second_phones_f
         assert post(hello, {**tunnel, "content-type": "application/json"}) == 403  # no signature
         assert post(hello, {**signed(hello), "x-hub-signature-256": signature("wrong", hello)}) == 403
         assert post(hello.replace(b"hello", b"hallo"), signed(hello)) == 403  # the body was changed
-        assert post(b"not json", {"content-type": "application/json"}) == 422
+        assert post(thumbs, {"content-type": "application/json"}) == 403  # from this machine too, with the secret set
+        assert post(b"not json", signed(b"not json")) == 422
         client.portal.call(app.state.whatsapp.idle)
         client.portal.call(app.state.bus.drain)
         assert client.portal.call(app.state.store.events, None, "whatsapp.message") == []
 
         assert post(hello, signed(hello)) == 200
         assert post(tapped, signed(tapped)) == 200
-        assert post(thumbs, {"content-type": "application/json"}) == 200  # from this machine: no signature asked
+        assert post(thumbs, signed(thumbs)) == 200
         status = json.dumps(webhook(statuses=[{"id": "wamid.OUT1", "status": "read", "recipient_id": "919811100001"}])).encode()
         assert post(status, signed(status)) == 200
         # The dashboard's second phone still posts Twilio's form, from this machine.
@@ -155,6 +157,24 @@ def test_the_webhook_takes_metas_signed_json_and_still_takes_the_second_phones_f
         (Direction.IN, GEETA, "hello", True), (Direction.OUT, GEETA, words.HELP_NO_DEAL, True),
     ]
     assert log[0].provider_id.startswith("wamid.IN")
+
+
+def test_with_no_app_secret_meta_posts_are_taken_unsigned_with_a_loud_warning(tmp_path, caplog):
+    settings = WhatsAppSettings(
+        _env_file=None, database_path=str(tmp_path / "t.db"), whatsapp_provider="meta", meta_app_secret=None,
+    )
+    app = create_app(settings)
+    hello = json.dumps(webhook(text(SUNITA, "hello"))).encode()
+    tunnel = {"cf-connecting-ip": "1.2.3.4", "content-type": "application/json"}
+    with caplog.at_level(logging.WARNING, "gawah.whatsapp"), TestClient(app) as client:
+        assert client.post(WHATSAPP_WEBHOOK_PATH, content=hello, headers=tunnel).status_code == 200
+        client.portal.call(app.state.whatsapp.idle)
+        client.portal.call(app.state.bus.drain)
+        log = client.portal.call(app.state.store.events, None, "whatsapp.message")
+    assert [e.text for e in log] == ["hello", words.HELP_NO_DEAL]
+    warnings = [r.getMessage() for r in caplog.records if "META_APP_SECRET IS NOT SET" in r.getMessage()]
+    assert len(warnings) == 2  # once at startup, once for the post
+    assert all(w.startswith(f"deal={NO_DEAL} ") for w in warnings)
 
 
 def test_metas_signature_is_hmac_sha256_of_the_raw_body_with_the_app_secret():
