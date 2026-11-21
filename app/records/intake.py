@@ -38,6 +38,18 @@ def yes_or_no(text: str) -> bool | None:
     return True if _YES.intersection(said) else None
 
 
+def buttons_for(record: Record) -> tuple[tuple[str, str], ...]:
+    """The yes and no buttons under a question. Each id names the record, so a tap answers
+    that question even when the person has more than one open."""
+    return (f"yes:{record.id}", words.YES_BUTTON), (f"no:{record.id}", words.NO_BUTTON)
+
+
+def read_button(button: str | None) -> tuple[bool, str] | None:
+    """(yes or no, record id) for a tapped yes or no button; None for anything else."""
+    said, _, record_id = (button or "").partition(":")
+    return (said == "yes", record_id) if said in ("yes", "no") and record_id else None
+
+
 @dataclass
 class Ask:
     """A question put to one person about the other person's record, not yet answered."""
@@ -47,6 +59,7 @@ class Ask:
     sender: Person
     answerer: Person
     question: str
+    message_id: str | None = None  # the provider's id of the sender's message, to react to
     timer: asyncio.Task | None = None
 
 
@@ -62,10 +75,11 @@ class Intake:
 
     async def take(
         self, deal: Deal, sender: Person, text: str, media_url: str | None = None,
-        image: bytes | None = None, image_type: str | None = None,
+        image: bytes | None = None, image_type: str | None = None, message_id: str | None = None,
     ) -> bool:
         """Log one message as a record. False if it is not a record at all. Raises if the
-        message could not be read."""
+        message could not be read. message_id is the provider's id of the message, so Gawah
+        can react to it where the provider has reactions."""
         reading = await self.reader.read(text, image, image_type)
         if reading.kind == "unclear":
             return False
@@ -85,6 +99,8 @@ class Intake:
         self.bus.publish(RecordReceived(deal_id=deal.id, record=record))
         other = deal.person(sender.role.other)
         if backed or other is None or not other.phone:
+            if backed:
+                self.outbox.react(deal.id, sender.phone, sender.role, message_id, "✅")
             self.outbox.send(deal.id, sender.phone, sender.role, words.logged(record))
             if check:
                 await self.sentinel.logged(deal.id, record, check)
@@ -98,21 +114,28 @@ class Intake:
         )
         if check and check.line:
             await self.sentinel.disagrees(deal.id, record, check, other.role)
-        self.outbox.send(deal.id, other.phone, other.role, question)
+        self.outbox.send(deal.id, other.phone, other.role, question, buttons=buttons_for(record))
         self.outbox.send(deal.id, sender.phone, sender.role, words.asking_other(other))
-        ask = Ask(deal.id, record, sender, other, question)
+        ask = Ask(deal.id, record, sender, other, question, message_id)
         ask.timer = asyncio.create_task(self._wait(ask))
         self._asks.setdefault(other.phone, []).append(ask)
         return True
 
-    def answer(self, phone: str, text: str, name: str | None = None) -> bool:
-        """Take a yes or no as the answer to this person's oldest open question.
-        False if they have no open question or the message is not a yes or no."""
-        asks = self._asks.get(phone)
-        confirmed = yes_or_no(text) if asks else None
-        if confirmed is None:
+    def answer(self, phone: str, text: str, name: str | None = None, button: str | None = None) -> bool:
+        """Take a yes or no as the answer to this person's oldest open question, or a tapped
+        yes or no button as the answer to its own question. False if there is no such open
+        question or the message is not a yes or no."""
+        asks = self._asks.get(phone) or []
+        tapped = read_button(button)
+        if tapped:
+            confirmed, record_id = tapped
+            ask = next((a for a in asks if a.record.id == record_id), None)
+        else:
+            confirmed = yes_or_no(text) if asks else None
+            ask = asks[0] if confirmed is not None else None
+        if ask is None:
             return False
-        ask = asks.pop(0)
+        asks.remove(ask)
         ask.timer.cancel()
         ask.answerer.name = ask.answerer.name or name
         # A copy: the record inside the events already published must stay as it was sent.
@@ -123,12 +146,16 @@ class Intake:
                 confirmed=confirmed, record=record,
             )
         )
-        self.outbox.send(
-            ask.deal_id, ask.sender.phone, ask.sender.role,
-            words.answer_for_sender(ask.answerer, record, confirmed),
-        )
+        self._tell_sender(ask, record, confirmed)
         self.outbox.send(ask.deal_id, ask.answerer.phone, ask.answerer.role, words.ANSWER_NOTED)
         return True
+
+    def _tell_sender(self, ask: Ask, record: Record, confirmed: bool) -> None:
+        if confirmed:
+            self.outbox.react(ask.deal_id, ask.sender.phone, ask.sender.role, ask.message_id, "👍")
+        self.outbox.send(
+            ask.deal_id, ask.sender.phone, ask.sender.role, words.answer_for_sender(ask.answerer, record, confirmed)
+        )
 
     async def on_confirmed(self, event: RecordConfirmed) -> None:
         """An answer given somewhere else (the call-back): close the question and tell the
@@ -139,10 +166,7 @@ class Intake:
                 asks.remove(ask)
                 ask.timer.cancel()
                 record = ask.record.model_copy(update={"confirmed": event.confirmed})
-                self.outbox.send(
-                    ask.deal_id, ask.sender.phone, ask.sender.role,
-                    words.answer_for_sender(ask.answerer, record, event.confirmed),
-                )
+                self._tell_sender(ask, record, event.confirmed)
                 return
 
     async def _wait(self, ask: Ask) -> None:

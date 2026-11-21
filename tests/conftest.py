@@ -4,6 +4,14 @@ from app.bus import Bus
 from app.config import Settings
 
 
+@pytest.fixture(autouse=True)
+def _twilio_unless_a_test_says_meta(monkeypatch):
+    """The whatsapp stream reads WHATSAPP_PROVIDER and META_APP_SECRET from the shell or
+    .env even when a test's settings read no .env. Pin them, so the .env never decides."""
+    monkeypatch.setenv("WHATSAPP_PROVIDER", "twilio")
+    monkeypatch.setenv("META_APP_SECRET", "test-app-secret")
+
+
 @pytest.fixture
 async def bus():
     """A started bus. Call `await bus.drain()` before asserting on what handlers saw."""

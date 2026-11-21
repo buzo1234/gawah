@@ -13,6 +13,10 @@ _KIND = {
 }
 
 ANSWER_NOTED = "Shukriya, aapka jawab likh liya."
+ALREADY_ANSWERED = "Is sawaal ka jawab pehle hi likh liya hai."
+# Reply buttons under a yes-or-no question (at most 20 characters each).
+YES_BUTTON, NO_BUTTON = "Haan, sahi hai", "Nahi"
+CLIP_BUTTON = "Wo pal suniye"  # the link to the clip, as a button
 
 
 def who(person: Person) -> str:
