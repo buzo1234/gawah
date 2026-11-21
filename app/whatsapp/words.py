@@ -3,6 +3,7 @@ script. Gawah never gives an opinion on a deal, so none of these do. The lines a
 records are in app/records/words.py."""
 
 from app.contracts import Person
+from app.records.words import who
 
 HELP_NO_DEAL = (
     "Namaste, main Gawah hoon. Deal shuru karne ke liye doosre vyakti ka mobile number bhejiye."
@@ -37,6 +38,10 @@ def call_link_for_other(requester: Person, url: str) -> str:
         f"Namaste! {asked_by} aapke saath kaam ki deal pakki karna chahte hain. "
         f"Gawah is call ka gawah rahega. Call ke liye yeh link kholiye: {url}"
     )
+
+
+def call_opened(opener: Person, url: str) -> str:
+    return f"{who(opener)} aapse deal par phir se baat karna chahte hain. Call ke liye yeh link kholiye: {url}"
 
 
 def callback_link(url: str) -> str:

@@ -1,7 +1,9 @@
 """What Gawah says on WhatsApp about records. Short, plain Hinglish in Roman script.
 Gawah never gives an opinion, so none of these do."""
 
-from app.contracts import Person, Record, RecordKind, Role
+from datetime import date
+
+from app.contracts import ItemKey, Person, Record, RecordKind, Role
 
 _ROLE = {Role.HIRER: "Kaam dene wale", Role.WORKER: "Kaam karne wale"}
 _KIND = {
@@ -49,3 +51,65 @@ def answer_for_sender(answerer: Person, record: Record, confirmed: bool) -> str:
 
 def _rupees(amount: float | None) -> str | None:
     return None if amount is None else f"₹{amount:,.0f}"
+
+
+# ---------- the Sentinel: what is owed, what was agreed, reminders ----------
+
+_TERM = {ItemKey.ADVANCE: "advance", ItemKey.AMOUNT: "kul paisa", ItemKey.BALANCE: "baaki paisa"}
+
+
+def rupees(amount: int) -> str:
+    return f"₹{amount:,}"
+
+
+def day(when: date) -> str:
+    return f"{when.day} {when:%b}"
+
+
+def agreed(item: ItemKey, agreed_rupees: int, when: str | None, paid_before: int, clip: str | None) -> str:
+    """What the deal says about a term a claim disagrees with. Facts only, no opinion."""
+    line = f"Deal mein {_TERM[item]} {rupees(agreed_rupees)} tay hua tha" + (f" ({when})" if when else "") + "."
+    if paid_before:
+        line += f" {rupees(paid_before)} pehle se record mein hai."
+    if clip:
+        line += f" Wo pal yahan suniye: {clip}"
+    return line
+
+
+def paid(kind: RecordKind, amount: int, advance_owed: int | None, total_owed: int | None, when: str = "") -> str:
+    """After a payment: what came in and what is still owed, e.g.
+    'Advance ₹3,000 mil gaya. Baaki ₹10,000 kaam ke baad.'"""
+    partial = kind is RecordKind.ADVANCE and advance_owed is not None and advance_owed > 0
+    if partial:
+        line = f"Advance mein {rupees(amount)} mila, advance ke {rupees(advance_owed)} abhi baaki."
+    elif kind is RecordKind.ADVANCE:
+        line = f"Advance {rupees(amount)} mil gaya."
+    else:
+        line = f"{rupees(amount)} mil gaya."
+    return line + _still_owed(total_owed, "Kul baaki" if partial else "Baaki", when)
+
+
+def work_done(total_owed: int | None) -> str:
+    return "Kaam poora ho gaya, dono ne confirm kiya." + _still_owed(total_owed, "Deal ke hisaab se baaki", "")
+
+
+def remind_after_work(owed: int) -> str:
+    return f"Yaad dila raha hoon: kaam poora ho chuka hai, dono ne confirm kiya tha. Deal ke hisaab se {rupees(owed)} baaki hai."
+
+
+def remind_date(item: ItemKey, owed: int, due: date) -> str:
+    return f"Yaad dila raha hoon: deal mein {_TERM[item]} {day(due)} tak dena tay hua tha. Abhi {rupees(owed)} baaki hai."
+
+
+def hirer_reminded(hirer: Person, owed: int) -> str:
+    return f"Gawah ne {who(hirer)} ko {rupees(owed)} baaki ki yaad dila di hai."
+
+
+def _still_owed(total: int | None, lead: str, when: str) -> str:
+    if total is None:
+        return ""
+    if total > 0:
+        return f" {lead} {rupees(total)}{when}."
+    if total == 0:
+        return " Ab kuch baaki nahi."
+    return f" Deal se {rupees(-total)} zyada record mein hai."

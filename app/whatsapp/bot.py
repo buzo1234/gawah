@@ -12,17 +12,23 @@ from urllib.parse import urlsplit
 from app.bus import Bus
 from app.config import Settings
 from app.contracts import (
-    NO_DEAL, CallEnded, CallKind, ContractReady, Deal, DealRequested, Direction, Person,
-    ReplyTimeout, Role, WhatsAppMessage, call_path, callback_path, new_id,
+    NO_DEAL, AgentNote, CallEnded, CallKind, CallOpened, ContractReady, CrewAgent, Deal, DealRequested,
+    Direction, Person, ReplyTimeout, Role, WhatsAppMessage, call_path, callback_path, new_id,
 )
 from app.log import deal_log, mask_phone
 from app.records.intake import Intake
+from app.records.sentinel import Sentinel
 from app.store import Store
 from app.whatsapp import phone, words
 from app.whatsapp.outbox import Outbox
 from app.whatsapp.twilio import Twilio
 
 LOCAL_BASE_URL = "http://localhost:8000"  # used for links until PUBLIC_BASE_URL is set
+
+
+def link_for(settings: Settings) -> Callable[[str], str]:
+    """A path on this server as a link a person can open."""
+    return lambda path: (settings.public_base_url or LOCAL_BASE_URL).rstrip("/") + path
 
 
 @dataclass
@@ -55,7 +61,7 @@ def parse_inbound(form: dict[str, str]) -> Inbound | None:
 class Bot:
     def __init__(
         self, settings: Settings, bus: Bus, store: Store, twilio: Twilio, outbox: Outbox,
-        intake: Intake, sign: Callable[[str], Awaitable[str]],
+        intake: Intake, sign: Callable[[str], Awaitable[str]], sentinel: Sentinel | None = None,
     ) -> None:
         self.settings, self.bus, self.store = settings, bus, store
         self.twilio, self.outbox, self.intake = twilio, outbox, intake
@@ -63,6 +69,9 @@ class Bot:
         self._inbox: asyncio.Queue[Inbound] = asyncio.Queue()
         self._worker: asyncio.Task | None = None
         self._followed_up: set[tuple[str, str | None]] = set()
+        self._opened: set[tuple[str, int]] = set()
+        self.sentinel = sentinel
+        self._link = link_for(settings)
 
     # ---------- inbound ----------
 
@@ -73,12 +82,16 @@ class Bot:
 
     async def start(self) -> None:
         self._worker = asyncio.create_task(self._work())
+        if self.sentinel:
+            self.sentinel.reminders.load()
 
     async def stop(self) -> None:
         if self._worker:
             self._worker.cancel()
             await asyncio.gather(self._worker, return_exceptions=True)
         await self.intake.close()
+        if self.sentinel:
+            await self.sentinel.reminders.close()
         await self.outbox.close()
 
     async def idle(self) -> None:
@@ -174,15 +187,36 @@ class Bot:
                         return deal, person.role
         return None
 
-    def _link(self, path: str) -> str:
-        return (self.settings.public_base_url or LOCAL_BASE_URL).rstrip("/") + path
-
     # ---------- other streams' events ----------
+
+    async def on_call_opened(self, event: CallOpened) -> None:
+        """One person opened a second (or later) call: tell the other, with their link."""
+        once = (event.deal_id, event.call_no)
+        deal = await self.store.deal(event.deal_id)
+        if once in self._opened or deal is None:
+            return
+        self._opened.add(once)
+        opener, other = deal.person(event.opened_by), deal.person(event.opened_by.other)
+        if other is None or not other.phone:
+            return
+        url = self._link(call_path(event.deal_id, other.role))
+        self.outbox.send(event.deal_id, other.phone, other.role, words.call_opened(opener or Person(role=event.opened_by), url))
+        self.bus.publish(AgentNote(
+            deal_id=event.deal_id, agent=CrewAgent.SENTINEL,
+            text=f"call {event.call_no} opened by the {event.opened_by.value}: told the {other.role.value}, with their link",
+        ))
 
     async def on_call_ended(self, event: CallEnded) -> None:
         if event.kind is not CallKind.DEAL:
             return
+        # After a second call, the call-back again only for a term it changed that both have
+        # not confirmed. Without memory there is no telling, so everyone gets it, as before.
+        needed = set(Role)
+        if event.call_no > 1 and self.sentinel:
+            needed = await self.sentinel.callback_roles(event.deal_id, event.call_no)
         for person in await self._people(event.deal_id, event.people):
+            if person.role not in needed:
+                continue
             url = self._link(callback_path(event.deal_id, person.role))
             self.outbox.send(event.deal_id, person.phone, person.role, words.callback_link(url))
 
