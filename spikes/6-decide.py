@@ -358,6 +358,16 @@ def score_q(yeses: list[int], w: dict, q: str) -> dict:
             "silent_broken": silent_broken}
 
 
+def carried(by_line: dict[int, dict | None]) -> dict[int, dict]:
+    """A line with no usable answer keeps the previous answers, with addressed_gawah no:
+    what the brain does when Sage2 gives no answer for a line (session.py on_line)."""
+    out, last = {}, {q: False for q in QS}
+    for n in sorted(by_line):
+        a = by_line[n]
+        out[n] = last = a if a is not None else {**last, "addressed_gawah": False}
+    return out
+
+
 def as_bool(sage_answers: dict) -> dict:
     return {q: (p is not None and p >= 0.5) for q, p in sage_answers.items()}
 
@@ -377,7 +387,7 @@ def score():
         p = OUT / f"{e}.json"
         if p.exists():
             runs[e] = json.loads(p.read_text())
-            sources[e] = {cid: {int(n): r.get("answers") for n, r in rows.items()} for cid, rows in runs[e]["calls"].items()}
+            sources[e] = {cid: carried({int(n): r.get("answers") for n, r in rows.items()}) for cid, rows in runs[e]["calls"].items()}
     qs = QS + ["unclear_any", "closing_judge"]
     result = {"per_call": {}, "summary": {}, "agreement": {}, "latency": {}, "cost": {}, "spike_lines": {}}
     labelled = [cid for cid in cs if windows(cs[cid])]

@@ -1,0 +1,4388 @@
+{
+ "per_call": {
+  "call_missing_balance": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      16
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      16
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      8,
+      13
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      17,
+      22
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      8,
+      13,
+      17
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "call_two_amounts": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      23,
+      26
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      16
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      23,
+      26
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      6,
+      8,
+      22
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      5
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      5,
+      8,
+      22
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      26
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      26
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "demo_script_call": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 2,
+     "hits": 2,
+     "misses": 0,
+     "false_fires": [
+      7,
+      10
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 2,
+     "hits": 1,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 2,
+     "hits": 2,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      6
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 2,
+     "hits": 1,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 2,
+     "hits": 0,
+     "misses": 2,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      6
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 2,
+     "hits": 1,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [
+      3
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      7
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 2,
+     "hits": 2,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 2,
+     "hits": 2,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      3,
+      7
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 2,
+     "hits": 2,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 2,
+     "hits": 1,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 2,
+     "hits": 0,
+     "misses": 2,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 2,
+     "hits": 1,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "dry_run_call": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      16,
+      22
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      17
+     ],
+     "silent_broken": []
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [
+      18,
+      21
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      15
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      15,
+      21
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      9,
+      20
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      14
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      9,
+      14,
+      20
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      15
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      15
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "holdout_carpenter_call": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      7,
+      9
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      7,
+      9
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "spike_painter_call": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      16
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      25,
+      26
+     ],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      15
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      15
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "holdout2_ac_repair": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      14,
+      19,
+      21,
+      25
+     ],
+     "silent_broken": [
+      19,
+      25
+     ]
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      15
+     ],
+     "silent_broken": []
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      6,
+      27
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      15
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      17
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      6,
+      15,
+      27
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      2,
+      8
+     ],
+     "silent_broken": [
+      8
+     ]
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      2,
+      8
+     ],
+     "silent_broken": [
+      8
+     ]
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      9
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      9
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "holdout2_car_mechanic": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      20
+     ],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      15,
+      19,
+      22
+     ],
+     "silent_broken": [
+      27
+     ]
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      16,
+      23
+     ],
+     "silent_broken": [
+      27
+     ]
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      20
+     ],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      21
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      28
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      21,
+      28
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      20
+     ],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      3,
+      7,
+      11
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      22
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      3,
+      7,
+      11
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "holdout2_driver_monthly": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [
+      19
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      11,
+      13,
+      17,
+      26
+     ],
+     "silent_broken": [
+      11,
+      17
+     ]
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [
+      19
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      14,
+      27
+     ],
+     "silent_broken": []
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      13
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      11,
+      26
+     ],
+     "silent_broken": [
+      11
+     ]
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [
+      13
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      10,
+      19,
+      28
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      11,
+      13
+     ],
+     "silent_broken": [
+      11
+     ]
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      10,
+      19,
+      28
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      14
+     ],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      11
+     ],
+     "silent_broken": [
+      11
+     ]
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "holdout2_mason_wall_call1": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      21
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      15
+     ],
+     "silent_broken": [
+      30
+     ]
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      21
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": [
+      30
+     ]
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      30
+     ],
+     "silent_broken": [
+      30
+     ]
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      30
+     ],
+     "silent_broken": [
+      30
+     ]
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      8
+     ],
+     "silent_broken": [
+      8
+     ]
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      23
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      8,
+      23
+     ],
+     "silent_broken": [
+      8
+     ]
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      3
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      3
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "holdout2_mason_wall_call2": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      24
+     ],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      18
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      4
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      18
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      11,
+      26
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      11,
+      19,
+      21,
+      26
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      11,
+      19,
+      21,
+      26
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      24
+     ],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      6,
+      20,
+      25
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      10,
+      13,
+      19,
+      23,
+      26
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      6,
+      10,
+      13,
+      19,
+      23,
+      25
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      24
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      17,
+      23
+     ],
+     "silent_broken": [
+      17
+     ]
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      17,
+      23
+     ],
+     "silent_broken": [
+      17
+     ]
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "holdout2_tailor_lehenga": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      16,
+      27
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      28
+     ],
+     "silent_broken": []
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      21
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      21
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [
+      8,
+      10,
+      18
+     ],
+     "silent_broken": [
+      10
+     ]
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      29
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      8,
+      10,
+      18,
+      29
+     ],
+     "silent_broken": [
+      10
+     ]
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [
+      26
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      28
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [
+      26
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "holdout_carpenter_wardrobe": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      6
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      6
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      7
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      14
+     ],
+     "silent_broken": [
+      14
+     ]
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      7
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      4,
+      7,
+      9,
+      13
+     ],
+     "silent_broken": [
+      9
+     ]
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      5
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      4,
+      7,
+      9,
+      13
+     ],
+     "silent_broken": [
+      9
+     ]
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      4
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      4
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "holdout_cook_month": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      17,
+      23
+     ],
+     "silent_broken": [
+      17,
+      24
+     ]
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      24
+     ],
+     "silent_broken": [
+      24
+     ]
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      21,
+      23
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      21,
+      23
+     ],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      13,
+      23
+     ],
+     "silent_broken": [
+      14
+     ]
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      25
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      13,
+      23
+     ],
+     "silent_broken": [
+      14
+     ]
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": [
+      22,
+      24
+     ]
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": [
+      22,
+      24
+     ]
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "holdout_electrician_shop": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      14
+     ],
+     "silent_broken": [
+      14
+     ]
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      14
+     ],
+     "silent_broken": [
+      14
+     ]
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      8,
+      10,
+      13,
+      17
+     ],
+     "silent_broken": [
+      10,
+      14
+     ]
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      16
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      8,
+      10,
+      13,
+      17
+     ],
+     "silent_broken": [
+      10,
+      14
+     ]
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "holdout_plumber_leak": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      15,
+      23
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      16
+     ],
+     "silent_broken": []
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      16,
+      18
+     ],
+     "silent_broken": [
+      18
+     ]
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      16,
+      18
+     ],
+     "silent_broken": [
+      18
+     ]
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      8
+     ],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      18,
+      27
+     ],
+     "silent_broken": [
+      18
+     ]
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [
+      16
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      8,
+      18
+     ],
+     "silent_broken": [
+      18
+     ]
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [
+      16
+     ],
+     "silent_broken": []
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 0,
+     "misses": 1,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   }
+  },
+  "holdout_tutor_monthly": {
+   "sage2": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      13,
+      25
+     ],
+     "silent_broken": [
+      13,
+      20,
+      26
+     ]
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      26
+     ],
+     "silent_broken": [
+      20,
+      26
+     ]
+    }
+   },
+   "luna": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      13
+     ],
+     "silent_broken": [
+      13
+     ]
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "mini": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      6,
+      9
+     ],
+     "silent_broken": [
+      7
+     ]
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      6
+     ],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      13
+     ],
+     "silent_broken": [
+      13
+     ]
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [
+      6,
+      9
+     ],
+     "silent_broken": [
+      7
+     ]
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    }
+   },
+   "realtime": {
+    "addressed_gawah": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "topic_left_unclear": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "balance_skipped": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_soon": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      25
+     ],
+     "silent_broken": [
+      26
+     ]
+    },
+    "wrapping_up": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "unclear_any": {
+     "required": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_fires": [],
+     "silent_broken": []
+    },
+    "closing_judge": {
+     "required": 1,
+     "hits": 1,
+     "misses": 0,
+     "false_fires": [
+      26
+     ],
+     "silent_broken": [
+      26
+     ]
+    }
+   }
+  }
+ },
+ "summary": {
+  "sage2": {
+   "addressed_gawah": {
+    "required": 5,
+    "hits": 5,
+    "misses": 0,
+    "false_fires": 2,
+    "silent_broken": 0,
+    "calls": 17,
+    "calls_with_false_fire": 2
+   },
+   "topic_left_unclear": {
+    "required": 10,
+    "hits": 3,
+    "misses": 7,
+    "false_fires": 4,
+    "silent_broken": 0,
+    "calls": 17,
+    "calls_with_false_fire": 3
+   },
+   "balance_skipped": {
+    "required": 4,
+    "hits": 3,
+    "misses": 1,
+    "false_fires": 2,
+    "silent_broken": 0,
+    "calls": 15,
+    "calls_with_false_fire": 2
+   },
+   "closing_soon": {
+    "required": 16,
+    "hits": 16,
+    "misses": 0,
+    "false_fires": 26,
+    "silent_broken": 11,
+    "calls": 15,
+    "calls_with_false_fire": 12
+   },
+   "wrapping_up": {
+    "required": 18,
+    "hits": 16,
+    "misses": 2,
+    "false_fires": 0,
+    "silent_broken": 0,
+    "calls": 17,
+    "calls_with_false_fire": 0
+   },
+   "unclear_any": {
+    "required": 10,
+    "hits": 6,
+    "misses": 4,
+    "false_fires": 6,
+    "silent_broken": 0,
+    "calls": 17,
+    "calls_with_false_fire": 5
+   },
+   "closing_judge": {
+    "required": 18,
+    "hits": 18,
+    "misses": 0,
+    "false_fires": 10,
+    "silent_broken": 5,
+    "calls": 17,
+    "calls_with_false_fire": 8
+   }
+  },
+  "luna": {
+   "addressed_gawah": {
+    "required": 5,
+    "hits": 5,
+    "misses": 0,
+    "false_fires": 1,
+    "silent_broken": 0,
+    "calls": 17,
+    "calls_with_false_fire": 1
+   },
+   "topic_left_unclear": {
+    "required": 10,
+    "hits": 6,
+    "misses": 4,
+    "false_fires": 11,
+    "silent_broken": 1,
+    "calls": 17,
+    "calls_with_false_fire": 7
+   },
+   "balance_skipped": {
+    "required": 4,
+    "hits": 4,
+    "misses": 0,
+    "false_fires": 14,
+    "silent_broken": 2,
+    "calls": 15,
+    "calls_with_false_fire": 10
+   },
+   "closing_soon": {
+    "required": 16,
+    "hits": 15,
+    "misses": 1,
+    "false_fires": 5,
+    "silent_broken": 3,
+    "calls": 15,
+    "calls_with_false_fire": 4
+   },
+   "wrapping_up": {
+    "required": 18,
+    "hits": 13,
+    "misses": 5,
+    "false_fires": 0,
+    "silent_broken": 0,
+    "calls": 17,
+    "calls_with_false_fire": 0
+   },
+   "unclear_any": {
+    "required": 10,
+    "hits": 9,
+    "misses": 1,
+    "false_fires": 23,
+    "silent_broken": 3,
+    "calls": 17,
+    "calls_with_false_fire": 14
+   },
+   "closing_judge": {
+    "required": 18,
+    "hits": 14,
+    "misses": 4,
+    "false_fires": 0,
+    "silent_broken": 0,
+    "calls": 17,
+    "calls_with_false_fire": 0
+   }
+  },
+  "mini": {
+   "addressed_gawah": {
+    "required": 5,
+    "hits": 5,
+    "misses": 0,
+    "false_fires": 4,
+    "silent_broken": 0,
+    "calls": 17,
+    "calls_with_false_fire": 3
+   },
+   "topic_left_unclear": {
+    "required": 10,
+    "hits": 8,
+    "misses": 2,
+    "false_fires": 39,
+    "silent_broken": 8,
+    "calls": 17,
+    "calls_with_false_fire": 17
+   },
+   "balance_skipped": {
+    "required": 4,
+    "hits": 4,
+    "misses": 0,
+    "false_fires": 16,
+    "silent_broken": 1,
+    "calls": 15,
+    "calls_with_false_fire": 10
+   },
+   "closing_soon": {
+    "required": 16,
+    "hits": 14,
+    "misses": 2,
+    "false_fires": 7,
+    "silent_broken": 2,
+    "calls": 15,
+    "calls_with_false_fire": 6
+   },
+   "wrapping_up": {
+    "required": 18,
+    "hits": 14,
+    "misses": 4,
+    "false_fires": 0,
+    "silent_broken": 0,
+    "calls": 17,
+    "calls_with_false_fire": 0
+   },
+   "unclear_any": {
+    "required": 10,
+    "hits": 10,
+    "misses": 0,
+    "false_fires": 48,
+    "silent_broken": 9,
+    "calls": 17,
+    "calls_with_false_fire": 17
+   },
+   "closing_judge": {
+    "required": 18,
+    "hits": 16,
+    "misses": 2,
+    "false_fires": 1,
+    "silent_broken": 0,
+    "calls": 17,
+    "calls_with_false_fire": 1
+   }
+  },
+  "realtime": {
+   "addressed_gawah": {
+    "required": 5,
+    "hits": 5,
+    "misses": 0,
+    "false_fires": 0,
+    "silent_broken": 0,
+    "calls": 17,
+    "calls_with_false_fire": 0
+   },
+   "topic_left_unclear": {
+    "required": 10,
+    "hits": 6,
+    "misses": 4,
+    "false_fires": 6,
+    "silent_broken": 2,
+    "calls": 17,
+    "calls_with_false_fire": 6
+   },
+   "balance_skipped": {
+    "required": 4,
+    "hits": 4,
+    "misses": 0,
+    "false_fires": 3,
+    "silent_broken": 1,
+    "calls": 15,
+    "calls_with_false_fire": 2
+   },
+   "closing_soon": {
+    "required": 16,
+    "hits": 14,
+    "misses": 2,
+    "false_fires": 4,
+    "silent_broken": 2,
+    "calls": 15,
+    "calls_with_false_fire": 4
+   },
+   "wrapping_up": {
+    "required": 18,
+    "hits": 12,
+    "misses": 6,
+    "false_fires": 0,
+    "silent_broken": 0,
+    "calls": 17,
+    "calls_with_false_fire": 0
+   },
+   "unclear_any": {
+    "required": 10,
+    "hits": 9,
+    "misses": 1,
+    "false_fires": 8,
+    "silent_broken": 3,
+    "calls": 17,
+    "calls_with_false_fire": 7
+   },
+   "closing_judge": {
+    "required": 18,
+    "hits": 14,
+    "misses": 4,
+    "false_fires": 1,
+    "silent_broken": 1,
+    "calls": 17,
+    "calls_with_false_fire": 1
+   }
+  }
+ },
+ "agreement": {
+  "sage2~luna:addressed_gawah": [
+   516,
+   518
+  ],
+  "sage2~luna:topic_left_unclear": [
+   466,
+   518
+  ],
+  "sage2~luna:balance_skipped": [
+   451,
+   488
+  ],
+  "sage2~luna:closing_soon": [
+   436,
+   518
+  ],
+  "sage2~luna:wrapping_up": [
+   500,
+   518
+  ],
+  "sage2~mini:addressed_gawah": [
+   513,
+   518
+  ],
+  "sage2~mini:topic_left_unclear": [
+   416,
+   518
+  ],
+  "sage2~mini:balance_skipped": [
+   451,
+   488
+  ],
+  "sage2~mini:closing_soon": [
+   434,
+   518
+  ],
+  "sage2~mini:wrapping_up": [
+   500,
+   518
+  ],
+  "sage2~realtime:addressed_gawah": [
+   516,
+   518
+  ],
+  "sage2~realtime:topic_left_unclear": [
+   444,
+   518
+  ],
+  "sage2~realtime:balance_skipped": [
+   473,
+   488
+  ],
+  "sage2~realtime:closing_soon": [
+   441,
+   518
+  ],
+  "sage2~realtime:wrapping_up": [
+   501,
+   518
+  ],
+  "luna~mini:addressed_gawah": [
+   511,
+   518
+  ],
+  "luna~mini:topic_left_unclear": [
+   416,
+   518
+  ],
+  "luna~mini:balance_skipped": [
+   452,
+   488
+  ],
+  "luna~mini:closing_soon": [
+   490,
+   518
+  ],
+  "luna~mini:wrapping_up": [
+   510,
+   518
+  ],
+  "luna~realtime:addressed_gawah": [
+   516,
+   518
+  ],
+  "luna~realtime:topic_left_unclear": [
+   460,
+   518
+  ],
+  "luna~realtime:balance_skipped": [
+   456,
+   488
+  ],
+  "luna~realtime:closing_soon": [
+   497,
+   518
+  ],
+  "luna~realtime:wrapping_up": [
+   513,
+   518
+  ],
+  "mini~realtime:addressed_gawah": [
+   511,
+   518
+  ],
+  "mini~realtime:topic_left_unclear": [
+   426,
+   518
+  ],
+  "mini~realtime:balance_skipped": [
+   458,
+   488
+  ],
+  "mini~realtime:closing_soon": [
+   491,
+   518
+  ],
+  "mini~realtime:wrapping_up": [
+   513,
+   518
+  ]
+ },
+ "latency": {
+  "luna": {
+   "n": 518,
+   "median_ms": 1140.5,
+   "p95_ms": 1453,
+   "max_ms": 5287
+  },
+  "mini": {
+   "n": 518,
+   "median_ms": 1567.0,
+   "p95_ms": 2304,
+   "max_ms": 3866
+  },
+  "realtime": {
+   "n": 518,
+   "median_ms": 2580.5,
+   "p95_ms": 4688,
+   "max_ms": 8227
+  },
+  "sage2": {
+   "n": 106,
+   "median_ms": 576.0,
+   "p95_ms": 702,
+   "max_ms": 889,
+   "source": "spikes/5-results/sage2-*-v2.json"
+  }
+ },
+ "cost": {
+  "luna": {
+   "tokens": {
+    "input": 477735,
+    "cached": 0,
+    "output": 21238,
+    "reasoning": 0
+   },
+   "usd_total": 0.121,
+   "lines": 518,
+   "usd_per_30_line_call": 0.007,
+   "requests_sent_total": 518,
+   "unparsed_or_failed": 0,
+   "errors": 0
+  },
+  "mini": {
+   "tokens": {
+    "input": 477735,
+    "cached": 77440,
+    "output": 72828,
+    "reasoning": 50586
+   },
+   "usd_total": 0.6338,
+   "lines": 518,
+   "usd_per_30_line_call": 0.0367,
+   "requests_sent_total": 518,
+   "unparsed_or_failed": 0,
+   "errors": 0
+  },
+  "realtime": {
+   "tokens": {
+    "input": 459605,
+    "cached": 383232,
+    "output": 118419,
+    "reasoning": 0
+   },
+   "usd_total": 3.3008,
+   "lines": 518,
+   "usd_per_30_line_call": 0.1912,
+   "requests_sent_total": 518,
+   "unparsed_or_failed": 11,
+   "errors": 0
+  }
+ },
+ "spike_lines": {
+  "sage2": {
+   "addressed_gawah": [
+    44,
+    44
+   ],
+   "topic_left_unclear": [
+    46,
+    46
+   ],
+   "wrapping_up": [
+    45,
+    45
+   ]
+  },
+  "luna": {
+   "addressed_gawah": [
+    44,
+    44
+   ],
+   "topic_left_unclear": [
+    46,
+    46
+   ],
+   "wrapping_up": [
+    45,
+    45
+   ]
+  },
+  "mini": {
+   "addressed_gawah": [
+    42,
+    44
+   ],
+   "topic_left_unclear": [
+    41,
+    46
+   ],
+   "wrapping_up": [
+    45,
+    45
+   ]
+  },
+  "realtime": {
+   "addressed_gawah": [
+    44,
+    44
+   ],
+   "topic_left_unclear": [
+    44,
+    46
+   ],
+   "wrapping_up": [
+    45,
+    45
+   ]
+  }
+ }
+}

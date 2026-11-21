@@ -1,0 +1,147 @@
+labelled calls: 17: call_missing_balance, call_two_amounts, demo_script_call, dry_run_call, holdout_carpenter_call, spike_painter_call, holdout2_ac_repair, holdout2_car_mechanic, holdout2_driver_monthly, holdout2_mason_wall_call1, holdout2_mason_wall_call2, holdout2_tailor_lehenga, holdout_carpenter_wardrobe, holdout_cook_month, holdout_electrician_shop, holdout_plumber_leak, holdout_tutor_monthly
+
+question            source    hits/req  misses  false fires (calls with one)  silent lines broken
+addressed_gawah     sage2       5/5         0     2 (2/17)                       0
+addressed_gawah     luna        5/5         0     1 (1/17)                       0
+addressed_gawah     mini        5/5         0     4 (3/17)                       0
+addressed_gawah     realtime    5/5         0     0 (0/17)                       0
+
+topic_left_unclear  sage2       3/10        7     4 (3/17)                       0
+topic_left_unclear  luna        6/10        4    11 (7/17)                       1
+topic_left_unclear  mini        8/10        2    39 (17/17)                       8
+topic_left_unclear  realtime    6/10        4     6 (6/17)                       2
+
+balance_skipped     sage2       3/4         1     2 (2/15)                       0
+balance_skipped     luna        4/4         0    14 (10/15)                       2
+balance_skipped     mini        4/4         0    16 (10/15)                       1
+balance_skipped     realtime    4/4         0     3 (2/15)                       1
+
+closing_soon        sage2      16/16        0    26 (12/15)                      11
+closing_soon        luna       15/16        1     5 (4/15)                       3
+closing_soon        mini       14/16        2     7 (6/15)                       2
+closing_soon        realtime   14/16        2     4 (4/15)                       2
+
+wrapping_up         sage2      16/18        2     0 (0/17)                       0
+wrapping_up         luna       13/18        5     0 (0/17)                       0
+wrapping_up         mini       14/18        4     0 (0/17)                       0
+wrapping_up         realtime   12/18        6     0 (0/17)                       0
+
+unclear_any         sage2       6/10        4     6 (5/17)                       0
+unclear_any         luna        9/10        1    23 (14/17)                       3
+unclear_any         mini       10/10        0    48 (17/17)                       9
+unclear_any         realtime    9/10        1     8 (7/17)                       3
+
+closing_judge       sage2      18/18        0    10 (8/17)                       5
+closing_judge       luna       14/18        4     0 (0/17)                       0
+closing_judge       mini       16/18        2     1 (1/17)                       0
+closing_judge       realtime   14/18        4     1 (1/17)                       1
+
+spike 5 per-line accuracy (lines marked ? left out):
+  sage2     addressed_gawah 44/44  topic_left_unclear 46/46  wrapping_up 45/45
+  luna      addressed_gawah 44/44  topic_left_unclear 46/46  wrapping_up 45/45
+  mini      addressed_gawah 42/44  topic_left_unclear 41/46  wrapping_up 45/45
+  realtime  addressed_gawah 44/44  topic_left_unclear 44/46  wrapping_up 45/45
+
+agreement per line, every call:
+  sage2~luna:addressed_gawah               516/518 = 99.6%
+  sage2~luna:topic_left_unclear            466/518 = 90.0%
+  sage2~luna:balance_skipped               451/488 = 92.4%
+  sage2~luna:closing_soon                  436/518 = 84.2%
+  sage2~luna:wrapping_up                   500/518 = 96.5%
+  sage2~mini:addressed_gawah               513/518 = 99.0%
+  sage2~mini:topic_left_unclear            416/518 = 80.3%
+  sage2~mini:balance_skipped               451/488 = 92.4%
+  sage2~mini:closing_soon                  434/518 = 83.8%
+  sage2~mini:wrapping_up                   500/518 = 96.5%
+  sage2~realtime:addressed_gawah           516/518 = 99.6%
+  sage2~realtime:topic_left_unclear        444/518 = 85.7%
+  sage2~realtime:balance_skipped           473/488 = 96.9%
+  sage2~realtime:closing_soon              441/518 = 85.1%
+  sage2~realtime:wrapping_up               501/518 = 96.7%
+  luna~mini:addressed_gawah                511/518 = 98.6%
+  luna~mini:topic_left_unclear             416/518 = 80.3%
+  luna~mini:balance_skipped                452/488 = 92.6%
+  luna~mini:closing_soon                   490/518 = 94.6%
+  luna~mini:wrapping_up                    510/518 = 98.5%
+  luna~realtime:addressed_gawah            516/518 = 99.6%
+  luna~realtime:topic_left_unclear         460/518 = 88.8%
+  luna~realtime:balance_skipped            456/488 = 93.4%
+  luna~realtime:closing_soon               497/518 = 95.9%
+  luna~realtime:wrapping_up                513/518 = 99.0%
+  mini~realtime:addressed_gawah            511/518 = 98.6%
+  mini~realtime:topic_left_unclear         426/518 = 82.2%
+  mini~realtime:balance_skipped            458/488 = 93.9%
+  mini~realtime:closing_soon               491/518 = 94.8%
+  mini~realtime:wrapping_up                513/518 = 99.0%
+
+latency: {
+ "luna": {
+  "n": 518,
+  "median_ms": 1140.5,
+  "p95_ms": 1453,
+  "max_ms": 5287
+ },
+ "mini": {
+  "n": 518,
+  "median_ms": 1567.0,
+  "p95_ms": 2304,
+  "max_ms": 3866
+ },
+ "realtime": {
+  "n": 518,
+  "median_ms": 2580.5,
+  "p95_ms": 4688,
+  "max_ms": 8227
+ },
+ "sage2": {
+  "n": 106,
+  "median_ms": 576.0,
+  "p95_ms": 702,
+  "max_ms": 889,
+  "source": "spikes/5-results/sage2-*-v2.json"
+ }
+}
+cost: {
+ "luna": {
+  "tokens": {
+   "input": 477735,
+   "cached": 0,
+   "output": 21238,
+   "reasoning": 0
+  },
+  "usd_total": 0.121,
+  "lines": 518,
+  "usd_per_30_line_call": 0.007,
+  "requests_sent_total": 518,
+  "unparsed_or_failed": 0,
+  "errors": 0
+ },
+ "mini": {
+  "tokens": {
+   "input": 477735,
+   "cached": 77440,
+   "output": 72828,
+   "reasoning": 50586
+  },
+  "usd_total": 0.6338,
+  "lines": 518,
+  "usd_per_30_line_call": 0.0367,
+  "requests_sent_total": 518,
+  "unparsed_or_failed": 0,
+  "errors": 0
+ },
+ "realtime": {
+  "tokens": {
+   "input": 459605,
+   "cached": 383232,
+   "output": 118419,
+   "reasoning": 0
+  },
+  "usd_total": 3.3008,
+  "lines": 518,
+  "usd_per_30_line_call": 0.1912,
+  "requests_sent_total": 518,
+  "unparsed_or_failed": 11,
+  "errors": 0
+ }
+}
