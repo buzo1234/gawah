@@ -41,10 +41,10 @@ LiveKit and Twilio are both on free plans with monthly allowances. Burning them 
 | Feature | Feasible in 2 days | How | Risk |
 |---|---|---|---|
 | Gawah connects both parties on a call | Yes | A LiveKit room per deal; each person gets a join link on WhatsApp | Medium - opening the link from inside WhatsApp needs the mic to work |
-| Knowing who said what | Yes | Each person is a separate audio track in the room | Low |
+| Knowing who said what | Yes | Each person is a separate audio track in the room | Low - confirmed in spike 1 |
 | Live transcript in Hindi / Hinglish | Yes | Each track goes to OpenAI `gpt-transcribe`, with a prompt and Hindi plus English hints | Medium - tested on recorded Hinglish; a single amount can be misheard |
 | Judge tracks pending contract items, live | Yes | Sage2 stream: one yes/no question per checklist item, updated as each line is said | Low - tested on Hinglish, 286 of 286 answers right |
-| Judge speaks like a person in the call | Yes | OpenAI realtime voice model, published into the room as Gawah's audio, silent until told to speak | Medium - we wire this ourselves |
+| Judge speaks like a person in the call | Yes | OpenAI realtime voice model, published into the room as Gawah's audio, silent until told to speak | Medium - wired and measured in spike 3; echo and how it sounds are unchecked |
 | Picking the right moment to speak | Yes, with tuning | Sage2 decisions on how the call is going, plus waiting for a pause | High - this is the part to tune |
 | Read-back of full terms on the call | Yes | Same voice model | Low |
 | Independent call-back to each party | Yes | A one-to-one room; the person taps a link | Low - but it is a link, not a ring |
@@ -66,7 +66,16 @@ LiveKit and Twilio are both on free plans with monthly allowances. Burning them 
 - Each person is a separate audio track. This is what tells us who is speaking - no speaker-separation model needed.
 - The call starts with a short recording notice and both say yes.
 
-LiveKit's agent framework is built around one person talking to one agent. For two people plus Gawah we do not use that ready-made session. The agent subscribes to each person's track itself and handles them separately. LiveKit's repo has a multi-user transcriber example to start from.
+LiveKit's agent framework is built around one person talking to one agent. For two people plus Gawah we do not use that ready-made session. The agent joins with LiveKit's low-level Python client (`livekit` for the room, `livekit-api` for tokens and rooms), subscribes to each person's track itself and handles them separately. Spike 1 ran this with two headless browsers and the agent in one room; the working code is `spikes/1-call/agent.py`. LiveKit's multi-user transcriber example is built on the framework's session, so it is not our starting point.
+
+What spike 1 fixed (details in `spikes/1-call.md`):
+
+- Everything about a person is keyed on their identity, the name in their join token. The participant id and the track id both change every time they rejoin.
+- The agent receives each track as 16-bit mono PCM at the rate it asks for: 48 kHz by default, 24 kHz in the spike. Audio was flowing under 2 seconds after a person joined.
+- A person who drops without leaving (lost network, app closed) is reported gone only after 22 seconds. Until then their track is silence. A clean leave, or the same person opening the link again, is reported at once.
+- A room has no maximum-length setting. The 10-minute cap is our own timer that deletes the room.
+- The page uses LiveKit's browser client (`livekit-client` 2.25.0). The spike loaded it from a public address; our app should serve it.
+- Machine-checked only. A real phone and the link opened inside WhatsApp are still to do.
 
 ### 2. Witness and Judge
 
@@ -74,7 +83,7 @@ One live voice on the call, with a harness behind it deciding what it says and w
 
 - Ears (Witness): each person's audio track goes to OpenAI `gpt-transcribe` (listed at $0.0045 per minute), with a short prompt (the speakers' names, the kind of words to expect) and Hindi plus English language hints. Our own end-of-speech detection decides when a line ends, not OpenAI's, which added words nobody said. The text arrives about a second after the line ends (0.8-0.9 s measured), on top of however long our detection waits to decide the person has stopped. Transcript lines are saved with speaker and timestamp. The agent also writes each track's audio to a file and uploads it to S3 at the end.
 - Fast brain (Sage2): every transcript line is appended to a Sage2 stream. Sage2 answers a fixed set of questions about the call so far and sends an update only when an answer changes. Measured from India: about half a second per update (the vendor states 80-130 ms; half of our delay is the network trip to its US servers).
-- Mouth (voice model): OpenAI's realtime voice model (`gpt-realtime-2.1`). The agent holds a connection to it and publishes its audio into the room as Gawah's voice. Automatic replies are switched off, so it stays silent until the harness tells it to speak. If someone talks over it, the agent stops the audio, like a person would.
+- Mouth (voice model): OpenAI's realtime voice model, `gpt-realtime-2.1`. Not the mini: in spike 3 the mini added words to 4 of 9 questions and once suggested a term. The agent holds one connection open for the whole call (opening one takes about a second) and publishes the model's audio into the room as Gawah's voice. Automatic replies are switched off and the model is never sent the room's audio, so it stays silent until the harness tells it to speak; 65 seconds of two people talking produced nothing. From the harness's trigger to the first sound in the room is 1.1-1.9 seconds (median 1.3). If someone talks over it, the agent stops the audio, like a person would: it was silent in the room 139-158 ms after the person's first sound. The agent spots a person speaking by loudness on that person's own track. Machine-checked only; details in `spikes/3-mouth.md`.
 - Slow brain (reasoning model): writes the contract after the call. Not in the live loop.
 
 Questions Sage2 answers during the call (limit is 32 per session):
@@ -159,14 +168,15 @@ What would cost money, and is not needed for the demo:
 
 ## Risks, in order
 
-1. Picking the moment to speak. A wrong interruption is worse than silence. Sage2's docs describe live call monitoring, but not turn-taking - that use is ours and unproven. Tune it on recorded practice calls, and keep the safety switch.
-2. Two people plus an agent on LiveKit. The framework's ready-made session handles one person. We wire the per-person tracks and the voice output ourselves. Prove it in the first spike.
-3. Sage2's free usage. It works on Hinglish, but $1 a month is only about a dozen full-length calls, and the spike has used about a tenth of it. Build the brain against the saved spike results, and use live Sage2 only for tuning runs and the demo. Backup: the same questions on a small OpenAI text model, or Sage2's $14 plan.
-4. The call link opened from WhatsApp. Some in-app browsers block the mic. Test on the real phone early; the fix is a "open in browser" prompt.
-5. Running out of free allowance. See "Use the free plans with care".
-6. An amount said only once can be misheard. In the spike "seventeen thousand" came back as "seventy thousand" every time, and it reads as confidently as a correct line. The read-back on the call and the separate confirmation with each person are what protect the contract.
-7. AWS keys expiring mid-build. Replace all three together when they do.
-8. Time. See the cut list.
+1. Picking the moment to speak. A wrong interruption is worse than silence. Sage2's docs describe live call monitoring, but not turn-taking - that use is ours and unproven. Gawah's voice starts about 1.3 seconds after the harness decides, so the pause has to be judged with that delay in mind. Tune it on recorded practice calls, and keep the safety switch.
+2. Two people plus an agent on LiveKit. Proved in spike 1 with headless browsers: separate tracks, the right person on each, and Gawah's voice published into the room. What is left: a person who drops is only reported gone after 22 seconds, so the Judge could put a question to someone who is no longer there; and a real phone has not been tried.
+3. Gawah stopping when it should not. It stops when a person's track gets loud. That was tested only against a silent fake microphone. A cough, a "haan", or Gawah's own voice coming out of a loudspeaker and back into a microphone may cut it off. Check with a real phone and a laptop; the first fix to try is a higher threshold while Gawah is speaking.
+4. Sage2's free usage. It works on Hinglish, but $1 a month is only about a dozen full-length calls, and the spike has used about a tenth of it. Build the brain against the saved spike results, and use live Sage2 only for tuning runs and the demo. Backup: the same questions on a small OpenAI text model, or Sage2's $14 plan.
+5. The call link opened from WhatsApp. Some in-app browsers block the mic. Test on the real phone early; the fix is a "open in browser" prompt. The checklist is `spikes/1-call/HUMAN-CHECK.md`.
+6. Running out of free allowance. See "Use the free plans with care".
+7. An amount said only once can be misheard. In the spike "seventeen thousand" came back as "seventy thousand" every time, and it reads as confidently as a correct line. The read-back on the call and the separate confirmation with each person are what protect the contract.
+8. AWS keys expiring mid-build. Replace all three together when they do.
+9. Time. See the cut list.
 
 ## Test these first (first 3 hours)
 
@@ -205,6 +215,9 @@ Stretch:
 - Whether our agent, running on the laptop, counts as a participant against LiveKit's 5,000 call minutes. The pages do not say. Assume it does.
 - How much of this month's LiveKit allowance is already used. It is shared across all free projects on the account. Check the LiveKit dashboard.
 - Whether the call page's mic works when the link is opened inside WhatsApp.
+- The call on a real phone with real microphones. Spike 1 used headless Chrome on the laptop, with recordings as the microphones. The checklist is `spikes/1-call/HUMAN-CHECK.md`.
+- Whether Gawah's own voice, coming out of a loudspeaker, cuts it off (echo), and whether ordinary room noise does.
+- How Gawah's Hindi sounds to a person. It was judged from transcripts only; samples are in `spikes/1-call/samples/`.
 - Whether our server can receive and reply to sandbox messages. Joining works on the trial (see below); the webhook is untested until the server exists.
 - Sage2's real spend so far. The spike estimated $0.11 from token counts; check the Levanto dashboard.
 - Sage2 on real transcription output. The Sage2 spike used clean hand-written transcripts; real lines have mishearings and are in Devanagari. Real transcripts to try it on are now in `spikes/2-results/`.
@@ -217,6 +230,8 @@ Confirmed on 21 Nov:
 - AWS keys work; S3 bucket created and written to.
 - LiveKit keys work.
 - LiveKit free plan ("Build"), from its pricing and limits pages: 5,000 call minutes a month, counted per person connected; 100 connections at once; 60 minutes of its recording service. It is a hard cap - once used up, new calls fail, with no charges. It resets on the 1st of each month. The 1,000 "agent session minutes" are for agents hosted on LiveKit's cloud; ours runs on the laptop, and the docs treat that as self-hosted. A 10-minute call with two people and the agent is about 30 minutes of allowance, so roughly 160 such calls a month.
+- The LiveKit call with two people and our agent (spike 1, `spikes/1-call.md`), machine-checked with headless browsers: both heard each other, and the agent got each person as a separate track tied to the right identity. A hard drop is reported after 22 seconds. Spikes 1 and 3 together used about 22.5 of the 5,000 monthly minutes.
+- The realtime voice as Gawah's mouth (spike 3, `spikes/3-mouth.md`), machine-checked: silent for 65 seconds untriggered; first sound in the room 1.1-1.9 seconds after a trigger; silent 139-158 ms after being talked over. `gpt-realtime-2.1` said only what it was told, 13 times of 13; the mini did not.
 - Sage2 on Hinglish (spike 5, `spikes/5-sage2.md`): yes/no decisions were right on 286 of 286 answers in Roman Hinglish, 285 of 286 in Devanagari, and 147 of 150 on a second, unseen call. About half a second per update. Its extract call is not usable for Hinglish values.
 - OpenAI transcription on Hinglish (spike 2, `spikes/2-ears.md`): `gpt-transcribe` with a prompt got 36 to 40 of 42 amounts, dates, names and brands right on 24 recorded lines, always in Devanagari, with the text 0.8-0.9 seconds after the line ends. "Seventeen thousand" was heard as "seventy thousand" in 42 of 43 runs. `gpt-live-transcribe` was less accurate and costs four times as much.
 - Amazon Transcribe supports Hindi (`hi-IN`, streaming, `us-west-2`). On five lines it was not clearly better than OpenAI, so it stays a backup.
