@@ -4,6 +4,7 @@ from it. Streams only read."""
 
 import asyncio
 import sqlite3
+from contextlib import nullcontext
 import threading
 from datetime import UTC, datetime
 
@@ -57,9 +58,15 @@ class Store:
         await asyncio.to_thread(_open)
 
     async def close(self) -> None:
-        if self._db:
-            await asyncio.to_thread(self._db.close)
-            self._db = None
+        def _close() -> None:
+            # Under the lock, so a write or read still in progress finishes first. Closing
+            # the connection under another thread's feet crashes the whole process.
+            with self._lock:
+                if self._db:
+                    self._db.close()
+                    self._db = None
+
+        await asyncio.to_thread(_close)
 
     async def record_event(self, event: Event) -> None:
         await asyncio.to_thread(self._record, event)
@@ -102,12 +109,14 @@ class Store:
     async def _query(self, sql: str, args: tuple) -> list[tuple]:
         def _run() -> list[tuple]:
             with self._lock:
-                return self._db.execute(sql, args).fetchall()
+                return self._db.execute(sql, args).fetchall() if self._db else []
 
         return await asyncio.to_thread(_run)
 
     def _record(self, event: Event) -> None:
-        with self._lock, self._db as db:
+        with self._lock, (self._db or nullcontext()) as db:
+            if db is None:  # closed: an event that arrives during shutdown is dropped
+                return
             db.execute(
                 "INSERT INTO events (event_id, name, deal_id, ts, payload) VALUES (?, ?, ?, ?, ?)",
                 (event.event_id, event.name, event.deal_id, event.ts.isoformat(), event.model_dump_json()),
