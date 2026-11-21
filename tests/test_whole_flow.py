@@ -322,7 +322,7 @@ async def test_a_second_call_on_the_same_deal_from_the_same_links(flow, caplog):
 
     first, _ = await call(0, f"deal-{deal_id}-1")
     page = (await flow.client.get(call_path(deal_id, Role.WORKER))).text
-    assert '"ended": 1' in page and "Phir se baat karein" in page
+    assert '"ended": 1' in page and "Call again" in page
     late = await flow.client.post(call_path(deal_id, Role.HIRER) + "/join?after=0")
     assert late.status_code == 410
 

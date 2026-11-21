@@ -1,180 +1,202 @@
 <!doctype html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b0f14">
+<meta name="theme-color" content="#16181d">
 <link rel="icon" href="data:,">
 <title>Gawah</title>
 <style>
-  :root { --bg: #0b0f14; --ink: #f4f7fa; --soft: #aab6c2; --green: #22c55e; --red: #ef4444; --gold: #f5b942; --key: #26303b; }
+  :root { --ink: #fff; --soft: rgba(235,235,245,.62); --faint: rgba(235,235,245,.38); --glass: rgba(255,255,255,.17);
+          --glass-press: rgba(255,255,255,.32); --red: #ff3b30; --green: #34c759; --bg: #16181d; }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
-  body { margin: 0; background: radial-gradient(120% 70% at 50% 0%, #1b2633 0%, var(--bg) 60%); background-color: var(--bg);
-         color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; text-align: center; }
-  main { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; max-width: 480px; margin: 0 auto;
-         padding: max(16px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom)); }
+  body { margin: 0; background: var(--bg); color: var(--ink); text-align: center; overflow: hidden;
+         font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
+         -webkit-font-smoothing: antialiased; }
+  /* The iPhone's call screen: the contact's colours, blurred far out of focus, under a dark veil. */
+  .backdrop { position: fixed; inset: -25%; z-index: 0; filter: blur(70px) saturate(115%);
+              background: radial-gradient(38% 30% at 30% 22%, #55657a 0%, transparent 70%),
+                          radial-gradient(40% 34% at 76% 38%, #5e5168 0%, transparent 70%),
+                          radial-gradient(46% 36% at 40% 82%, #2f4a52 0%, transparent 70%), #1d2027; }
+  .backdrop::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,.32); }
+  main { position: relative; z-index: 1; display: flex; flex-direction: column; height: 100vh; height: 100dvh;
+         max-width: 430px; margin: 0 auto; padding: max(14px, env(safe-area-inset-top)) 28px max(26px, env(safe-area-inset-bottom)); }
   [hidden] { display: none !important; }
 
-  .top { display: flex; justify-content: space-between; align-items: center; min-height: 32px; font-size: 16px; color: var(--soft); }
-  .brand { font-weight: 700; letter-spacing: .02em; color: var(--ink); }
-  .rec { display: none; align-items: center; gap: 8px; font-size: 15px; color: #ffd0d0; }
-  .rec i { width: 10px; height: 10px; border-radius: 50%; background: var(--red); animation: blink 1.6s ease-in-out infinite; }
-  body[data-state="on"] .rec { display: inline-flex; }
+  .top { height: 26px; display: flex; justify-content: center; align-items: center; }
+  .rec { display: none; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; letter-spacing: .01em;
+         color: #fff; background: rgba(255,59,48,.22); padding: 4px 10px 4px 8px; border-radius: 999px; }
+  .rec i { width: 7px; height: 7px; border-radius: 50%; background: var(--red); animation: blink 1.6s ease-in-out infinite; }
+  body[data-state="on"] .rec, body[data-state="waiting"] .rec, body[data-state="reconnecting"] .rec,
+  body[data-state="actor"] .rec.live { display: inline-flex; }
 
-  .stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 0; }
-  #title { font-size: 34px; font-weight: 700; line-height: 1.15; margin: 0; }
-  #status:empty { display: none; }
-  #status { font-size: 20px; line-height: 1.4; color: var(--soft); margin: 10px 0 0; min-height: 28px; max-width: 360px; }
-  body[data-state="on"] #status { color: #86efac; }
-  body[data-state="error"] #status { color: #fde68a; }
-  #timer { font-size: 22px; font-variant-numeric: tabular-nums; margin: 4px 0 0; min-height: 30px; display: none; }
-  body[data-state="on"] #timer { display: block; }
-  #length { font-size: 20px; color: var(--soft); margin: 10px 0 0; display: none; }
-  body[data-state="ended"] #length { display: block; }
+  .caller { padding-top: 7vh; }
+  #title { font-size: 34px; font-weight: 400; letter-spacing: .01em; line-height: 1.15; margin: 0; overflow-wrap: anywhere; }
+  #status, #timer { font-size: 17px; line-height: 1.35; color: var(--soft); margin: 6px 0 0; min-height: 23px; }
+  #timer { font-variant-numeric: tabular-nums; display: none; }
+  body[data-state="on"] #timer, body[data-state="actor"] #timer:not(:empty) { display: block; }
+  body[data-state="on"] #status, body[data-state="actor"] #status:empty { display: none; }
+  #gawah { display: none; align-items: center; justify-content: center; gap: 7px; margin: 10px 0 0; font-size: 14px; color: var(--faint); }
+  body[data-state="waiting"] #gawah, body[data-state="on"] #gawah, body[data-state="reconnecting"] #gawah,
+  body[data-state="actor"] #gawah { display: flex; }
+  #gawah i { width: 6px; height: 6px; border-radius: 50%; background: var(--faint); }
+  #gawah.talking { color: var(--soft); }
+  #gawah.talking i { background: #fff; animation: breathe .9s ease-in-out infinite alternate; }
+  #length { font-size: 15px; color: var(--faint); margin: 4px 0 0; display: none; }
+  body[data-state="ended"] #length:not(:empty) { display: block; }
 
-  .person { margin: 34px 0 8px; }
-  .avatar { position: relative; width: 148px; height: 148px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center;
-            background: linear-gradient(145deg, #fcd34d, #d97706); box-shadow: 0 0 0 4px rgba(255,255,255,.08); --glow: 253,224,71; }
-  .avatar svg { width: 72px; height: 72px; fill: #1c1405; }
-  .person .sub { font-size: 18px; color: var(--soft); margin-top: 16px; min-height: 24px; }
-  .talking .avatar { animation: talk 1s ease-in-out infinite alternate; }
-  .talking .sub { color: var(--gold); }
-  body[data-state="connecting"] .avatar::before, body[data-state="connecting"] .avatar::after {
-    content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(252,211,77,.6); animation: pulse 2.6s ease-out infinite; }
-  body[data-state="connecting"] .avatar::after { animation-delay: 1.3s; }
-  body[data-state="ended"] .person, body[data-state="mic"] .person { display: none; }
-  body:not([data-state="on"]) .person .sub { visibility: hidden; }
-
-  .note { font-size: 18px; line-height: 1.45; border-radius: 16px; padding: 14px 16px; margin: 16px 0 0; text-align: left; }
-  #keep-open { font-size: 16px; color: var(--soft); margin: 14px 0 0; display: none; }
-  body[data-state="on"] #keep-open { display: block; }
-  #next { background: #13261b; color: #d1fae5; display: none; }
+  .stage { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 0; }
+  #me { font-size: 15px; color: var(--faint); margin: 0; }
+  .note { font-size: 15px; line-height: 1.45; border-radius: 14px; padding: 12px 14px; margin: 10px 0 0; text-align: left;
+          background: rgba(255,255,255,.1); color: var(--soft); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+  #mic-quiet { background: rgba(255,59,48,.24); color: #fff; }
+  #keep-open { font-size: 13px; color: var(--faint); margin: auto 0 18px; max-width: 280px; }
+  #next { display: none; }
   body[data-state="ended"] #next { display: block; }
-  .big-icon { width: 96px; height: 96px; border-radius: 50%; display: none; place-items: center; margin: 0 auto 22px; }
-  .big-icon svg { width: 48px; height: 48px; fill: #fff; }
-  body[data-state="ended"] #done-icon { display: grid; background: #1f3b2a; }
-  body[data-state="mic"] #mic-icon { display: grid; background: #5a1f1f; }
-  #hint { background: #33260f; color: #ffe8b8; line-height: 1.55; }
-  #hint b { color: #fff; }
-  #hint ol { margin: 8px 0 0; padding-left: 22px; }
-  #hint li { margin: 6px 0; }
+  #mic-help b { color: #fff; }
+  #mic-help ol { margin: 6px 0 0; padding-left: 20px; }
+  #mic-help li { margin: 4px 0; }
+  #copy { font: inherit; font-size: 15px; font-weight: 600; width: 100%; margin-top: 10px; padding: 11px; border: 0; border-radius: 10px;
+          background: rgba(255,255,255,.18); color: #fff; }
 
-  .actions { padding: 8px 0 4px; }
-  .key { font: inherit; background: none; border: 0; padding: 0; color: var(--ink); display: inline-flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; }
-  .key .disc { width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; background: var(--key); transition: transform .1s, background .15s; }
-  .key:active .disc { transform: scale(.94); }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); row-gap: 22px; justify-items: center; margin: 0 0 30px; }
+  .key { font: inherit; background: none; border: 0; padding: 0; color: var(--ink); display: flex; flex-direction: column;
+         align-items: center; gap: 8px; cursor: pointer; }
+  .key .disc { width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; background: var(--glass);
+               -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); transition: background .15s, transform .1s; }
   .key svg { width: 32px; height: 32px; fill: currentColor; }
-  .key .label { font-size: 16px; color: var(--soft); }
-  .controls { display: flex; justify-content: space-around; align-items: flex-start; }
-  .key[aria-pressed="true"] .disc { background: var(--ink); color: var(--bg); }
-  #leave .disc { background: var(--red); color: #fff; }
-  #leave svg { transform: rotate(135deg); }
-  #join .disc { width: 88px; height: 88px; background: var(--green); color: #fff; box-shadow: 0 8px 28px rgba(34,197,94,.35); }
-  #join svg { width: 40px; height: 40px; }
-  #join .label { font-size: 22px; font-weight: 700; color: var(--ink); }
+  .key .label { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .key:active:not(:disabled) .disc { background: var(--glass-press); }
+  .key[aria-pressed="true"] .disc { background: #fff; color: #1c1c1e; }
+  .key:disabled { cursor: default; opacity: .38; }
+  .end { display: flex; justify-content: center; min-height: 104px; }
+  #leave .disc, #join .disc { width: 76px; height: 76px; color: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  #leave .disc { background: var(--red); }
+  #leave svg { transform: rotate(135deg); width: 34px; height: 34px; }
+  #join .disc { background: var(--green); }
+  #join svg { width: 34px; height: 34px; }
+  #join:active .disc { transform: scale(.95); }
   body[data-state="idle"] #join .disc { animation: ring 2.4s ease-in-out infinite; }
-  #join:disabled .disc { background: #3d5245; box-shadow: none; animation: none; }
+  #join:disabled { opacity: 1; }
+  #join:disabled .disc { background: rgba(52,199,89,.45); animation: none; }
 
-  /* A dark gap, then the ring: it reads as a ring even around Gawah's gold. */
-  @keyframes talk { from { box-shadow: 0 0 0 4px var(--bg), 0 0 0 8px rgba(var(--glow),.95), 0 0 22px 10px rgba(var(--glow),.35); }
-                    to   { box-shadow: 0 0 0 5px var(--bg), 0 0 0 11px rgba(var(--glow),.95), 0 0 40px 18px rgba(var(--glow),.5); } }
-  @keyframes pulse { from { transform: scale(1); opacity: .9; } to { transform: scale(1.55); opacity: 0; } }
   @keyframes blink { 50% { opacity: .25; } }
-  @keyframes ring { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,.5); } 50% { box-shadow: 0 0 0 16px rgba(34,197,94,0); } }
-  @media (max-height: 640px) { .avatar { width: 120px; height: 120px; } .person { margin-top: 22px; } #title { font-size: 30px; } }
-  @media (max-height: 700px) { body[data-state="mic"] #mic-icon { display: none; } }
+  @keyframes breathe { from { transform: scale(.8); opacity: .6; } to { transform: scale(1.35); opacity: 1; } }
+  @keyframes ring { 0%, 100% { box-shadow: 0 0 0 0 rgba(52,199,89,.45); } 50% { box-shadow: 0 0 0 14px rgba(52,199,89,0); } }
+  @media (max-height: 700px) {
+    .caller { padding-top: 3vh; }
+    #title { font-size: 30px; }
+    .key .disc, #leave .disc, #join .disc { width: 64px; height: 64px; }
+    .key svg { width: 28px; height: 28px; }
+    .grid { row-gap: 14px; margin-bottom: 18px; }
+    .end { min-height: 88px; }
+    .note { font-size: 14px; padding: 10px 12px; }
+  }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
 </style>
 </head>
 <body data-state="idle">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></symbol>
-  <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></symbol>
   <symbol id="i-mic-off" viewBox="0 0 24 24"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5a3 3 0 0 0-6 0v.18l5.98 5.99zM4.27 3 3 4.27l6.01 6.01V11a3 3 0 0 0 3 3c.22 0 .44-.03.65-.08l1.66 1.66A5.5 5.5 0 0 1 12 16.1 5.3 5.3 0 0 1 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28a7.1 7.1 0 0 0 2.54-.9L19.73 21 21 19.73 4.27 3z"/></symbol>
+  <symbol id="i-keypad" viewBox="0 0 24 24"><g><circle cx="6" cy="4" r="1.9"/><circle cx="12" cy="4" r="1.9"/><circle cx="18" cy="4" r="1.9"/><circle cx="6" cy="10" r="1.9"/><circle cx="12" cy="10" r="1.9"/><circle cx="18" cy="10" r="1.9"/><circle cx="6" cy="16" r="1.9"/><circle cx="12" cy="16" r="1.9"/><circle cx="18" cy="16" r="1.9"/><circle cx="12" cy="22" r="1.9"/></g></symbol>
   <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></symbol>
-  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V5l-8-3zm-2 15-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></symbol>
-  <symbol id="i-check" viewBox="0 0 24 24"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></symbol>
+  <symbol id="i-add" viewBox="0 0 24 24"><path d="M11 4h2v7h7v2h-7v7h-2v-7H4v-2h7z"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><path d="M15 8v8H4V8h11m1-2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-3.5l5 4v-13l-5 4V7a1 1 0 0 0-1-1z"/></symbol>
+  <symbol id="i-contacts" viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></symbol>
 </svg>
+<div class="backdrop" aria-hidden="true"></div>
 <main>
-  <header class="top">
-    <span class="brand">Gawah</span>
-    <span class="rec"><i></i>Record ho raha hai</span>
-  </header>
+  <header class="top"><span class="rec" id="rec"><i></i>Recording</span></header>
 
-  <section class="stage">
-    <div class="big-icon" id="done-icon"><svg><use href="#i-check"/></svg></div>
-    <div class="big-icon" id="mic-icon"><svg><use href="#i-mic-off"/></svg></div>
+  <section class="caller" id="them">
     <h1 id="title">Gawah</h1>
-    <p id="status" role="status">Gawah aapse akele mein baat karke deal ki shartein confirm karega.</p>
+    <p id="status" role="status">Gawah will confirm the deal's terms with you, one to one.</p>
     <p id="timer" aria-live="off"></p>
     <p id="length"></p>
-    <div class="person" id="gawah">
-      <div class="avatar"><svg><use href="#i-shield"/></svg></div>
-      <div class="sub" id="gawah-line">Gawah sun raha hai</div>
-    </div>
-    <p id="keep-open">Baat ke dauraan yeh page khula rakhiye aur phone lock mat kijiye.</p>
-    <p class="note" id="next">Dhanyavaad. Aage ki baat Gawah aapko WhatsApp par bhejega.</p>
-    <div class="note" id="hint" hidden>
-      WhatsApp ke andar khula link kabhi-kabhi microphone nahi deta. Yeh kijiye:
-      <ol>
-        <li>Upar teen bindu <b>⋮</b> dabaiye aur <b>Open in Chrome</b> (ya "Browser mein kholein") chuniye. iPhone par neeche <b>Safari</b> ka nishaan dabaiye.</li>
-        <li>Wahan "Microphone" ke liye <b>Allow</b> dabaiye.</li>
-        <li>Phir neeche hara button dabaiye.</li>
-      </ol>
-    </div>
+    <p id="gawah"><i></i><span id="gawah-line">Gawah is listening</span></p>
   </section>
 
-  <footer class="actions">
-    <button class="key" id="join"><span class="disc"><svg><use href="#i-phone"/></svg></span><span class="label" id="join-label">Baat shuru karein</span></button>
-    <div class="controls" id="controls" hidden>
-      <button class="key" id="mute" aria-pressed="false"><span class="disc"><svg><use id="mute-icon" href="#i-mic"/></svg></span><span class="label" id="mute-label">Mute</span></button>
-      <button class="key" id="speaker" aria-pressed="true"><span class="disc"><svg><use href="#i-speaker"/></svg></span><span class="label" id="speaker-label">Speaker</span></button>
-      <button class="key" id="leave" hidden><span class="disc"><svg><use href="#i-phone"/></svg></span><span class="label">Call kaatein</span></button>
+  <section class="stage">
+    <p class="note" id="tap-audio" role="alert" hidden>Tap anywhere to hear Gawah.</p>
+    <p class="note" id="next">Thank you. Gawah will send you what happens next on WhatsApp.</p>
+    <p class="note" id="actor-note" hidden>Test mode: an AI voice is on this call in this person's place. Stop it from the dashboard.</p>
+    <div class="note" id="hint" hidden>
+      A link opened inside WhatsApp sometimes cannot use the microphone. Try this:
+      <ol>
+        <li>Tap <b>⋮</b> at the top and choose <b>Open in Chrome</b>. On an iPhone, tap the <b>Safari</b> icon at the bottom.</li>
+        <li>Tap <b>Allow</b> when it asks for the microphone.</li>
+        <li>Then tap the green button below.</li>
+      </ol>
     </div>
+    <p id="keep-open" hidden>Keep this page open and your phone unlocked during the call.</p>
+  </section>
+
+  <div class="grid" id="controls" hidden>
+    <button class="key" id="mute" aria-pressed="false"><span class="disc"><svg><use href="#i-mic-off"/></svg></span><span class="label" id="mute-label">mute</span></button>
+    <button class="key" disabled aria-label="keypad (not available)"><span class="disc"><svg><use href="#i-keypad"/></svg></span><span class="label">keypad</span></button>
+    <button class="key" id="speaker" aria-pressed="true"><span class="disc"><svg><use href="#i-speaker"/></svg></span><span class="label" id="speaker-label">speaker</span></button>
+    <button class="key" disabled aria-label="add call (not available)"><span class="disc"><svg><use href="#i-add"/></svg></span><span class="label">add call</span></button>
+    <button class="key" disabled aria-label="FaceTime (not available)"><span class="disc"><svg><use href="#i-video"/></svg></span><span class="label">FaceTime</span></button>
+    <button class="key" disabled aria-label="contacts (not available)"><span class="disc"><svg><use href="#i-contacts"/></svg></span><span class="label">contacts</span></button>
+  </div>
+
+  <footer class="end">
+    <button class="key" id="join"><span class="disc"><svg><use href="#i-phone"/></svg></span><span class="label" id="join-label">Join</span></button>
+    <button class="key" id="leave" hidden><span class="disc"><svg><use href="#i-phone"/></svg></span><span class="label">End</span></button>
   </footer>
 </main>
 <script src="/mouth/static/livekit-client.umd.min.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const GAWAH = 'gawah';  // tuning.IDENTITY
-const TITLES = { ended: 'Baat poori ho gayi', mic: 'Microphone nahi chal raha' };
+const [, , DEAL, ROLE] = location.pathname.split('/');
+const TITLES = { mic: 'Microphone blocked' };
 const WORDS = {
-  idle: 'Gawah aapse akele mein baat karke deal ki shartein confirm karega.',
-  connecting: 'Jud rahe hain...',
-  on: 'Gawah se baat chalu hai',
-  mic: 'Microphone ke bina baat nahi ho sakti.',
+  idle: "Gawah will confirm the deal's terms with you, one to one.",
+  connecting: 'Connecting...',
+  on: '',
+  ended: 'Call ended',
+  mic: 'The call needs your microphone.',
 };
-const BUTTON = { idle: 'Baat shuru karein', connecting: 'Jud rahe hain...', ended: 'Phir se baat karein' };
-let room = null, wakeLock = null, startedAt = null, ticker = null, selfMuted = false, quiet = false;
+// The server's own message is in Hinglish (it is also what Gawah would say); the page says it in English.
+const FAILED = { 404: 'There is nothing to confirm with you yet.', network: 'No network. Try again.' };
+const BUTTON = { idle: 'Join', connecting: 'Connecting...', ended: 'Call again' };
+let room = null, mic = null, wakeLock = null, startedAt = null, ticker = null, selfMuted = false, quiet = false;
 
-// iPhones fix a page's volume at full: there the speaker button could do nothing, so it is not shown.
+// iPhones fix a page's volume at full: there the speaker button could do nothing, so it is greyed out.
 const canTurnDown = (() => { const a = document.createElement('audio'); a.volume = 0.5; return a.volume === 0.5; })();
-$('speaker').hidden = !canTurnDown;
+$('speaker').disabled = !canTurnDown;
 
 function clock(ms) {
   const s = Math.floor(ms / 1000);
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 }
 
-// state: idle, connecting, on, ended, mic, error (error carries the words to show)
+// state: idle, connecting, on, ended, mic, error (error carries the words to show), actor
 function show(state, words) {
   document.body.dataset.state = state;
   $('title').textContent = TITLES[state] || 'Gawah';
   $('status').textContent = words ?? WORDS[state] ?? '';
   const on = state === 'on';
-  $('controls').hidden = $('leave').hidden = !on;
-  $('join').hidden = on;
+  $('controls').hidden = !on && state !== 'actor';
+  $('leave').hidden = !on;
+  $('join').hidden = on || state === 'actor';
   $('join').disabled = state === 'connecting';
-  $('join-label').textContent = BUTTON[state] || 'Phir se koshish karein';
+  $('join-label').textContent = BUTTON[state] || 'Try again';
   $('hint').hidden = state !== 'mic';
-  if (!on) speaking([]);
+  $('keep-open').hidden = !on;
+  $('actor-note').hidden = state !== 'actor';
+  if (state !== 'on') $('tap-audio').hidden = true;
+  document.querySelectorAll('#controls .key').forEach((b) => { if (b.id) b.disabled = state === 'actor' || (b.id === 'speaker' && !canTurnDown); });
+  if (state !== 'actor') speaking([]);
 }
 
 function speaking(who) {
   const talking = who.some((p) => p.identity === GAWAH);
   $('gawah').classList.toggle('talking', talking);
-  $('gawah-line').textContent = talking ? 'Gawah bol raha hai' : 'Gawah sun raha hai';
+  $('gawah-line').textContent = talking ? 'Gawah is speaking' : 'Gawah is listening';
 }
 
 function status(text) { $('status').textContent = text; }
@@ -183,92 +205,134 @@ function finish() {
   clearInterval(ticker);
   if (wakeLock) wakeLock.release().catch(() => {});
   const s = startedAt ? Math.round((Date.now() - startedAt) / 1000) : 0;
-  $('length').textContent = s ? (s >= 60 ? `${Math.floor(s / 60)} minute ` : '') + `${s % 60} second baat hui` : '';
+  $('length').textContent = s ? (s >= 60 ? `${Math.floor(s / 60)} min ` : '') + `${s % 60} sec` : '';
   startedAt = null;
   show('ended');
 }
 
 async function keepAwake() {
   if (!navigator.wakeLock || !room || document.visibilityState !== 'visible') return;
-  try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { /* low battery, or not allowed */ }
+  try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { /* low battery, not allowed, or in a frame */ }
 }
 
 async function toggleMute() {
-  if (!room) return;
+  if (!room || !mic) return;
   selfMuted = !selfMuted;
-  try { await room.localParticipant.setMicrophoneEnabled(!selfMuted); } catch (e) { console.warn('mute:', e.message); }
+  try { await (selfMuted ? mic.mute() : mic.unmute()); } catch (e) { console.warn('mute:', e.message); }
   drawMute();
 }
 
 function drawMute() {
   $('mute').setAttribute('aria-pressed', selfMuted);
-  $('mute-icon').setAttribute('href', selfMuted ? '#i-mic-off' : '#i-mic');
-  $('mute-label').textContent = selfMuted ? 'Mic band hai' : 'Mute';
 }
 
 // Turned down, for holding the phone at the ear. A browser cannot switch to the earpiece.
 function loudness() {
   document.querySelectorAll('audio').forEach((el) => { el.volume = quiet ? 0.3 : 1; });
   $('speaker').setAttribute('aria-pressed', !quiet);
-  $('speaker-label').textContent = quiet ? 'Dheemi awaaz' : 'Speaker';
 }
 
-// Everything happens inside the button's tap, so the phone allows the microphone and the sound.
+// The microphone and the sound are asked for inside the tap itself, before anything is awaited:
+// after an await a phone (and WhatsApp's own browser) no longer counts it as the person's tap and
+// refuses the sound. A refused sound is never a failed call: the room stays, and the next tap starts it.
 async function join() {
   show('connecting');
   selfMuted = false; quiet = false;
+  const LK = LivekitClient;
+  const audio = { echoCancellation: true, noiseSuppression: true, autoGainControl: true };
+  const r = new LK.Room({ audioCaptureDefaults: audio, adaptiveStream: false, dynacast: false });
+  r.startAudio().catch(() => {});
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('no microphone access here');
+    mic = await LK.createLocalAudioTrack(audio);
+  } catch (e) {
+    console.warn('microphone:', e.name, e.message);
+    return show('mic');
+  }
   let answer;
   try {
     const res = await fetch(location.pathname.replace(/\/$/, '') + '/join', { method: 'POST' });
     answer = await res.json();
-    if (!res.ok) return show('error', answer.message || 'Abhi baat nahi ho paa rahi. Thodi der mein dobara koshish kijiye.');
+    if (!res.ok) { mic.stop(); return show('error', FAILED[res.status] || 'Cannot reach Gawah right now. Try again in a moment.'); }
   } catch (e) {
-    return show('error', 'Network nahi mil raha. Dobara koshish kijiye.');
+    mic.stop();
+    return show('error', FAILED.network);
   }
-  const LK = LivekitClient;
-  room = new LK.Room({ adaptiveStream: false, dynacast: false });
-  room.on(LK.RoomEvent.TrackSubscribed, (track) => {
+  r.on(LK.RoomEvent.TrackSubscribed, (track) => {
     if (track.kind === 'audio') document.body.appendChild(track.attach());
     loudness();
   });
-  room.on(LK.RoomEvent.TrackUnsubscribed, (track) => track.detach().forEach((el) => el.remove()));
-  room.on(LK.RoomEvent.ActiveSpeakersChanged, speaking);
-  room.on(LK.RoomEvent.Reconnecting, () => status('Network dheema hai, dobara jud rahe hain...'));
-  room.on(LK.RoomEvent.Reconnected, () => status(WORDS.on));
-  room.on(LK.RoomEvent.AudioPlaybackStatusChanged, () => {
-    if (!room.canPlaybackAudio) status('Awaaz sunne ke liye screen par ek baar tap kijiye.');
-  });
-  room.on(LK.RoomEvent.Disconnected, () => { if (room) { room = null; finish(); } });
-  document.body.addEventListener('click', () => room && room.startAudio());
+  r.on(LK.RoomEvent.TrackUnsubscribed, (track) => track.detach().forEach((el) => el.remove()));
+  r.on(LK.RoomEvent.ActiveSpeakersChanged, speaking);
+  r.on(LK.RoomEvent.Reconnecting, () => status('Poor connection. Reconnecting...'));
+  r.on(LK.RoomEvent.Reconnected, () => status(WORDS.on));
+  r.on(LK.RoomEvent.AudioPlaybackStatusChanged, tapToHear);
+  r.on(LK.RoomEvent.Disconnected, () => { mic.stop(); if (room) { room = null; finish(); } });
   try {
-    await room.connect(answer.url, answer.token);
-    await room.startAudio();
+    await r.connect(answer.url, answer.token);
   } catch (e) {
-    room = null;
-    return show('error', 'Jud nahi paaye. Dobara koshish kijiye.');
+    console.warn('connect:', e.name, e.message);
+    mic.stop();
+    return show('error', 'Could not connect to Gawah. Check your internet, then tap Try again.');
   }
+  room = r;
   try {
-    await room.localParticipant.setMicrophoneEnabled(true, { echoCancellation: true, noiseSuppression: true, autoGainControl: true });
+    await r.localParticipant.publishTrack(mic);
   } catch (e) {
     // Without a microphone there is no call: leave, so the room does not sit open.
-    const r = room; room = null; await r.disconnect();
+    console.warn('publish:', e.name, e.message);
+    room = null; mic.stop(); await r.disconnect();
     return show('mic');
   }
   startedAt = Date.now();
-  $('timer').textContent = '0:00';
+  $('timer').textContent = '00:00';
   ticker = setInterval(() => { $('timer').textContent = clock(Date.now() - startedAt); }, 1000);
   show('on');
   drawMute();
   loudness();
   keepAwake();
+  r.startAudio().catch(() => {}).finally(tapToHear);
+}
+
+// The phone would not play sound without a tap: say so until a tap starts it.
+function tapToHear() {
+  $('tap-audio').hidden = !room || room.canPlaybackAudio;
+}
+
+// Testing with one real phone: an AI may play this person (app/actor). The page then shows that
+// instead of joining. The route exists only in development and only on localhost.
+let actorOn = false;
+async function watchActor() {
+  if (!room && document.body.dataset.state !== 'connecting') {
+    let s;
+    try {
+      const res = await fetch(`/actor/status?deal_id=${encodeURIComponent(DEAL)}`);
+      if (!res.ok) return;
+      s = await res.json();
+    } catch (e) { return setTimeout(watchActor, 5000); }
+    if (s.active && s.role === ROLE && s.kind === 'callback') {
+      actorOn = true;
+      show('actor', s.state === 'on' ? '' : 'Connecting...');
+      $('timer').textContent = s.state === 'on' && s.seconds != null ? clock(s.seconds * 1000) : '';
+      $('rec').classList.toggle('live', s.state === 'on');
+      $('gawah-line').textContent = `AI is playing ${s.name || 'the ' + ROLE}`;
+    } else if (actorOn) {
+      actorOn = false;
+      show('ended');
+    }
+  }
+  setTimeout(watchActor, 2000);
 }
 
 $('join').onclick = join;
 $('leave').onclick = () => room && room.disconnect();
 $('mute').onclick = toggleMute;
 $('speaker').onclick = () => { quiet = !quiet; loudness(); };
+document.body.addEventListener('click', () => { if (room) room.startAudio().catch(() => {}).finally(tapToHear); });
 document.addEventListener('visibilitychange', keepAwake);
 if (new URLSearchParams(location.search).get('auto') === '1') join();  // for the headless check in tests/mouth
+// Only inside the dashboard's phone frame: a real phone never asks. (__watchActor is for tests/call_page_shots.py.)
+if (window.top !== window || window.__watchActor) watchActor();
 </script>
 </body>
 </html>
