@@ -44,9 +44,32 @@ def frames(pcm: bytes) -> list[bytes]:
 class FakeListener:
     def __init__(self) -> None:
         self.disconnected = False
+        self.in_room: set[str] = set()  # what LiveKit itself would say
+
+    def people(self) -> set[str]:
+        return set(self.in_room)
 
     async def disconnect(self) -> None:
         self.disconnected = True
+
+
+class FakeRoom:
+    """One room as a test plays it. joined and left change who is in the room and then
+    tell the call, as LiveKit does; everything else goes straight to the call."""
+
+    def __init__(self, session: CallSession, listener: FakeListener) -> None:
+        self.session, self.listener = session, listener
+
+    def joined(self, identity: str) -> None:
+        self.listener.in_room.add(identity)
+        self.session.joined(identity)
+
+    def left(self, identity: str) -> None:
+        self.listener.in_room.discard(identity)
+        self.session.left(identity)
+
+    def __getattr__(self, name: str):
+        return getattr(self.session, name)
 
 
 class FakeLiveKit(LiveKit):
@@ -54,7 +77,7 @@ class FakeLiveKit(LiveKit):
         super().__init__(LIVEKIT_SETTINGS)
         self.created: list[str] = []
         self.deleted: list[str] = []
-        self.open: dict[str, CallSession] = {}  # room name -> who the listener reports to
+        self.open: dict[str, FakeRoom] = {}
         self.listeners: list[FakeListener] = []
 
     async def create_room(self, name: str) -> None:
@@ -68,8 +91,8 @@ class FakeLiveKit(LiveKit):
         return list(self.open)
 
     async def listen(self, room_name: str, events) -> FakeListener:
-        self.open[room_name] = events
         self.listeners.append(FakeListener())
+        self.open[room_name] = FakeRoom(events, self.listeners[-1])
         return self.listeners[-1]
 
 
@@ -122,19 +145,23 @@ class World:
             self.room(deal_id).joined(role.value)
         return token
 
-    def room(self, deal_id: str = "d1") -> CallSession:
+    def room(self, deal_id: str = "d1") -> FakeRoom:
         return self.livekit.open[f"deal-{deal_id}"]
 
-    def talk(self, deal_id: str = "d1", hirer: bytes = b"", worker: bytes = b"", seconds: float | None = None) -> None:
+    def talk(
+        self, deal_id: str = "d1", hirer: bytes = b"", worker: bytes = b"", seconds: float | None = None,
+        no_frames_from: str | None = None,
+    ) -> None:
         """Both tracks deliver audio side by side while the clock runs. A person who is
-        given no audio sends silence, as a quiet microphone does."""
+        given no audio sends silence, as a quiet or muted microphone does. no_frames_from
+        names a person whose track delivers nothing at all for this stretch."""
         room = self.room(deal_id)
         tracks = {"hirer": frames(hirer), "worker": frames(worker)}
         count = int(seconds / FRAME_SECONDS) if seconds else max(map(len, tracks.values()))
         for i in range(count):
             self.clock.now += FRAME_SECONDS
             for identity, track in tracks.items():
-                if Role(identity) in room.present:
+                if Role(identity) in room.present and identity != no_frames_from:
                     room.audio(identity, track[i] if i < len(track) else SILENT_FRAME)
 
     async def ended(self, deal_id: str = "d1", timeout: float = 3.0) -> CallEnded:

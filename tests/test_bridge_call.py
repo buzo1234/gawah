@@ -1,8 +1,10 @@
 import asyncio
 import io
+import time
 import wave
 
 import numpy as np
+import pytest
 from bridge_world import SILENT_FRAME, recorded, world  # noqa: F401
 
 from app.contracts import CallKind, Role
@@ -96,17 +98,80 @@ async def test_call_ends_when_both_have_left(world):
     assert names.index("call.ended") > max(i for i, n in enumerate(names) if n == "transcript.line")
 
 
-async def test_call_ends_when_one_person_has_been_gone_for_a_while(world):
+@pytest.mark.parametrize("leaver", list(Role))
+async def test_call_ends_when_one_person_has_been_gone_for_a_while(world, leaver):
     await world.deal()
     await world.join(role=Role.HIRER)
     await world.join(role=Role.WORKER)
     world.talk(seconds=2)
-    world.room().left("worker")
+    world.room().left(leaver.value)
     await asyncio.sleep(0.05)
     assert world.named("call.ended") == [] and world.livekit.deleted == []  # not yet: they may come back
+    assert world.room().present == {leaver.other}  # and nothing is remembered of the one who left
     ended = await world.ended()
     assert ended.reason == "one_left" and len(ended.recording_keys) == 2
     assert world.livekit.deleted == ["deal-d1"] and world.livekit.listeners[0].disconnected
+
+
+@pytest.mark.parametrize("order", [("hirer", "worker"), ("worker", "hirer")])
+async def test_call_ends_when_both_leave_in_either_order(world, order):
+    await world.deal()
+    await world.join(role=Role.HIRER)
+    await world.join(role=Role.WORKER)
+    world.talk(seconds=2)
+    world.room().left(order[0])
+    world.talk(seconds=1)
+    world.room().left(order[1])
+    ended = await world.ended()
+    assert ended.reason == "both_left" and world.livekit.deleted == ["deal-d1"]
+    assert world.calls.sessions == {} and world.livekit.listeners[0].disconnected
+
+
+async def test_who_is_present_is_read_from_the_room_not_remembered(world):
+    await world.deal()
+    await world.join(role=Role.HIRER)
+    await world.join(role=Role.WORKER)
+    # A "left" for a connection that was replaced: LiveKit still has the worker in the room.
+    world.room().session.left("worker")
+    assert world.room().present == {Role.HIRER, Role.WORKER}
+    await asyncio.sleep(0.3)  # longer than the "gone" limit
+    assert world.named("call.ended") == []
+    # The worker goes and we are never told. The next event of any kind finds out.
+    world.room().listener.in_room.discard("worker")
+    world.room().joined("gawah")
+    assert world.room().present == {Role.HIRER}
+    assert (await world.ended()).reason == "one_left"
+
+
+async def test_an_event_about_someone_else_does_not_restart_the_gone_clock(world):
+    world.calls.limits.gone = 0.4
+    await world.deal()
+    await world.join(role=Role.HIRER)
+    await world.join(role=Role.WORKER)
+    world.room().left("worker")
+    left_at = time.monotonic()
+    await asyncio.sleep(0.3)
+    world.room().joined("gawah")
+    await world.ended()
+    assert time.monotonic() - left_at < 0.65  # 0.4 s from the leave, not from Gawah joining
+
+
+async def test_someone_who_leaves_mid_line_has_that_line_published_and_nothing_carried_over(world):
+    await world.deal()
+    await world.join(role=Role.HIRER)
+    await world.join(role=Role.WORKER)
+    world.talk(worker=recorded("paint-23")[: int(1.2 * RATE) * 2])  # cut off mid-air
+    await world.settle()
+    assert world.named("transcript.line") == []  # still being spoken, as far as we know
+    world.room().left("worker")
+    await world.settle()
+    [line] = world.named("transcript.line")
+    assert line.speaker is Role.WORKER and line.end <= 1.2
+    world.room().joined("worker")
+    world.talk(worker=recorded("paint-23"), seconds=3)
+    await world.settle()
+    assert [e.line_no for e in world.named("transcript.line")] == [1, 2]
+    assert world.named("call.ended") == [] and len(world.named("call.started")) == 1
 
 
 async def test_call_ends_at_our_own_time_limit(world):

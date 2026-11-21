@@ -19,6 +19,8 @@
   #status { font-size: 22px; line-height: 1.4; margin: 28px 0; min-height: 62px; }
   body[data-state="on"] #status { color: #8fd3a8; }
   body[data-state="waiting"] #status, body[data-state="reconnecting"] #status { color: #ffd479; }
+  #keep-open { font-size: 17px; color: #b8c2cc; margin: 0 0 20px; }
+  #mic-quiet { font-size: 19px; line-height: 1.4; background: #5a1f1f; color: #ffd9d9; border-radius: 14px; padding: 14px; margin: 0 0 20px; }
   #mic-help { text-align: left; font-size: 17px; line-height: 1.5; background: #3a2a12; border-radius: 14px; padding: 16px; color: #ffe2a8; }
   #mic-help b { color: #fff; }
   [hidden] { display: none !important; }
@@ -32,6 +34,8 @@
   <button id="join">Call mein judein</button>
   <button id="leave" hidden>Call chhodein</button>
   <div id="status" role="status"></div>
+  <p id="mic-quiet" role="alert" hidden></p>
+  <p id="keep-open" hidden>Call ke dauraan yeh page khula rakhiye aur phone lock mat kijiye.</p>
   <div id="mic-help" hidden>
     <b>Microphone nahi chal raha.</b><br>
     WhatsApp ke andar khula link kabhi-kabhi microphone nahi deta. Yeh kijiye:<br>
@@ -63,7 +67,7 @@ const WORDS = {
   mic: 'Microphone ke bina call nahi ho sakta.',
 };
 const FINAL = ['ended', 'elsewhere'];  // no way back in from these
-let room = null, timer = null, callWasOn = false;
+let room = null, mic = null, timer = null, callWasOn = false, micQuiet = false, wakeLock = null;
 
 $('who').textContent = `${cfg.name ? cfg.name + ' ji, aap' : 'Aap'} is call mein ${cfg.roleWords} hain. Baat ${other} se hogi.`;
 
@@ -76,6 +80,21 @@ function show(state) {
   $('join').disabled = state === 'connecting';
   $('mic-help').hidden = state !== 'mic';
   $('notice').hidden = FINAL.includes(state);
+  $('keep-open').hidden = !inRoom;
+  $('mic-quiet').hidden = !(inRoom && micQuiet);
+}
+
+// A phone mutes the microphone when its screen locks or this page goes to the background.
+// The call stays up but the other person hears nothing, so say so.
+function setMicQuiet(quiet) {
+  micQuiet = quiet;
+  $('mic-quiet').textContent = `Aapka microphone band ho gaya hai. ${other} aapko sun nahi pa rahe. Phone ki screen kholiye aur yeh page saamne rakhiye.`;
+  show(document.body.dataset.state);
+}
+
+async function keepAwake() {
+  if (!navigator.wakeLock || !room || document.visibilityState !== 'visible') return;
+  try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { /* low battery, or not allowed */ }
 }
 
 function refresh() {
@@ -90,7 +109,6 @@ async function join() {
   const LK = LivekitClient;
   // Gawah's voice comes out of this phone's loudspeaker: it must not go straight back in.
   const audio = { echoCancellation: true, noiseSuppression: true, autoGainControl: true };
-  let mic;
   try {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('no microphone access here');
     mic = await LK.createLocalAudioTrack(audio);
@@ -112,9 +130,15 @@ async function join() {
     room.on(LK.RoomEvent.ParticipantDisconnected, refresh);
     room.on(LK.RoomEvent.Reconnecting, () => show('reconnecting'));
     room.on(LK.RoomEvent.Reconnected, refresh);
+    room.on(LK.RoomEvent.TrackMuted, (pub, who) => { if (who === room.localParticipant) setMicQuiet(true); });
+    room.on(LK.RoomEvent.TrackUnmuted, (pub, who) => { if (who === room.localParticipant) setMicQuiet(false); });
+    mic.mediaStreamTrack.addEventListener('mute', () => setMicQuiet(true));
+    mic.mediaStreamTrack.addEventListener('unmute', () => setMicQuiet(false));
     room.on(LK.RoomEvent.Disconnected, (reason) => {
       clearTimeout(timer);
       mic.stop();
+      micQuiet = false;
+      if (wakeLock) wakeLock.release().catch(() => {});
       const R = LK.DisconnectReason;
       if (reason === R.ROOM_DELETED) show(callWasOn ? 'ended' : 'nobody');
       else if (reason === R.CLIENT_INITIATED) show('left');
@@ -126,7 +150,7 @@ async function join() {
     await room.startAudio();
     await room.localParticipant.publishTrack(mic);
     timer = setTimeout(leave, MAX_MINUTES * 60 * 1000);
-    if (navigator.wakeLock) navigator.wakeLock.request('screen').catch(() => {});
+    keepAwake();
     refresh();
   } catch (e) {
     console.warn('join:', e.name, e.message);
@@ -148,6 +172,8 @@ $('copy').onclick = async () => {
   catch (e) { $('copy').textContent = location.href; }
 };
 document.body.addEventListener('click', () => { if (room) room.startAudio(); });
+// The browser drops the screen lock whenever the page is hidden: ask again when it is back.
+document.addEventListener('visibilitychange', keepAwake);
 show(cfg.over ? 'ended' : 'idle');
 </script>
 </body>

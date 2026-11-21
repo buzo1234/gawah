@@ -49,6 +49,7 @@ class CallSession:
         self._clock, self._folder = clock, folder
         self._on_closing, self._on_closed = on_closing, on_closed
         self.present: set[Role] = set()
+        self._absence_state: object = None  # what the absence timer is running for
         self.started_at: float | None = None  # time zero, on our clock
         self.ears: Ears | None = None
         self._recordings: dict[Role, Recording] = {}
@@ -66,26 +67,28 @@ class CallSession:
             raise
         self._timer("age", self._limits.max_age, "time_limit")
         self.log.info("room %s open, listener in", self.room)
+        self._look()  # no event fires for people who were already in the room
 
     # ---- what the listener reports ----
 
     def joined(self, identity: str) -> None:
-        role = _role(identity)
-        if role is None or self._closing:
-            return
-        self.present.add(role)
-        self.log.info("%s joined", identity)
-        if self.started_at is None and len(self.present) == len(Role):
-            self._start()
-        self._watch_absence()
+        if _role(identity) and not self._closing:
+            self.log.info("%s joined", identity)
+        self._look()
 
     def left(self, identity: str) -> None:
         role = _role(identity)
-        if role is None or self._closing:
-            return
-        self.present.discard(role)
-        self.log.info("%s left", identity)
-        self._watch_absence()
+        if role and not self._closing:
+            self.log.info("%s left", identity)
+            if self.ears:
+                self.ears.forget(role)  # nothing of theirs is carried over to a rejoin
+        self._look()
+
+    def muted(self, identity: str, muted: bool) -> None:
+        # A phone mutes the track when its screen locks or the page goes to the background.
+        # The person is still on the call: their audio is silence until it comes back.
+        if _role(identity) and not self._closing:
+            self.log.info("%s's microphone %s", identity, "was muted by their device" if muted else "is back")
 
     def audio(self, identity: str, pcm: bytes) -> None:
         role = _role(identity)
@@ -93,6 +96,15 @@ class CallSession:
             return
         at = self._recordings[role].write(pcm, self._clock() - self.started_at)
         self.ears.hear(role, pcm, at)
+
+    def _look(self) -> None:
+        """Take who is present from the room itself, not from what we remember of past events."""
+        if self._listener is None or self._closing:
+            return
+        self.present = {Role(i) for i in self._listener.people() if i in Role}
+        if self.started_at is None and len(self.present) == len(Role):
+            self._start()
+        self._watch_absence()
 
     def lost(self) -> None:
         # The listener gave up reconnecting, or the room was deleted from outside. Nobody is
@@ -114,17 +126,35 @@ class CallSession:
         self._bus.publish(CallStarted(deal_id=self.deal.id, people=self.deal.people, room=self.room))
         self.log.info("call started")
 
-    def _watch_absence(self) -> None:
+    def _absence(self) -> tuple[float, str] | None:
+        """How long to wait before ending the call for who is missing now, and why."""
         if not self.present:
-            self._timer("absence", self._limits.empty, "both_left")
-        elif self.started_at is not None and len(self.present) < len(Role):
-            self._timer("absence", self._limits.gone, "one_left")
-        elif task := self._timers.pop("absence", None):
-            task.cancel()
+            return self._limits.empty, "both_left"
+        if self.started_at is not None and len(self.present) < len(Role):
+            return self._limits.gone, "one_left"
+        return None
+
+    def _watch_absence(self) -> None:
+        due = self._absence()
+        state = (due, frozenset(self.present))
+        if state == self._absence_state:
+            return  # an event about someone else must not restart the clock
+        self._absence_state = state
+        if old := self._timers.pop("absence", None):
+            old.cancel()
+        if due:
+            self._timer("absence", *due)
 
     def _timer(self, name: str, wait: float, reason: str) -> None:
         async def run() -> None:
             await asyncio.sleep(wait)
+            if name == "absence":
+                # Look at the room once more before ending a call on something remembered.
+                self.present = {Role(i) for i in self._listener.people() if i in Role}
+                due = self._absence()
+                if due is None or due[1] != reason:
+                    self._absence_state = None
+                    return self._watch_absence()
             await self.close(reason)
 
         if old := self._timers.pop(name, None):

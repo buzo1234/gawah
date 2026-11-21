@@ -42,7 +42,8 @@ def test_call_page_for_a_valid_link(site):
     assert RAMESH.phone not in page.text and SUNITA.phone not in worker
     # What the page has to do: echo cancellation and friends, a way out of WhatsApp's browser, the three states.
     for needed in ("echoCancellation: true", "noiseSuppression: true", "autoGainControl: true",
-                   "Open in Chrome", "ka intezaar hai", "Call chalu hai", "Call khatam ho gaya"):
+                   "Open in Chrome", "ka intezaar hai", "Call chalu hai", "Call khatam ho gaya",
+                   "yeh page khula rakhiye", "wakeLock.request('screen')", "Aapka microphone band ho gaya hai"):
         assert needed in page.text, needed
     # Opening the page (or WhatsApp fetching a preview of it) opens no room.
     assert livekit.created == []

@@ -41,16 +41,22 @@ class RoomEvents(Protocol):
     def joined(self, identity: str) -> None: ...
     def left(self, identity: str) -> None: ...
     def audio(self, identity: str, pcm: bytes) -> None: ...
+    def muted(self, identity: str, muted: bool) -> None: ...  # their device muted the microphone
     def lost(self) -> None: ...  # the listener is out of the room and did not ask to be
 
 
 class Listener:
-    def __init__(self, room: rtc.Room, pumps: dict[str, asyncio.Task]) -> None:
+    def __init__(self, room: rtc.Room, pumps: dict[str, tuple[str, asyncio.Task]]) -> None:
         self._room, self._pumps = room, pumps
 
+    def people(self) -> set[str]:
+        """Who is in the room right now, as LiveKit has it. Ask this instead of remembering."""
+        return set(self._room.remote_participants)
+
     async def disconnect(self) -> None:
-        for task in self._pumps.values():
+        for _, task in self._pumps.values():
             task.cancel()
+        self._pumps.clear()
         await self._room.disconnect()
 
 
@@ -97,7 +103,7 @@ class LiveKit:
     async def listen(self, room_name: str, events: RoomEvents) -> Listener:
         """Join as the hidden listener and report who comes, who goes, and what they say."""
         room = rtc.Room()
-        pumps: dict[str, asyncio.Task] = {}
+        pumps: dict[str, tuple[str, asyncio.Task]] = {}  # identity -> (participant id, its audio task)
 
         async def pump(identity: str, track: rtc.Track) -> None:
             stream = rtc.AudioStream(
@@ -111,22 +117,35 @@ class LiveKit:
             finally:
                 await stream.aclose()
 
+        def stop_pump(identity: str, participant_id: str | None = None) -> None:
+            held = pumps.get(identity)
+            if held and participant_id in (None, held[0]):
+                del pumps[identity]
+                held[1].cancel()
+
         @room.on("participant_connected")
         def _joined(p: rtc.RemoteParticipant) -> None:
             events.joined(p.identity)
 
         @room.on("participant_disconnected")
         def _left(p: rtc.RemoteParticipant) -> None:
+            stop_pump(p.identity, p.sid)  # only this connection's audio: they may already be back
             events.left(p.identity)
 
         @room.on("track_subscribed")
         def _track(track: rtc.Track, publication: rtc.RemoteTrackPublication, p: rtc.RemoteParticipant) -> None:
             if track.kind != rtc.TrackKind.KIND_AUDIO:
                 return
-            old = pumps.pop(p.identity, None)
-            if old:
-                old.cancel()
-            pumps[p.identity] = asyncio.create_task(pump(p.identity, track))
+            stop_pump(p.identity)
+            pumps[p.identity] = (p.sid, asyncio.create_task(pump(p.identity, track)))
+
+        @room.on("track_muted")
+        def _muted(p: rtc.Participant, publication: rtc.TrackPublication) -> None:
+            events.muted(p.identity, True)
+
+        @room.on("track_unmuted")
+        def _unmuted(p: rtc.Participant, publication: rtc.TrackPublication) -> None:
+            events.muted(p.identity, False)
 
         @room.on("disconnected")
         def _lost(*_: object) -> None:
@@ -134,8 +153,6 @@ class LiveKit:
 
         token = self.token(room_name, LISTENER, listener=True)
         await room.connect(self.url, token, rtc.RoomOptions(connect_timeout=CONNECT_TIMEOUT))
-        for p in room.remote_participants.values():  # no event fires for people already here
-            events.joined(p.identity)
         return Listener(room, pumps)
 
     async def close(self) -> None:

@@ -26,11 +26,14 @@ def register(app: FastAPI, bus: Bus) -> None:
     calls = app.state.calls = Calls(app.state.settings, bus, app.state.store)
 
     async def shutdown() -> None:
-        if await calls.close_all():
-            try:  # the store closes right after the hooks: let call.ended reach it first
-                await bus.drain()
-            except TimeoutError:
-                pass
+        await calls.close_all()
+        # This hook runs last, and the store closes right after it. An event still being
+        # written then (call.ended, or anything another stream just sent) crashes the
+        # process, so wait for the bus to go quiet first.
+        try:
+            await bus.drain()
+        except TimeoutError:
+            pass
 
     app.state.on_shutdown.append(shutdown)
     # Mounted before the page route, which would otherwise match /call/static/<file>.

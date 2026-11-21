@@ -1,13 +1,17 @@
 """The bridge's proof on a real call. Not a test: pytest does not collect it, and it uses
 the free plans, so run it by hand and count what it used.
 
-    uv run python tests/bridge_live.py [--drop]
+    uv run python tests/bridge_live.py [--drop | --leave hirer | --leave worker]
 
 It starts the real app on a free port, creates a deal, and opens the two call links in two
 headless Chrome browsers. Each browser plays some of the recorded Hinglish lines as its
-microphone. A third browser screenshots the dashboard mid-call. Then both people leave,
-and the script checks the events a dashboard client received, the transcript against what
-was played, and the two recordings in S3 against the transcript's times.
+microphone. Mid-call the worker's microphone is muted for a few seconds, as a phone does
+when its screen locks, and a third browser screenshots the dashboard. Then both people
+leave, and the script checks the events a dashboard client received, the transcript against
+what was played, and the two recordings in S3 against the transcript's times.
+
+With --leave hirer (or worker): that person taps leave after four lines and the other stays,
+so the call ends on the "gone for a while" limit.
 
 With --drop: the hirer reloads the page and rejoins mid-call, then the worker's browser is
 killed and never comes back, so the call ends on the "gone for a while" limit.
@@ -181,7 +185,7 @@ def detected(wav_bytes: bytes) -> tuple[float, list[tuple[float, float]]]:
     return len(pcm) / 2 / RATE, found
 
 
-async def main(drop: bool) -> None:
+async def main(drop: bool, leaver: Role | None) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     scratch = Path(tempfile.mkdtemp(prefix="bridge-live-"))
     microphones, plan = build_microphones(scratch)
@@ -206,7 +210,7 @@ async def main(drop: bool) -> None:
     received: list = []  # (when it arrived, event), as a dashboard client sees them
     browsers: dict[Role, CallBrowser] = {}
     seconds_in_room: dict[str, float] = {}
-    report: dict = {"deal_id": deal_id, "room": room, "drop": drop}
+    report: dict = {"deal_id": deal_id, "room": room, "drop": drop, "one_leaves": leaver.value if leaver else None}
     try:
         async with httpx.AsyncClient() as http, connect(f"ws://127.0.0.1:{port}/dashboard/ws") as ws:
             async def watch() -> None:
@@ -265,7 +269,26 @@ async def main(drop: bool) -> None:
                 report["rejoin_took_s"] = round(time.monotonic() - t_rejoin, 2)
                 print(f"hirer reloaded and rejoined in {report['rejoin_took_s']}s", flush=True)
                 await sleep_until(t_rejoin + plan[0]["until"] + 1.5)  # their first line, played again
+            elif leaver:
+                await sleep_until(t_click + plan[3]["until"] + 2.0)  # four lines in
             else:
+                # While the hirer says their second line, the worker's microphone is muted, as a
+                # phone does when its screen locks. The worker has nothing to say in that stretch.
+                worker = browsers[Role.WORKER]
+                await sleep_until(t_click + plan[2]["at"] + 1.0)
+                await worker.js("room.localParticipant.setMicrophoneEnabled(false)")
+                await asyncio.sleep(1.0)
+                report["while_muted"] = {
+                    "worker_page_says_microphone_is_off": await worker.js("!document.getElementById('mic-quiet').hidden"),
+                    "worker_page_says_keep_page_open": await worker.js("!document.getElementById('keep-open').hidden"),
+                    "worker_page_state": await worker.state(),
+                    "people_the_call_counts_as_present": sorted(r.value for r in session.present),
+                }
+                await sleep_until(t_click + plan[2]["until"] - 1.0)
+                await worker.js("room.localParticipant.setMicrophoneEnabled(true)")
+                await asyncio.sleep(0.5)
+                report["after_unmute_worker_page_says_microphone_is_off"] = await worker.js("!document.getElementById('mic-quiet').hidden")
+                print(f"worker muted for {plan[2]['until'] - plan[2]['at'] - 2.0:.1f}s: {report['while_muted']}", flush=True)
                 # Mid-call: the dashboard as the big screen shows it.
                 await sleep_until(t_click + plan[5]["at"])
                 async with Chrome(port=free_port()) as dashboard:
@@ -283,6 +306,15 @@ async def main(drop: bool) -> None:
                 report["kill_to_call_ended_s"] = round(time.monotonic() - t_kill, 1)
                 seconds_in_room = {"hirer": time.monotonic() - t_click, "worker": t_kill - t_click + 22}
                 report["hirer_page_after"] = await browsers[Role.HIRER].state()
+            elif leaver:
+                stays = leaver.other
+                t_leave = time.monotonic()
+                await browsers[leaver].js("document.getElementById('leave').click()")
+                print(f"{leaver.value} tapped leave; {stays.value} stays on the line...", flush=True)
+                await wait_for("call.ended", 60)
+                report["one_leaves_to_call_ended_s"] = round(time.monotonic() - t_leave, 1)
+                seconds_in_room = {leaver.value: t_leave - t_click, stays.value: time.monotonic() - t_click}
+                report["pages_after"] = {b.role.value: await b.state() for b in browsers.values()}
             else:
                 t_leave = time.monotonic()
                 await asyncio.gather(*(b.js("document.getElementById('leave').click()") for b in browsers.values()))
@@ -301,6 +333,8 @@ async def main(drop: bool) -> None:
         print("\nevents the dashboard client received for this deal, in order:")
         print("  " + " ".join(e.name for _, e in received if e.deal_id == deal_id and e.name != "whatsapp.message"))
         print(f"call.started events: {len(got('call.started'))}")
+        if leaver:
+            print(f"pages after: {report['pages_after']}; call.ended {report['one_leaves_to_call_ended_s']}s after {leaver.value} left")
         if drop:
             print("\ntranscript lines (the hirer's microphone started over when they rejoined):")
             for e in lines:
@@ -353,10 +387,11 @@ async def main(drop: bool) -> None:
                       transcription_calls=calls.transcriber.calls)
         print(f"\nrooms on the LiveKit project now: {left}")
         print(f"participant-minutes: {minutes}  transcription uploads: {calls.transcriber.calls}  S3 uploads: {len(report.get('recordings', {}))}")
-        name = "live-drop.json" if drop else "live.json"
+        name = "live-drop.json" if drop else f"live-{leaver.value}-leaves.json" if leaver else "live.json"
         (OUT / name).write_text(json.dumps(report, indent=1, ensure_ascii=False, default=str) + "\n")
-        print(f"wrote {OUT / name}" + ("" if drop else f" and {OUT / 'dashboard-midcall.png'}"))
+        print(f"wrote {OUT / name}" + ("" if drop or leaver else f" and {OUT / 'dashboard-midcall.png'}"))
 
 
 if __name__ == "__main__":
-    asyncio.run(asyncio.wait_for(main("--drop" in sys.argv), 300))
+    leaves = Role(sys.argv[sys.argv.index("--leave") + 1]) if "--leave" in sys.argv else None
+    asyncio.run(asyncio.wait_for(main("--drop" in sys.argv, leaves), 300))
