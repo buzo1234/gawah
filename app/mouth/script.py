@@ -52,12 +52,6 @@ TOOLS = [
             "required": ["item", "agrees", "said"],
         },
     },
-    {
-        "type": "function",
-        "name": "end_call",
-        "description": "Hang up. Only when the steps are finished and you have said goodbye.",
-        "parameters": {"type": "object", "properties": {}},
-    },
 ]
 
 
@@ -102,7 +96,6 @@ class Script:
         self.never_agreed = [item.key for item in items if item.key not in read]
         self.disputed: list[ItemKey] = []
         self.at = 0
-        self.hang_up = False  # the model has said goodbye and asked to end the call
 
     @property
     def done(self) -> bool:
@@ -116,11 +109,6 @@ class Script:
         """Take one tool call from the model. Returns what it is told next."""
         step = None if self.done else self.steps[self.at]
         said = str(args.get("said") or "")[:300] or None
-        if name == "end_call":
-            if step:
-                return tuning.NOT_FINISHED.format(step=step.say)
-            self.hang_up = True
-            return "ok"
         if step and step.ask and name == "record_answer" and isinstance(args.get("confirmed"), bool):
             record = step.ask.record.model_copy(update={"confirmed": args["confirmed"]}) if step.ask.record else None
             self.publish(RecordConfirmed(
@@ -149,10 +137,12 @@ class Script:
         never = tuning.NEVER_AGREED.format(name=self.name, labels=labels) if labels else ""
         if self.disputed:
             disputed = ", ".join(tuning.LABEL[key] for key in self.disputed)
-            return tuning.END_DISPUTED.format(never=never, name=self.name, other=self.other, labels=disputed)
-        if self.terms:
-            return tuning.END_CONFIRMED.format(never=never, name=self.name, other=self.other)
-        return never + tuning.END_RECORD_ONLY.format(name=self.name)
+            end = tuning.END_DISPUTED.format(never=never, name=self.name, other=self.other, labels=disputed)
+        elif self.terms:
+            end = tuning.END_CONFIRMED.format(never=never, name=self.name, other=self.other)
+        else:
+            end = never + tuning.END_RECORD_ONLY.format(name=self.name)
+        return tuning.END.format(name=self.name) + end
 
 
 async def build(store: Store, deal_id: str, role: Role, publish: Callable[[Event], None]) -> Script | None:

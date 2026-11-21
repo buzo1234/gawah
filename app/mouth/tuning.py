@@ -66,7 +66,7 @@ CALLBACK_EMPTY_S = 30  # LiveKit closes the room this long after it is empty
 CALLBACK_JOIN_WAIT_S = 60.0  # the person opened the page but their audio never arrived
 CALLBACK_IDLE_S = 45.0  # nobody has spoken for this long
 CALLBACK_MAX_S = 300.0  # our own limit on a call-back
-CALLBACK_LINGER_S = 20.0  # every step is done and Gawah has not hung up
+CALLBACK_LINGER_S = 30.0  # every step is done and the closing words never finished (the person kept talking over them)
 CALLBACK_LEFT_GRACE_S = 5.0  # a page reload looks like leaving and coming back
 CALLBACK_HANGUP_S = 0.6  # after the last word, before the room closes
 # The model's own speech detection decides when the person has finished answering.
@@ -113,8 +113,9 @@ CALLBACK_PERSONA = (
     "words like 'advance' or 'balance' are fine). Never speak English sentences. Speak slowly, in short sentences.\n"
     "You go through a fixed list of steps and you are given one step at a time. Say what the step asks, then "
     "wait for the answer. When the person has answered, report the answer with the tool for that step; the "
-    "tool's reply gives you the next step. Never skip ahead, never invent a step, and never report an answer "
-    "the person has not given.\n"
+    "tool's reply gives you the next step. Call the tool without saying anything: never say that you are "
+    "noting or recording, and never announce what you are about to do. Never skip ahead, never invent a step, "
+    "and never report an answer the person has not given.\n"
     "If the answer is not a clear yes or no, or they ask you to repeat, say the step once more in simpler words "
     "and do not call a tool yet.\n"
     "You are only the witness. Never argue, never persuade, never suggest what a term should be, never say "
@@ -142,16 +143,17 @@ TERM_DISPUTED = (
     "Noted. Tell {name} in one sentence that Gawah will raise this with {other}. Do not discuss it. Then: {step}"
 )
 NEVER_AGREED = "Tell {name} plainly that these were never agreed on the call, so they are not on record: {labels}. "
+# The last thing said. The call is ended by our code once this has been spoken, not by the model.
+END = "Last step: say all of this to {name} now, then stop. The call will end by itself. "
 END_CONFIRMED = (
     "Every term is confirmed. {never}Thank {name}, say the written contract will come on WhatsApp once "
-    "{other} has confirmed too, and say goodbye. Then call end_call."
+    "{other} has confirmed too, and say goodbye."
 )
 END_DISPUTED = (
     "{never}Tell {name} that nothing is final until both agree, and that Gawah will talk to {other} about: "
-    "{labels}. Thank them and say goodbye. Then call end_call."
+    "{labels}. Thank them and say goodbye."
 )
-END_RECORD_ONLY = "That was all. Thank {name} and say goodbye. Then call end_call."
-NOT_FINISHED = "Not yet: the steps are not finished. {step}"
+END_RECORD_ONLY = "That was all. Thank {name} and say goodbye."
 
 # Shown on the call-back page when the join button cannot start a call.
 PAGE_NOTHING = "Abhi aapse confirm karne ke liye kuch nahi hai."

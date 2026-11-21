@@ -140,7 +140,7 @@ async def test_all_terms_confirmed(desk):
     opening = link.of("conversation.item.create")[0]["item"]["content"][0]["text"]
     assert "the work: painting the 2BHK flat, two coats" in opening and "22,000" not in opening  # one term at a time
     assert link.config["audio"]["input"]["turn_detection"]["create_response"]  # here the model does reply by itself
-    assert {t["name"] for t in link.config["tools"]} == {"record_answer", "term_answer", "end_call"}
+    assert {t["name"] for t in link.config["tools"]} == {"record_answer", "term_answer"}
 
     then = await link.calls("term_answer", item="work", agrees=True, said="haan theek hai")
     assert "the total amount: 22,000 rupees with material" in then
@@ -151,9 +151,11 @@ async def test_all_terms_confirmed(desk):
     assert (confirmed.person, confirmed.item, confirmed.said) == (Role.WORKER, None, "haan sahi hai")
     # The terms that were never agreed are said plainly, and not confirmed.
     assert "never agreed" in then and "the advance, the balance, what happens if the work is late" in then
-    assert "end_call" in then and not desk.of(TermsDisputed)
+    assert "The call will end by itself" in then and not desk.of(TermsDisputed)
 
-    await link.says("Dhanyavaad Ramesh ji. Namaste.", calls=[("end_call", {})])
+    await asyncio.sleep(0.3)
+    assert not desk.of(CallEnded)  # not before the closing words
+    await link.says("Advance ke baad ka balance aur der hone par kya hoga, yeh tay nahi hua tha. Dhanyavaad Ramesh ji. Namaste.")
     ended = (await until(lambda: desk.of(CallEnded)))[0]
     assert (ended.kind, ended.reason, ended.room) == (CallKind.CALLBACK, "done", seat.room)
     await until(lambda: desk.rooms.deleted == [seat.room] and seat.gone and link.closed)
@@ -170,7 +172,7 @@ async def test_a_disputed_term_is_reported_and_not_argued(desk):
     assert "raise this with Sunita" in then and "Do not discuss it" in then and "the dates: Monday to Friday" in then
     then = await link.calls("term_answer", item="dates", agrees=True, said="haan")
     assert "nothing is final until both agree" in then and "the total amount" in then
-    await link.says("Theek hai. Namaste.", calls=[("end_call", {})])
+    await link.says("Theek hai. Namaste.")
     await until(lambda: desk.of(CallEnded))
     assert not desk.of(TermsConfirmed)
 
@@ -216,7 +218,7 @@ async def test_an_answer_for_the_wrong_step_is_not_recorded(desk):
     seat, link = await desk.join()
     for name, args in (
         ("term_answer", {"item": "work", "agrees": True, "said": "haan"}),  # the record question comes first
-        ("end_call", {}),
+        ("end_call", {}),  # no such tool: our code ends the call
         ("record_answer", {"confirmed": "yes", "said": "haan"}),  # not a yes or no
     ):
         then = await link.calls(name, **args)

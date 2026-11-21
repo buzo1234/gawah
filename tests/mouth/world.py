@@ -118,7 +118,8 @@ class FakeLink:
             await self.on_event({"type": "response.output_audio.delta", "response_id": rid, "item_id": item, "delta": audio(ms)})
             await self.on_event({"type": "response.output_audio.done", "response_id": rid, "item_id": item})
             await self.on_event({"type": "response.output_audio_transcript.done", "response_id": rid, "transcript": text})
-        output = [
+        spoken = [{"type": "message", "status": "completed", "role": "assistant", "content": [{"type": "output_audio", "transcript": text}]}]
+        output = (spoken if ms else []) + [
             {"type": "function_call", "status": "completed", "name": name, "call_id": f"call_{self._n}_{i}", "arguments": json.dumps(args)}
             for i, (name, args) in enumerate(calls)
         ]

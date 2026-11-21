@@ -47,6 +47,7 @@ class Callback:
         self._left: float | None = None
         self._active = self._made  # the last time anybody spoke
         self._finished: float | None = None  # when the last step was answered
+        self._closing = False  # the model has been given its closing words
         self._listening = False  # the model hears the person only once it has finished its greeting
         self._mic: asyncio.Queue[bytes] = asyncio.Queue()
         self._reply: str | None = None  # the reply being played ...
@@ -189,6 +190,7 @@ class Callback:
             return
         heard = self.player.heard_so_far()
         self.player.stop()
+        self.log.info("%s talked over Gawah %d ms into what it was saying", self.identity, heard)
         self._cut.add(self._reply)  # the model may still be sending the rest of it
         if self._item:
             await self.link.send({
@@ -209,16 +211,20 @@ class Callback:
             await self.link.send({"type": "conversation.item.create", "item": {
                 "type": "function_call_output", "call_id": call.get("call_id"), "output": result,
             }})
-        if self.plan.hang_up:
-            self._spawn(self._hang_up())
-        elif calls:
+        spoke = any(o.get("type") == "message" for o in response.get("output") or [])
+        if self._closing and spoke and not calls and response.get("status") == "completed":
+            self._spawn(self._hang_up())  # the closing words are on their way out: end the call after them
+        if calls:
+            self._closing = self.plan.done
             await self.link.send({"type": "response.create"})
 
     async def _hang_up(self) -> None:
         try:
-            await asyncio.wait_for(self.player.done.wait(), 20)
+            await asyncio.wait_for(self.player.done.wait(), 40)
         except TimeoutError:
             pass
+        if self.player.cut:
+            return  # the person talked over the closing words; the model answers, and this runs again
         await asyncio.sleep(tuning.CALLBACK_HANGUP_S)
         self.end("done")
 
