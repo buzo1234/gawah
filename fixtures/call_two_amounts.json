@@ -1,0 +1,273 @@
+{
+  "id": "call_two_amounts",
+  "description": "Sunita hires Ramesh to paint her 2BHK, labour only. They settle on 13,000 at line 12. At line 19 Ramesh sums up with a total of 14,000 and Sunita says yes without noticing. Everything else is agreed: advance 3,000 in cash tomorrow, balance on the day of finishing after she checks the work, Wednesday to Monday, and what happens if the work is late or left unfinished.",
+  "people": [
+    {
+      "role": "hirer",
+      "name": "Sunita",
+      "phone": "+910000000001"
+    },
+    {
+      "role": "worker",
+      "name": "Ramesh",
+      "phone": "+910000000002"
+    }
+  ],
+  "lines": [
+    {
+      "line_no": 1,
+      "speaker": "worker",
+      "text": "Hello, Sunita madam? Main Ramesh bol raha hoon, painter. Aapne message kiya tha.",
+      "start": 0.8,
+      "end": 5.3
+    },
+    {
+      "line_no": 2,
+      "speaker": "hirer",
+      "text": "Haan Ramesh ji, namaste. Flat paint karwana hai. Aap kal dekh ke gaye the na?",
+      "start": 5.8,
+      "end": 11.0
+    },
+    {
+      "line_no": 3,
+      "speaker": "worker",
+      "text": "Ji madam, dekh liya. 2BHK hai - dono kamre, hall, kitchen. Bathroom ke darwaze bhi karne hain na?",
+      "start": 11.6,
+      "end": 17.8
+    },
+    {
+      "line_no": 4,
+      "speaker": "hirer",
+      "text": "Haan darwaze bhi, aur balcony ki railing bhi. Walls pe do coat chahiye, ceiling pe ek chalega.",
+      "start": 18.5,
+      "end": 24.4
+    },
+    {
+      "line_no": 5,
+      "speaker": "worker",
+      "text": "Theek hai ji. Walls do coat, ceiling ek coat, darwaze aur railing pe enamel. Putty jahan zaroorat ho wahan kar dunga.",
+      "start": 24.8,
+      "end": 32.0
+    },
+    {
+      "line_no": 6,
+      "speaker": "hirer",
+      "text": "Paint main khud le aaungi, mere bhai ki dukaan hai. Aap sirf labour ka batao.",
+      "start": 32.5,
+      "end": 37.7
+    },
+    {
+      "line_no": 7,
+      "speaker": "worker",
+      "text": "Achha, material aapka. To sirf labour ka madam... 15 hazaar lagega.",
+      "start": 38.3,
+      "end": 42.1
+    },
+    {
+      "line_no": 8,
+      "speaker": "hirer",
+      "text": "15 zyada hai Ramesh ji. Sirf labour hi to hai.",
+      "start": 42.8,
+      "end": 46.2
+    },
+    {
+      "line_no": 9,
+      "speaker": "worker",
+      "text": "Madam teen aadmi lagenge, chhe din ka kaam hai. Chaliye 14 kar dete hain.",
+      "start": 46.6,
+      "end": 51.4
+    },
+    {
+      "line_no": 10,
+      "speaker": "hirer",
+      "text": "12 mein karo to abhi pakka karti hoon.",
+      "start": 51.9,
+      "end": 54.7
+    },
+    {
+      "line_no": 11,
+      "speaker": "worker",
+      "text": "12 mein nahi padta madam... 13 hazaar, last. Isse neeche nahi.",
+      "start": 55.3,
+      "end": 59.1
+    },
+    {
+      "line_no": 12,
+      "speaker": "hirer",
+      "text": "Theek hai, 13 hazaar. Sirf labour, material mera.",
+      "start": 59.8,
+      "end": 62.6
+    },
+    {
+      "line_no": 13,
+      "speaker": "worker",
+      "text": "Ji, done.",
+      "start": 63.0,
+      "end": 63.9
+    },
+    {
+      "line_no": 14,
+      "speaker": "hirer",
+      "text": "Advance kitna loge?",
+      "start": 64.4,
+      "end": 65.4
+    },
+    {
+      "line_no": 15,
+      "speaker": "worker",
+      "text": "3 hazaar de dijiye madam, ladkon ko dena padta hai.",
+      "start": 66.0,
+      "end": 69.4
+    },
+    {
+      "line_no": 16,
+      "speaker": "hirer",
+      "text": "Theek hai, 3 hazaar kal subah de dungi, cash mein.",
+      "start": 70.1,
+      "end": 73.5
+    },
+    {
+      "line_no": 17,
+      "speaker": "worker",
+      "text": "Ji. Aur baaki?",
+      "start": 73.9,
+      "end": 74.9
+    },
+    {
+      "line_no": 18,
+      "speaker": "hirer",
+      "text": "Baaki kaam poora hone ke baad, jis din finish karoge usi din. Pehle main kaam dekhungi, phir payment.",
+      "start": 75.4,
+      "end": 81.6
+    },
+    {
+      "line_no": 19,
+      "speaker": "worker",
+      "text": "Theek hai madam, kaam dekh ke hi dena. To total 14 hazaar mein se 3 advance, baaki finish hone pe.",
+      "start": 82.2,
+      "end": 89.1
+    },
+    {
+      "line_no": 20,
+      "speaker": "hirer",
+      "text": "Haan haan theek hai. Achha, shuru kab se karoge?",
+      "start": 90.6,
+      "end": 93.7
+    },
+    {
+      "line_no": 21,
+      "speaker": "worker",
+      "text": "Parson se madam, Wednesday. Kal kamron se saamaan hata lijiyega.",
+      "start": 94.1,
+      "end": 97.5
+    },
+    {
+      "line_no": 22,
+      "speaker": "hirer",
+      "text": "Aur khatam kab hoga?",
+      "start": 98.0,
+      "end": 99.4
+    },
+    {
+      "line_no": 23,
+      "speaker": "worker",
+      "text": "Chhe din lagenge ji, agle Monday tak ho jayega.",
+      "start": 100.0,
+      "end": 103.1
+    },
+    {
+      "line_no": 24,
+      "speaker": "hirer",
+      "text": "Monday tak pakka? Tuesday se mera office hai, uske baad ghar pe koi nahi hoga.",
+      "start": 103.8,
+      "end": 109.0
+    },
+    {
+      "line_no": 25,
+      "speaker": "worker",
+      "text": "Pakka madam, Monday shaam tak.",
+      "start": 109.4,
+      "end": 111.1
+    },
+    {
+      "line_no": 26,
+      "speaker": "hirer",
+      "text": "Aur agar beech mein kaam chhod ke chale gaye to? Aajkal bahut hota hai ye.",
+      "start": 111.6,
+      "end": 116.8
+    },
+    {
+      "line_no": 27,
+      "speaker": "worker",
+      "text": "Nahi madam, aisa nahi karunga. Agar kaam adhoora chhoda to baaki paise mat dena, aur advance bhi wapas kar dunga.",
+      "start": 117.4,
+      "end": 124.3
+    },
+    {
+      "line_no": 28,
+      "speaker": "hirer",
+      "text": "Theek hai. Aur late hua to?",
+      "start": 125.0,
+      "end": 127.1
+    },
+    {
+      "line_no": 29,
+      "speaker": "worker",
+      "text": "Late hua to roz ka 300 rupaye kaat lena madam.",
+      "start": 127.5,
+      "end": 130.9
+    },
+    {
+      "line_no": 30,
+      "speaker": "hirer",
+      "text": "Chalo theek hai. To Wednesday subah aa jao, 10 baje.",
+      "start": 131.4,
+      "end": 134.8
+    },
+    {
+      "line_no": 31,
+      "speaker": "worker",
+      "text": "Ji madam, Wednesday 10 baje. Paint tab tak mangwa lijiyega.",
+      "start": 136.2,
+      "end": 139.6
+    },
+    {
+      "line_no": 32,
+      "speaker": "hirer",
+      "text": "Haan kal hi aa jayega. Theek hai phir, rakhti hoon.",
+      "start": 140.3,
+      "end": 143.7
+    },
+    {
+      "line_no": 33,
+      "speaker": "worker",
+      "text": "Ji namaste.",
+      "start": 144.1,
+      "end": 145.0
+    }
+  ],
+  "expected_note": "Each entry is a moment the Judge should speak. after_line is the line that makes it true: the Judge speaks in the pause after it. by_line is the last line after which speaking still counts as on time. modes lists the JUDGE_MODE values in which the entry applies. The transcript is a call with no Judge on it, so nobody answers the first question and the item is still open at wrap-up.",
+  "expected": [
+    {
+      "after_line": 19,
+      "by_line": 21,
+      "item": "amount",
+      "reason": "conflicting_figures",
+      "to": "both",
+      "modes": [
+        "live"
+      ]
+    },
+    {
+      "after_line": 30,
+      "by_line": 32,
+      "item": "amount",
+      "reason": "wrapping_up",
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ]
+    }
+  ]
+}
