@@ -63,6 +63,8 @@ LiveKit and Twilio are on free plans with monthly allowances. Using them up in t
 | Prove Gawah's voice on a deal call in a real room (about 9 LiveKit participant-minutes and a minute of generated speech) | `uv run python -m tests.mouth.prove_deal_call` |
 | Prove the call-back in a real room (about 7 LiveKit participant-minutes and a 2 to 3 minute realtime connection) | `uv run python -m tests.mouth.prove_callback` |
 | Measure the speech detector on noise and the recorded lines (no room, no cost) | `uv run python -m tests.mouth.measure_hearing` |
+| Try Gawah the agent against the real model, no room: questions by name, a skipped term, a contradiction with a clip, a change agreed by voice (about 3 minutes of a realtime connection) | `uv run python -m tests.mouth.try_agent [out_dir]` |
+| Prove Gawah the agent in a real room: four questions, two skipped terms, two contradictions with a clip, measured from the room (about 14 LiveKit participant-minutes and 4 minutes of a realtime connection) | `uv run python -m tests.mouth.prove_agent` |
 
 Python is pinned to 3.12 through `uv`. Do not use the system Python.
 

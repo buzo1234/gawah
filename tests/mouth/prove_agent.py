@@ -178,7 +178,7 @@ async def main(dry: bool) -> None:
                 print(json.dumps(moment, ensure_ascii=False))
                 name = SAMPLE[line["kind"]]
                 if said and name not in saved:  # the first of each kind
-                    heard = recorder.heard("gawah", after=said[0]["at"] - 0.05, before=said[-1]["at"] + 30)
+                    heard = recorder.heard("gawah", after=said[0]["at"] - 0.05, before=said[-1]["at"] + said[-1].get("speech_ms", 0) / 1000 + 1)
                     if heard:
                         recorder.save("gawah", rig.SAMPLES / name, after=heard[0], before=heard[-1])
                         saved.add(name)
