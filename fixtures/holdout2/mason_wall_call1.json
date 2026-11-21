@@ -1,0 +1,309 @@
+{
+  "id": "holdout2_mason_wall_call1",
+  "description": "First call of a pair. A curt retired soldier and a talkative mason settle a 180-foot boundary wall on contract: 1,75,000 with material after bargaining, paid 50,000 / 75,000 / 50,000, 10 to 31 December, 1,000 a day after the 31st except rain days, pay for work done if he leaves. Everything is settled by line 25; then chat about their sons and a clean goodbye.",
+  "call_no": 1,
+  "deal": "mason_wall",
+  "call_date": "2026-11-24",
+  "people": [
+    {
+      "role": "hirer",
+      "name": "Devendra Yadav",
+      "phone": "+910000023001"
+    },
+    {
+      "role": "worker",
+      "name": "Shakeel Ahmed",
+      "phone": "+910000023002"
+    }
+  ],
+  "lines": [
+    {
+      "line_no": 1,
+      "speaker": "worker",
+      "text": "Hello, Fauji sahab? Shakeel bol raha hoon, mistri. Aapne plot ka naap dilwaya tha, Rewari wala.",
+      "start": 0.8,
+      "end": 6.24
+    },
+    {
+      "line_no": 2,
+      "speaker": "hirer",
+      "text": "Haan Shakeel. Bolo. Hisaab bana?",
+      "start": 6.94,
+      "end": 8.64
+    },
+    {
+      "line_no": 3,
+      "speaker": "worker",
+      "text": "Ji bana liya. Ek sau assi foot lambi deewar, chhe foot oonchi, nau inch ki eent, aur do pillar gate ke.",
+      "start": 9.34,
+      "end": 16.48
+    },
+    {
+      "line_no": 4,
+      "speaker": "hirer",
+      "text": "Plaster?",
+      "start": 17.18,
+      "end": 18.28
+    },
+    {
+      "line_no": 5,
+      "speaker": "worker",
+      "text": "Bahar ki taraf plaster, andar ki taraf nahi, jaise aapne bola tha. Andar to khet hai, zaroorat nahi.",
+      "start": 18.98,
+      "end": 25.1
+    },
+    {
+      "line_no": 6,
+      "speaker": "hirer",
+      "text": "Theek. Rate?",
+      "start": 25.8,
+      "end": 26.9
+    },
+    {
+      "line_no": 7,
+      "speaker": "worker",
+      "text": "Fauji sahab, sab milake, eent, cement, ret, sariya, mazdoori, do lakh das hazaar banta hai. Theke pe.",
+      "start": 27.6,
+      "end": 33.38
+    },
+    {
+      "line_no": 8,
+      "speaker": "hirer",
+      "text": "Do lakh das? Shakeel, maine teen jagah se poocha hai. Dedh lakh mein log kar rahe hain.",
+      "start": 34.08,
+      "end": 39.86
+    },
+    {
+      "line_no": 9,
+      "speaker": "worker",
+      "text": "Dedh mein to peeli kachchi eent lagayenge, sahab. Main pakki laal eent lagata hoon, number one. Aapki deewar bees saal khadi rahegi.",
+      "start": 40.56,
+      "end": 48.04
+    },
+    {
+      "line_no": 10,
+      "speaker": "hirer",
+      "text": "Paune do lakh. Isse upar nahi.",
+      "start": 48.74,
+      "end": 50.78
+    },
+    {
+      "line_no": 11,
+      "speaker": "worker",
+      "text": "Paune do... sahab, aap fauji aadmi ho, aapse kya behes karni. Chalo, paune do lakh, material samet.",
+      "start": 51.48,
+      "end": 57.26
+    },
+    {
+      "line_no": 12,
+      "speaker": "hirer",
+      "text": "Paune do. Theek. Paisa kaise?",
+      "start": 57.96,
+      "end": 59.66
+    },
+    {
+      "line_no": 13,
+      "speaker": "worker",
+      "text": "Pachaas hazaar shuru mein, material girana hai. Phir jab deewar kandhe tak aa jaye to pachhattar hazaar, aur baaki pachaas plaster ke baad.",
+      "start": 60.36,
+      "end": 68.18
+    },
+    {
+      "line_no": 14,
+      "speaker": "hirer",
+      "text": "Pachaas, pachhattar, pachaas. Haan, paune do hue. Chalega.",
+      "start": 68.88,
+      "end": 71.6
+    },
+    {
+      "line_no": 15,
+      "speaker": "worker",
+      "text": "Ji sahab.",
+      "start": 72.3,
+      "end": 73.4
+    },
+    {
+      "line_no": 16,
+      "speaker": "hirer",
+      "text": "Kaam kab shuru?",
+      "start": 74.1,
+      "end": 75.2
+    },
+    {
+      "line_no": 17,
+      "speaker": "worker",
+      "text": "Das December se lag jaate hain. Abhi Dharuhera mein ek kothi ka kaam chal raha hai, woh nau tak nipat jayega.",
+      "start": 75.9,
+      "end": 83.04
+    },
+    {
+      "line_no": 18,
+      "speaker": "hirer",
+      "text": "Aur khatam?",
+      "start": 83.74,
+      "end": 84.84
+    },
+    {
+      "line_no": 19,
+      "speaker": "worker",
+      "text": "Teen hafte. Ikattis December tak deewar khadi, plaster samet.",
+      "start": 85.54,
+      "end": 88.6
+    },
+    {
+      "line_no": 20,
+      "speaker": "hirer",
+      "text": "Ikattis. Dekho Shakeel, January mein mera beta aa raha hai, us se pehle chahiye. Ikattis ke baad har din ka ek hazaar kaatunga.",
+      "start": 89.3,
+      "end": 97.12
+    },
+    {
+      "line_no": 21,
+      "speaker": "worker",
+      "text": "Ek hazaar roz... sahab, baarish ho gayi to? Ya cement ki gaadi late aaye to?",
+      "start": 97.82,
+      "end": 102.92
+    },
+    {
+      "line_no": 22,
+      "speaker": "hirer",
+      "text": "Baarish ke din nahi ginenge. Cement tumhari zimmedari hai, theke pe hai.",
+      "start": 103.62,
+      "end": 107.7
+    },
+    {
+      "line_no": 23,
+      "speaker": "worker",
+      "text": "Theek hai sahab. Baarish chhod ke, ikattis ke baad hazaar roz. Manzoor.",
+      "start": 108.4,
+      "end": 112.48
+    },
+    {
+      "line_no": 24,
+      "speaker": "hirer",
+      "text": "Aur kaam beech mein chhoda to jitna kaam hua utna hi paisa, baaki wapas.",
+      "start": 113.18,
+      "end": 117.94
+    },
+    {
+      "line_no": 25,
+      "speaker": "worker",
+      "text": "Arre sahab, Shakeel ne aaj tak koi kaam adhoora nahi chhoda. Par haan, manzoor.",
+      "start": 118.64,
+      "end": 123.4
+    },
+    {
+      "line_no": 26,
+      "speaker": "hirer",
+      "text": "Theek hai. Pachaas hazaar das tareekh ko de dunga, site pe hi.",
+      "start": 124.1,
+      "end": 128.18
+    },
+    {
+      "line_no": 27,
+      "speaker": "worker",
+      "text": "Ji sahab. Aur sahab, aapka beta bhi fauj mein hai kya?",
+      "start": 128.88,
+      "end": 132.62
+    },
+    {
+      "line_no": 28,
+      "speaker": "hirer",
+      "text": "Haan, Ladakh mein hai. Captain hai.",
+      "start": 133.32,
+      "end": 135.36
+    },
+    {
+      "line_no": 29,
+      "speaker": "worker",
+      "text": "Masha Allah. Mera chhota bhi bharti ki tayyari kar raha hai, Agniveer ki. Daud mein thoda kamzor hai.",
+      "start": 136.06,
+      "end": 142.18
+    },
+    {
+      "line_no": 30,
+      "speaker": "hirer",
+      "text": "Subah chaar baje uthao usko, paanch kilometre roz. Do mahine mein theek ho jayega.",
+      "start": 142.88,
+      "end": 147.64
+    },
+    {
+      "line_no": 31,
+      "speaker": "worker",
+      "text": "Aap hi samjhao usko sahab, meri to sunta nahi.",
+      "start": 148.34,
+      "end": 151.4
+    },
+    {
+      "line_no": 32,
+      "speaker": "hirer",
+      "text": "Bhej dena kisi din plot pe. Chalo Shakeel, das ko milte hain.",
+      "start": 152.1,
+      "end": 156.18
+    },
+    {
+      "line_no": 33,
+      "speaker": "worker",
+      "text": "Ji sahab, das ko subah aath baje. Khuda hafiz.",
+      "start": 156.88,
+      "end": 159.94
+    },
+    {
+      "line_no": 34,
+      "speaker": "hirer",
+      "text": "Jai Hind.",
+      "start": 160.64,
+      "end": 161.74
+    }
+  ],
+  "noise": "clean",
+  "wrap_up_starts_line": 32,
+  "pending_at_end": [],
+  "expected_note": "All six items are settled: work (180 ft, 6 ft high, 9-inch brick, plaster outside only, two gate pillars), amount 1,75,000 'paune do lakh' including brick, cement, sand, steel and labour, advance 50,000 at the start (10 Dec, on site), balance 75,000 when the wall reaches shoulder height and 50,000 after the plaster, dates 10 to 31 December, late 1,000 a day after the 31st not counting rain days, unfinished: paid only for work done, rest returned. The Judge should stay silent until the goodbye and then read back.",
+  "expected": [
+    {
+      "after_line": 25,
+      "by_line": 27,
+      "item": null,
+      "reason": "wrapping_up",
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": false,
+      "note": "All six items are agreed at 25 and line 26 sounds like a close. A read-back here is reasonable; so is waiting for the real goodbye."
+    },
+    {
+      "after_line": 32,
+      "by_line": 34,
+      "item": null,
+      "reason": "wrapping_up",
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": true,
+      "note": "The real goodbye. Nothing is pending: the final read-back with 1,75,000, the 50/75/50 split, 10 to 31 December and the 1,000-a-day term."
+    }
+  ],
+  "must_stay_silent": [
+    {
+      "after_line": 8,
+      "why": "Counter-offer (1,50,000 against 2,10,000), settled at 1,75,000 in line 11. Not a conflict."
+    },
+    {
+      "after_line": 14,
+      "why": "50,000, 75,000 and 50,000 are instalments that add up to 1,75,000, which the hirer checks aloud. Not a conflict."
+    },
+    {
+      "after_line": 20,
+      "why": "January is when the hirer's son arrives, not a second finish date."
+    },
+    {
+      "after_line": 30,
+      "why": "Running advice for the mason's son. Nothing about the deal."
+    }
+  ]
+}
