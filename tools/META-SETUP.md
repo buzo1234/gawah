@@ -111,6 +111,7 @@ The privacy policy promises that "delete my data" (or "mera data delete karo", "
 | `META_APP_SECRET IS NOT SET` | Webhooks are taken unsigned. Fine for a quick check; set the secret (step 1.3) before the demo. |
 | `code 131047` (often as `not delivered`, a few seconds after the send) | More than 24 hours since that phone last wrote. Send Gawah any message from it first. |
 | `code 131030` | That phone is not on the test number's allowed list (step 1.2). |
+| Meta's webhook **Test** button reaches the server, but messages from your phone never do | Your app is not attached to the WhatsApp account that owns the number (on 22 Nov it was attached only to Meta's own "WA DevX Webhook Events 1P App"). Find the account's ID in WhatsApp Manager: it is the `asset_id=` (or `waba_id=`) in the page's address, not the `business_id=`. Then attach the app once: `curl -X POST "https://graph.facebook.com/v23.0/<account id>/subscribed_apps" -d access_token=$META_WHATSAPP_TOKEN`, and check it with a GET on the same address. |
 | `code 131056` | Too many messages to one person too fast. Wait a minute. |
 | `403 bad signature` on `POST /whatsapp/webhook` | `META_APP_SECRET` is wrong, or belongs to another app. Copy it again from App settings > Basic > App secret > Show. |
 | `message(s) from a person with no phone number skipped` | The person uses a WhatsApp username and hides their number. Gawah knows people only by phone number. |
