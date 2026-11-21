@@ -47,64 +47,9 @@ function brokenAt(state, broken) {
   return `broken at link ${broken.index + 1} (${what})`;
 }
 
-// The chain as a strip along the bottom, one link per fact.recorded, grouped by where it
-// was sealed (call 1, WhatsApp on a day, call 2): links memory has verified in the "ok"
-// colour, the broken one and everything after it in red, new ones not yet checked grey.
-const STRIP = { x: 8, width: 1030, step: 22, glyph: 10 };
-let drawn = 0;
-
-function drawLinks(state, live) {
-  const svg = $("chain-links");
-  const list = state.chain.list;
-  const check = state.chainCheck;
-  const broken = check && !check.error && !check.verified ? check.first_broken?.index ?? null : null;
-  const checked = check && !check.error ? check.links : 0;
-  const groups = [];
-  for (const [i, link] of list.entries()) {
-    if (groups.at(-1)?.where !== link.where) groups.push({ where: link.where, from: i, to: i });
-    else groups.at(-1).to = i;
-  }
-  // Each stretch is as wide as its links, and never narrower than its name.
-  const gapW = 18;
-  const named = (g) => g.where.length * 8.4 + 12;
-  let step = STRIP.step;
-  const total = () => groups.reduce((sum, g) => sum + Math.max((g.to - g.from + 1) * step, named(g)) + gapW, 0);
-  while (step > 6 && total() > STRIP.width) step -= 1;
-  let left = STRIP.x;
-  for (const g of groups) {
-    g.left = left;
-    left += Math.max((g.to - g.from + 1) * step, named(g)) + gapW;
-  }
-  const x = (i) => {
-    const g = groups.find((gr) => i >= gr.from && i <= gr.to);
-    return g.left + (i - g.from) * step + step / 2;
-  };
-  const NS = "http://www.w3.org/2000/svg";
-  const el = (tag, attrs) => {
-    const e = document.createElementNS(NS, tag);
-    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
-    return e;
-  };
-  const parts = [];
-  for (const g of groups) {
-    const label = el("text", { x: g.left, y: 16, class: "where" });
-    label.textContent = g.where;
-    parts.push(label, el("line", { x1: g.left, y1: 24, x2: g.left, y2: 58, class: "tick" }));
-  }
-  for (const [i, link] of list.entries()) {
-    const tone = broken != null && i >= broken ? (i === broken ? "broken" : "after") : i < checked ? "ok" : "waiting";
-    if (i && groups.some((g) => g.from === i) === false) parts.push(el("line", { x1: x(i - 1) + STRIP.glyph / 2, y1: 44, x2: x(i) - STRIP.glyph / 2, y2: 44, class: `joint ${tone}` }));
-    const rect = el("rect", { x: x(i) - STRIP.glyph / 2, y: 34, width: STRIP.glyph, height: 20, rx: 5, class: `link-glyph ${tone}${live && i >= drawn ? " enter" : ""}` });
-    const title = el("title", {});
-    title.textContent = `Link ${i + 1}: ${state.facts[link.factId]?.text || link.factId} (${link.status})`;
-    rect.append(title);
-    parts.push(rect);
-  }
-  svg.replaceChildren(...parts);
-  drawn = list.length;
-}
-
-export function renderChain(state, live = false) {
+// The verdict on the whole chain, under the fact layer; the layer's own row shows the
+// links of the term on screen (layer.js).
+export function renderChain(state) {
   const check = state.chainCheck;
   const links = state.chain.links;
   const el = $("chain");
@@ -115,8 +60,7 @@ export function renderChain(state, live = false) {
     : ["ok", `verified · ${plural(check.links)}${links > check.links ? ` · checking ${links - check.links} new` : ""}`];
   const head = check?.verified && check.links ? check.head : null;
   el.title = head ? `Head of the chain: ${head}` : "";
-  el.className = `chain ${tone}`;
+  el.className = `chain label ${tone}`;
   el.replaceChildren(...(!links && !check?.links ? [] : ["Witness chain ", h("span", { class: "verdict" }, text)]));
   $("chain-head").textContent = head ? `head ${head.slice(0, 12)}` : "";
-  drawLinks(state, live);
 }

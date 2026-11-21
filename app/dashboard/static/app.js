@@ -3,8 +3,8 @@
 // Another deal is picked with ?deal=<id>, or by pressing D.
 
 import { NO_DEAL, apply, emptyState } from "./state.js";
-import { h, renderAll, renderChange } from "./render.js";
-import { checkChain, renderChain } from "./chain.js";
+import { h, renderAll, renderChange, renderChecked } from "./render.js";
+import { checkChain } from "./chain.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -25,7 +25,7 @@ async function fetchState() {
 
 // Memory's verdict on the witness chain comes back later; it is drawn only if the page
 // still shows the deal it was asked for.
-const chainChecked = (checked) => checked === state && renderChain(state);
+const chainChecked = (checked) => checked === state && renderChecked(state);
 
 async function load() {
   ready = false;
@@ -62,7 +62,7 @@ function fold(e, live) {
   const change = apply(state, e);
   if (!live) return;
   renderChange(state, change);
-  if (change.panels.includes("chain")) checkChain(state, chainChecked);
+  if (change.fact) checkChain(state, chainChecked);
 }
 
 function onEvent(e) {

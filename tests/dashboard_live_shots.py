@@ -6,21 +6,25 @@ recordings go.
     PYTHONPATH=. uv run python tests/dashboard_live_shots.py
 
 1. call_missing_balance to line 17, then the shot: mid-call; two lines more, caught while
-   their nodes come in (1b; lines 18 to 22).
+   their facts come in (1b; lines 18 to 22).
    The user's recorded lines (fixtures/audio) are laid out as the call's two recordings,
    at the times of the call's lines, so a clip button plays real audio from memory.
 2. call_two_amounts to line 21, a line every 0.3 seconds, filmed (2-facts-arriving.mp4 and
    a contact sheet, with ffmpeg) so the motion can be judged: memory's contradiction on
-   line 19, then the shot.
+   line 19, then the shot. The fact layer must show the agreed 13,000 with the 14,000 as
+   its claim, the slide-7 card must cover nothing else, and its "Original moment" must
+   play (this call's recordings are laid down silent, so the clip is real but quiet).
 2b. On the same deal (started on WhatsApp, as a real one is), voice notes from
    fixtures/voice-notes/ through the webhook: Sunita's on the work, and Ramesh's change of
    the amount to 25,000, which Sunita says yes to. The voice-note facts carry their own
-   mark, the amount reads "Changed by voice note, both said yes", then the shot.
+   mark, the amount reads "Changed by voice note, both said yes" and the fact layer shows
+   the voice note's fact, then the shot.
 3. The first call finished, an advance paid on WhatsApp, and the amount changed by both:
    payments, what they count towards, and a superseded version, then the shot.
 
-After each shot: the graph is checked against memory's own answers (/memory/state, terms,
-owed, /memory/chain), the checklist against the brain's, and a reload must rebuild exactly
+After each shot: the board is checked against memory's own answers (/memory/state, terms,
+owed, /memory/chain; every fact in the feed once, the fact layer's card memory's current
+term), the checklist against the brain's, and a reload must rebuild exactly
 the same page. Then one past fact is altered inside memory, and the chain must name the
 link that broke.
 
@@ -57,35 +61,42 @@ from app.contracts import (
 from fakes.replayer import load
 from tests.offline import offline_app
 
-PANELS = ["items", "settled-count", "graph", "graph-count", "chain"]
+PANELS = ["items", "settled-count", "feed", "graph-count", "tracks", "layer", "chain-row", "below", "chain"]
 SNAPSHOT = """JSON.stringify({
   text: Object.fromEntries(%r.map((id) => [id, document.getElementById(id).textContent])),
-  links: [...document.querySelectorAll('#graph path.link')].map((p) => p.getAttribute('class')).sort(),
+  cards: [...document.querySelectorAll('#layer > *, #chain-row > *, #feed .row, #items .item')].map((p) => p.className.replace(/ ?(enter|moved|pulse)/g, '')),
 })""" % PANELS
 LOADED = "document.body.dataset.conn === 'live' && document.body.dataset.loaded === 'true'"
 VERIFIED = "document.getElementById('chain').textContent.includes('verified') && !document.getElementById('chain').textContent.includes('new')"
-# Every fact is a node: a pill or a dot on its speaker's side of its term, or, for the fact a
-# term stands on, the line under the term itself.
-GRAPH = """JSON.stringify([...document.querySelectorAll('#graph [id^="fact-"]')].map((el) => ({
+# Every fact is a row of the feed, once; the fact a term stands on is marked.
+GRAPH = """JSON.stringify([...document.querySelectorAll('#feed [id^="fact-"]')].map((el) => ({
   id: el.id.slice(5), status: [...el.classList].find((c) => ['said','agreed','confirmed','disputed','superseded'].includes(c)),
-  stands: el.classList.contains('stands'), item: el.dataset.item || el.closest('.item')?.dataset.item || '',
+  stands: el.classList.contains('stands'), item: el.dataset.item || '',
 })))"""
-OWED = "JSON.stringify([...document.querySelectorAll('#graph .owed')].map((el) => [el.closest('.item').dataset.item, el.textContent]))"
+OWED = "JSON.stringify([...document.querySelectorAll('#items .owed')].map((el) => [el.closest('.item').dataset.item, el.textContent]))"
+# The fact layer: the term it shows, the fact on its card, and its side cards.
+LAYER = """JSON.stringify({ item: document.querySelector('#items .item.focus')?.dataset.item,
+  fact: document.querySelector('#layer .fact-card')?.dataset.fact || null, text: document.getElementById('layer').textContent,
+  time: document.getElementById('layer-time').textContent })"""
 # A term's value is cut at a word when it is too long for the row; its full text is the
 # first line of the row's hover text.
 CHECKLIST = """JSON.stringify(Object.fromEntries([...document.querySelectorAll('#items .item')].map((el) => [el.dataset.item, {
   state: el.querySelector('.state').textContent, value: el.title.split('\\n')[0] || el.querySelector('.value').textContent,
-  shown: el.querySelector('.value').textContent, foot: el.querySelector('.foot').textContent,
-  when: el.querySelector('.when')?.textContent || '', contradicted: el.querySelector('.contradicted')?.textContent || '',
+  shown: el.querySelector('.value').textContent, foot: el.querySelector('.foot').textContent, title: el.title,
+  when: el.dataset.when || '', contradicted: el.querySelector('.contradicted')?.title || '',
 }])))"""
-GONE = ["flow", "decisions", "records", "lanes", "real-chat", "deal-picker", "conn", "people", "status"]
-IN_VIEW = """(() => { const el = document.querySelector('%s'), g = document.getElementById('graph').getBoundingClientRect();
-  const r = el.getBoundingClientRect(); return r.top >= g.top && r.bottom <= g.bottom; })()"""
+GONE = ["flow", "decisions", "records", "lanes", "real-chat", "deal-picker", "conn", "people", "status", "graph", "nodes", "edges", "card-slot", "timeline", "chain-links"]
+IN_VIEW = """(() => { const r = document.querySelector('%s').getBoundingClientRect();
+  return r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth; })()"""
+COVERS = """(() => { const c = document.querySelector('#below .conflict').getBoundingClientRect();
+  return JSON.stringify([...document.querySelectorAll('#layer > *, #chain-row > *, #items .item, #feed .row, #tracks')].filter((n) => {
+    const r = n.getBoundingClientRect(); return r.left < c.right && c.left < r.right && r.top < c.bottom && c.top < r.bottom; })
+    .map((n) => n.id || n.className)); })()"""
 ARRIVING = """new Promise((done) => {
   const seen = new MutationObserver(() => {
-    if (document.querySelector('#graph .node.enter')) { seen.disconnect(); done(true); }
+    if (document.querySelector('#feed .row.enter')) { seen.disconnect(); done(true); }
   });
-  seen.observe(document.getElementById('graph'), { subtree: true, childList: true, attributes: true });
+  seen.observe(document.getElementById('feed'), { subtree: true, childList: true, attributes: true });
 })"""
 AUDIO = Path("fixtures/audio")
 FRAME = "document.getElementById('phone-frame').contentWindow"
@@ -140,6 +151,25 @@ def film_to(frames: Path, video: Path, sheet: Path) -> None:
     rows = max(1, -(-len(shots) // 12))
     subprocess.run([*common, "-vf", f"select='not(mod(n\\,3))',scale=480:-1,tile=4x{rows}", "-frames:v", "1", str(sheet)], check=True)
     print(f"  {len(shots)} frames over {seconds:.1f} s: {video}, {sheet}")
+
+
+async def press(chrome, selector: str) -> None:
+    """A real mouse press in the middle of the element, as a person's: the page may only
+    start sound from one."""
+    box = json.loads(await chrome.js(f"""(() => {{ const r = document.querySelector('{selector}').getBoundingClientRect();
+        return JSON.stringify([r.x + r.width / 2, r.y + r.height / 2]); }})()"""))
+    for kind in ("mousePressed", "mouseReleased"):
+        await chrome.send("Input.dispatchMouseEvent", type=kind, x=box[0], y=box[1], button="left", clickCount=1)
+
+
+def silent_recordings(folder: Path, seconds: int) -> None:
+    """A call's two recordings, silent, where the bridge would leave them: a clip from them
+    plays, with nothing to hear."""
+    folder.mkdir(parents=True, exist_ok=True)
+    for role in ("hirer", "worker"):
+        with wave.open(str(folder / f"{role}.wav"), "wb") as w:
+            w.setnchannels(1), w.setsampwidth(2), w.setframerate(16000)
+            w.writeframes(bytes(seconds * 16000 * 2))
 
 
 def lay_recordings(folder: Path, fixture: dict) -> list[int]:
@@ -239,11 +269,15 @@ async def main(port: int, out: Path) -> None:
                 for label, text in json.loads(await chrome.js(OWED)):
                     r = owed[label]
                     want = f"Paid ₹{r['paid_rupees']} · ₹{r['owed_rupees']} left"
-                    check(text.replace(",", "") == want, f"{label}: {text!r} is memory's owed ({r['paid_rupees']} paid, {r['owed_rupees']} owed)")
+                    check(text.replace(",", "").replace("₹ ", "₹") == want, f"{label}: {text!r} is memory's owed ({r['paid_rupees']} paid, {r['owed_rupees']} owed)")
                 chain = (await http.get(f"/memory/chain/{deal}")).json()
                 text = await chrome.js("document.getElementById('chain').textContent")
                 title = await chrome.js("document.getElementById('chain').title")
                 check(chain["verified"] and text == f"Witness chain verified · {chain['links']} links" and chain["head"] in title, f"chain: {text!r}")
+                layer = json.loads(await chrome.js(LAYER))
+                term = (await http.get(f"/memory/term/{deal}/{layer['item']}")).json()["current"]
+                if term:
+                    check(layer["fact"] == term["id"], f"the fact layer shows {layer['item']}: memory's current term, {term['value']!r}")
                 await checklist_matches(deal)
 
             async def checklist_matches(deal: str) -> dict:
@@ -258,7 +292,7 @@ async def main(port: int, out: Path) -> None:
                         continue
                     want = ("Agreed", item["value"]) if item["state"] == "agreed" else ("Pending", "Not agreed yet")
                     check((row["state"], row["value"]) == want, f"checklist {item['key']}: {row['state']} {row['value']!r}")
-                    if row["shown"] != row["value"]:
+                    if row["shown"] != row["value"] and row["shown"] != "₹ " + row["value"].removesuffix(" rupees"):
                         kept = row["shown"].removesuffix("…")
                         check(row["shown"].endswith("…") and row["value"].startswith(kept) and row["value"][len(kept)] in " ;,.",
                               f"checklist {item['key']}: cut at a word, {row['shown']!r}")
@@ -313,6 +347,8 @@ async def main(port: int, out: Path) -> None:
             check(clip.status_code == 200 and clip.headers["content-type"] == "audio/wav" and seconds > 5, f"memory's clip for line 3: {seconds:.1f} s of WAV")
             (home / "clip-line-3.wav").write_bytes(clip.content)
             print(f"  the clip, to listen to: {home / 'clip-line-3.wav'}")
+            layer = json.loads(await chrome.js(LAYER))
+            check(layer["time"].startswith("Fact in "), f"the fact layer says how long the fact took: {layer['time']!r}")
             box = json.loads(await chrome.js(f"""(() => {{ const b = document.querySelector('#fact-{fact["id"]} .play');
                 b.scrollIntoView({{block: 'center'}}); const r = b.getBoundingClientRect(); return JSON.stringify([r.x + r.width / 2, r.y + r.height / 2]); }})()"""))
             for kind in ("mousePressed", "mouseReleased"):
@@ -360,27 +396,36 @@ async def main(port: int, out: Path) -> None:
                     n += 1
 
             camera = asyncio.create_task(film())
+            silent_recordings(home / "recordings" / deal2 / "1", seconds=int(ta["lines"][-1]["end"]) + 5)
             await play(deal2, ta, range(1, 22), gap=0.3)  # the contradiction is on line 19; two lines on, it is still in view
             await asyncio.sleep(2.0)
             shooting = False
             await camera
             film_to(frames, out / "2-facts-arriving.mp4", out / "2-facts-arriving-sheet.png")
             await matches_memory(deal2)
-            conflict = await chrome.js("document.querySelector('#graph div.conflict')?.textContent || ''")
-            check("14,000" in conflict and "13,000" in conflict, f"contradiction card: {conflict[:140]!r}")
-            check(await chrome.js("!!document.querySelector('#graph path.link.conflict')"), "the contradiction points at the agreed 13,000")
-            check(await chrome.js(IN_VIEW % "#graph div.conflict"), "the contradiction is in view in the graph")
+            conflict = await chrome.js("document.querySelector('#below .conflict')?.textContent || ''")
+            check("14,000" in conflict and "13,000" in conflict and "Original moment" in conflict, f"contradiction card: {conflict[:160]!r}")
+            struck = await chrome.js("document.querySelector('#below .conflict .now s')?.textContent || ''")
+            check("14,000" in struck, f"the claim is struck through: {struck!r}")
+            layer = json.loads(await chrome.js(LAYER))
+            check(layer["item"] == "amount" and "contradicts" in layer["text"] and "13,000" in layer["text"] and "14,000" in layer["text"],
+                  f"the fact layer: the claim 14,000 contradicts the agreed 13,000: {layer['text'][:160]!r}")
+            check(await chrome.js("!!document.querySelector('#chain-row .link-box.bad')"), "the claim is a link of the chain row")
+            check(await chrome.js(IN_VIEW % "#below .conflict"), "the contradiction card is in view")
             rows = json.loads(await chrome.js(CHECKLIST))
             check(rows["amount"]["contradicted"].startswith("Contradicted · Call 1 · "), f"the checklist marks the amount: {rows['amount']}")
             await asyncio.sleep(1.2)  # the contradiction's red wash, part faded: as the room sees it a second on
             await chrome.shot(out / "2-contradiction.png")
             await reload_check("contradiction")
-            card = json.loads(await chrome.js("""(() => { const c = document.querySelector('#graph div.conflict').getBoundingClientRect();
-              const hit = [...document.querySelectorAll('#graph .node, #items .item')].filter((n) => { const r = n.getBoundingClientRect();
-                return r.left < c.right && c.left < r.right && r.top < c.bottom && c.top < r.bottom; }).map((n) => n.id || n.dataset.item);
-              return JSON.stringify(hit); })()"""))
-            check(card == [], f"the contradiction card covers no node and no term: {card}")
-            check(await chrome.js("!!document.querySelector('#graph path.link.card-link')"), "the card's red link runs to what was just said")
+            card = json.loads(await chrome.js(COVERS))
+            check(card == [], f"the contradiction card covers nothing else: {card}")
+            await press(chrome, "#below .conflict .play")
+            await chrome.wait_for("document.querySelector('#below .conflict .play').classList.contains('playing') || document.querySelector('#below .conflict .play').classList.contains('missing')", timeout=3)
+            agreed = await chrome.js("document.querySelector('#below .conflict .play').getAttribute('data-fact')")
+            heard = await http.get(f"/memory/clip/{agreed}")
+            check(await chrome.js("document.querySelector('#below .conflict .play').classList.contains('playing')"),
+                  f"Original moment plays the agreed clip (memory answers {heard.status_code}, {len(heard.content)} bytes)")
+            await press(chrome, "#below .conflict .play")  # and stop it
 
             # ---------- 2b. voice notes on the same deal ----------
             print("2b. voice notes: one on the work, and a change of the amount both say yes to")
@@ -395,15 +440,16 @@ async def main(port: int, out: Path) -> None:
             voiced = [f for f in memory["facts"] if f["source"] == "voice_note"]
             check(len(voiced) >= 2, f"memory holds the voice notes' facts: {[(f['kind'], f['value'], f['status']) for f in voiced]}")
             await matches_memory(deal2)
-            marks = json.loads(await chrome.js("""JSON.stringify([...document.querySelectorAll('#graph .src-voice_note')].map((m) =>
+            marks = json.loads(await chrome.js("""JSON.stringify([...document.querySelectorAll('#feed .src-voice_note')].map((m) =>
               m.closest('[id^="fact-"]')?.id.slice(5)).filter(Boolean))"""))
-            on_graph = [f["id"] for f in voiced if f["id"] in marks]
-            check(on_graph and set(on_graph) <= {f["id"] for f in voiced}, f"voice-note facts carry the voice-note mark ({len(on_graph)} of {len(voiced)}; the rest are dots)")
+            check(sorted(marks) == sorted(f["id"] for f in voiced), f"every voice-note fact carries the voice-note mark ({len(marks)} of {len(voiced)})")
             rows = json.loads(await chrome.js(CHECKLIST))
             amount = rows["amount"]
-            title = await chrome.js("document.querySelector('#items .item[data-item=amount]').title")
-            check(amount["state"] == "Changed" and amount["value"].startswith("25,000") and amount["foot"].startswith("WhatsApp voice note") and amount["foot"].endswith("· both said yes")
-                  and "Changed by voice note, both said yes" in title, f"the amount changed by voice note: {amount}, hover {title!r}")
+            check(amount["state"] == "Changed" and amount["value"].startswith("25,000") and amount["when"] == "WhatsApp voice note"
+                  and "Changed by voice note, both said yes" in amount["title"], f"the amount changed by voice note: {amount}")
+            layer = json.loads(await chrome.js(LAYER))
+            check(layer["item"] == "amount" and "WhatsApp voice note" in layer["text"] and "Voice note" in layer["text"] and "Both, by voice note" in layer["text"],
+                  f"the fact layer shows the voice note's fact: {layer['text'][:200]!r}")
             await asyncio.sleep(0.6)
             await chrome.shot(out / "2b-voice-notes.png")
             await reload_check("voice notes")

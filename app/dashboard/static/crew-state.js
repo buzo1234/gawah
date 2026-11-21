@@ -7,7 +7,7 @@ const NOT_COUNTED = new Set(["disputed", "superseded"]);
 
 export function emptyCrew() {
   return {
-    facts: {}, // id -> the latest version, plus seq (when it was first seen) and last (its newest link)
+    facts: {}, // id -> the latest version, plus seq (when it was first seen), ts (the event's time then) and last (its newest link)
     factOrder: [], // ids, first seen first
     seq: 0, // one counter for facts and changes, to tell what came after what
     conflicts: [], // each fact.conflict
@@ -78,7 +78,7 @@ export function applyCrew(state, e, change) {
     case "fact.recorded": {
       const known = state.facts[e.fact.id];
       if (!known) state.factOrder.push(e.fact.id);
-      state.facts[e.fact.id] = { ...e.fact, seq: known ? known.seq : ++state.seq, last: ++state.chain.links };
+      state.facts[e.fact.id] = { ...e.fact, seq: known ? known.seq : ++state.seq, ts: known ? known.ts : e.ts, last: ++state.chain.links };
       state.chain.list.push({ factId: e.fact.id, status: e.fact.status, where: sealedIn(e.fact, state.live, e.ts) });
       // Memory sends a replacement first and the old version again as superseded after
       // it: the highlight stays on the replacement.
@@ -92,7 +92,7 @@ export function applyCrew(state, e, change) {
     case "fact.conflict":
       state.conflicts.push({
         id: e.event_id, factIds: e.fact_ids, explanation: e.explanation, said: e.said,
-        speaker: e.speaker, callNo: e.call_no, lineNo: e.line_no, confidence: e.confidence,
+        speaker: e.speaker, callNo: e.call_no, lineNo: e.line_no, confidence: e.confidence, seq: ++state.seq, ts: e.ts,
       });
       change.conflict = e.event_id;
       change.panels.push("graph", "checklist");

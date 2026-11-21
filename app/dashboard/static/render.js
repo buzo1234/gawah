@@ -1,9 +1,15 @@
-// Draws the board from the state: one layout, then the graph, the checklist down its
-// middle, and the chain under it. Text only ever goes in through h(), as text nodes.
+// Draws the board from the state: one view worked out from it (board.js), then each
+// panel from that view. A live event redraws the panels with what is new marked, so it
+// rises in; a reload draws the same thing at once. Text only ever goes in through h(),
+// as text nodes.
 
-import { layout } from "./graph-layout.js";
+import { ITEMS, nameOf, termView } from "./state.js";
+import { standing } from "./crew-state.js";
+import { contradicting, factLayer, feed, focusItem, openConflict, tracks } from "./board.js";
 import { renderChecklist } from "./checklist.js";
-import { renderGraph } from "./graph.js";
+import { renderFeed } from "./feed.js";
+import { renderTracks } from "./tracks.js";
+import { renderChainRow, renderLayerAndBelow } from "./layer.js";
 import { renderChain } from "./chain.js";
 
 export function h(tag, attrs = {}, ...kids) {
@@ -20,35 +26,74 @@ export function h(tag, attrs = {}, ...kids) {
 
 export const isWebLink = (url) => /^https?:\/\//i.test(url || "");
 
-// Pill widths and where a long label is cut come from the page's own font.
+// Where a long label is cut comes from the page's own font.
 const ctx = document.createElement("canvas").getContext("2d");
 const measure = (text, font = "500 16px") => {
   ctx.font = `${font} ${getComputedStyle(document.body).fontFamily}`;
   return ctx.measureText(text).width;
 };
 
-// A reload, or another deal: everything at once, nothing animated.
-export function renderAll(state) {
+let picked = null; // the term a person picked in the contract, until something new happens
+let current = null; // the state last drawn, for a pick to redraw
+let shown = null; // the term the fact layer shows
+
+function viewOf(state) {
+  const focus = focusItem(state, picked);
+  return {
+    views: Object.fromEntries(ITEMS.map(([key]) => [key, termView(state, key)])),
+    stands: Object.fromEntries(ITEMS.map(([key]) => [key, standing(state, key)])),
+    focus, measure, contradicting: (c) => contradicting(state, c),
+    pick: (key) => { picked = key; renderAll(current, true); },
+    feed: feed(state), tracks: tracks(state), layer: factLayer(state, focus), open: openConflict(state),
+  };
+}
+
+function header(state, view) {
+  const hirer = state.people.hirer?.name, worker = state.people.worker?.name;
+  document.getElementById("deal-title").textContent = hirer || worker ? `${nameOf(state, "hirer")} · ${nameOf(state, "worker")}` : "Gawah";
+  const pill = document.getElementById("call-pill");
+  const live = state.live;
+  pill.replaceChildren(...(live ? [h("span", { class: "dot" }), live.kind === "callback" ? "Call-back · live" : `Call ${live.callNo} · live`]
+    : state.calls.length ? [`After call ${state.currentCall}`] : state.dealId ? ["Before the call"] : []));
+  pill.className = `pill${live ? " live" : ""}`;
+  pill.hidden = !pill.textContent;
+}
+
+function draw(state, change = {}, live = false) {
+  current = state;
+  const view = viewOf(state);
+  shown = view.focus;
+  header(state, view);
+  renderTracks(state, view, live ? change : {});
+  renderChecklist(state, view, change.moved || [], live);
+  renderFeed(state, view, live ? change.fact : null);
+  renderLayerAndBelow(state, view, live ? change : {});
+  renderChain(state);
+}
+
+// A reload, another deal, or a term picked: everything at once, nothing animated.
+export function renderAll(state, keepPick = false) {
+  if (!keepPick) picked = null;
   const stage = document.getElementById("stage");
   stage.classList.add("instant");
-  const L = layout(state, measure);
-  renderGraph(state, L);
-  renderChecklist(state, L);
-  renderChain(state);
+  draw(state);
   void stage.offsetWidth;
   requestAnimationFrame(() => stage.classList.remove("instant"));
 }
 
-// One live event: what is new enters, what moved eases there.
+// One live event: what is new rises in.
 export function renderChange(state, change) {
-  const wants = (panel) => change.panels.includes("all") || change.panels.includes(panel);
-  if (change.panels.includes("all")) return renderAll(state);
-  if (!wants("graph") && !wants("checklist") && !wants("chain")) return;
-  const L = layout(state, measure);
-  renderGraph(state, L, change, true); // before the checklist: a replaced version steps back from its term
-  renderChecklist(state, L, change.conflict ? [...change.moved, ...conflictItems(state, change.conflict)] : change.moved, true);
-  if (wants("chain")) renderChain(state, true);
+  if (change.panels.includes("all")) return renderAll(state, true);
+  if (!change.panels.length) return;
+  if (change.fact || change.conflict || change.changed) picked = null;
+  draw(state, change, true);
 }
 
-const conflictItems = (state, id) =>
-  state.conflicts.find((c) => c.id === id)?.factIds.map((f) => state.facts[f]?.item).filter(Boolean) || [];
+// Memory's answer on the chain: the verdict and the links on screen; the whole board only
+// when a broken link moves the fact layer to its term.
+export function renderChecked(state) {
+  const view = viewOf(state);
+  if (view.focus !== shown) return draw(state);
+  renderChain(state);
+  renderChainRow(state, view.layer);
+}
