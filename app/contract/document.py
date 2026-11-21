@@ -252,13 +252,13 @@ def _call(n: int, call: Call) -> Bi | None:
         if not ended:
             return None
         day = _day(ended.ts)
-        return Bi(f"कॉल {n} {day.hi} को हुई।", f"Call {n} was on {day.en}.")
+        return Bi(f"कॉल {n}: {day.hi} को हुई।", f"Call {n} was on {day.en}.")
     start = _moment(began)
     if not duration:
-        return Bi(f"कॉल {n} {start.hi} शुरू हुई।", f"Call {n} started on {start.en}.")
+        return Bi(f"कॉल {n}: {start.hi} शुरू हुई।", f"Call {n} started on {start.en}.")
     minutes, seconds = divmod(int(duration), 60)
     return Bi(
-        f"कॉल {n} {start.hi} शुरू हुई और {minutes} मिनट {seconds} सेकंड चली।",
+        f"कॉल {n}: {start.hi} शुरू हुई और {minutes} मिनट {seconds} सेकंड चली।",
         f"Call {n} started on {start.en} and lasted {minutes} min {seconds} sec.",
     )
 

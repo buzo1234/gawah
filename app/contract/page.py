@@ -54,7 +54,7 @@ def html(doc: Document) -> str:
 def _clause(n: int, clause: Clause) -> str:
     rows = "".join(
         f"<tr><th>{e(p.label.hi)}<br><span>{e(p.label.en)}</span></th><td class=amount>{e(both(p.amount, ' / '))}</td>"
-        f"<td>{e(p.when.hi)}<br>{e(p.when.en)}</td><td class=at>{_at(p.said_at, br=False)}</td></tr>"
+        f"<td>{e(p.when.hi)}<br>{e(p.when.en)}</td><td class=at>{_at(p.said_at)}</td></tr>"
         for p in clause.payments
     )
     table = (
@@ -81,7 +81,7 @@ def _changes(changes: list[ChangeRow]) -> str:
     if not changes:
         return ""
     rows = "".join(
-        f"<tbody><tr><td class=n>{c.n}.</td><th>{e(c.term.hi)}<br><span>{e(c.term.en)}</span></th>"
+        f"<tbody><tr><td class=n>{c.n}.</td><th class=term>{e(c.term.hi)}<br><span>{e(c.term.en)}</span></th>"
         f"<td>{e(c.before.hi)}<br>{e(c.before.en)}</td><td class=now>{e(c.now.hi)}<br>{e(c.now.en)}</td>"
         f"<td class=at>{_at(c.said_at)}</td></tr>"
         f"<tr class=how><td></td><td colspan=4>{e(BOTH_CONFIRMED.hi)}: {e(c.when.hi)}<br>{e(BOTH_CONFIRMED.en)}: {e(c.when.en)}"
@@ -90,17 +90,17 @@ def _changes(changes: list[ChangeRow]) -> str:
     )
     return (
         f"<div class=block><h2>{e(CHANGES.hi)} <span>/ {e(CHANGES.en)}</span></h2><div class=lead>{_two(CHANGES_LEAD)}</div>"
-        f"<table class=changes><thead><tr><th></th><th>बात<br><span>Term</span></th><th>{e(BEFORE.hi)}<br><span>{e(BEFORE.en)}</span></th>"
+        f"<table class=changes><thead><tr><th class=n></th><th class=term>बात<br><span>Term</span></th><th>{e(BEFORE.hi)}<br><span>{e(BEFORE.en)}</span></th>"
         f"<th>{e(NOW.hi)}<br><span>{e(NOW.en)}</span></th><th class=at>कॉल<br><span>call</span></th></tr></thead>{rows}</table></div>"
     )
 
 
-def _at(said_at: str | None, br: bool = True) -> str:
+def _at(said_at: str | None) -> str:
     """"2, 1:05" as call 2, 1 min 5 s in."""
     if not said_at:
         return ""
     call, _, clock = said_at.partition(", ")
-    return f"कॉल / call {e(call)}" + (("<br>" if br else " ") + e(clock) if clock else "")
+    return f"कॉल / call {e(call)}" + (f"<br>{e(clock)}" if clock else "")
 
 
 def _two(text: Bi) -> str:
@@ -173,7 +173,7 @@ ul.also li {{ margin-top: 1.2mm; }}
 .changes tbody tr:first-child > * {{ border-top: 0.12mm solid #999; }}
 .changes thead th {{ font-size: 8.5pt; line-height: 1.25; }}
 .changes .n {{ width: 5mm; font-weight: bold; }}
-.changes th {{ width: 24mm; }}
+.changes .term {{ width: 32mm; }}
 .changes .now {{ font-weight: bold; }}
 .changes .at {{ width: 14mm; padding-right: 0; }}
 .changes .how td {{ padding-top: 0; font-size: 8pt; color: #444; }}

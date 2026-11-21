@@ -64,11 +64,13 @@ class Rig:
     def second_call(self, deal_id=DEAL) -> datetime:
         started = datetime.now(UTC)
         self.bus.publish(CallStarted(deal_id=deal_id, call_no=2, room=f"replay-{deal_id}-2", ts=started))
+        return started
+
+    def end_second_call(self, started: datetime, deal_id=DEAL) -> None:
         self.bus.publish(CallEnded(
             deal_id=deal_id, call_no=2, duration=120.0, ts=started + timedelta(seconds=120),
             recording_keys={"hirer": f"recordings/{deal_id}/2/hirer.wav", "worker": f"recordings/{deal_id}/2/worker.wav"},
         ))
-        return started
 
     def change(self, fact_id: str, new_value: str, deal_id=DEAL) -> None:
         steps = [
@@ -130,6 +132,8 @@ async def test_a_change_both_confirmed_on_a_second_call_makes_version_2(bus, sto
         ),
         old.model_copy(update={"status": FactStatus.SUPERSEDED, "superseded_at": started + timedelta(seconds=65)}),
     )
+    assert len(await rig.settle()) == 1  # the call is still going on: its length and recordings are not known yet
+    rig.end_second_call(started)
     _, v2 = await rig.settle()
     text = v2.text
 
@@ -229,10 +233,11 @@ async def test_version_2_from_the_real_memory(bus, store, tmp_path):
     [v1] = await rig.settle()
     await memory.settle()
 
-    rig.second_call(deal_id)
+    started = rig.second_call(deal_id)
     amount = (await memory.get_term(deal_id, ItemKey.AMOUNT)).current
     assert amount.value_rupees == 13000
     rig.change(amount.id, "15,000 rupees, labour only, with the balcony wall", deal_id)
+    rig.end_second_call(started, deal_id)
     await rig.settle()
     await memory.settle()
     _, v2 = await rig.settle()

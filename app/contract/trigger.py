@@ -118,6 +118,10 @@ class DealState:
         return all(self.confirmed[role] >= set(ItemKey) or
                    (self.agreed() and self.confirmed[role] >= self.agreed()) for role in Role)
 
+    def in_call(self) -> bool:
+        """A deal call is going on: its length and recordings are not known yet."""
+        return any(c.started and not c.ended for c in self.calls.values())
+
     def should_write(self) -> bool:
         new_changes = bool(set(self.landed) - self.written_changes)
-        return (not self.written or new_changes) and bool(self.agreed()) and self.both_confirmed()
+        return (not self.written or new_changes) and bool(self.agreed()) and self.both_confirmed() and not self.in_call()
