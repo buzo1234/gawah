@@ -118,3 +118,23 @@ async def test_same_call_gives_the_same_events_every_time(path, mode):
         await bus.stop()
     assert runs[0] == runs[1] == runs[2]
     assert any(e["name"] == JudgeSpeak.model_fields["name"].default for e in runs[0])
+
+
+async def test_spike_call_covers_a_dodged_question_and_speaking_to_gawah(bus):
+    """Sage2's answers here are the spike's saved run of its 30-line call."""
+    run = await run_call(bus, "tests/brain/spike_painter_call.json", "live")
+    assert run.spoken == [
+        (18, "term_unclear", "balance", "hirer"),  # asked at 17, brushed off at 18
+        (23, "addressed_directly", None, "hirer"),  # "Gawah, aapne sab note kar liya na?"
+        # 43 thousand is said at 24; the Judge is still waiting on its answer to line 23.
+        (26, "conflicting_figures", "amount", "both"),
+        (29, "wrapping_up", "late_or_unfinished", "both"),  # never discussed, and not yet asked
+    ]
+    assert 'said: "Gawah, aapne sab note kar liya na?"' in run.speaks[1].instruction
+    assert run.final["amount"].note == "two figures said: 42,000 rupees and 43,000 rupees"
+    assert run.values.missing == []
+
+
+async def test_spike_call_in_wrapup_mode_only_speaks_at_the_end(bus):
+    run = await run_call(bus, "tests/brain/spike_painter_call.json", "wrapup")
+    assert run.spoken == [(27, "wrapping_up", "amount", "both")]

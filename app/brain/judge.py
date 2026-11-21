@@ -129,7 +129,8 @@ class Judge:
         wrapping_up = self.wrapup_until is not None and view.now <= self.wrapup_until
         if wrapping_up and self._gap_ok(view, tuning.WRAPUP_GAP_S):
             pending = [key for key, item in view.items.items() if item.state is ItemState.PENDING]
-            for item in pending:
+            # Least asked first: do not go straight back to what was asked a moment ago.
+            for item in sorted(pending, key=lambda key: self.asked.get(key, 0)):
                 if item not in self.asked_at_wrapup and self._may_ask(item, view):
                     if item in view.conflicts:
                         return _which_figure(item, view, SpeakReason.WRAPPING_UP)

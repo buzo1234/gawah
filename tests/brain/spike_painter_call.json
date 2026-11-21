@@ -1,0 +1,228 @@
+{
+  "id": "spike_painter_call",
+  "description": "The 30-line painter call from spikes/5-sage2.md, with made-up timings. Sunita asks when the balance is paid at line 17 and Ramesh brushes it off at 18; she speaks to Gawah at 23; Ramesh says 43 thousand at 24 after 42 was agreed; late terms are never discussed. It covers what the two practice calls do not: a question that was asked and dodged, and someone speaking to Gawah.",
+  "people": [
+    {
+      "role": "hirer",
+      "name": "Sunita",
+      "phone": "+910000000001"
+    },
+    {
+      "role": "worker",
+      "name": "Ramesh",
+      "phone": "+910000000002"
+    }
+  ],
+  "lines": [
+    {
+      "line_no": 1,
+      "speaker": "hirer",
+      "text": "Hello Ramesh ji, namaste. Main Sunita bol rahi hoon, apne flat ki painting ke liye baat karni thi.",
+      "start": 0.8,
+      "end": 7.7
+    },
+    {
+      "line_no": 2,
+      "speaker": "worker",
+      "text": "Ji namaste madam, boliye. Kaunsa flat hai, kitna bada hai?",
+      "start": 8.3,
+      "end": 12.6
+    },
+    {
+      "line_no": 3,
+      "speaker": "hirer",
+      "text": "2BHK hai, Sector 62 Noida mein. Do bedroom, hall, kitchen, aur dono bathroom ki ceiling karni hai.",
+      "start": 13.2,
+      "end": 19.8
+    },
+    {
+      "line_no": 4,
+      "speaker": "worker",
+      "text": "Theek hai madam. Sirf andar ka kaam hai ya balcony aur bahar ka bhi?",
+      "start": 20.4,
+      "end": 26.0
+    },
+    {
+      "line_no": 5,
+      "speaker": "hirer",
+      "text": "Sirf andar ka. Do coat lagane hain, jahan zaroorat ho wahan putty, aur paint Asian Paints ka Royale chahiye.",
+      "start": 26.6,
+      "end": 33.9
+    },
+    {
+      "line_no": 6,
+      "speaker": "worker",
+      "text": "Ho jayega madam. Poora 2BHK andar se, do coat, putty ke saath, Royale paint. Pakka.",
+      "start": 34.5,
+      "end": 40.5
+    },
+    {
+      "line_no": 7,
+      "speaker": "hirer",
+      "text": "Haan bilkul yahi. Ab paisa batao, kitna loge?",
+      "start": 41.1,
+      "end": 44.7
+    },
+    {
+      "line_no": 8,
+      "speaker": "worker",
+      "text": "Madam material aur labour mila ke 45 hazaar lagega.",
+      "start": 45.3,
+      "end": 49.3
+    },
+    {
+      "line_no": 9,
+      "speaker": "hirer",
+      "text": "45 toh bahut zyada hai bhaiya. 40 mein kar do.",
+      "start": 49.9,
+      "end": 54.2
+    },
+    {
+      "line_no": 10,
+      "speaker": "worker",
+      "text": "Madam Royale mehenga paint hai. Chalo 42 hazaar final, isse kam nahi hoga.",
+      "start": 54.8,
+      "end": 60.1
+    },
+    {
+      "line_no": 11,
+      "speaker": "hirer",
+      "text": "Theek hai, 42 hazaar done. Material tumhara hi rahega na?",
+      "start": 60.7,
+      "end": 65.0
+    },
+    {
+      "line_no": 12,
+      "speaker": "worker",
+      "text": "Haan ji, material sab mera. Bas kaam shuru karne se pehle thoda advance chahiye, paint khareedna padega.",
+      "start": 65.6,
+      "end": 72.2
+    },
+    {
+      "line_no": 13,
+      "speaker": "hirer",
+      "text": "Kitna advance?",
+      "start": 72.8,
+      "end": 74.5
+    },
+    {
+      "line_no": 14,
+      "speaker": "worker",
+      "text": "15 hazaar de dijiye advance.",
+      "start": 75.1,
+      "end": 77.8
+    },
+    {
+      "line_no": 15,
+      "speaker": "hirer",
+      "text": "15 nahi, 10 hazaar deti hoon, kal UPI se.",
+      "start": 78.4,
+      "end": 82.4
+    },
+    {
+      "line_no": 16,
+      "speaker": "worker",
+      "text": "Chaliye theek hai, das hazaar advance kal bhej dijiye.",
+      "start": 83.0,
+      "end": 87.0
+    },
+    {
+      "line_no": 17,
+      "speaker": "hirer",
+      "text": "Aur baaki paisa kab dena hai?",
+      "start": 87.6,
+      "end": 90.6
+    },
+    {
+      "line_no": 18,
+      "speaker": "worker",
+      "text": "Woh dekh lenge madam, koi tension nahi. Aap yeh batao kaam kab se shuru karna hai?",
+      "start": 91.2,
+      "end": 97.5
+    },
+    {
+      "line_no": 19,
+      "speaker": "hirer",
+      "text": "Somwar se shuru kar do, 23 November se.",
+      "start": 98.1,
+      "end": 101.7
+    },
+    {
+      "line_no": 20,
+      "speaker": "worker",
+      "text": "Ji, 23 November somwar se shuru. Saat din ka kaam hai, 30 November tak khatam kar dunga.",
+      "start": 102.3,
+      "end": 108.9
+    },
+    {
+      "line_no": 21,
+      "speaker": "hirer",
+      "text": "Pakka 30 tak? Mere ghar mehmaan aa rahe hain 2 December ko.",
+      "start": 109.5,
+      "end": 114.5
+    },
+    {
+      "line_no": 22,
+      "speaker": "worker",
+      "text": "Pakka madam, 30 November tak poora ho jayega.",
+      "start": 115.1,
+      "end": 118.7
+    },
+    {
+      "line_no": 23,
+      "speaker": "hirer",
+      "text": "Gawah, aapne sab note kar liya na?",
+      "start": 119.3,
+      "end": 122.6
+    },
+    {
+      "line_no": 24,
+      "speaker": "worker",
+      "text": "Toh madam total 43 hazaar hua na, usme se 10 advance kal.",
+      "start": 123.2,
+      "end": 128.2
+    },
+    {
+      "line_no": 25,
+      "speaker": "hirer",
+      "text": "Haan theek hai. Aur dekho, furniture dhak ke kaam karna, safai bhi tumhari.",
+      "start": 128.8,
+      "end": 134.1
+    },
+    {
+      "line_no": 26,
+      "speaker": "worker",
+      "text": "Bilkul madam, sab cover kar denge, safai karke hi jayenge.",
+      "start": 134.7,
+      "end": 139.0
+    },
+    {
+      "line_no": 27,
+      "speaker": "hirer",
+      "text": "Chalo theek hai phir, kal advance bhej deti hoon. Ab rakhti hoon.",
+      "start": 139.6,
+      "end": 144.6
+    },
+    {
+      "line_no": 28,
+      "speaker": "worker",
+      "text": "Ji madam, dhanyavaad. Somwar ko subah 9 baje aa jaunga.",
+      "start": 145.2,
+      "end": 149.5
+    },
+    {
+      "line_no": 29,
+      "speaker": "hirer",
+      "text": "Theek hai, somwar ko milte hain. Namaste.",
+      "start": 150.1,
+      "end": 153.4
+    },
+    {
+      "line_no": 30,
+      "speaker": "worker",
+      "text": "Namaste madam.",
+      "start": 154.0,
+      "end": 155.7
+    }
+  ]
+}
