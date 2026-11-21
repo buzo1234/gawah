@@ -1,0 +1,306 @@
+{
+  "id": "holdout_electrician_shop",
+  "description": "A curt mobile-shop owner hires a chatty electrician to rewire the shop. Written as raw speech-to-text: Devanagari with English words in Latin script, no punctuation, one line split in two, 'Polycab' heard as 'poly cap', and 'seventeen' heard as 'seventy' in the worker's recap (17,000 then 70,000). The finish date is dodged even though a per-day penalty for delay is agreed. Ends abruptly: the worker gets another call and the line drops.",
+  "people": [
+    {
+      "role": "hirer",
+      "name": "Imran Qureshi",
+      "phone": "+910000000121"
+    },
+    {
+      "role": "worker",
+      "name": "Suresh",
+      "phone": "+910000000122"
+    }
+  ],
+  "lines": [
+    {
+      "line_no": 1,
+      "speaker": "worker",
+      "text": "हां हेलो इमरान भाई सुरेश बोल रहा हूं electrician",
+      "start": 0.8,
+      "end": 4.3
+    },
+    {
+      "line_no": 2,
+      "speaker": "hirer",
+      "text": "हां बोलो दुकान देख ली थी कल",
+      "start": 4.7,
+      "end": 6.9
+    },
+    {
+      "line_no": 3,
+      "speaker": "worker",
+      "text": "हां देख ली भाई पूरी wiring पुरानी है एकदम aluminium की है अभी तक मैं तो हैरान हो गया आजकल कौन aluminium लगाता है",
+      "start": 7.8,
+      "end": 15.6
+    },
+    {
+      "line_no": 4,
+      "speaker": "hirer",
+      "text": "पूरी बदलनी है",
+      "start": 16.0,
+      "end": 17.1
+    },
+    {
+      "line_no": 5,
+      "speaker": "worker",
+      "text": "हां पूरी बदलनी पड़ेगी copper की डालेंगे Havells या Polycab जो आप बोलो और एक नया MCB box लगेगा",
+      "start": 17.6,
+      "end": 24.9
+    },
+    {
+      "line_no": 6,
+      "speaker": "hirer",
+      "text": "Polycab ठीक है points कितने",
+      "start": 25.3,
+      "end": 27.3
+    },
+    {
+      "line_no": 7,
+      "speaker": "worker",
+      "text": "आठ socket point है counter पे चार पीछे चार उसके अलावा दो light और AC की अलग line",
+      "start": 27.8,
+      "end": 34.3
+    },
+    {
+      "line_no": 8,
+      "speaker": "hirer",
+      "text": "AC का भी हां ठीक है total बोलो",
+      "start": 35.2,
+      "end": 38.2
+    },
+    {
+      "line_no": 9,
+      "speaker": "worker",
+      "text": "देखो भाई सब मिला के material labour सब सत्रह हज़ार",
+      "start": 39.1,
+      "end": 42.8
+    },
+    {
+      "line_no": 10,
+      "speaker": "hirer",
+      "text": "सत्रह ज़्यादा है पंद्रह कर लो",
+      "start": 43.1,
+      "end": 45.4
+    },
+    {
+      "line_no": 11,
+      "speaker": "worker",
+      "text": "इमरान भाई copper का rate आपको पता है आजकल आसमान पे है सत्रह से कम नहीं होगा सच बोल रहा हूं मेरा अपना कुछ नहीं बचता",
+      "start": 46.0,
+      "end": 54.8
+    },
+    {
+      "line_no": 12,
+      "speaker": "hirer",
+      "text": "ठीक है सत्रह",
+      "start": 55.2,
+      "end": 56.3
+    },
+    {
+      "line_no": 13,
+      "speaker": "worker",
+      "text": "हां तो advance पांच हज़ार दे देना जिस दिन start करूं material उठाना पड़ता है",
+      "start": 57.0,
+      "end": 62.9
+    },
+    {
+      "line_no": 14,
+      "speaker": "hirer",
+      "text": "ठीक है पांच start वाले दिन बाकी",
+      "start": 63.6,
+      "end": 66.4
+    },
+    {
+      "line_no": 15,
+      "speaker": "hirer",
+      "text": "काम ख़तम होते ही",
+      "start": 66.5,
+      "end": 68.0
+    },
+    {
+      "line_no": 16,
+      "speaker": "worker",
+      "text": "हां हां उसी दिन ले लूंगा कोई दिक्कत नहीं",
+      "start": 68.7,
+      "end": 72.0
+    },
+    {
+      "line_no": 17,
+      "speaker": "hirer",
+      "text": "start कब",
+      "start": 72.4,
+      "end": 73.2
+    },
+    {
+      "line_no": 18,
+      "speaker": "worker",
+      "text": "सोमवार से कर देता हूं सोमवार को वैसे भी मेरे पास दूसरी कोई site नहीं है वो गुप्ता जी का मकान था वो ख़तम हो गया",
+      "start": 73.7,
+      "end": 83.5
+    },
+    {
+      "line_no": 19,
+      "speaker": "hirer",
+      "text": "कितने दिन लगेंगे दुकान बंद रखनी पड़ेगी मुझे",
+      "start": 84.4,
+      "end": 87.3
+    },
+    {
+      "line_no": 20,
+      "speaker": "worker",
+      "text": "अरे भाई जल्दी कर दूंगा आप चिंता मत करो मेरा काम साफ़ होता है पूछ लो market में किसी से भी वो सामने वाली medical shop की wiring भी मैंने की थी",
+      "start": 87.7,
+      "end": 99.9
+    },
+    {
+      "line_no": 21,
+      "speaker": "hirer",
+      "text": "हम्म",
+      "start": 100.6,
+      "end": 101.3
+    },
+    {
+      "line_no": 22,
+      "speaker": "worker",
+      "text": "और वो जो board है ना पुराना वो भी हटा देंगे नया modular लगा देंगे वो free में",
+      "start": 101.6,
+      "end": 108.0
+    },
+    {
+      "line_no": 23,
+      "speaker": "hirer",
+      "text": "ठीक है देर हुई तो हर दिन का पांच सौ काटूंगा ये पहले बता रहा हूं",
+      "start": 108.3,
+      "end": 114.5
+    },
+    {
+      "line_no": 24,
+      "speaker": "worker",
+      "text": "हां ठीक है भाई काट लेना इतना भरोसा है अपने काम पे",
+      "start": 115.1,
+      "end": 119.4
+    },
+    {
+      "line_no": 25,
+      "speaker": "hirer",
+      "text": "और कुछ",
+      "start": 119.9,
+      "end": 120.6
+    },
+    {
+      "line_no": 26,
+      "speaker": "worker",
+      "text": "बस तो सोमवार सुबह नौ बजे आ जाऊंगा दो लड़के साथ होंगे seventy हज़ार में पूरा काम poly cap वाला MCB के साथ",
+      "start": 121.5,
+      "end": 129.3
+    },
+    {
+      "line_no": 27,
+      "speaker": "hirer",
+      "text": "हां",
+      "start": 129.8,
+      "end": 130.5
+    },
+    {
+      "line_no": 28,
+      "speaker": "worker",
+      "text": "और दुकान की चाबी किसके पास रहेगी आप होगे सुबह",
+      "start": 130.9,
+      "end": 134.6
+    },
+    {
+      "line_no": 29,
+      "speaker": "hirer",
+      "text": "मैं रहूंगा",
+      "start": 135.2,
+      "end": 135.9
+    },
+    {
+      "line_no": 30,
+      "speaker": "worker",
+      "text": "ठीक है फिर अरे भाई मेरा दूसरा call आ रहा है गुप्ता जी का",
+      "start": 136.6,
+      "end": 141.6
+    },
+    {
+      "line_no": 31,
+      "speaker": "hirer",
+      "text": "हां ठीक",
+      "start": 141.9,
+      "end": 142.7
+    }
+  ],
+  "noise": "stt",
+  "wrap_up_starts_line": 25,
+  "pending_at_end": [
+    "dates",
+    "amount (17,000 vs 70,000)"
+  ],
+  "expected_note": "Each entry is a moment the Judge should speak. after_line is the line that makes it true: the Judge speaks in the pause after it. by_line is the last line after which speaking still counts as on time. modes lists the JUDGE_MODE values in which the entry applies. The transcript is a call with no Judge on it, so nobody answers a question and an open item stays open unless the people settle it themselves. Fields beyond the practice calls: required=false marks a moment where a reasonable listener could go either way (speaking there is fine, staying silent is fine); reason_also_ok lists other reasons that count; also_pending lists further items open at that moment; wrap_up_starts_line is where the call starts wrapping up; must_stay_silent lists lines after which the Judge must not speak even though they may sound final or look like a problem.",
+  "expected": [
+    {
+      "after_line": 20,
+      "by_line": 24,
+      "item": "dates",
+      "reason": "term_unclear",
+      "to": "worker",
+      "modes": [
+        "live"
+      ],
+      "required": true,
+      "note": "The hirer asks how many days; the worker says 'jaldi kar dunga' and talks about other jobs. Start is Monday, finish is never said. The delay penalty at line 23 makes the missing finish date matter more."
+    },
+    {
+      "after_line": 26,
+      "by_line": 28,
+      "item": "amount",
+      "reason": "conflicting_figures",
+      "to": "both",
+      "modes": [
+        "live"
+      ],
+      "required": true,
+      "note": "The recap says 'seventy हज़ार' after 17,000 was agreed at line 12. Almost certainly a mis-transcribed 'seventeen', but the Judge only has the text and a contract on the wrong figure is costly: it should ask which it is. A question that simply confirms 17,000 counts."
+    },
+    {
+      "after_line": 25,
+      "by_line": 31,
+      "item": "dates",
+      "reason": "wrapping_up",
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": true,
+      "note": "'और कुछ' (line 25) opens the close and line 30 ends it abruptly. The Judge must get in by the pause after line 30; after line 31 the call is likely already gone. The question should cover the finish date and the 17,000/70,000 conflict.",
+      "also_pending": [
+        "amount"
+      ]
+    }
+  ],
+  "must_stay_silent": [
+    {
+      "after_line": 10,
+      "why": "A counter-offer (15,000 against 17,000) mid-negotiation; settled at line 12. Not a conflict yet."
+    },
+    {
+      "after_line": 12,
+      "why": "'ठीक है सत्रह' settles the amount."
+    },
+    {
+      "after_line": 14,
+      "why": "The sentence continues on line 15 (split line); balance is 'काम ख़तम होते ही'."
+    },
+    {
+      "after_line": 22,
+      "why": "The free modular board is an addition at no cost, not a new amount."
+    },
+    {
+      "after_line": 24,
+      "why": "'हां ठीक है भाई' agrees the penalty and sounds final, but the call continues. (Asking about the finish date here is still inside the dates window.)"
+    }
+  ]
+}
