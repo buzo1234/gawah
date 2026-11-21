@@ -1,6 +1,6 @@
 {
  "fixture": "holdout_cook_month",
- "recorded_at": "2026-11-21T19:23:38+00:00",
+ "recorded_at": "2026-11-21T19:48:57+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "value:work@4": {
@@ -77,6 +77,28 @@
    "readings": null
   },
   "ambiguous:dates@23": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@5": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@8": {
+   "ambiguous": true,
+   "readings": [
+    "come at 10 a.m. and make breakfast and lunch",
+    "come at 10 a.m. and make breakfast and lunch, then come again at 7 p.m."
+   ]
+  },
+  "ambiguous:amount@13": {
+   "ambiguous": true,
+   "readings": [
+    "₹8,000 a month for labour only",
+    "₹8,000 a month including materials"
+   ]
+  },
+  "ambiguous:balance@21": {
    "ambiguous": false,
    "readings": null
   }
