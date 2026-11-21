@@ -1,0 +1,54 @@
+{
+ "fixture": "holdout2_ac_repair",
+ "recorded_at": "2026-11-21T18:25:46+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "ambiguous:advance@19": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:balance@20": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:balance@19": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@4": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@27": {
+   "ambiguous": true,
+   "readings": [
+    "₹8,000 total for a company compressor replacement, including labour and material",
+    "₹8,000 for the company part only, with labour or other charges extra"
+   ]
+  },
+  "names:-@1": {
+   "hirer": null,
+   "worker": "Vikas"
+  },
+  "names:-@2": {
+   "hirer": null,
+   "worker": "Vikas"
+  },
+  "names:-@3": {
+   "hirer": null,
+   "worker": "Vikas"
+  },
+  "names:-@4": {
+   "hirer": null,
+   "worker": "Vikas"
+  },
+  "names:-@5": {
+   "hirer": null,
+   "worker": "Vikas"
+  },
+  "names:-@6": {
+   "hirer": null,
+   "worker": "Vikas"
+  }
+ }
+}

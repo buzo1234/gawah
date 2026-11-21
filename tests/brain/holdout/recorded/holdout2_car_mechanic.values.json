@@ -1,0 +1,39 @@
+{
+ "fixture": "holdout2_car_mechanic",
+ "recorded_at": "2026-11-21T18:25:19+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "ambiguous:amount@6": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@4": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@12": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@13": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@14": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:balance@14": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:late_or_unfinished@21": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "names:-@1": {
+   "hirer": "Abhishek",
+   "worker": "Salim"
+  }
+ }
+}

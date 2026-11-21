@@ -1,0 +1,1078 @@
+{
+ "model": "gpt-5.4-mini",
+ "effort": "none",
+ "replies": {
+  "Hello, Fauji sahab? Shakeel bol raha hoon, mistri. Aapne plot ka naap dilwaya tha, Rewari wala.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "recall",
+    "text": "Shakeel Ahmed says the hirer had arranged the plot measurement for the Rewari site.",
+    "value": "plot measurement for the Rewari site",
+    "rupees": null,
+    "date": null,
+    "quote": "Aapne plot ka naap dilwaya tha, Rewari wala.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Shakeel Ahmed says he is a mason.",
+    "value": "mistri",
+    "rupees": null,
+    "date": null,
+    "quote": "Shakeel bol raha hoon, mistri.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan Shakeel. Bolo. Hisaab bana?": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Devendra says yes and asks Shakeel to speak.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Haan Shakeel. Bolo.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Devendra asks whether the calculation is ready.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Hisaab bana?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Ji bana liya. Ek sau assi foot lambi deewar, chhe foot oonchi, nau inch ki eent, aur do pillar gate ke.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says the work is a 180-foot-long wall, 6 feet high, with 9-inch bricks and two pillars for the gate.",
+    "value": "180-foot wall, 6 feet high, 9-inch bricks, 2 gate pillars",
+    "rupees": null,
+    "date": null,
+    "quote": "Ji bana liya. Ek sau assi foot lambi deewar, chhe foot oonchi, nau inch ki eent, aur do pillar gate ke.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Plaster?": [],
+  "Bahar ki taraf plaster, andar ki taraf nahi, jaise aapne bola tha. Andar to khet hai, zaroorat nahi.": [
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "recall",
+    "text": "The worker says the agreed work is plaster on the outside only, not on the inside, as the hirer said before.",
+    "value": "outside plaster only; no inside plaster",
+    "rupees": null,
+    "date": null,
+    "quote": "Bahar ki taraf plaster, andar ki taraf nahi, jaise aapne bola tha.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says the inside is a खेत and does not need plaster.",
+    "value": "inside is field; no need for plaster",
+    "rupees": null,
+    "date": null,
+    "quote": "Andar to khet hai, zaroorat nahi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek. Rate?": [],
+  "Fauji sahab, sab milake, eent, cement, ret, sariya, mazdoori, do lakh das hazaar banta hai. Theke pe.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says the total including bricks, cement, sand, steel, and labour is 210,000 rupees.",
+    "value": "210,000 rupees",
+    "rupees": 210000,
+    "date": null,
+    "quote": "Fauji sahab, sab milake, eent, cement, ret, sariya, mazdoori, do lakh das hazaar banta hai. Theke pe.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the job is on contract basis.",
+    "value": "contract basis",
+    "rupees": null,
+    "date": null,
+    "quote": "Fauji sahab, sab milake, eent, cement, ret, sariya, mazdoori, do lakh das hazaar banta hai. Theke pe.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Do lakh das? Shakeel, maine teen jagah se poocha hai. Dedh lakh mein log kar rahe hain.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The hirer says he has asked around in three places and says they are doing it for 150,000 rupees.",
+    "value": "150,000 rupees",
+    "rupees": 150000,
+    "date": null,
+    "quote": "Do lakh das? Shakeel, maine teen jagah se poocha hai. Dedh lakh mein log kar rahe hain.",
+    "accepts_line": null,
+    "contradicts": "amount@1.7"
+   }
+  ],
+  "Dedh mein to peeli kachchi eent lagayenge, sahab. Main pakki laal eent lagata hoon, number one. Aapki deewar bees saal khadi rahegi.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The worker says the 150,000-rupee price would mean yellow raw bricks instead of the stated good red bricks.",
+    "value": "150,000 rupees",
+    "rupees": 150000,
+    "date": null,
+    "quote": "Dedh mein to peeli kachchi eent lagayenge, sahab.",
+    "accepts_line": null,
+    "contradicts": "amount@1.8"
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says he uses good red bricks, number one.",
+    "value": "good red bricks",
+    "rupees": null,
+    "date": null,
+    "quote": "Main pakki laal eent lagata hoon, number one.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "late_or_unfinished",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says the wall will stand for twenty years.",
+    "value": "lasts 20 years",
+    "rupees": null,
+    "date": null,
+    "quote": "Aapki deewar bees saal khadi rahegi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Paune do lakh. Isse upar nahi.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The hirer proposes a revised total of 190,000 rupees as the maximum.",
+    "value": "190,000 rupees",
+    "rupees": 190000,
+    "date": null,
+    "quote": "Paune do lakh. Isse upar nahi.",
+    "accepts_line": null,
+    "contradicts": "amount@1.8"
+   }
+  ],
+  "Paune do... sahab, aap fauji aadmi ho, aapse kya behes karni. Chalo, paune do lakh, material samet.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The worker accepts the hirer’s 190,000 rupees as the total, including material.",
+    "value": "190,000 rupees",
+    "rupees": 190000,
+    "date": null,
+    "quote": "Paune do... sahab, aap fauji aadmi ho, aapse kya behes karni. Chalo, paune do lakh, material samet.",
+    "accepts_line": 10,
+    "contradicts": null
+   },
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the 190,000 rupees is with materials included.",
+    "value": "material included",
+    "rupees": null,
+    "date": null,
+    "quote": "Paune do... sahab, aap fauji aadmi ho, aapse kya behes karni. Chalo, paune do lakh, material samet.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Paune do. Theek. Paisa kaise?": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "accept",
+    "text": "Devendra Yadav accepts 190,000 rupees as the total amount.",
+    "value": "190,000 rupees",
+    "rupees": 190000,
+    "date": null,
+    "quote": "Paune do. Theek. Paisa kaise?",
+    "accepts_line": 10,
+    "contradicts": "amount@1.8"
+   },
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "accept",
+    "text": "Devendra Yadav accepts that the amount is paune do lakh.",
+    "value": "190,000 rupees",
+    "rupees": 190000,
+    "date": null,
+    "quote": "Paune do. Theek. Paisa kaise?",
+    "accepts_line": 11,
+    "contradicts": "amount@1.8"
+   }
+  ],
+  "Pachaas hazaar shuru mein, material girana hai. Phir jab deewar kandhe tak aa jaye to pachhattar hazaar, aur baaki pachaas plaster ke baad.": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says the advance is 50,000 rupees at the start.",
+    "value": "50,000 rupees",
+    "rupees": 50000,
+    "date": null,
+    "quote": "Pachaas hazaar shuru mein, material girana hai.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says material must be delivered first.",
+    "value": "material delivered first",
+    "rupees": null,
+    "date": null,
+    "quote": "Pachaas hazaar shuru mein, material girana hai.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says 75,000 rupees is paid when the wall reaches shoulder height.",
+    "value": "75,000 rupees when the wall reaches shoulder height",
+    "rupees": 75000,
+    "date": null,
+    "quote": "Phir jab deewar kandhe tak aa jaye to pachhattar hazaar",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says the remaining 50,000 rupees is paid after plaster.",
+    "value": "50,000 rupees after plaster",
+    "rupees": 50000,
+    "date": null,
+    "quote": "aur baaki pachaas plaster ke baad.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Pachaas, pachhattar, pachaas. Haan, paune do hue. Chalega.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The hirer accepts the total price of 190,000 rupees.",
+    "value": "190,000 rupees",
+    "rupees": 190000,
+    "date": null,
+    "quote": "Pachaas, pachhattar, pachaas. Haan, paune do hue. Chalega.",
+    "accepts_line": 13,
+    "contradicts": "amount@1.8"
+   },
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The hirer accepts an advance of 50,000 rupees.",
+    "value": "50,000 rupees",
+    "rupees": 50000,
+    "date": null,
+    "quote": "Pachaas, pachhattar, pachaas. Haan, paune do hue. Chalega.",
+    "accepts_line": 13,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The hirer accepts a balance of 75,000 rupees when the wall reaches shoulder height.",
+    "value": "75,000 rupees when the wall reaches shoulder height",
+    "rupees": 75000,
+    "date": null,
+    "quote": "Pachaas, pachhattar, pachaas. Haan, paune do hue. Chalega.",
+    "accepts_line": 13,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The hirer accepts a balance of 50,000 rupees after plaster.",
+    "value": "50,000 rupees after plaster",
+    "rupees": 50000,
+    "date": null,
+    "quote": "Pachaas, pachhattar, pachaas. Haan, paune do hue. Chalega.",
+    "accepts_line": 13,
+    "contradicts": null
+   }
+  ],
+  "Ji sahab.": [],
+  "Kaam kab shuru?": [
+   {
+    "item": "dates",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer asks when the work will start.",
+    "value": "when work starts",
+    "rupees": null,
+    "date": null,
+    "quote": "Kaam kab shuru?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Das December se lag jaate hain. Abhi Dharuhera mein ek kothi ka kaam chal raha hai, woh nau tak nipat jayega.": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the work will start on 2026-12-10 and that another job will finish by the 9th before then.",
+    "value": "start December 10, finish by the 9th for the other job",
+    "rupees": null,
+    "date": "2026-12-10",
+    "quote": "Das December se lag jaate hain. Abhi Dharuhera mein ek kothi ka kaam chal raha hai, woh nau tak nipat jayega.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Aur khatam?": [],
+  "Teen hafte. Ikattis December tak deewar khadi, plaster samet.": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the wall work will finish by 31 December, with plaster included, and take three weeks.",
+    "value": "finish by 31 December, plaster included; duration three weeks",
+    "rupees": null,
+    "date": null,
+    "quote": "Teen hafte. Ikattis December tak deewar khadi, plaster samet.",
+    "accepts_line": null,
+    "contradicts": "dates@1.17"
+   }
+  ],
+  "Ikattis. Dekho Shakeel, January mein mera beta aa raha hai, us se pehle chahiye. Ikattis ke baad har din ka ek hazaar kaatunga.": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The hirer accepts the finish by 31 December for the job.",
+    "value": "finish by 31 December",
+    "rupees": null,
+    "date": null,
+    "quote": "Ikattis.",
+    "accepts_line": 19,
+    "contradicts": null
+   },
+   {
+    "item": "late_or_unfinished",
+    "kind": "term",
+    "stance": "state",
+    "text": "The hirer says that after the 31st, he will deduct 1,000 rupees per day.",
+    "value": "1,000 rupees per day deducted after the 31st",
+    "rupees": 1000,
+    "date": null,
+    "quote": "Dekho Shakeel, January mein mera beta aa raha hai, us se pehle chahiye. Ikattis ke baad har din ka ek hazaar kaatunga.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Ek hazaar roz... sahab, baarish ho gayi to? Ya cement ki gaadi late aaye to?": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker asks what happens if it rains or if the cement truck arrives late.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Ek hazaar roz... sahab, baarish ho gayi to? Ya cement ki gaadi late aaye to?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Baarish ke din nahi ginenge. Cement tumhari zimmedari hai, theke pe hai.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "term",
+    "stance": "state",
+    "text": "The hirer says rainy days will not be counted.",
+    "value": "rainy days not counted",
+    "rupees": null,
+    "date": null,
+    "quote": "Baarish ke din nahi ginenge.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "The hirer says cement is the worker's responsibility and is included in the contract.",
+    "value": "cement is worker's responsibility; contract basis",
+    "rupees": null,
+    "date": null,
+    "quote": "Cement tumhari zimmedari hai, theke pe hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek hai sahab. Baarish chhod ke, ikattis ke baad hazaar roz. Manzoor.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "change",
+    "stance": "accept",
+    "text": "The worker accepts the hirer's 1,000 rupees per day deduction after the 31st, excluding rainy days.",
+    "value": "1,000 rupees per day after the 31st, rainy days not counted",
+    "rupees": 1000,
+    "date": null,
+    "quote": "Theek hai sahab. Baarish chhod ke, ikattis ke baad hazaar roz. Manzoor.",
+    "accepts_line": 20,
+    "contradicts": null
+   }
+  ],
+  "Aur kaam beech mein chhoda to jitna kaam hua utna hi paisa, baaki wapas.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "term",
+    "stance": "state",
+    "text": "The hirer says that if the work is left halfway, payment will be only for the work completed and the बाकी money will be returned.",
+    "value": "if left unfinished, pay for work done and return the rest",
+    "rupees": null,
+    "date": null,
+    "quote": "Aur kaam beech mein chhoda to jitna kaam hua utna hi paisa, baaki wapas.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Arre sahab, Shakeel ne aaj tak koi kaam adhoora nahi chhoda. Par haan, manzoor.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says he has never left any job unfinished before, but agrees.",
+    "value": "never left work unfinished before",
+    "rupees": null,
+    "date": null,
+    "quote": "Arre sahab, Shakeel ne aaj tak koi kaam adhoora nahi chhoda. Par haan, manzoor.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek hai. Pachaas hazaar das tareekh ko de dunga, site pe hi.": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "accept",
+    "text": "Devendra Yadav accepts the 50,000 rupees advance proposed before.",
+    "value": "50,000 rupees",
+    "rupees": 50000,
+    "date": null,
+    "quote": "Theek hai. Pachaas hazaar das tareekh ko de dunga, site pe hi.",
+    "accepts_line": 13,
+    "contradicts": null
+   },
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "state",
+    "text": "Devendra Yadav states the 50,000 rupees advance will be paid on the 10th at the site.",
+    "value": "50,000 rupees on the 10th at the site",
+    "rupees": 50000,
+    "date": "2026-12-10",
+    "quote": "Theek hai. Pachaas hazaar das tareekh ko de dunga, site pe hi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Ji sahab. Aur sahab, aapka beta bhi fauj mein hai kya?": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker asks whether the hirer's son is also in the army.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Ji sahab. Aur sahab, aapka beta bhi fauj mein hai kya?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan, Ladakh mein hai. Captain hai.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says his son is in Ladakh and is a captain.",
+    "value": "son in Ladakh; captain",
+    "rupees": null,
+    "date": null,
+    "quote": "Haan, Ladakh mein hai. Captain hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Masha Allah. Mera chhota bhi bharti ki tayyari kar raha hai, Agniveer ki. Daud mein thoda kamzor hai.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says his younger son is preparing for Army recruitment as an Agniveer and is a bit weak at running.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Masha Allah. Mera chhota bhi bharti ki tayyari kar raha hai, Agniveer ki. Daud mein thoda kamzor hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Subah chaar baje uthao usko, paanch kilometre roz. Do mahine mein theek ho jayega.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says the younger son should get up at 4 a.m. and run 5 kilometres every day for two months, and that he will improve.",
+    "value": "4 a.m., 5 kilometres daily for two months",
+    "rupees": null,
+    "date": null,
+    "quote": "Subah chaar baje uthao usko, paanch kilometre roz. Do mahine mein theek ho jayega.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Aap hi samjhao usko sahab, meri to sunta nahi.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says the hirer should explain it to his son because the son does not listen to him.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Aap hi samjhao usko sahab, meri to sunta nahi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Bhej dena kisi din plot pe. Chalo Shakeel, das ko milte hain.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says to send someone to the plot someday.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Bhej dena kisi din plot pe.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Ji sahab, das ko subah aath baje. Khuda hafiz.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says to meet at 8 a.m. on the 10th.",
+    "value": "8 a.m. on the 10th",
+    "rupees": null,
+    "date": "2026-12-10",
+    "quote": "Ji sahab, das ko subah aath baje.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Jai Hind.": [],
+  "Salaam Fauji sahab, Shakeel. Site se bol raha hoon.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says hello and says he is Shakeel speaking from the site.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Salaam Fauji sahab, Shakeel. Site se bol raha hoon.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan Shakeel, bolo. Kaam kaisa chal raha hai?": [],
+  "Badhiya sahab. Neev bhar di, aaj teesra din hai, chaalis foot tak teen foot oonchi ho gayi.": [
+   {
+    "item": "work",
+    "kind": "work",
+    "stance": "state",
+    "text": "The worker says the foundation has been filled and the wall is now 40 feet long and 3 feet high on the third day.",
+    "value": "foundation filled; 40 feet long, 3 feet high",
+    "rupees": null,
+    "date": null,
+    "quote": "Badhiya sahab. Neev bhar di, aaj teesra din hai, chaalis foot tak teen foot oonchi ho gayi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Achha. Main parso aaunga dekhne.": [],
+  "Zaroor aaiye. Sahab, ek baat thi. Eent wala rate badha raha hai, saadhe aath rupaye se nau rupaye eent kar di usne.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The worker says the brick rate has been increased from 8.5 rupees to 9 rupees per brick.",
+    "value": "9 rupees per brick",
+    "rupees": 9,
+    "date": null,
+    "quote": "Sahab, ek baat thi. Eent wala rate badha raha hai, saadhe aath rupaye se nau rupaye eent kar di usne.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Woh tumhara mamla hai Shakeel. Theke pe baat hui thi.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says it is Shakeel's matter and that the agreement was on contract basis.",
+    "value": "contract basis",
+    "rupees": null,
+    "date": null,
+    "quote": "Woh tumhara mamla hai Shakeel. Theke pe baat hui thi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan sahab, haan, main kuch extra nahi maang raha, bas bata raha tha. Agle hafte tak deewar kandhe tak pahunch jayegi, tab sava lakh ka intezaam rakhna.": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the wall will reach shoulder height by next week.",
+    "value": "finish by next week",
+    "rupees": null,
+    "date": null,
+    "quote": "Haan sahab, haan, main kuch extra nahi maang raha, bas bata raha tha. Agle hafte tak deewar kandhe tak pahunch jayegi, tab sava lakh ka intezaam rakhna.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says keep 125,000 rupees ready then.",
+    "value": "125,000 rupees ready then",
+    "rupees": 125000,
+    "date": null,
+    "quote": "Haan sahab, haan, main kuch extra nahi maang raha, bas bata raha tha. Agle hafte tak deewar kandhe tak pahunch jayegi, tab sava lakh ka intezaam rakhna.",
+    "accepts_line": null,
+    "contradicts": "balance@1.13"
+   }
+  ],
+  "Haan haan, intezaam ho jayega. Tum kaam pe dhyaan do.": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "state",
+    "text": "The hirer says the money arrangement will be managed.",
+    "value": "money arrangement will be managed",
+    "rupees": null,
+    "date": null,
+    "quote": "Haan haan, intezaam ho jayega.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Ji. Aur sahab, ek suggestion hai. Gate wali side pe sadak oonchi hai, wahan chhe foot ki deewar chhoti lagegi. Saat foot kar dein?": [
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The worker proposes making the wall 7 feet high on the gate side because the road there is higher.",
+    "value": "7 feet high on the gate side",
+    "rupees": null,
+    "date": null,
+    "quote": "Ji. Aur sahab, ek suggestion hai. Gate wali side pe sadak oonchi hai, wahan chhe foot ki deewar chhoti lagegi. Saat foot kar dein?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Saat foot... poori deewar?": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "recall",
+    "text": "The hirer asks whether the whole wall should be seven feet high.",
+    "value": "whole wall seven feet",
+    "rupees": null,
+    "date": null,
+    "quote": "Saat foot... poori deewar?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Nahi nahi, sirf saamne wali, sadak wali, saath foot lambi hai. Baaki chhe hi rahegi.": [
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The worker says only the front road-side section should be changed to seven feet long, and the rest should remain six feet.",
+    "value": "front road-side section seven feet long; rest six feet",
+    "rupees": null,
+    "date": null,
+    "quote": "Nahi nahi, sirf saamne wali, sadak wali, saath foot lambi hai. Baaki chhe hi rahegi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Kitna extra?": [
+   {
+    "item": "amount",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer asks how much extra there would be.",
+    "value": "extra amount",
+    "rupees": null,
+    "date": null,
+    "quote": "Kitna extra?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Eent aur mazdoori milake, bees hazaar.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The worker says the extra for brick and labor together is 20,000 rupees.",
+    "value": "20,000 rupees",
+    "rupees": 20000,
+    "date": null,
+    "quote": "Eent aur mazdoori milake, bees hazaar.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Bees zyada hai. Saath foot pe ek foot. Baarah kar lo.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The hirer proposes reducing the extra amount to 12,000 rupees for the 7-foot section.",
+    "value": "12,000 rupees",
+    "rupees": 12000,
+    "date": null,
+    "quote": "Bees zyada hai. Saath foot pe ek foot. Baarah kar lo.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The hirer proposes changing the added wall section to one foot higher on the 7-foot side.",
+    "value": "7-foot side raised by 1 foot",
+    "rupees": null,
+    "date": null,
+    "quote": "Bees zyada hai. Saath foot pe ek foot. Baarah kar lo.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Sahab, ek foot oonchai matlab saath foot pe do raddhe extra, upar se pillar bhi ooncha karna padega. Pandrah se kam nahi hoga.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The worker says the extra for raising the 7-foot section by 1 foot is 15,000 rupees.",
+    "value": "15,000 rupees",
+    "rupees": 15000,
+    "date": null,
+    "quote": "Sahab, ek foot oonchai matlab saath foot pe do raddhe extra, upar se pillar bhi ooncha karna padega. Pandrah se kam nahi hoga.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Pandrah. Theek hai, kar do. Pandrah plaster wale ke saath dena, alag nahi.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "accept",
+    "text": "Devendra Yadav accepts 15,000 rupees for the extra work.",
+    "value": "15,000 rupees",
+    "rupees": 15000,
+    "date": null,
+    "quote": "Pandrah. Theek hai, kar do. Pandrah plaster wale ke saath dena, alag nahi.",
+    "accepts_line": 15,
+    "contradicts": null
+   },
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "state",
+    "text": "Devendra Yadav says the 15,000 rupees should be given together with the plaster money, not separately.",
+    "value": "with plaster money, not separately",
+    "rupees": null,
+    "date": null,
+    "quote": "Pandrah. Theek hai, kar do. Pandrah plaster wale ke saath dena, alag nahi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Ji sahab, plaster ke baad pachaas plus pandrah, painsath. Pakka.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The worker says the total is 65,000 rupees.",
+    "value": "65,000 rupees",
+    "rupees": 65000,
+    "date": null,
+    "quote": "Ji sahab, plaster ke baad pachaas plus pandrah, painsath. Pakka.",
+    "accepts_line": 16,
+    "contradicts": "amount@2.15"
+   }
+  ],
+  "Aur date? Ek foot badhne se late to nahi hoga?": [
+   {
+    "item": "dates",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer asks whether the increase by one foot will cause a delay.",
+    "value": "whether the one-foot increase will cause delay",
+    "rupees": null,
+    "date": null,
+    "quote": "Aur date? Ek foot badhne se late to nahi hoga?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Nahi sahab, ikattis hi. Do mazdoor aur laga dunga.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The worker says the price will be 31,000 rupees.",
+    "value": "31,000 rupees",
+    "rupees": 31000,
+    "date": null,
+    "quote": "Nahi sahab, ikattis hi.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The worker says he will add two more labourers.",
+    "value": "two more labourers",
+    "rupees": null,
+    "date": null,
+    "quote": "Do mazdoor aur laga dunga.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Dekho, ikattis ke baad wala hisaab yaad hai na.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "recall",
+    "text": "The hirer says the amount after 31,000 is remembered.",
+    "value": "31,000 rupees",
+    "rupees": 31000,
+    "date": null,
+    "quote": "Dekho, ikattis ke baad wala hisaab yaad hai na.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Yaad hai sahab, yaad hai.": [
+   {
+    "item": "amount",
+    "kind": "other",
+    "stance": "recall",
+    "text": "The worker says the total after 31,000 is remembered.",
+    "value": "31,000 rupees",
+    "rupees": 31000,
+    "date": null,
+    "quote": "Yaad hai sahab, yaad hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Gawah, tum bhi sun rahe ho. Pichhli baar kya tay hua tha, khatam kab tak, aur uske baad kitna roz?": [
+   {
+    "item": "dates",
+    "kind": "other",
+    "stance": "recall",
+    "text": "The hirer asks what was agreed last time and by when the work had to finish.",
+    "value": "what was agreed last time; finish by when",
+    "rupees": null,
+    "date": null,
+    "quote": "Gawah, tum bhi sun rahe ho. Pichhli baar kya tay hua tha, khatam kab tak, aur uske baad kitna roz?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Sahab aapne to machine laga rakhi hai, ab Shakeel ko darna padega.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says the hirer has put a machine on, so Shakeel will have to be careful.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Sahab aapne to machine laga rakhi hai, ab Shakeel ko darna padega.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Darne ki baat nahi, likha hua achha hota hai. Tumhare liye bhi.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says writing things down is good and is for the worker too.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Darne ki baat nahi, likha hua achha hota hai. Tumhare liye bhi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Sahi baat hai sahab. Achha, kal sariya aa raha hai pillar ka, ek baar aap photo dekh lena WhatsApp pe.": [
+   {
+    "item": "work",
+    "kind": "work",
+    "stance": "state",
+    "text": "The worker says the pillar steel is coming tomorrow and asks the hirer to look at the photo on WhatsApp.",
+    "value": "pillar steel coming tomorrow",
+    "rupees": null,
+    "date": null,
+    "quote": "Sahi baat hai sahab. Achha, kal sariya aa raha hai pillar ka, ek baar aap photo dekh lena WhatsApp pe.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Bhej dena. Aur ret thodi moti lag rahi thi pichhli photo mein.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says the sand looked a bit coarse in the previous photo.",
+    "value": "coarse sand",
+    "rupees": null,
+    "date": null,
+    "quote": "Aur ret thodi moti lag rahi thi pichhli photo mein.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Woh neev ke liye thi sahab, plaster mein baarik wali lagayenge.": [
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "state",
+    "text": "The worker says the sand that looked coarse was for the foundation and finer sand will be used for plaster.",
+    "value": "foundation sand; finer sand for plaster",
+    "rupees": null,
+    "date": null,
+    "quote": "Woh neev ke liye thi sahab, plaster mein baarik wali lagayenge.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Dhyaan rakhna. Chalo, mujhe bank jaana hai abhi.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says to take care and that he has to go to the bank now.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Dhyaan rakhna. Chalo, mujhe bank jaana hai abhi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Ji sahab. To agle hafte sava lakh, aur parso aap aa rahe ho.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the amount is one and a quarter lakh rupees next week.",
+    "value": "125,000 rupees",
+    "rupees": 125000,
+    "date": null,
+    "quote": "Ji sahab. To agle hafte sava lakh, aur parso aap aa rahe ho.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan parso aata hoon.": [
+   {
+    "item": "dates",
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says he will come the day after tomorrow.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Haan parso aata hoon.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Sahab truck aa gaya sariya ka, main baad mein karta hoon. Khuda hafiz.": [
+   {
+    "item": "work",
+    "kind": "work",
+    "stance": "state",
+    "text": "The worker says the steel truck has arrived and he will do it later.",
+    "value": "truck with steel has arrived; will do it later",
+    "rupees": null,
+    "date": null,
+    "quote": "Sahab truck aa gaya sariya ka, main baad mein karta hoon.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ]
+ },
+ "checks": {}
+}

@@ -1,0 +1,42 @@
+{
+ "fixture": "holdout2_driver_monthly",
+ "recorded_at": "2026-11-21T18:25:31+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "ambiguous:dates@5": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@3": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@10": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@11": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@15": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:balance@16": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "unclear:-@19": {
+   "item": "dates"
+  },
+  "ambiguous:late_or_unfinished@23": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "names:-@1": {
+   "hirer": "Ananya",
+   "worker": "Santosh"
+  }
+ }
+}

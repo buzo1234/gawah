@@ -1,0 +1,324 @@
+{
+  "id": "holdout2_car_mechanic",
+  "description": "An impatient sales manager and an unhurried garage owner agree a clutch, brake and service job on a Swift: 9,000 flat all-inclusive (8,700 then 9,300 quoted), no advance, pay on pickup, and if the car is not ready Monday the mechanic pays the cab to Kanpur. 'Monday tak' can mean before Monday morning or during Monday. A filler 'theek hai' on new tyres agrees to nothing. He asks Gawah the total. Cricket chat after everything is settled, then goodbye.",
+  "call_no": 1,
+  "deal": "car_mechanic",
+  "call_date": "2026-11-27",
+  "people": [
+    {
+      "role": "hirer",
+      "name": "Abhishek Tripathi",
+      "phone": "+910000025001"
+    },
+    {
+      "role": "worker",
+      "name": "Mohammad Salim",
+      "phone": "+910000025002"
+    }
+  ],
+  "lines": [
+    {
+      "line_no": 1,
+      "speaker": "hirer",
+      "text": "Hello Salim bhai? Abhishek, Swift wala. Kal aapke garage pe gaadi chhodi thi, white Swift.",
+      "start": 0.8,
+      "end": 5.9
+    },
+    {
+      "line_no": 2,
+      "speaker": "worker",
+      "text": "Haan Abhishek babu, UP32 wali. Dekh li maine. Clutch plate poori gayi hai, aur brake pad bhi khatam.",
+      "start": 6.6,
+      "end": 12.72
+    },
+    {
+      "line_no": 3,
+      "speaker": "hirer",
+      "text": "Yaar wahi laga tha. Kitna lagega total?",
+      "start": 13.42,
+      "end": 15.8
+    },
+    {
+      "line_no": 4,
+      "speaker": "worker",
+      "text": "Dekho, clutch kit 4,200 ki aati hai, company wali, brake pad 1,800, service 1,500 aur labour twelve hundred.",
+      "start": 16.5,
+      "end": 22.62
+    },
+    {
+      "line_no": 5,
+      "speaker": "hirer",
+      "text": "Matlab around eighty seven hundred?",
+      "start": 23.32,
+      "end": 25.02
+    },
+    {
+      "line_no": 6,
+      "speaker": "worker",
+      "text": "Haan, aur oil filter, coolant daalna padega, to nau hazaar teen sau ke aas paas baith jayega.",
+      "start": 25.72,
+      "end": 31.5
+    },
+    {
+      "line_no": 7,
+      "speaker": "hirer",
+      "text": "Salim bhai, 9,300 thoda zyada hai. Last time service 3,000 mein ho gaya tha.",
+      "start": 32.2,
+      "end": 36.96
+    },
+    {
+      "line_no": 8,
+      "speaker": "worker",
+      "text": "Last time sirf service tha babu, clutch nahi tha. Chalo, aapke liye 9,000 flat. Upar neeche jo hoga main dekh lunga.",
+      "start": 37.66,
+      "end": 44.8
+    },
+    {
+      "line_no": 9,
+      "speaker": "hirer",
+      "text": "9,000 all inclusive? Koi extra bill nahi aayega baad mein?",
+      "start": 45.5,
+      "end": 48.9
+    },
+    {
+      "line_no": 10,
+      "speaker": "worker",
+      "text": "Koi extra nahi. Nau hazaar mein gaadi ready.",
+      "start": 49.6,
+      "end": 52.32
+    },
+    {
+      "line_no": 11,
+      "speaker": "hirer",
+      "text": "Okay. Aur kab tak milegi? Mujhe Monday ko Kanpur jaana hai, client meeting hai.",
+      "start": 53.02,
+      "end": 57.78
+    },
+    {
+      "line_no": 12,
+      "speaker": "worker",
+      "text": "Monday tak de dunga. Clutch ka part kal aayega Aminabad se.",
+      "start": 58.48,
+      "end": 62.22
+    },
+    {
+      "line_no": 13,
+      "speaker": "hirer",
+      "text": "Chalo theek hai, to Monday. Aur paise advance mein chahiye kuch? Part ke liye?",
+      "start": 62.92,
+      "end": 67.68
+    },
+    {
+      "line_no": 14,
+      "speaker": "worker",
+      "text": "Arre nahi babu, gaadi to mere paas khadi hai, advance kya lena. Jab le jaoge tab de dena.",
+      "start": 68.38,
+      "end": 74.5
+    },
+    {
+      "line_no": 15,
+      "speaker": "hirer",
+      "text": "Cool. Online de dunga.",
+      "start": 75.2,
+      "end": 76.56
+    },
+    {
+      "line_no": 16,
+      "speaker": "worker",
+      "text": "Haan, Paytm hai garage pe.",
+      "start": 77.26,
+      "end": 78.96
+    },
+    {
+      "line_no": 17,
+      "speaker": "worker",
+      "text": "Aur haan babu, aage wale dono tyre bhi ghis gaye hain. Baarish mein slip karegi gaadi.",
+      "start": 79.31,
+      "end": 84.75
+    },
+    {
+      "line_no": 18,
+      "speaker": "hirer",
+      "text": "Haan theek hai, theek hai. Accha ek baat, agar Monday ko gaadi ready nahi hui to mera poora din kharab. Cab karni padegi Kanpur tak.",
+      "start": 85.45,
+      "end": 93.95
+    },
+    {
+      "line_no": 19,
+      "speaker": "worker",
+      "text": "To cab ka kiraya Salim dega, aur kya. Hahaha.",
+      "start": 94.65,
+      "end": 97.71
+    },
+    {
+      "line_no": 20,
+      "speaker": "hirer",
+      "text": "Pakka? Dekho, ye call pe sab record ho raha hai, Gawah sun raha hai.",
+      "start": 98.41,
+      "end": 103.17
+    },
+    {
+      "line_no": 21,
+      "speaker": "worker",
+      "text": "Haan haan pakka. Monday ko gaadi nahi mili to Kanpur ki cab ka paisa mera. Salim zubaan ka pakka hai.",
+      "start": 103.87,
+      "end": 110.67
+    },
+    {
+      "line_no": 22,
+      "speaker": "hirer",
+      "text": "Done. Theek hai.",
+      "start": 111.37,
+      "end": 112.47
+    },
+    {
+      "line_no": 23,
+      "speaker": "worker",
+      "text": "Aur clutch ki warranty company ki hai, chhe mahine ya das hazaar kilometre.",
+      "start": 113.17,
+      "end": 117.59
+    },
+    {
+      "line_no": 24,
+      "speaker": "hirer",
+      "text": "Achha good. Salim bhai waise kal ka match dekha? Lucknow wala?",
+      "start": 118.29,
+      "end": 122.03
+    },
+    {
+      "line_no": 25,
+      "speaker": "worker",
+      "text": "Arre mat poochho babu. Aakhri over mein haar gaye. Bowler ne do wide daal di.",
+      "start": 122.73,
+      "end": 127.83
+    },
+    {
+      "line_no": 26,
+      "speaker": "hirer",
+      "text": "Haan yaar, captain out hua to laga gaya match.",
+      "start": 128.53,
+      "end": 131.59
+    },
+    {
+      "line_no": 27,
+      "speaker": "worker",
+      "text": "Hamara bhatija stadium gaya tha, chaar sau ka ticket leke. Bola paisa barbaad.",
+      "start": 132.29,
+      "end": 136.71
+    },
+    {
+      "line_no": 28,
+      "speaker": "hirer",
+      "text": "Haha. Accha Gawah, ek baar bata do, total kitna fix hua tha, 9,000 ya 9,300?",
+      "start": 137.41,
+      "end": 142.51
+    },
+    {
+      "line_no": 29,
+      "speaker": "worker",
+      "text": "Nau hazaar babu, flat. Main bhi wahi bol raha hoon.",
+      "start": 143.21,
+      "end": 146.61
+    },
+    {
+      "line_no": 30,
+      "speaker": "hirer",
+      "text": "Haan haan. Chalo Salim bhai, Monday milte hain.",
+      "start": 147.31,
+      "end": 150.03
+    },
+    {
+      "line_no": 31,
+      "speaker": "worker",
+      "text": "Haan babu. Aur tyre ka soch lena, baarish aa rahi hai.",
+      "start": 150.73,
+      "end": 154.47
+    },
+    {
+      "line_no": 32,
+      "speaker": "hirer",
+      "text": "Haan haan dekhta hoon. Chalo bye, Khuda hafiz.",
+      "start": 155.17,
+      "end": 157.89
+    },
+    {
+      "line_no": 33,
+      "speaker": "worker",
+      "text": "Khuda hafiz babu.",
+      "start": 158.59,
+      "end": 159.69
+    }
+  ],
+  "noise": "clean",
+  "wrap_up_starts_line": 30,
+  "pending_at_end": [
+    "dates: 'Monday tak' (before Monday morning, or some time on Monday)"
+  ],
+  "expected_note": "Settled: work (clutch kit, brake pads, service with oil filter and coolant, on the hirer's Swift; front tyres NOT included), amount 9,000 flat with no extra bill (line 8-10, accepted by moving on), no advance, pay on pickup by Paytm, late: if the car is not ready on Monday (30 Nov) the mechanic pays the cab fare to Kanpur (said laughing at 19, confirmed at 21), clutch warranty six months or 10,000 km. Two meanings: 'Monday tak de dunga' (line 12) against a hirer who must leave for Kanpur on Monday: ready before Monday morning, or by Monday evening? The cab term depends on it.",
+  "expected": [
+    {
+      "after_line": 12,
+      "by_line": 15,
+      "item": "dates",
+      "reason": "two_meanings",
+      "reason_also_ok": [
+        "term_unclear"
+      ],
+      "to": "both",
+      "modes": [
+        "live"
+      ],
+      "required": true,
+      "note": "The hirer leaves for Kanpur on Monday; 'Monday tak' can mean ready before he leaves or some time on Monday. He accepts it at 13 ('to Monday') without a time."
+    },
+    {
+      "after_line": 28,
+      "by_line": 29,
+      "item": "amount",
+      "reason": "question_to_gawah",
+      "to": "hirer",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": true,
+      "answer": "9,000 flat, all inclusive, no extra bill (lines 8-10). 9,300 was the estimate before the discount.",
+      "note": "Asked by name. Answering 9,300 or 'around 9,000' is a failure."
+    },
+    {
+      "after_line": 30,
+      "by_line": 33,
+      "item": "dates",
+      "reason": "wrapping_up",
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": true,
+      "note": "If 'Monday tak' was not pinned to a time live, ask now. The read-back must not include the tyres: 'haan theek hai' (18) and 'haan haan dekhta hoon' (32) agree to nothing. If the time was settled live, this is a plain read-back."
+    }
+  ],
+  "must_stay_silent": [
+    {
+      "after_line": 6,
+      "why": "9,300 is 8,700 plus oil filter and coolant, explained in the same line. Not a conflict."
+    },
+    {
+      "after_line": 8,
+      "why": "9,000 flat against the 9,300 estimate is a discount offered mid-negotiation. Not a conflict."
+    },
+    {
+      "after_line": 14,
+      "why": "'Advance kya lena' is a settled answer: no advance, pay on pickup."
+    },
+    {
+      "after_line": 18,
+      "why": "'Haan theek hai, theek hai' on the tyres is a filler, not an agreement; the hirer raises the late term in the same line and gets an answer at 19-21."
+    },
+    {
+      "after_line": 27,
+      "why": "'Chaar sau ka ticket' is the nephew's cricket ticket. Not a deal figure."
+    }
+  ]
+}
