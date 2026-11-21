@@ -303,7 +303,7 @@ def _contradiction(conflict: Conflict, view: View, reason: SpeakReason) -> Speak
 def _two_ways(ambiguity: Ambiguity, view: View, reason: SpeakReason) -> Speak:
     first, second = ambiguity.readings
     text = (
-        f'{LABEL[ambiguity.item].capitalize()} was agreed as "{_quoted(ambiguity.value)}", which can be heard two ways: '
+        f'What was agreed for {LABEL[ambiguity.item]}, "{_quoted(ambiguity.value)}", can be heard two ways: '
         f"{first}, or {second}. Ask {_who(Audience.BOTH, view.names)} which they mean. Do not suggest either."
     )
     return Speak(

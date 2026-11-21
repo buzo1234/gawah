@@ -452,7 +452,7 @@ async def test_a_newly_agreed_term_heard_two_ways_is_asked_about_once(bus):
     speak = call.speaks[0]
     assert (speak.to, speak.fact_ids) == ("both", [call.facts[ItemKey.DATES].id])
     assert speak.instruction == (
-        'The dates was agreed as "the dates", which can be heard two ways: the work starts on Monday, or the work '
+        'What was agreed for the dates, "the dates", can be heard two ways: the work starts on Monday, or the work '
         "is finished by Monday. Ask Sunita and Ramesh which they mean. Do not suggest either."
     )
     # One model call per newly agreed term: the amount and the dates, at the line each was said on.
@@ -470,7 +470,7 @@ async def test_two_meanings_wait_for_wrap_up_in_wrapup_mode_and_never_hold_a_lin
     for _ in range(2):
         await call.say(takes=20.0)
     assert call.spoken == [(2, "wrapping_up", "dates")]
-    assert call.speaks[0].instruction.startswith("They are about to hang up. Raise these in one short turn. (1) The dates was agreed")
+    assert call.speaks[0].instruction.startswith("They are about to hang up. Raise these in one short turn. (1) What was agreed for the dates")
 
 
 # ---- a second call on the same deal ----
