@@ -51,8 +51,11 @@ LiveKit and Twilio are on free plans with monthly allowances. Using them up in t
 | Watch events live | open `http://localhost:8000/dashboard` |
 | Watch events live in a terminal, one JSON object per line | `uv run python -m fakes.tail` |
 | Public address for webhooks | `cloudflared tunnel --url http://localhost:8000` |
+| Prove the contract stream: one complete deal through the running server (real OpenAI and S3; saves the PDF and audio to `fixtures/contract-sample/`) | `uv run python -m tests.contract_proof` |
 
 Python is pinned to 3.12 through `uv`. Do not use the system Python.
+
+The contract stream prints its PDF with a headless Chrome-family browser already on the laptop (Chrome, Chromium, Edge or Brave). Nothing is installed for it, and it fails loudly in the log, with the deal id, if none is found.
 
 The practice calls are `fixtures/call_missing_balance.json` and `fixtures/call_two_amounts.json`. The replayer and the tail need the server running, and both take the same `--url` (default `http://localhost:8000`). In a test, replay straight onto a bus instead: `await replay(bus, "fixtures/<call>.json", speed=0)` from `fakes.replayer`.
 

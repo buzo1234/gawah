@@ -1,0 +1,68 @@
+काम का अनुबंध
+WORK AGREEMENT
+रिकॉर्ड की गई फ़ोन कॉल पर बोलकर हुए समझौते का लिखित रिकॉर्ड
+Written record of an agreement made by voice on a recorded call
+
+संदर्भ संख्या / Reference no.: GW-CONTRACT-PROOF-F17B
+तारीख / Date: 21 नवंबर 2026 / 21 November 2026
+
+पक्ष / PARTIES
+पहला पक्ष (काम देने वाले) / First party (the hirer): सुनीता (Sunita), फ़ोन / phone +910000000001
+दूसरा पक्ष (काम करने वाले) / Second party (the worker): रमेश (Ramesh), फ़ोन / phone +910000000002
+दोनों पक्षों ने कॉल पर ये बातें तय कीं। / The two parties agreed the following on the call.
+
+1. काम / The work  [कॉल / call 0:24]
+2बीएचके फ्लैट की दीवारों पर 2 कोट और छत पर 1 कोट लगाना है। दरवाज़ों और बालकनी की रेलिंग पर एनामेल लगाना है और जहाँ ज़रूरत हो वहाँ पुट्टी करनी है।
+Paint the 2BHK flat with 2 coats on the walls and 1 coat on the ceiling. Use enamel on the doors and balcony railing, and apply putty where needed.
+
+2. कीमत और उसमें क्या शामिल है / The price and what it covers  [कॉल / call 0:59]
+₹13,000 सिर्फ़ मज़दूरी के हैं। पेंट सुनीता लाएँगी।
+₹13,000 is for labour only. Sunita will bring the paint.
+
+3. भुगतान कब और कैसे / Payment schedule
+- एडवांस / Advance: ₹3,000  [कॉल / call 1:10]
+  ₹3,000 एडवांस कल सुबह नकद दिए जाएँगे।
+  The ₹3,000 advance will be paid in cash tomorrow morning.
+- बाकी पैसा / Balance: बाकी रकम / The rest  [कॉल / call 1:15]
+  जिस दिन काम पूरा होगा, उसी दिन सुनीता काम देखकर बाकी पैसे देंगी।
+  Sunita will check the work and pay the balance on the day it is finished.
+
+4. काम की तारीखें / The dates  [कॉल / call 1:40]
+काम बुधवार को शुरू होगा और अगले सोमवार शाम तक पूरा होगा।
+Work starts on Wednesday and will be finished by next Monday evening.
+
+5. देर हुई या काम अधूरा रहा तो / If the work is late or left unfinished  [कॉल / call 2:07]
+देरी हुई तो हर दिन ₹300 कटेंगे। अगर रमेश काम अधूरा छोड़ते हैं, तो सुनीता बाकी पैसे नहीं देंगी और रमेश एडवांस लौटा देंगे।
+If the work is late, ₹300 will be deducted per day. If Ramesh leaves the work unfinished, Sunita will not pay the balance and Ramesh will return the advance.
+
+6. जो बातें तय नहीं हुईं / What was not agreed
+गवाह छह बातें पूछता है: काम, कीमत, एडवांस, बाकी पैसा, तारीखें, और देर होने या काम अधूरा रहने पर क्या होगा। ये सभी छह बातें कॉल पर तय हुईं।
+Gawah checks six points: the work, the price, the advance, the balance, the dates, and what happens if the work is late or left unfinished. All six were agreed on the call.
+
+स्वीकृति / ACCEPTANCE
+पहला पक्ष (काम देने वाले) / First party (the hirer): सुनीता (Sunita), फ़ोन / phone +910000000001
+गवाह के साथ अलग कॉल पर बोलकर पुष्टि की / Confirmed by voice on a separate call with Gawah
+21 नवंबर 2026 को शाम 5:44 बजे / 21 November 2026 at 5:44 pm IST
+कहा / Said: “haan sab sahi hai”
+दूसरा पक्ष (काम करने वाले) / Second party (the worker): रमेश (Ramesh), फ़ोन / phone +910000000002
+गवाह के साथ अलग कॉल पर बोलकर पुष्टि की / Confirmed by voice on a separate call with Gawah
+21 नवंबर 2026 को शाम 5:44 बजे / 21 November 2026 at 5:44 pm IST
+कहा / Said: “ji theek hai”
+
+गवाह / WITNESS
+गवाह (Gawah) एक AI गवाह है। वह इस कॉल पर मौजूद था, और दोनों लोगों के रिकॉर्डिंग के लिए हाँ कहने के बाद उसने कॉल रिकॉर्ड की।
+Gawah is an AI witness. It was on the call, and recorded it after both people agreed to the recording.
+कॉल 21 नवंबर 2026 को शाम 5:42 बजे शुरू हुई और 2 मिनट 25 सेकंड चली।
+The call started on 21 November 2026 at 5:42 pm IST and lasted 2 min 25 sec.
+रिकॉर्डिंग की पहचान (SHA-256)। रिकॉर्डिंग ज़रा भी बदले तो ये अक्षर बदल जाते हैं।
+Recording fingerprint (SHA-256). If a recording is changed at all, these characters change.
+पहले पक्ष की आवाज़ / First party's audio: dd13bbcbf827a03d5c751d2f081286d7c64cb71da69ae1da7e4a6b6582ca0e87
+दूसरे पक्ष की आवाज़ / Second party's audio: c5bfde8639b0e7b39bdb2e2c964d7c422312711a5dac035fcc63bcf27fa9ac45
+
+यह दस्तावेज़ क्या है / WHAT THIS DOCUMENT IS
+यह दस्तावेज़ बोलकर हुए समझौते का लिखित रिकॉर्ड है, जिसकी दोनों लोगों ने अलग-अलग पुष्टि की है।
+This document is a written record of a spoken agreement, confirmed separately by both people.
+इसे किसी वकील ने तैयार नहीं किया है और यह स्टाम्प पेपर पर नहीं है।
+It was not drafted by a lawyer and is not on stamp paper.
+अगर बाद में किसी बात पर असहमति हो, तो दोनों में से कोई भी गवाह से उस बात की रिकॉर्डिंग माँग सकता है।
+If either person disagrees later, they can ask Gawah for the recording of any term.
