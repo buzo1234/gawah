@@ -271,8 +271,9 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
 
 async def test_a_second_call_on_the_same_deal_from_the_same_links(flow, caplog):
     """Days after the first call, the two talk again on the deal. What the other streams do
-    with call 2 today: the mouth joins its new room and greets them; the brain starts a fresh
-    checklist; the dashboard gets every event. The Judge's follow-up behaviour is Phase 2."""
+    with call 2: the mouth joins its new room and greets them; the brain carries the deal's
+    checklist over (tests/brain/test_practice_calls.py replays a call 2 with agreed terms and
+    a contradiction); the dashboard gets every event."""
     await flow.whatsapp(Role.HIRER, PHONE[Role.WORKER].removeprefix("+91"), name="Sunita")
     [requested] = flow.of(DealRequested)
     deal_id = requested.deal_id
@@ -309,8 +310,10 @@ async def test_a_second_call_on_the_same_deal_from_the_same_links(flow, caplog):
     assert (first.call_no, second.call_no, ended.call_no) == (1, 2, 2)
     assert set(ended.recording_keys.values()) == {f"recordings/{deal_id}/2/{r.value}.wav" for r in Role}
     assert [s.room for s in flow.voice.seats] == [first.room, second.room]  # Gawah's voice joined both
-    fresh = [c for c in flow.of(ChecklistUpdated) if c.ts >= second.ts]
-    assert fresh and all(i.state is ItemState.PENDING for i in fresh[0].items)  # the brain starts afresh
+    before = [c for c in flow.of(ChecklistUpdated) if c.ts < second.ts]
+    carried = [c for c in flow.of(ChecklistUpdated) if c.ts >= second.ts]
+    assert carried and carried[0].items == before[-1].items  # the brain carries the checklist over
+    assert all(i.state is ItemState.PENDING for i in carried[0].items)  # nothing was agreed on call 1 here
 
     state = (await flow.client.get("/dashboard/state", params={"deal": deal_id})).json()
     lines = [e for e in state["events"] if e["name"] == "transcript.line"]

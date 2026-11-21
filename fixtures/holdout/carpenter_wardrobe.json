@@ -1,0 +1,326 @@
+{
+  "id": "holdout_carpenter_wardrobe",
+  "description": "An office worker in his late thirties hires an older carpenter for a bedroom wardrobe. Clean transcript. Everything is agreed by line 16, with the finish on the 15th, before the hirer's in-laws arrive on the 18th. Then a long, rambling goodbye with several false endings, inside which the carpenter says 'bees tarikh tak toh pakka' (by the 20th), a second date that conflicts with the 15th and misses the 18th; the hirer does not notice. The laminate colour and mirror size are left to the hirer's wife.",
+  "people": [
+    {
+      "role": "hirer",
+      "name": "Deepak Malhotra",
+      "phone": "+910000000151"
+    },
+    {
+      "role": "worker",
+      "name": "Abdul Karim",
+      "phone": "+910000000152"
+    }
+  ],
+  "lines": [
+    {
+      "line_no": 1,
+      "speaker": "hirer",
+      "text": "Hello, Abdul bhai? Deepak bol raha hoon, Malhotra, woh Greenwood wala flat.",
+      "start": 0.8,
+      "end": 4.9
+    },
+    {
+      "line_no": 2,
+      "speaker": "worker",
+      "text": "Haan sahab, salaam, pehchaan liya. Kal naap le ke aaya tha na main.",
+      "start": 5.8,
+      "end": 10.3
+    },
+    {
+      "line_no": 3,
+      "speaker": "hirer",
+      "text": "Haan haan. Toh kya bana? Kitna aa raha hai wardrobe ka?",
+      "start": 11.1,
+      "end": 15.6
+    },
+    {
+      "line_no": 4,
+      "speaker": "worker",
+      "text": "Dekhiye sahab, saat foot unchi, chhe foot chaudi, teen darwaaze, ek mein sheesha, upar loft. Century ka unnees mm ply, andar white laminate, Hettich ke hinge aur channel.",
+      "start": 16.4,
+      "end": 26.5
+    },
+    {
+      "line_no": 5,
+      "speaker": "hirer",
+      "text": "Haan yahi chahiye tha. Aur bahar ka laminate?",
+      "start": 27.0,
+      "end": 30.2
+    },
+    {
+      "line_no": 6,
+      "speaker": "worker",
+      "text": "Bahar ka jo aap pasand karo, showroom mein dekh lo, rate ek hi hai.",
+      "start": 31.1,
+      "end": 36.7
+    },
+    {
+      "line_no": 7,
+      "speaker": "hirer",
+      "text": "Woh main wife se poochh ke bata dunga, colour woh decide karegi, mera kuch chalta nahi uske aage, haha.",
+      "start": 37.3,
+      "end": 44.3
+    },
+    {
+      "line_no": 8,
+      "speaker": "worker",
+      "text": "Haha, sab ghar mein yahi hai sahab. Toh total sab milake, material, laminate, hardware, labour, adtees hazaar.",
+      "start": 44.8,
+      "end": 51.6
+    },
+    {
+      "line_no": 9,
+      "speaker": "hirer",
+      "text": "Adtees? Thoda kam karo yaar, paintees kar do.",
+      "start": 52.2,
+      "end": 55.2
+    },
+    {
+      "line_no": 10,
+      "speaker": "worker",
+      "text": "Sahab Century ka ply hai. Local daal du toh paintees mein bhi ho jayega, par do saal mein phoolne lagega. Adtees sahi rate hai.",
+      "start": 55.9,
+      "end": 65.3
+    },
+    {
+      "line_no": 11,
+      "speaker": "hirer",
+      "text": "Chalo theek hai, adtees. Local nahi chahiye. Advance kitna?",
+      "start": 65.6,
+      "end": 68.8
+    },
+    {
+      "line_no": 12,
+      "speaker": "worker",
+      "text": "Pandrah hazaar de dijiye, kal material uthaunga. Baaki teis hazaar fitting wale din.",
+      "start": 69.6,
+      "end": 74.6
+    },
+    {
+      "line_no": 13,
+      "speaker": "hirer",
+      "text": "Theek hai, kal pandrah bhej dunga. Kab tak ho jayega? Dekho, athaarah ko mere saas sasur aa rahe hain, us se pehle chahiye.",
+      "start": 75.4,
+      "end": 83.2
+    },
+    {
+      "line_no": 14,
+      "speaker": "worker",
+      "text": "Das din ka kaam hai sahab. Pandrah tareekh tak fit kar dunga.",
+      "start": 83.6,
+      "end": 88.2
+    },
+    {
+      "line_no": 15,
+      "speaker": "hirer",
+      "text": "Pakka? Agar late hua toh hazaar rupaye roz kaatunga, pehle bata raha hoon.",
+      "start": 88.9,
+      "end": 93.5
+    },
+    {
+      "line_no": 16,
+      "speaker": "worker",
+      "text": "Theek hai sahab, kaat lena, par late hoga nahi, Abdul ka kaam hai.",
+      "start": 94.3,
+      "end": 99.1
+    },
+    {
+      "line_no": 17,
+      "speaker": "hirer",
+      "text": "Badhiya. Kaam ghar pe karoge ya workshop mein?",
+      "start": 99.6,
+      "end": 102.9
+    },
+    {
+      "line_no": 18,
+      "speaker": "worker",
+      "text": "Kuch workshop mein katai karke laaunga, baaki ghar pe. Thoda shor hoga, padosiyon ko bata dena.",
+      "start": 103.2,
+      "end": 109.9
+    },
+    {
+      "line_no": 19,
+      "speaker": "hirer",
+      "text": "Haan woh society mein bata dunga. Chalo theek hai Abdul bhai, toh kal milte hain.",
+      "start": 110.4,
+      "end": 115.9
+    },
+    {
+      "line_no": 20,
+      "speaker": "worker",
+      "text": "Haan sahab, kal subah aata hoon. Aur haan, mirror ka size madam se ek baar confirm kar lena, poora darwaaza ya aadha.",
+      "start": 116.3,
+      "end": 124.6
+    },
+    {
+      "line_no": 21,
+      "speaker": "hirer",
+      "text": "Arre haan, woh bhi poochh lunga. Chalo phir.",
+      "start": 125.4,
+      "end": 128.2
+    },
+    {
+      "line_no": 22,
+      "speaker": "worker",
+      "text": "Aur sahab, drill ke liye bijli ka point bhi chahiye hoga, bedroom mein socket hai na?",
+      "start": 128.9,
+      "end": 134.8
+    },
+    {
+      "line_no": 23,
+      "speaker": "hirer",
+      "text": "Haan hai, bed ke peeche. Theek hai bhai, aur kuch?",
+      "start": 135.3,
+      "end": 138.8
+    },
+    {
+      "line_no": 24,
+      "speaker": "worker",
+      "text": "Bas sahab. Aapka kaam dil se karunga. Aapke pados mein jo Verma ji hain na, unka bhi kiya tha, poochh lena unse.",
+      "start": 139.5,
+      "end": 147.7
+    },
+    {
+      "line_no": 25,
+      "speaker": "hirer",
+      "text": "Haan haan, unhone hi toh number diya tha. Accha chalo phir Abdul bhai.",
+      "start": 148.3,
+      "end": 153.3
+    },
+    {
+      "line_no": 26,
+      "speaker": "worker",
+      "text": "Ji sahab. Bees tarikh tak toh pakka fit karke de dunga, aap befikar raho.",
+      "start": 153.6,
+      "end": 159.4
+    },
+    {
+      "line_no": 27,
+      "speaker": "hirer",
+      "text": "Haan haan theek hai, badhiya. Chalo, kal milte hain phir.",
+      "start": 160.2,
+      "end": 163.8
+    },
+    {
+      "line_no": 28,
+      "speaker": "worker",
+      "text": "Ji sahab, Allah hafiz. Madam ko salaam kehna.",
+      "start": 164.6,
+      "end": 167.8
+    },
+    {
+      "line_no": 29,
+      "speaker": "hirer",
+      "text": "Zaroor zaroor. Accha suno, laminate ka colour main kal subah tak WhatsApp kar dunga.",
+      "start": 168.3,
+      "end": 173.3
+    },
+    {
+      "line_no": 30,
+      "speaker": "worker",
+      "text": "Theek hai sahab, showroom se photo bhej dena. Accha sahab, rakhta hoon.",
+      "start": 173.6,
+      "end": 178.1
+    },
+    {
+      "line_no": 31,
+      "speaker": "hirer",
+      "text": "Haan theek hai, bye bye. Chalo.",
+      "start": 178.6,
+      "end": 180.9
+    },
+    {
+      "line_no": 32,
+      "speaker": "worker",
+      "text": "Ji, khuda hafiz sahab.",
+      "start": 181.5,
+      "end": 183.0
+    }
+  ],
+  "noise": "clean",
+  "wrap_up_starts_line": 19,
+  "pending_at_end": [
+    "dates (15th vs 20th)"
+  ],
+  "expected_note": "Each entry is a moment the Judge should speak. after_line is the line that makes it true: the Judge speaks in the pause after it. by_line is the last line after which speaking still counts as on time. modes lists the JUDGE_MODE values in which the entry applies. The transcript is a call with no Judge on it, so nobody answers a question and an open item stays open unless the people settle it themselves. Fields beyond the practice calls: required=false marks a moment where a reasonable listener could go either way (speaking there is fine, staying silent is fine); reason_also_ok lists other reasons that count; also_pending lists further items open at that moment; wrap_up_starts_line is where the call starts wrapping up; must_stay_silent lists lines after which the Judge must not speak even though they may sound final or look like a problem.",
+  "expected": [
+    {
+      "after_line": 19,
+      "by_line": 25,
+      "item": null,
+      "reason": "wrapping_up",
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": false,
+      "note": "First 'kal milte hain'. At this point every item is agreed (laminate colour and mirror size are details left to the wife), so an early read-back is reasonable; so is waiting, since the goodbye keeps going."
+    },
+    {
+      "after_line": 21,
+      "by_line": 25,
+      "item": "work",
+      "reason": "term_unclear",
+      "to": "hirer",
+      "modes": [
+        "live"
+      ],
+      "required": false,
+      "note": "Laminate colour and mirror size are both deferred to the wife. They do not change the price; a listener could ask to note them as open, or treat the work as settled."
+    },
+    {
+      "after_line": 26,
+      "by_line": 28,
+      "item": "dates",
+      "reason": "conflicting_figures",
+      "to": "both",
+      "modes": [
+        "live"
+      ],
+      "required": true,
+      "note": "'Bees tarikh tak' (20th) against 'pandrah tareekh tak' (15th, line 14), and past the 18th the hirer needs. The hirer says 'theek hai' without noticing. The Judge should ask which date holds."
+    },
+    {
+      "after_line": 27,
+      "by_line": 31,
+      "item": "dates",
+      "reason": "wrapping_up",
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": true,
+      "note": "The goodbye resumes with the dates conflict open. In wrapup mode this is the only chance to catch it; a read-back given before line 26 does not cover it. In live mode the question after line 26 can satisfy this if it was asked."
+    }
+  ],
+  "must_stay_silent": [
+    {
+      "after_line": 9,
+      "why": "A counter-offer (35,000 against 38,000), settled at line 11. Not a conflict."
+    },
+    {
+      "after_line": 11,
+      "why": "'Chalo theek hai, adtees' sounds final but only settles the amount."
+    },
+    {
+      "after_line": 12,
+      "why": "'Pandrah hazaar' (advance) and the later 'pandrah tareekh' (date) share a word, not an item."
+    },
+    {
+      "after_line": 14,
+      "why": "The 15th fits inside the 18th deadline; no conflict."
+    },
+    {
+      "after_line": 16,
+      "why": "'Theek hai sahab, kaat lena' agrees the penalty; mid-call."
+    },
+    {
+      "after_line": 17,
+      "why": "'Badhiya' then a new question."
+    }
+  ]
+}

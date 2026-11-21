@@ -1,0 +1,92 @@
+{
+ "fixture": "holdout_carpenter_wardrobe",
+ "recorded_at": "2026-11-21T17:08:30+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "value:work@3": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:work@5": {
+   "value": "wardrobe, 7 feet high, 6 feet wide, 3 doors, one with glass, loft, Century 19 mm ply, white laminate inside, Hettich hinges and channels",
+   "source_text": "Dekhiye sahab, saat foot unchi, chhe foot chaudi, teen darwaaze, ek mein sheesha, upar loft.",
+   "line_no": 4
+  },
+  "unclear:-@6": {
+   "item": "amount"
+  },
+  "value:amount@11": {
+   "value": "25,000 rupees for material, laminate, hardware and labour",
+   "source_text": "Toh total sab milake, material, laminate, hardware, labour, adtees hazaar.",
+   "line_no": 8
+  },
+  "value:advance@12": {
+   "value": "15,000 rupees tomorrow Sunday 22 November 2026, with the remaining 23,000 rupees on the fitting day",
+   "source_text": "Pandrah hazaar de dijiye, kal material uthaunga. Baaki teis hazaar fitting wale din.",
+   "line_no": 12
+  },
+  "value:balance@12": {
+   "value": "remaining 27,000 rupees on the fitting day against fitting",
+   "source_text": "Baaki teis hazaar fitting wale din.",
+   "line_no": 12
+  },
+  "value:late_or_unfinished@15": {
+   "value": "1,000 rupees per day deducted if late",
+   "source_text": "Agar late hua toh hazaar rupaye roz kaatunga, pehle bata raha hoon.",
+   "line_no": 15
+  },
+  "value:dates@15": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:dates@17": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:late_or_unfinished@19": {
+   "value": "1,000 rupees per day if late",
+   "source_text": "Pakka? Agar late hua toh hazaar rupaye roz kaatunga, pehle bata raha hoon.",
+   "line_no": 15
+  },
+  "value:advance@19": {
+   "value": "15,000 rupees tomorrow, and the remaining 23,000 rupees on the fitting day",
+   "source_text": "Pandrah hazaar de dijiye, kal material uthaunga. Baaki teis hazaar fitting wale din.",
+   "line_no": 12
+  },
+  "value:balance@19": {
+   "value": "23,000 rupees on the fitting day against fitting",
+   "source_text": "Baaki teis hazaar fitting wale din.",
+   "line_no": 12
+  },
+  "value:work@19": {
+   "value": "make a wardrobe seven feet high and six feet wide with three doors, one mirror door, a loft, Century 19 mm ply, white laminate inside, Hettich hinges and channels, and outside laminate of the chosen colour",
+   "source_text": "Dekhiye sahab, saat foot unchi, chhe foot chaudi, teen darwaaze, ek mein sheesha, upar loft.",
+   "line_no": 4
+  },
+  "value:dates@19": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:amount@19": {
+   "value": "35,000 rupees for material, laminate, hardware and labour",
+   "source_text": "Haha, sab ghar mein yahi hai sahab. Toh total sab milake, material, laminate, hardware, labour, adtees hazaar.",
+   "line_no": 8
+  },
+  "names:-@1": {
+   "hirer": "Deepak",
+   "worker": "Abdul"
+  },
+  "ambiguous:work@4": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@10": {
+   "ambiguous": false,
+   "readings": null
+  }
+ }
+}

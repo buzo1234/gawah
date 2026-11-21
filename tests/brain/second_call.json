@@ -1,0 +1,84 @@
+{
+ "id": "second_call",
+ "description": "Call 2 of the call_two_amounts deal, days later: Ramesh says the total was 14,000, which contradicts the 13,000 both agreed on call 1; Sunita corrects him. Replayed after call_two_amounts on the same deal (call_no 2).",
+ "follows": "call_two_amounts",
+ "call_no": 2,
+ "people": [
+  {
+   "role": "hirer",
+   "name": "Sunita",
+   "phone": "+910000000001"
+  },
+  {
+   "role": "worker",
+   "name": "Ramesh",
+   "phone": "+910000000002"
+  }
+ ],
+ "lines": [
+  {
+   "speaker": "worker",
+   "text": "Hello madam, Ramesh bol raha hoon. Kal se kaam shuru karna hai na?",
+   "start": 0.5,
+   "end": 5.37,
+   "line_no": 1
+  },
+  {
+   "speaker": "hirer",
+   "text": "Haan Ramesh ji, namaste. Kamron se saamaan hata diya hai.",
+   "start": 6.77,
+   "end": 11.14,
+   "line_no": 2
+  },
+  {
+   "speaker": "worker",
+   "text": "Achha madam, ek baat. Labour ka total 14 hazaar tay hua tha na?",
+   "start": 12.54,
+   "end": 17.24,
+   "line_no": 3
+  },
+  {
+   "speaker": "hirer",
+   "text": "Nahi nahi, 13 hazaar tay hua tha. Aapne khud last bola tha.",
+   "start": 18.64,
+   "end": 23.12,
+   "line_no": 4
+  },
+  {
+   "speaker": "worker",
+   "text": "Haan haan madam, 13 hi. Galti se bol diya.",
+   "start": 24.52,
+   "end": 28.05,
+   "line_no": 5
+  },
+  {
+   "speaker": "hirer",
+   "text": "Theek hai. Aur paint aa gaya hai, bhai ki dukaan se.",
+   "start": 29.45,
+   "end": 33.54,
+   "line_no": 6
+  },
+  {
+   "speaker": "worker",
+   "text": "Ji madam. Kal subah 10 baje pahunch jaunga.",
+   "start": 34.94,
+   "end": 38.53,
+   "line_no": 7
+  },
+  {
+   "speaker": "hirer",
+   "text": "Theek hai, kal milte hain. Bye.",
+   "start": 39.93,
+   "end": 42.85,
+   "line_no": 8
+  },
+  {
+   "speaker": "worker",
+   "text": "Namaste madam.",
+   "start": 44.25,
+   "end": 46.23,
+   "line_no": 9
+  }
+ ],
+ "ended_at": 48.63
+}

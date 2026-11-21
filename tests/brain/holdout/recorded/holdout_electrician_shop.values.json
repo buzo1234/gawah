@@ -1,0 +1,90 @@
+{
+ "fixture": "holdout_electrician_shop",
+ "recorded_at": "2026-11-21T17:08:34+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "value:work@5": {
+   "value": "replace all the wiring with copper wiring and install a new MCB box",
+   "source_text": "हां पूरी बदलनी पड़ेगी copper की डालेंगे Havells या Polycab जो आप बोलो और एक नया MCB box लगेगा",
+   "line_no": 5
+  },
+  "value:amount@12": {
+   "value": "17,000 rupees for material and labour",
+   "source_text": "देखो भाई सब मिला के material labour सब सत्रह हज़ार",
+   "line_no": 9
+  },
+  "value:advance@14": {
+   "value": "5,000 rupees on the start day",
+   "source_text": "ठीक है पांच start वाले दिन बाकी",
+   "line_no": 14
+  },
+  "value:balance@15": {
+   "value": "the remaining balance will be paid when the work is finished",
+   "source_text": "काम ख़तम होते ही",
+   "line_no": 15
+  },
+  "unclear:-@21": {
+   "item": "dates"
+  },
+  "value:late_or_unfinished@23": {
+   "value": "500 rupees deducted for each day late",
+   "source_text": "ठीक है देर हुई तो हर दिन का पांच सौ काटूंगा ये पहले बता रहा हूं",
+   "line_no": 23
+  },
+  "conflict:-@26": {
+   "item": "amount",
+   "figures": [
+    "17,000 rupees",
+    "70,000 rupees"
+   ],
+   "line_nos": [
+    12,
+    26
+   ]
+  },
+  "value:late_or_unfinished@30": {
+   "value": "500 rupees will be cut per day if the work is delayed",
+   "source_text": "ठीक है देर हुई तो हर दिन का पांच सौ काटूंगा ये पहले बता रहा हूं",
+   "line_no": 23
+  },
+  "value:advance@30": {
+   "value": "5,000 rupees on the start day, and the rest when the work is finished",
+   "source_text": "हां तो advance पांच हज़ार दे देना जिस दिन start करूं material उठाना पड़ता है",
+   "line_no": 13
+  },
+  "value:work@30": {
+   "value": "Complete shop rewiring with copper wiring, an eight-point socket setup, two lights, a separate AC line, a new MCB box, and a new modular board",
+   "source_text": "हां पूरी बदलनी पड़ेगी copper की डालेंगे Havells या Polycab जो आप बोलो और एक नया MCB box लगेगा",
+   "line_no": 5
+  },
+  "value:balance@30": {
+   "value": "the rest on the same day the work is finished",
+   "source_text": "हां हां उसी दिन ले लूंगा कोई दिक्कत नहीं",
+   "line_no": 16
+  },
+  "names:-@1": {
+   "hirer": "Imran",
+   "worker": "Suresh"
+  },
+  "ambiguous:work@5": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@11": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@13": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:balance@15": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:late_or_unfinished@23": {
+   "ambiguous": false,
+   "readings": null
+  }
+ }
+}

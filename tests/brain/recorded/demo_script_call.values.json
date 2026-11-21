@@ -1,6 +1,6 @@
 {
  "fixture": "demo_script_call",
- "recorded_at": "2026-11-21T14:41:08+00:00",
+ "recorded_at": "2026-11-21T17:08:35+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "names:-@1": {
@@ -71,6 +71,26 @@
    "value": "500 rupees deducted for each day late",
    "source_text": "लेट हुआ तो हर दिन का पाँच सौ काट लेना।",
    "line_no": 15
+  },
+  "ambiguous:amount@3": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@3": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@5": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:balance@10": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@9": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }

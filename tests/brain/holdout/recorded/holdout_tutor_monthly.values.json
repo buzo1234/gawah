@@ -1,0 +1,92 @@
+{
+ "fixture": "holdout_tutor_monthly",
+ "recorded_at": "2026-11-21T17:08:33+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "value:work@4": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:work@6": {
+   "value": "teach Rohan maths and science at home, Monday to Friday from 5:00 pm to 6:30 pm",
+   "source_text": "Main ghar aake padhaunga, Monday se Friday, shaam paanch se saadhe chhe, chalega?",
+   "line_no": 4
+  },
+  "value:amount@7": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:dates@8": {
+   "value": "Tuesday 1 December 2026 until the March final exam",
+   "source_text": "Ek December se. Aur March mein final exam tak padhaunga, uske baad aap dekh lena aage rakhna hai ya nahi.",
+   "line_no": 8
+  },
+  "value:amount@9": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:balance@10": {
+   "value": "2,000 rupees at the end of the first month against the first month's fee",
+   "source_text": "Pehle mahine ke do hazaar pehle din de dijiye, baaki do hazaar mahine ke end mein.",
+   "line_no": 10
+  },
+  "value:advance@11": {
+   "value": "2,000 rupees on the first day of the first month, and the remaining 2,000 rupees at the end of the month",
+   "source_text": "Pehle mahine ke do hazaar pehle din de dijiye, baaki do hazaar mahine ke end mein.",
+   "line_no": 10
+  },
+  "value:amount@11": {
+   "value": "4,000 rupees per month for both subjects",
+   "source_text": "Dono subject ke chaar hazaar mahina, aunty.",
+   "line_no": 6
+  },
+  "value:amount@14": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:advance@14": {
+   "value": "2,000 rupees on the first day of the month, and the remaining 2,000 rupees at the end of the month",
+   "source_text": "Pehle mahine ke do hazaar pehle din de dijiye, baaki do hazaar mahine ke end mein.",
+   "line_no": 10
+  },
+  "value:work@14": {
+   "value": "Home tutoring in maths and science for Rohan, Monday to Friday from 5 pm to 6:30 pm",
+   "source_text": "Main ghar aake padhaunga, Monday se Friday, shaam paanch se saadhe chhe, chalega?",
+   "line_no": 4
+  },
+  "value:balance@14": {
+   "value": "2,000 rupees at the end of the month, after 2,000 rupees on the first day, for the first month; after that, 4,000 rupees on the first date of every month",
+   "source_text": "Pehle mahine ke do hazaar pehle din de dijiye, baaki do hazaar mahine ke end mein. Uske baad har mahine ki pehli tareekh ko poore chaar hazaar.",
+   "line_no": 10
+  },
+  "value:dates@14": {
+   "value": "1 December 2026 to the March final exam",
+   "source_text": "Ek December se. Aur March mein final exam tak padhaunga, uske baad aap dekh lena aage rakhna hai ya nahi.",
+   "line_no": 8
+  },
+  "names:-@1": {
+   "hirer": "Ruma",
+   "worker": "Ankit"
+  },
+  "ambiguous:dates@4": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@6": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@4": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@8": {
+   "ambiguous": false,
+   "readings": null
+  }
+ }
+}

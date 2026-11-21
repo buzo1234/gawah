@@ -1,6 +1,6 @@
 {
  "fixture": "call_two_amounts",
- "recorded_at": "2026-11-21T14:45:03+00:00",
+ "recorded_at": "2026-11-21T17:08:37+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "value:work@4": {
@@ -97,6 +97,37 @@
    "value": "If the work is left unfinished, the remaining money will not be paid and the advance will be returned; if it is late, 300 rupees will be deducted per day",
    "source_text": "Late hua to roz ka 300 rupaye kaat lena madam.",
    "line_no": 29
+  },
+  "unclear:-@19": {
+   "item": null
+  },
+  "ambiguous:amount@11": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@7": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@12": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@15": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@24": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@21": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@31": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }
