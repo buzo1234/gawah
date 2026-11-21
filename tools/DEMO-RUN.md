@@ -91,8 +91,8 @@ Send Ramesh's number: exactly what is in the "Second phone" panel's Number box, 
 
 ### 6. Join call 1
 
-1. Laptop: click Ramesh's link in the "Second phone" panel. Press the green **Judiye** button and allow the microphone.
-2. Phone: tap **Call kholiye**. Press the green **Judiye** button and allow the microphone. If the WhatsApp in-app browser blocks the microphone, open the link in Chrome.
+1. Laptop: click Ramesh's link in the "Second phone" panel. Press the green **Join** button and allow the microphone.
+2. Phone: tap **Call kholiye**. Press the green **Join** button and allow the microphone. If the WhatsApp in-app browser blocks the microphone, open the link in Chrome.
 
 **You should see:** both pages say you are connected. Within about 5 to 20 seconds (it waits to hear both of you, at most 15 seconds) Gawah says: "Namaste. Main Gawah hoon. Yeh call record ho rahi hai ... Aap dono, kripya ek-ek karke apna naam bataiye aur kahiye ki aap sehmat hain."
 
@@ -132,7 +132,7 @@ Send Ramesh's number: exactly what is in the "Second phone" panel's Number box, 
 | 25 | Phone | Haan, sab sahi hai. |
 | 26 | Laptop | Haan ji, sab sahi hai. |
 
-Then press **Call chhodein** on both.
+Then press the red **End** button on both.
 
 **On the dashboard during the call:** the checklist filling in (work, amount 22,000, advance 5,000, dates, balance, late), each with the call time it was agreed at; the knowledge graph growing, with 25,000 and 20,000 as offers and 22,000 as agreed.
 
@@ -146,7 +146,7 @@ Then press **Call chhodein** on both.
 
 About 3 seconds after you both leave, each of you gets a call-back: "Gawah aapse akele mein deal ki sharten confirm karna chahta hai. Yeh link kholiye." with a **Call kholiye** button.
 
-1. Phone: tap **Call kholiye**. Press **Baat shuru karein**.
+1. Phone: tap **Call kholiye**. Press the green **Join** button.
 2. Gawah reads each agreed term, one at a time. After each, say **"haan, sahi hai"**.
 3. It ends by itself, in 2 to 3 minutes.
 
@@ -184,13 +184,13 @@ A screenshot of a payment is proof on its own, so nobody is asked to confirm it.
 
 ### 11. Ramesh opens a new call (laptop)
 
-Click Ramesh's **call** link again (the first one, from step 5). The page says the call is over; press **Phir se baat karein**.
+Click Ramesh's **call** link again (the first one, from step 5). The page says the call ended; press **Call again**.
 
 **You should see:**
 - Phone: "Ramesh ji aapse deal par phir se baat karna chahte hain. Call ke liye yeh link kholiye." with a **Call kholiye** button.
 - Dashboard: the Sentinel's lane, "call 2 opened by the worker: told the hirer".
 
-Phone: tap **Call kholiye** and press **Phir se baat karein**. Gawah greets you both by name and asks you to say your names again. The header says "On call 2".
+Phone: tap **Call kholiye** and press **Call again**. Gawah greets you both by name and asks you to say your names again. The header says "On call 2".
 
 ### 12. Call 2: the wrong total, and a change
 
@@ -212,7 +212,7 @@ Phone: tap **Call kholiye** and press **Phir se baat karein**. Gawah greets you 
 | 11 | Phone | Theek hai Ramesh ji, bye. |
 | 12 | Laptop | Namaste madam. |
 
-Then **Call chhodein** on both.
+Then the red **End** button on both.
 
 **On the dashboard:** at line 3 a red contradiction link in the fact graph, from Ramesh's "25,000" to the 22,000 both agreed, with "Hear what was agreed", and the checklist's amount says "Contradicted". At line 8 the change appears; when both have said haan, the checklist's amount reads "Changed" 24,000, and in the graph the old 22,000 is marked replaced.
 

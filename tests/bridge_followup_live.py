@@ -5,7 +5,7 @@ the free plans, so run it by hand and count what it used.
 
 It starts the real app on a free port, creates a deal, and opens the two call links in two
 headless Chrome browsers whose microphones play recorded Hinglish lines. Call 1: both join,
-talk, and leave. The pages then show "Phir se baat karein"; both tap it on the same open
+talk, and leave. The pages then show "Call again"; both tap it on the same open
 pages, and call 2 runs the same way. Then it checks, for each call: its own room, its
 call.started and call.ended with the call number, transcript lines numbered from 1 with
 times from that call's start, and the two recordings in S3 against those times. Gawah's

@@ -99,7 +99,7 @@ async def desk(bus, settings):
 
 async def test_the_page_is_served_at_the_agreed_path_with_our_own_copy_of_the_client(desk):
     page = await desk.http.get(callback_path("d1", Role.HIRER))
-    assert page.status_code == 200 and "Baat shuru karein" in page.text
+    assert page.status_code == 200 and ">Join<" in page.text
     assert 'src="/mouth/static/livekit-client.umd.min.js"' in page.text and "cdn." not in page.text
     script = await desk.http.get("/mouth/static/livekit-client.umd.min.js")
     assert script.status_code == 200 and len(script.content) > 100_000

@@ -36,7 +36,7 @@ def test_call_page_for_a_valid_link(site):
     client, livekit, _ = site
     page = client.get(call_path("d1", Role.HIRER))
     assert page.status_code == 200
-    assert "Judiye" in page.text and "Call chhodein" in page.text
+    assert ">Join<" in page.text and ">End<" in page.text
     assert '"name": "Sunita"' in page.text and '"roleWords": "kaam dene wale"' in page.text
     # The other person's name is not known yet, and their phone number is never put on the page.
     worker = client.get(call_path("d1", Role.WORKER)).text
@@ -44,8 +44,8 @@ def test_call_page_for_a_valid_link(site):
     assert RAMESH.phone not in page.text and SUNITA.phone not in worker
     # What the page has to do: echo cancellation and friends, a way out of WhatsApp's browser, the three states.
     for needed in ("echoCancellation: true", "noiseSuppression: true", "autoGainControl: true",
-                   "Open in Chrome", "ka intezaar", "Call chalu hai", "Call khatam ho gaya",
-                   "yeh page khula rakhiye", "wakeLock.request('screen')", "Aapka microphone band ho gaya hai"):
+                   "Open in Chrome", "Waiting for ${other}", "Call in progress", "Call ended",
+                   "Keep this page open", "wakeLock.request('screen')", "Your microphone went off"):
         assert needed in page.text, needed
     # Opening the page (or WhatsApp fetching a preview of it) opens no room.
     assert livekit.created == []
@@ -107,7 +107,7 @@ def test_after_the_call_the_page_says_so_and_offers_a_new_one(site):
     client, livekit, publish = site
     publish(CallEnded(deal_id="d1", people=[SUNITA, RAMESH], room="deal-d1-1", duration=60))
     page = client.get(call_path("d1", Role.HIRER)).text
-    assert '"ended": 1' in page and "Phir se baat karein" in page
+    assert '"ended": 1' in page and "Call again" in page
     late = client.post(call_path("d1", Role.HIRER) + "/join?after=0")  # a page from before it ended
     assert (late.status_code, late.json()) == (410, {"error": "over", "ended": 1}) and livekit.created == []
 
