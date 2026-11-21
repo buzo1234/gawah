@@ -1,7 +1,8 @@
 // Draws the panels from the state. Text only ever goes in through h(), as text nodes.
 
 import { ITEMS, clock, lineAt, nameOf, otherRole } from "./state.js";
-import { clipButton, relink, renderGraph } from "./graph.js";
+import { relink, renderGraph } from "./graph.js";
+import { clipButton } from "./clips.js";
 import { renderLanes } from "./lanes.js";
 
 const $ = (id) => document.getElementById(id);
@@ -131,7 +132,11 @@ function renderWhy(state, entering) {
       : `line ${d.afterLine}`;
     return h("article", { class: `decision${i === 0 ? " latest" : ""}${d.id === entering ? " enter" : ""}` },
       h("div", { class: "reason" }, REASONS[d.reason] || d.reason, d.item && h("span", { class: "about" }, ITEM_LABEL[d.item])),
-      h("dl", {},
+      d.question ? h("dl", {},
+        h("dt", {}, "Asked"), h("dd", { class: "asked" }, `${line ? `${nameOf(state, line.speaker)}: ` : ""}“${d.question}”`),
+        h("dt", {}, "Answer"), h("dd", {}, d.spoken ? `“${d.spoken}”${d.interrupted ? " (cut off)" : ""}`
+          : d.dropped ? "Nothing: the moment passed" : `${d.instruction} (not said yet)`))
+      : h("dl", {},
         after && [h("dt", {}, "Right after"), h("dd", { class: "clamp" }, after)],
         h("dt", {}, "Told to ask"), h("dd", {}, `${d.instruction} (to ${nameOf(state, d.to)})`),
         d.spoken && [h("dt", {}, "Gawah said"), h("dd", {}, `“${d.spoken}”${d.interrupted ? " (cut off)" : ""}`)],

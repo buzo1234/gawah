@@ -9,8 +9,8 @@ from pathlib import Path
 import pytest
 
 from app.contracts import (
-    AgentNote, CallEnded, CallStarted, ChangeStatus, ChecklistUpdated, CrewAgent, FactChanged, FactRecorded,
-    FactStatus, ItemKey, Role, TranscriptLine, empty_checklist,
+    AgentNote, Audience, CallEnded, CallStarted, ChangeStatus, ChecklistUpdated, CrewAgent, Fact, FactChanged, FactKind, FactRecorded,
+    FactStatus, ItemKey, JudgeSpeak, Role, SpeakReason, TranscriptLine, empty_checklist,
 )
 from fakes import RAMESH, SUNITA
 from fakes.samples import sample_events
@@ -28,8 +28,9 @@ console.log(JSON.stringify({
   marks: state.flow.filter((f) => f.type === "call" || f.type === "mark").map((f) => f.type === "call" ? `call ${f.callNo}` : f.text),
   facts: state.factOrder.map((id) => state.facts[id].status),
   conflicts: state.conflicts.map((c) => [c.factIds, c.callNo, c.lineNo]),
+  question: state.decisions.map((d) => d.question),
   changes: state.changeOrder.map((id) => [state.changes[id].status, state.changes[id].confirmed_by]),
-  chain: { links: state.chain.links, latest: state.chain.latest, problem: state.chain.problem },
+  chain: state.chain.links,
   notes: state.notes.memory.map((n) => n.text),
   earlier: Object.keys(state.earlier), items: state.items.map((i) => i.state),
 }));
@@ -71,20 +72,44 @@ def test_the_fold_keeps_calls_apart_and_follows_the_crew(tmp_path):
     assert got["facts"] == ["superseded"]  # one fact, its latest version
     assert got["conflicts"] == [[[advance.id], 2, 7]]
     assert got["changes"] == [["confirmed_one", ["worker"]], ["confirmed_both", ["worker", "hirer"]]]
-    assert got["chain"] == {"links": 2, "latest": "ab" * 32, "problem": None}
+    assert got["chain"] == 2  # links; memory checks them (/memory/chain), not the page
     assert got["notes"] == ["advance: 9,000 replaces 8,000", "found 1 fact about the advance"]
     assert got["earlier"] == ["amount"] and got["items"] == ["pending"] * 6  # kept in view, not hidden
     assert got["view"] == "graph"
 
 
 @pytest.mark.skipif(not shutil.which("node"), reason="needs Node to run the page's own fold")
-def test_a_link_without_a_fingerprint_breaks_the_chain(tmp_path):
-    fact = next(e for e in sample_events("d-chain") if isinstance(e, FactRecorded)).fact
-    events = [
-        FactRecorded(deal_id="d-chain", fact=fact),
-        FactRecorded(deal_id="d-chain", fact=fact.model_copy(update={"status": FactStatus.CONFIRMED, "hash": None})),
-        FactRecorded(deal_id="d-chain", fact=fact.model_copy(update={"status": FactStatus.DISPUTED})),
-    ]
-    assert fold(events, tmp_path)["chain"]["problem"] == "link 2 has no fingerprint"
-    events[1] = FactRecorded(deal_id="d-chain", fact=fact.model_copy(update={"status": FactStatus.CONFIRMED}))
-    assert fold(events, tmp_path)["chain"]["problem"] == "link 2 repeats an earlier fingerprint"
+def test_a_question_put_to_gawah_is_kept_with_its_decision(tmp_path):
+    asked = JudgeSpeak(
+        deal_id="d-ask", instruction="Read back the advance.", to=Audience.HIRER, reason=SpeakReason.ADDRESSED_DIRECTLY,
+        item=ItemKey.ADVANCE, question="Gawah, advance kitna tay hua?",
+    )
+    plain = JudgeSpeak(deal_id="d-ask", instruction="Ask when the balance is paid.", to=Audience.HIRER, reason=SpeakReason.TERM_UNCLEAR)
+    assert fold([asked, plain], tmp_path)["question"] == ["Gawah, advance kitna tay hua?", None]
+
+
+@pytest.mark.skipif(not shutil.which("node"), reason="needs Node to run the page's own fold")
+def test_the_term_stands_on_the_newest_version_as_in_memory(tmp_path):
+    """Memory's current(): of the agreed facts, the one with the newest version, even if it
+    was first said before the others (a said date agreed only at the end of the call)."""
+    monday = Fact(deal_id="d-st", text="Starts Monday.", item=ItemKey.DATES, kind=FactKind.TERM, value="Monday", status=FactStatus.SAID)
+    friday = Fact(deal_id="d-st", text="Ends Friday.", item=ItemKey.DATES, kind=FactKind.TERM, value="Friday", status=FactStatus.AGREED)
+    note = Fact(deal_id="d-st", text="Asks about dates.", item=ItemKey.DATES, kind=FactKind.OTHER, status=FactStatus.AGREED)
+    events = [FactRecorded(deal_id="d-st", fact=f) for f in (monday, friday, monday.model_copy(update={"status": FactStatus.AGREED}), note)]
+    script = tmp_path / "standing.mjs"
+    script.write_text(STANDING % ((STATIC / "state.js").as_uri(), (STATIC / "crew-state.js").as_uri()))
+    data = tmp_path / "events.json"
+    data.write_text(json.dumps([e.model_dump(mode="json") for e in events]))
+    run = subprocess.run(["node", script, data], capture_output=True, text=True, timeout=30)
+    assert run.returncode == 0, run.stderr
+    assert run.stdout.strip() == monday.id
+
+
+STANDING = """
+import { readFileSync } from "node:fs";
+import { apply, emptyState } from "%s";
+import { standing } from "%s";
+const state = emptyState("d-st");
+for (const e of JSON.parse(readFileSync(process.argv[2], "utf8"))) apply(state, e);
+console.log(standing(state, "dates").id);
+"""
