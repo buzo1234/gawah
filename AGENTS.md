@@ -27,6 +27,7 @@ LiveKit and Twilio are on free plans with monthly allowances. Using them up in t
 - One room at a time. Give every room a short empty-timeout and a 10-minute maximum. Always close it when you are done.
 - Never leave the agent sitting in a room, and never use LiveKit's recording service.
 - No loops that send WhatsApp messages or poll either service's API.
+- Sage2's free usage is the tightest: about a dozen full-length calls a month. Build against the saved results in `spikes/5-results/`. Use live Sage2 only for a tuning run or a demo run, and report how many updates you sent.
 - Say in your report how many real rooms you opened and messages you sent.
 
 ## Stop and ask

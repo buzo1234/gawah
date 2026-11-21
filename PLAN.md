@@ -21,7 +21,7 @@ Scaffold a thin skeleton on `main` first, with the shared event types frozen and
 
 ## Use the free plans with care
 
-LiveKit and Twilio are on free plans. The rules are in `tech-feasibility.md` and `AGENTS.md`. In short: build against the fakes, open a real room or send a real message only for a spike, a manual check, or a demo run, and always close the room after.
+LiveKit and Twilio are on free plans. The rules are in `tech-feasibility.md` and `AGENTS.md`. In short: build against the fakes, open a real room or send a real message only for a spike, a manual check, or a demo run, and always close the room after. Sage2's free usage is the tightest of all - about a dozen full-length calls a month - so the brain is built against saved results and goes live only to tune and to demo.
 
 ## Folder layout
 
@@ -197,4 +197,8 @@ Fill in at hour 3.
 2. Ears:
 3. Mouth:
 4. WhatsApp:
-5. Sage2:
+5. Sage2: PARTLY. Use it for the live yes/no decisions; do not use its extract call.
+   - Decisions were right on 286 of 286 answers on a 30-line Hinglish call, 285 of 286 in Devanagari, and 147 of 150 on a second, unseen call. About half a second per update from India.
+   - Extract found the right words but wrong values ("42 hazaar" came back as 42). Get values from a small OpenAI text model instead; `gpt-5.4-mini` got all five right in about 2 seconds.
+   - Catch: about a dozen full-length calls fit in the free $1 a month. The spike used about $0.11.
+   - For the brain stream: the question wording that worked, the harness notes, and saved results are in `spikes/5-sage2.md` and `spikes/5-results/`.

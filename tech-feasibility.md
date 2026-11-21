@@ -32,6 +32,7 @@ LiveKit and Twilio are both on free plans with monthly allowances. Burning them 
 - Always disconnect and close the room when a test ends. Never leave the agent sitting in a room.
 - No LiveKit recording service. The agent saves the audio itself.
 - No loops that send WhatsApp messages. The sandbox allows one message every three seconds; stay well under it.
+- Sage2 has the tightest allowance of all: about a dozen full-length calls a month. Replay the saved results in `spikes/5-results/` while building; go live only to tune and to demo.
 - Do not poll either service's API in a loop.
 - Automated tests never touch LiveKit or Twilio.
 
@@ -42,7 +43,7 @@ LiveKit and Twilio are both on free plans with monthly allowances. Burning them 
 | Gawah connects both parties on a call | Yes | A LiveKit room per deal; each person gets a join link on WhatsApp | Medium - opening the link from inside WhatsApp needs the mic to work |
 | Knowing who said what | Yes | Each person is a separate audio track in the room | Low |
 | Live transcript in Hindi / Hinglish | Yes | Each track goes to OpenAI `gpt-transcribe` | Medium - Hinglish accuracy untested |
-| Judge tracks pending contract items, live | Yes | Sage2 stream: one yes/no question per checklist item, updated as each line is said | Medium - Hinglish support not stated |
+| Judge tracks pending contract items, live | Yes | Sage2 stream: one yes/no question per checklist item, updated as each line is said | Low - tested on Hinglish, 286 of 286 answers right |
 | Judge speaks like a person in the call | Yes | OpenAI realtime voice model, published into the room as Gawah's audio, silent until told to speak | Medium - we wire this ourselves |
 | Picking the right moment to speak | Yes, with tuning | Sage2 decisions on how the call is going, plus waiting for a pause | High - this is the part to tune |
 | Read-back of full terms on the call | Yes | Same voice model | Low |
@@ -72,7 +73,7 @@ LiveKit's agent framework is built around one person talking to one agent. For t
 One live voice on the call, with a harness behind it deciding what it says and when. Four parts:
 
 - Ears (Witness): each person's audio track goes to OpenAI `gpt-transcribe` (listed at $0.0045 per minute). Transcript lines are saved with speaker and timestamp. The agent also writes each track's audio to a file and uploads it to S3 at the end.
-- Fast brain (Sage2): every transcript line is appended to a Sage2 stream. Sage2 answers a fixed set of questions about the call so far and sends an update only when an answer changes (about 80-130 ms, vendor-stated).
+- Fast brain (Sage2): every transcript line is appended to a Sage2 stream. Sage2 answers a fixed set of questions about the call so far and sends an update only when an answer changes. Measured from India: about half a second per update (the vendor states 80-130 ms; half of our delay is the network trip to its US servers).
 - Mouth (voice model): OpenAI's realtime voice model (`gpt-realtime-2.1`). The agent holds a connection to it and publishes its audio into the room as Gawah's voice. Automatic replies are switched off, so it stays silent until the harness tells it to speak. If someone talks over it, the agent stops the audio, like a person would.
 - Slow brain (reasoning model): writes the contract after the call. Not in the live loop.
 
@@ -80,7 +81,8 @@ Questions Sage2 answers during the call (limit is 32 per session):
 
 - Contract items, one yes/no each: has the work been agreed? the amount? the advance? when the balance is paid? the dates? what happens if late or unfinished?
 - How the call is going: did someone just speak to Gawah directly? did they move to a new topic and leave the last one unclear? have two different figures been said for the same term? are they wrapping up?
-- When an item turns to yes, Sage2's extract call pulls the value (money, date, duration, text) with the source words and a probability.
+- When an item turns to yes, a small OpenAI text model pulls the value (amount, date, duration). Sage2's own extract call is not used: on Hinglish it found the right words but returned wrong values ("42 hazaar" came back as 42). `gpt-5.4-mini` got all five test values right in about 2 seconds.
+- Contract items latch: once an item is yes it stays yes. Sage2 drops the amount back to no when a second figure is said, and the "two different figures" question is the signal for that.
 
 When the Judge speaks:
 
@@ -144,7 +146,7 @@ The earlier plan, kept as the fallback.
 | OpenAI speech and reasoning | Credits. A 10-minute demo call is well under $2. |
 | AWS storage | Credits |
 | LiveKit calls | Free plan |
-| Sage2 decisions and extraction | Free plan, $1 of usage a month. A live call costs about $0.0013 at listed rates. |
+| Sage2 decisions | Free plan, $1 of usage a month. Every update re-bills all ten questions, so a 30-line call is about $0.02-0.03 and a full-length call about $0.08. That is roughly a dozen full calls a month. The spike used about $0.11. |
 | Twilio WhatsApp sandbox | Trial allowance |
 | Tunnel | Free |
 | Total out of pocket | ₹0 |
@@ -159,7 +161,7 @@ What would cost money, and is not needed for the demo:
 
 1. Picking the moment to speak. A wrong interruption is worse than silence. Sage2's docs describe live call monitoring, but not turn-taking - that use is ours and unproven. Tune it on recorded practice calls, and keep the safety switch.
 2. Two people plus an agent on LiveKit. The framework's ready-made session handles one person. We wire the per-person tracks and the voice output ourselves. Prove it in the first spike.
-3. Sage2 on Hinglish. Its pages do not mention Hindi or any Indian language. Backup: ask the same questions of a small, fast OpenAI text model - slower, but known to handle Hinglish.
+3. Sage2's free usage. It works on Hinglish, but $1 a month is only about a dozen full-length calls, and the spike has used about a tenth of it. Build the brain against the saved spike results, and use live Sage2 only for tuning runs and the demo. Backup: the same questions on a small OpenAI text model, or Sage2's $14 plan.
 4. The call link opened from WhatsApp. Some in-app browsers block the mic. Test on the real phone early; the fix is a "open in browser" prompt.
 5. Running out of free allowance. See "Use the free plans with care".
 6. Hindi and Hinglish transcription accuracy. Browser audio is clearer than phone audio, which helps. Test with our own voices early.
@@ -204,7 +206,8 @@ Stretch:
 - How much of this month's LiveKit allowance is already used. It is shared across all free projects on the account. Check the LiveKit dashboard.
 - Whether the call page's mic works when the link is opened inside WhatsApp.
 - Whether our server can receive and reply to sandbox messages. Joining works on the trial (see below); the webhook is untested until the server exists.
-- Whether Sage2 handles Hindi or Hinglish text, its free-plan rate limits, and whether the key works. Sage2's speed figures are the vendor's own.
+- Sage2's real spend so far. The spike estimated $0.11 from token counts; check the Levanto dashboard.
+- Sage2 on real transcription output. The spike used clean hand-written transcripts; real lines will have mishearings and no punctuation.
 - That Amazon Transcribe supports Hindi - from memory, not checked today.
 - Current WhatsApp message pricing - sources conflict after 1 October 2026. Irrelevant at demo volume.
 
@@ -214,6 +217,7 @@ Confirmed on 21 Nov:
 - AWS keys work; S3 bucket created and written to.
 - LiveKit keys work.
 - LiveKit free plan ("Build"), from its pricing and limits pages: 5,000 call minutes a month, counted per person connected; 100 connections at once; 60 minutes of its recording service. It is a hard cap - once used up, new calls fail, with no charges. It resets on the 1st of each month. The 1,000 "agent session minutes" are for agents hosted on LiveKit's cloud; ours runs on the laptop, and the docs treat that as self-hosted. A 10-minute call with two people and the agent is about 30 minutes of allowance, so roughly 160 such calls a month.
+- Sage2 on Hinglish (spike 5, `spikes/5-sage2.md`): yes/no decisions were right on 286 of 286 answers in Roman Hinglish, 285 of 286 in Devanagari, and 147 of 150 on a second, unseen call. About half a second per update. Its extract call is not usable for Hinglish values.
 - Twilio keys work; the account is a trial with no phone number and no verified phones.
 - WhatsApp sandbox joined from our phone on the trial account: the join message arrived and Twilio's reply was delivered and read.
 
