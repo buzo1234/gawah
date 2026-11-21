@@ -8,6 +8,8 @@ from contract_fakes import agreed_items
 from app.contract import document, page
 from app.contract.document import Bi
 from app.contract.pdf import find_chrome, page_count, render_pdf
+from app.contract.terms import resolve
+from app.contract.trigger import Call
 from app.contracts import CallEnded, ChecklistItem, ItemKey, ItemState, Role, TranscriptLine
 from fakes import RAMESH, SUNITA
 from fakes.replayer import load
@@ -24,17 +26,22 @@ NAMES = {Role.HIRER: Bi("सुनीता", "Sunita"), Role.WORKER: Bi("रम
 PRINTS = {Role.HIRER: hashlib.sha256(b"hirer").hexdigest(), Role.WORKER: hashlib.sha256(b"worker").hexdigest()}
 
 
-def fixed_document(pending=(), **changes) -> document.Document:
+LINES = {(1, line["line_no"]): TranscriptLine(deal_id="d1", **line) for line in load("fixtures/call_two_amounts.json")["lines"]}
+CALL_1 = Call(ended=CallEnded(deal_id="d1", duration=145.0, ts=datetime(2026, 11, 21, 11, 0, tzinfo=UTC)))
+
+
+def fixed_document(pending=(), items=None, call=CALL_1, fingerprints=PRINTS, **changes) -> document.Document:
     """An agreement from fixed text: the practice call's terms, with nothing asked of a model."""
-    items = agreed_items(pending=pending)
+    items = items or agreed_items(pending=pending)
+    checklist = {i.key: (i, 1) for i in items if i.state is ItemState.AGREED}
     facts = dict(
-        deal_id="d1", people={Role.HIRER: SUNITA, Role.WORKER: RAMESH}, names=NAMES, place=None, items=items,
+        deal_id="d1", people={Role.HIRER: SUNITA, Role.WORKER: RAMESH}, names=NAMES, place=None,
+        terms=resolve(checklist, {}, [], {}, LINES, {}),
         bodies={i.key.value: {"hi": HINDI[i.key], "en": i.value} for i in items if i.value},
-        transcript=[TranscriptLine(deal_id="d1", **line) for line in load("fixtures/call_two_amounts.json")["lines"]],
         confirmed_at={Role.HIRER: datetime(2026, 11, 21, 11, 32, tzinfo=UTC), Role.WORKER: datetime(2026, 11, 21, 12, 5, tzinfo=UTC)},
         confirmed_said={Role.HIRER: "haan sab sahi hai", Role.WORKER: None},
-        call=CallEnded(deal_id="d1", duration=145.0, ts=datetime(2026, 11, 21, 11, 0, tzinfo=UTC)),
-        fingerprints=PRINTS, now=datetime(2026, 11, 21, 19, 0, tzinfo=UTC),
+        calls={1: call} if call else {}, fingerprints={(1, role): digest for role, digest in fingerprints.items()},
+        now=datetime(2026, 11, 21, 19, 0, tzinfo=UTC),
     )
     return document.build(**(facts | changes))
 
@@ -44,21 +51,22 @@ def test_the_text_has_everything_the_agreement_must_have():
     for expected in (
         "काम का अनुबंध\nWORK AGREEMENT\nरिकॉर्ड की गई फ़ोन कॉल पर बोलकर हुए समझौते का लिखित रिकॉर्ड\n"
         "Written record of an agreement made by voice on a recorded call",
-        "संदर्भ संख्या / Reference no.: GW-D1\nतारीख / Date: 22 नवंबर 2026 / 22 November 2026\n\n",  # 19:00 UTC is the 22nd in India
+        "संदर्भ संख्या / Reference no.: GW-D1\nसंस्करण / Version: संस्करण 1 / Version 1\n"
+        "तारीख / Date: 22 नवंबर 2026 / 22 November 2026\n\n",  # 19:00 UTC is the 22nd in India
         "पहला पक्ष (काम देने वाले) / First party (the hirer): सुनीता (Sunita), फ़ोन / phone +910000000001",
         "दूसरा पक्ष (काम करने वाले) / Second party (the worker): रमेश (Ramesh), फ़ोन / phone +910000000002",
-        "2. कीमत और उसमें क्या शामिल है / The price and what it covers  [कॉल / call 0:59]\n"
+        "2. कीमत और उसमें क्या शामिल है / The price and what it covers  [कॉल / call 1, 0:59]\n"
         "कुल ₹13,000, सिर्फ़ मज़दूरी के। पेंट सुनीता खुद लाएँगी।\n13,000 rupees, labour only; the hirer brings the paint",
-        "3. भुगतान कब और कैसे / Payment schedule\n- एडवांस / Advance: ₹3,000  [कॉल / call 1:10]\n",
-        "- बाकी पैसा / Balance: बाकी रकम / The rest  [कॉल / call 1:15]\n",
-        "5. देर हुई या काम अधूरा रहा तो / If the work is late or left unfinished  [कॉल / call 2:07]",
+        "3. भुगतान कब और कैसे / Payment schedule\n- एडवांस / Advance: ₹3,000  [कॉल / call 1, 1:10]\n",
+        "- बाकी पैसा / Balance: बाकी रकम / The rest  [कॉल / call 1, 1:15]\n",
+        "5. देर हुई या काम अधूरा रहा तो / If the work is late or left unfinished  [कॉल / call 1, 2:07]",
         "6. जो बातें तय नहीं हुईं / What was not agreed\n",
         "All six were agreed on the call.",
         "Confirmed by voice on a separate call with Gawah\n21 नवंबर 2026 को शाम 5:02 बजे / 21 November 2026 at 5:02 pm IST\nकहा / Said: “haan sab sahi hai”",
         "21 नवंबर 2026 को शाम 5:35 बजे / 21 November 2026 at 5:35 pm IST\n\nगवाह / WITNESS",  # no words, so no "Said" line
         "Gawah is an AI witness. It was on the call, and recorded it after both people agreed to the recording.",
-        "The call started on 21 November 2026 at 4:27 pm IST and lasted 2 min 25 sec.",
-        f"पहले पक्ष की आवाज़ / First party's audio: {PRINTS[Role.HIRER]}",
+        "Call 1 started on 21 November 2026 at 4:27 pm IST and lasted 2 min 25 sec.",
+        f"कॉल 1 · पहले पक्ष की आवाज़ / Call 1 · First party's audio: {PRINTS[Role.HIRER]}",
         "This document is a written record of a spoken agreement, confirmed separately by both people.",
         "It was not drafted by a lawyer and is not on stamp paper.",
         "If either person disagrees later, they can ask Gawah for the recording of any term.",
@@ -100,7 +108,7 @@ def test_a_payment_amount_is_shown_only_when_the_checklist_states_exactly_one():
 def test_names_a_place_and_recordings_appear_only_when_they_exist():
     bare = fixed_document(names={Role.HIRER: NAMES[Role.HIRER]}, call=None, fingerprints={}, confirmed_said={}).text()
     assert "दूसरा पक्ष (काम करने वाले) / Second party (the worker): फ़ोन / phone +910000000002" in bare
-    for absent in ("Place of work", "SHA-256", "कहा / Said", "The call "):
+    for absent in ("Place of work", "SHA-256", "कहा / Said", "Call 1 "):
         assert absent not in bare, absent
     placed = fixed_document(place=Bi("इंदिरापुरम", "Indirapuram")).text()
     assert "काम की जगह / Place of work: इंदिरापुरम (Indirapuram)" in placed

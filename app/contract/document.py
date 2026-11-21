@@ -1,10 +1,11 @@
 """The work agreement as a document: every line in Hindi and in English.
 
-The model writes only the terms, and finds the names and the place said on the call.
-Everything else here (reference number, date, phone numbers, call times, the payment
-amounts, who confirmed and when, the witness lines) is filled in by code from the store
-and the events, so it cannot be invented. Nothing is added that was not said on the
-call: no governing-law, penalty, warranty or other standard clause.
+The model writes only the terms (and both sides of each change, and the other things both
+agreed), and finds the names and the place said on the calls. Everything else here
+(reference number, version, date, phone numbers, call times, the payment amounts, who
+confirmed and when, the witness lines, the chain) is filled in by code from the store, the
+events and memory's facts, so it cannot be invented. Nothing is added that was not said on
+a call: no governing-law, penalty, warranty or other standard clause.
 
 page.py turns a Document into the page that is printed to PDF.
 """
@@ -12,81 +13,30 @@ page.py turns a Document into the page that is printed to PDF.
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import NamedTuple
 from zoneinfo import ZoneInfo
 
 from app.contract import check
-from app.contracts import CallEnded, ChecklistItem, ItemKey, ItemState, Person, Role, TranscriptLine
+from app.contract.terms import AlsoAgreed, Bi, Change, Term
+from app.contract.trigger import Call
+from app.contract.wording import (
+    ALL_AGREED, ALSO_AGREED, AS_STATED, CLAUSES, LEAD, NOT_AGREED, OPEN_CLAUSE, OPEN_POINTS, PARTIES,
+    PAYMENT_CLAUSE, PAYMENTS, ROLES, SUBTITLE, THE_REST, VOICES, WITNESS,
+)
+from app.contracts import ItemKey, Person, Role
+
+__all__ = ["Bi", "Document", "build", "both"]
 
 IST = ZoneInfo("Asia/Kolkata")
-
-
-class Bi(NamedTuple):
-    hi: str
-    en: str
-
-
-TITLE = Bi("काम का अनुबंध", "Work Agreement")
-SUBTITLE = Bi(
-    "रिकॉर्ड की गई फ़ोन कॉल पर बोलकर हुए समझौते का लिखित रिकॉर्ड",
-    "Written record of an agreement made by voice on a recorded call",
-)
-PARTIES = {Role.HIRER: Bi("पहला पक्ष", "First party"), Role.WORKER: Bi("दूसरा पक्ष", "Second party")}
-ROLES = {Role.HIRER: Bi("काम देने वाले", "the hirer"), Role.WORKER: Bi("काम करने वाले", "the worker")}
-LEAD = Bi("दोनों पक्षों ने कॉल पर ये बातें तय कीं।", "The two parties agreed the following on the call.")
-CLAUSES = {
-    ItemKey.WORK: Bi("काम", "The work"),
-    ItemKey.AMOUNT: Bi("कीमत और उसमें क्या शामिल है", "The price and what it covers"),
-    ItemKey.DATES: Bi("काम की तारीखें", "The dates"),
-    ItemKey.LATE_OR_UNFINISHED: Bi("देर हुई या काम अधूरा रहा तो", "If the work is late or left unfinished"),
-}
-PAYMENT_CLAUSE = Bi("भुगतान कब और कैसे", "Payment schedule")
-PAYMENTS = {ItemKey.ADVANCE: Bi("एडवांस", "Advance"), ItemKey.BALANCE: Bi("बाकी पैसा", "Balance")}
-THE_REST = Bi("बाकी रकम", "The rest")
-AS_STATED = Bi("जैसा आगे लिखा है", "As stated")
-OPEN_CLAUSE = Bi("जो बातें तय नहीं हुईं", "What was not agreed")
-NOT_AGREED = Bi("यह बात कॉल पर तय नहीं हुई।", "This was not agreed on the call.")
-OPEN_POINTS = {
-    ItemKey.WORK: Bi("काम क्या है", "what the work is"),
-    ItemKey.AMOUNT: Bi("कीमत और उसमें क्या शामिल है", "the price and what it covers"),
-    ItemKey.ADVANCE: Bi("एडवांस कितना और कब", "the advance, how much and when"),
-    ItemKey.BALANCE: Bi("बाकी पैसा कब और किस बात पर मिलेगा", "when the balance is paid and against what"),
-    ItemKey.DATES: Bi("काम कब शुरू और कब पूरा होगा", "the start and finish dates"),
-    ItemKey.LATE_OR_UNFINISHED: Bi("देर होने या काम अधूरा रहने पर क्या होगा", "what happens if the work is late or left unfinished"),
-}
-ALL_AGREED = Bi(
-    "गवाह छह बातें पूछता है: काम, कीमत, एडवांस, बाकी पैसा, तारीखें, और देर होने या काम अधूरा रहने पर क्या होगा। "
-    "ये सभी छह बातें कॉल पर तय हुईं।",
-    "Gawah checks six points: the work, the price, the advance, the balance, the dates, and what happens "
-    "if the work is late or left unfinished. All six were agreed on the call.",
-)
-CONFIRMED = Bi("गवाह के साथ अलग कॉल पर बोलकर पुष्टि की", "Confirmed by voice on a separate call with Gawah")
-WITNESS = Bi(
-    "गवाह (Gawah) एक AI गवाह है। वह इस कॉल पर मौजूद था, और दोनों लोगों के रिकॉर्डिंग के लिए हाँ कहने के बाद उसने कॉल रिकॉर्ड की।",
-    "Gawah is an AI witness. It was on the call, and recorded it after both people agreed to the recording.",
-)
-FINGERPRINT = Bi(
-    "रिकॉर्डिंग की पहचान (SHA-256)। रिकॉर्डिंग ज़रा भी बदले तो ये अक्षर बदल जाते हैं।",
-    "Recording fingerprint (SHA-256). If a recording is changed at all, these characters change.",
-)
-VOICES = {Role.HIRER: Bi("पहले पक्ष की आवाज़", "First party's audio"), Role.WORKER: Bi("दूसरे पक्ष की आवाज़", "Second party's audio")}
-IS = Bi(
-    "यह दस्तावेज़ बोलकर हुए समझौते का लिखित रिकॉर्ड है, जिसकी दोनों लोगों ने अलग-अलग पुष्टि की है।",
-    "This document is a written record of a spoken agreement, confirmed separately by both people.",
-)
-IS_NOT = Bi(
-    "इसे किसी वकील ने तैयार नहीं किया है और यह स्टाम्प पेपर पर नहीं है।",
-    "It was not drafted by a lawyer and is not on stamp paper.",
-)
-IF_YOU_DISAGREE = Bi(
-    "अगर बाद में किसी बात पर असहमति हो, तो दोनों में से कोई भी गवाह से उस बात की रिकॉर्डिंग माँग सकता है।",
-    "If either person disagrees later, they can ask Gawah for the recording of any term.",
-)
 _MONTHS_HI = ("जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर")
 # A figure the value itself marks as money: "3,000 rupees", "₹3,000", "Rs 3000".
 _MONEY = re.compile(
     r"(?:₹|rs\.?|inr)\s*(\d[\d,]*)|(\d[\d,]*(?:\s*(?:hazaar|hazar|thousand|k|lakhs?|lac))?)\s*(?:rupees?|rupaye|rupay|rs\b|/-)",
     re.IGNORECASE,
+)
+# Said of one call; with more than one call, the same words for all of them.
+_PLURAL = (
+    (r"\bon the call\b", "on the calls"), (r"\bon a recorded call\b", "on recorded calls"),
+    (r"\band recorded it\b", "and recorded them"), ("इस कॉल पर", "इन कॉल पर"), ("कॉल रिकॉर्ड की।", "कॉल रिकॉर्ड कीं।"),
 )
 
 
@@ -111,11 +61,33 @@ class Payment:
 
 
 @dataclass
+class Note:
+    """Something else both agreed, with the words it was said in."""
+
+    text: Bi
+    said: str | None
+    said_at: str | None
+
+
+@dataclass
 class Clause:
     title: Bi
     body: Bi | None = None
-    said_at: str | None = None  # minutes:seconds into the call
+    said_at: str | None = None  # "call no, minutes:seconds into that call"
     payments: list[Payment] = field(default_factory=list)
+    notes: list[Note] = field(default_factory=list)
+    changed: bool = False
+
+
+@dataclass
+class ChangeRow:
+    n: int
+    term: Bi
+    before: Bi
+    now: Bi
+    said_at: str | None
+    when: Bi
+    said: str | None
 
 
 @dataclass
@@ -128,42 +100,32 @@ class Acceptance:
 @dataclass
 class Document:
     reference: str
+    version: int
     date: Bi
     made: Bi  # when this document was made, for the footer
     place: Bi | None
+    subtitle: Bi
+    lead: Bi
     parties: list[Party]
     clauses: list[Clause]
+    changes: list[ChangeRow]
     acceptances: list[Acceptance]
-    call: Bi | None
+    witness: Bi
+    calls: list[Bi]
     fingerprints: list[tuple[Bi, str]]
+    chain: tuple[str, int] | None  # head fingerprint and number of links, when the chain held
+
+    @property
+    def version_line(self) -> Bi:
+        if self.version == 1:
+            return Bi(f"संस्करण {self.version}", f"Version {self.version}")
+        return Bi(f"संस्करण {self.version} (संस्करण {self.version - 1} की जगह)",
+                  f"Version {self.version} (replaces version {self.version - 1})")
 
     def text(self) -> str:
-        at = lambda t: f"  [कॉल / call {t}]" if t else ""  # noqa: E731
-        lines = [TITLE.hi, TITLE.en.upper(), SUBTITLE.hi, SUBTITLE.en, "",
-                 f"संदर्भ संख्या / Reference no.: {self.reference}", f"तारीख / Date: {self.date.hi} / {self.date.en}"]
-        if self.place:
-            lines.append(f"काम की जगह / Place of work: {both(self.place)}")
-        lines += ["", "पक्ष / PARTIES", *(p.line() for p in self.parties), f"{LEAD.hi} / {LEAD.en}"]
-        for n, clause in enumerate(self.clauses, 1):
-            lines += ["", f"{n}. {clause.title.hi} / {clause.title.en}{at(clause.said_at)}"]
-            if clause.body:
-                lines += [clause.body.hi, clause.body.en]
-            for pay in clause.payments:
-                lines += [f"- {pay.label.hi} / {pay.label.en}: {both(pay.amount, ' / ')}{at(pay.said_at)}",
-                          f"  {pay.when.hi}", f"  {pay.when.en}"]
-        lines += ["", "स्वीकृति / ACCEPTANCE"]
-        for a in self.acceptances:
-            lines += [a.party.line(), f"{CONFIRMED.hi} / {CONFIRMED.en}", f"{a.when.hi} / {a.when.en}"]
-            if a.said:
-                lines.append(f"कहा / Said: “{a.said}”")
-        lines += ["", "गवाह / WITNESS", WITNESS.hi, WITNESS.en]
-        if self.call:
-            lines += [self.call.hi, self.call.en]
-        if self.fingerprints:
-            lines += [FINGERPRINT.hi, FINGERPRINT.en, *(f"{who.hi} / {who.en}: {digest}" for who, digest in self.fingerprints)]
-        lines += ["", "यह दस्तावेज़ क्या है / WHAT THIS DOCUMENT IS", IS.hi, IS.en, IS_NOT.hi, IS_NOT.en,
-                  IF_YOU_DISAGREE.hi, IF_YOU_DISAGREE.en]
-        return "\n".join(lines)
+        from app.contract.plain import text  # plain.py reads this module's types
+
+        return text(self)
 
 
 def build(
@@ -172,61 +134,86 @@ def build(
     people: dict[Role, Person],
     names: dict[Role, Bi | None],
     place: Bi | None,
-    items: list[ChecklistItem],
+    terms: list[Term],
     bodies: dict[str, dict[str, str]],
-    transcript: list[TranscriptLine],
     confirmed_at: dict[Role, datetime],
     confirmed_said: dict[Role, str | None],
-    call: CallEnded | None,
-    fingerprints: dict[Role, str],
+    calls: dict[int, Call],
+    fingerprints: dict[tuple[int, Role], str],
     now: datetime,
+    version: int = 1,
+    changes: list[Change] = (),
+    change_texts: dict[str, tuple[Bi, Bi]] | None = None,
+    also: list[AlsoAgreed] = (),
+    also_texts: dict[str, Bi] | None = None,
+    chain: tuple[str, int] | None = None,
 ) -> Document:
-    """names and place are what was said on the call (None if never said); bodies is the
-    model's text, {item key: {"hi": ..., "en": ...}}; fingerprints is the SHA-256 of each
-    person's recording, for those that could be read."""
-    lines = {line.line_no or n: line for n, line in enumerate(transcript, 1)}
-    agreed = {i.key: i for i in items if i.state is ItemState.AGREED and i.value}
+    """names and place are what was said on the calls (None if never said); bodies is the
+    model's text, {item key: {"hi": ..., "en": ...}}, and change_texts and also_texts its
+    text for each change (before, now) and each other thing agreed; fingerprints is the
+    SHA-256 of each person's recording of each call, for those that could be read."""
+    agreed = {t.item.key: t for t in terms if t.item.value}
+    many = len(calls) > 1
+    say = (lambda text: _plural(text)) if many else (lambda text: text)  # noqa: E731
 
     def body(key: ItemKey) -> Bi:
         return Bi(bodies[key.value]["hi"].strip(), bodies[key.value]["en"].strip())
 
     def said_at(key: ItemKey) -> str | None:
-        line = lines.get(agreed[key].line_no)
-        return f"{int(line.start) // 60}:{int(line.start) % 60:02d}" if line else None
+        return agreed[key].at.label() if agreed[key].at else None
 
     def clause(key: ItemKey) -> Clause:
-        return Clause(CLAUSES[key], body(key), said_at(key)) if key in agreed else Clause(CLAUSES[key], NOT_AGREED)
+        if key not in agreed:
+            return Clause(CLAUSES[key], say(NOT_AGREED))
+        return Clause(CLAUSES[key], body(key), said_at(key), changed=agreed[key].changed)
 
     payments = [
-        Payment(PAYMENTS[key], _amount(agreed[key].value, THE_REST if key is ItemKey.BALANCE else AS_STATED), body(key), said_at(key))
+        Payment(PAYMENTS[key], _amount(agreed[key].item.value, THE_REST if key is ItemKey.BALANCE else AS_STATED), body(key), said_at(key))
         for key in (ItemKey.ADVANCE, ItemKey.BALANCE) if key in agreed
     ]
     still_open = [OPEN_POINTS[key] for key in ItemKey if key not in agreed]
+    notes = [Note((also_texts or {})[a.key], a.quote, a.at.label() if a.at else None) for a in also]
     clauses = [
         clause(ItemKey.WORK),
         clause(ItemKey.AMOUNT),
-        Clause(PAYMENT_CLAUSE, None if payments else NOT_AGREED, payments=payments),
+        Clause(PAYMENT_CLAUSE, None if payments else say(NOT_AGREED), payments=payments,
+               changed=any(agreed[k].changed for k in (ItemKey.ADVANCE, ItemKey.BALANCE) if k in agreed)),
         clause(ItemKey.DATES),
         clause(ItemKey.LATE_OR_UNFINISHED),
-        Clause(OPEN_CLAUSE, Bi(
+        *([Clause(ALSO_AGREED, notes=notes)] if notes else []),
+        Clause(OPEN_CLAUSE, say(Bi(
             "कॉल पर ये बातें तय नहीं हुईं: " + "; ".join(p.hi for p in still_open) + "।",
             "These were not agreed on the call: " + "; ".join(p.en for p in still_open) + ".",
-        ) if still_open else ALL_AGREED),
+        )) if still_open else say(ALL_AGREED)),
     ]
     parties = {
         role: Party(PARTIES[role], ROLES[role], names.get(role), (people.get(role) and people[role].phone) or "-")
         for role in Role
     }
+    rows = [
+        ChangeRow(n, CLAUSES.get(c.item) or PAYMENTS[c.item], *(change_texts or {})[c.key],
+                  c.at.label() if c.at else None, _moment(c.when), c.said)
+        for n, c in enumerate(changes, 1)
+    ]
     return Document(
         reference="GW-" + re.sub(r"[^A-Za-z0-9-]", "-", deal_id).upper(),
+        version=version,
         date=_day(now),
         made=_moment(now),
         place=place,
+        subtitle=say(SUBTITLE),
+        lead=say(LEAD),
         parties=list(parties.values()),
         clauses=clauses,
+        changes=rows,
         acceptances=[Acceptance(parties[role], _moment(confirmed_at[role]), confirmed_said.get(role)) for role in Role],
-        call=_call(call),
-        fingerprints=[(VOICES[role], fingerprints[role]) for role in Role if role in fingerprints],
+        witness=say(WITNESS),
+        calls=[line for n in sorted(calls) if (line := _call(n, calls[n]))],
+        fingerprints=[
+            (Bi(f"कॉल {n} · {VOICES[role].hi}", f"Call {n} · {VOICES[role].en}"), fingerprints[(n, role)])
+            for n in sorted(calls) for role in Role if (n, role) in fingerprints
+        ],
+        chain=chain,
     )
 
 
@@ -251,16 +238,28 @@ def _amount(value: str, otherwise: Bi) -> Bi:
     return Bi("₹" + ",".join(groups), "₹" + ",".join(groups))
 
 
-def _call(call: CallEnded | None) -> Bi | None:
-    if not call:
-        return None
-    if not call.duration:
-        day = _day(call.ts)
-        return Bi(f"कॉल {day.hi} को हुई।", f"The call was on {day.en}.")
-    start, (minutes, seconds) = _moment(call.ts - timedelta(seconds=call.duration)), divmod(int(call.duration), 60)
+def _plural(text: Bi) -> Bi:
+    for one, many in _PLURAL:
+        text = Bi(re.sub(one, many, text.hi), re.sub(one, many, text.en))
+    return text
+
+
+def _call(n: int, call: Call) -> Bi | None:
+    ended = call.ended
+    duration = ended.duration if ended else None
+    began = call.started or (ended.ts - timedelta(seconds=duration) if ended and duration else None)
+    if began is None:
+        if not ended:
+            return None
+        day = _day(ended.ts)
+        return Bi(f"कॉल {n} {day.hi} को हुई।", f"Call {n} was on {day.en}.")
+    start = _moment(began)
+    if not duration:
+        return Bi(f"कॉल {n} {start.hi} शुरू हुई।", f"Call {n} started on {start.en}.")
+    minutes, seconds = divmod(int(duration), 60)
     return Bi(
-        f"कॉल {start.hi} शुरू हुई और {minutes} मिनट {seconds} सेकंड चली।",
-        f"The call started on {start.en} and lasted {minutes} min {seconds} sec.",
+        f"कॉल {n} {start.hi} शुरू हुई और {minutes} मिनट {seconds} सेकंड चली।",
+        f"Call {n} started on {start.en} and lasted {minutes} min {seconds} sec.",
     )
 
 

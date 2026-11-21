@@ -5,8 +5,10 @@ Every value is escaped: names, places and spoken words come from a phone call.
 
 from html import escape as e
 
-from app.contract.document import (
-    CONFIRMED, FINGERPRINT, IF_YOU_DISAGREE, IS, IS_NOT, LEAD, SUBTITLE, TITLE, WITNESS, Bi, Clause, Document, both,
+from app.contract.document import Bi, ChangeRow, Clause, Document, both
+from app.contract.wording import (
+    BEFORE, BOTH_CONFIRMED, CHAIN, CHAIN_MEANS, CHANGED, CHANGES, CHANGES_LEAD, CONFIRMED, FINGERPRINT,
+    IF_YOU_DISAGREE, IS, IS_NOT, NOW, TITLE,
 )
 
 
@@ -27,15 +29,24 @@ def html(doc: Document) -> str:
         for a in doc.acceptances
     )
     prints = "".join(f"<p>{e(who.hi)} / {e(who.en)}<br><code>{e(digest)}</code></p>" for who, digest in doc.fingerprints)
+    chain = ""
+    if doc.chain:
+        head, links = doc.chain
+        chain = (
+            f"<div class=prints><p><b>{e(CHAIN.hi)} / {e(CHAIN.en)}</b>: {links} कड़ियाँ / links</p>"
+            f"<p>आख़िरी पहचान / Head fingerprint<br><code>{e(head)}</code></p>{_two(CHAIN_MEANS)}</div>"
+        )
     witness = (
-        _two(WITNESS) + (_two(doc.call) if doc.call else "")
-        + (f"<div class=prints>{_two(FINGERPRINT)}{prints}</div>" if prints else "")
+        _two(doc.witness) + "".join(_two(call) for call in doc.calls)
+        + (f"<div class=prints>{_two(FINGERPRINT)}{prints}</div>" if prints else "") + chain
     )
+    version = doc.version_line
     return _PAGE.format(
         reference=e(doc.reference), reference_css=_css(doc.reference), made_css=_css(doc.made.en),
-        title_hi=e(TITLE.hi), title_en=e(TITLE.en), subtitle=f"{e(SUBTITLE.hi)}<br>{e(SUBTITLE.en)}",
-        date=e(f"{doc.date.hi} / {doc.date.en}"), place=place, parties=parties, lead=_two(LEAD),
-        clauses="".join(_clause(n, c) for n, c in enumerate(doc.clauses, 1)),
+        version=e(f"{version.hi} / {version.en}"), version_n=doc.version,
+        title_hi=e(TITLE.hi), title_en=e(TITLE.en), subtitle=f"{e(doc.subtitle.hi)}<br>{e(doc.subtitle.en)}",
+        date=e(f"{doc.date.hi} / {doc.date.en}"), place=place, parties=parties, lead=_two(doc.lead),
+        clauses="".join(_clause(n, c) for n, c in enumerate(doc.clauses, 1)), changes=_changes(doc.changes),
         accepted=accepted, witness=witness, notes=_two(IS) + _two(IS_NOT), disagree=_two(IF_YOU_DISAGREE),
     )
 
@@ -43,7 +54,7 @@ def html(doc: Document) -> str:
 def _clause(n: int, clause: Clause) -> str:
     rows = "".join(
         f"<tr><th>{e(p.label.hi)}<br><span>{e(p.label.en)}</span></th><td class=amount>{e(both(p.amount, ' / '))}</td>"
-        f"<td>{e(p.when.hi)}<br>{e(p.when.en)}</td><td class=at>{e(p.said_at or '')}</td></tr>"
+        f"<td>{e(p.when.hi)}<br>{e(p.when.en)}</td><td class=at>{_at(p.said_at, br=False)}</td></tr>"
         for p in clause.payments
     )
     table = (
@@ -51,11 +62,45 @@ def _clause(n: int, clause: Clause) -> str:
         "<th>कब और कैसे<br><span>When and how</span></th><th class=at>कॉल<br><span>call</span></th></tr></thead>"
         f"<tbody>{rows}</tbody></table>"
     ) if rows else ""
-    at = f"<div class=at>कॉल / call<br>{e(clause.said_at)}</div>" if clause.said_at else ""
-    return (
-        f"<section><div class=num>{n}.</div><div><h3>{e(clause.title.hi)} <span>/ {e(clause.title.en)}</span></h3>"
-        f"{_two(clause.body) if clause.body else ''}{table}</div>{at}</section>"
+    notes = "".join(
+        f"<li>{_two(note.text)}<p class=said>"
+        + (f"कहा / Said: \u201c{e(note.said)}\u201d" if note.said else "")
+        + (f" &middot; कॉल / call {e(note.said_at)}" if note.said_at else "") + "</p></li>"
+        for note in clause.notes
     )
+    notes = f"<ul class=also>{notes}</ul>" if notes else ""
+    at = f"<div class=at>{_at(clause.said_at)}</div>" if clause.said_at else ""
+    mark = f" <em>{e(CHANGED.hi)} / {e(CHANGED.en)}</em>" if clause.changed else ""
+    return (
+        f"<section><div class=num>{n}.</div><div><h3>{e(clause.title.hi)} <span>/ {e(clause.title.en)}</span>{mark}</h3>"
+        f"{_two(clause.body) if clause.body else ''}{table}{notes}</div>{at}</section>"
+    )
+
+
+def _changes(changes: list[ChangeRow]) -> str:
+    if not changes:
+        return ""
+    rows = "".join(
+        f"<tbody><tr><td class=n>{c.n}.</td><th>{e(c.term.hi)}<br><span>{e(c.term.en)}</span></th>"
+        f"<td>{e(c.before.hi)}<br>{e(c.before.en)}</td><td class=now>{e(c.now.hi)}<br>{e(c.now.en)}</td>"
+        f"<td class=at>{_at(c.said_at)}</td></tr>"
+        f"<tr class=how><td></td><td colspan=4>{e(BOTH_CONFIRMED.hi)}: {e(c.when.hi)}<br>{e(BOTH_CONFIRMED.en)}: {e(c.when.en)}"
+        + (f"<br>कहा / Said: \u201c{e(c.said)}\u201d" if c.said else "") + "</td></tr></tbody>"
+        for c in changes
+    )
+    return (
+        f"<div class=block><h2>{e(CHANGES.hi)} <span>/ {e(CHANGES.en)}</span></h2><div class=lead>{_two(CHANGES_LEAD)}</div>"
+        f"<table class=changes><thead><tr><th></th><th>बात<br><span>Term</span></th><th>{e(BEFORE.hi)}<br><span>{e(BEFORE.en)}</span></th>"
+        f"<th>{e(NOW.hi)}<br><span>{e(NOW.en)}</span></th><th class=at>कॉल<br><span>call</span></th></tr></thead>{rows}</table></div>"
+    )
+
+
+def _at(said_at: str | None, br: bool = True) -> str:
+    """"2, 1:05" as call 2, 1 min 5 s in."""
+    if not said_at:
+        return ""
+    call, _, clock = said_at.partition(", ")
+    return f"कॉल / call {e(call)}" + (("<br>" if br else " ") + e(clock) if clock else "")
 
 
 def _two(text: Bi) -> str:
@@ -73,10 +118,10 @@ _FONTS = '"Charter", "Iowan Old Style", Georgia, "ITF Devanagari", "Kohinoor Dev
 _FOOT = "font-family: FONTS; font-size: 7pt; color: #555; vertical-align: top; padding-top: 6mm; white-space: nowrap;"
 
 _PAGE = """<!doctype html>
-<html lang="hi"><head><meta charset="utf-8"><title>{title_en} {reference}</title><style>
+<html lang="hi"><head><meta charset="utf-8"><title>{title_en} {reference} v{version_n}</title><style>
 @page {{
   size: A4; margin: 18mm 21mm 21mm;
-  @bottom-left {{ content: "संदर्भ / Ref. {reference_css}"; FOOT }}
+  @bottom-left {{ content: "संदर्भ / Ref. {reference_css}  ·  संस्करण / Version {version_n}"; FOOT }}
   @bottom-center {{ content: "पेज " counter(page) " / " counter(pages) "  ·  Page " counter(page) " of " counter(pages); FOOT }}
   @bottom-right {{ content: "बनाया गया / Made: {made_css}"; FOOT }}
 }}
@@ -119,14 +164,29 @@ h4 {{ font-size: 9.5pt; margin: 0 0 0.5mm; }}
 .prints {{ margin-top: 1.5mm; }}
 code {{ font-family: Menlo, Consolas, monospace; font-size: 7.2pt; word-break: break-all; }}
 .notes {{ font-size: 9.2pt; }}
+h3 em {{ font-style: normal; font-weight: normal; font-size: 8pt; border: 0.2mm solid #555; padding: 0 1.2mm; margin-left: 1.5mm; }}
+ul.also {{ margin: 0.5mm 0 0; padding-left: 4mm; }}
+ul.also li {{ margin-top: 1.2mm; }}
+.said {{ font-size: 8pt; color: #444; }}
+.changes {{ margin-top: 1.5mm; border-top: 0.25mm solid #111; border-bottom: 0.25mm solid #111; font-size: 9.2pt; }}
+.changes th, .changes td {{ padding: 1.2mm 3mm 1.2mm 0; }}
+.changes tbody tr:first-child > * {{ border-top: 0.12mm solid #999; }}
+.changes thead th {{ font-size: 8.5pt; line-height: 1.25; }}
+.changes .n {{ width: 5mm; font-weight: bold; }}
+.changes th {{ width: 24mm; }}
+.changes .now {{ font-weight: bold; }}
+.changes .at {{ width: 14mm; padding-right: 0; }}
+.changes .how td {{ padding-top: 0; font-size: 8pt; color: #444; }}
+.changes tbody {{ break-inside: avoid; }}
 .notes p:nth-child(odd) {{ margin-top: 1mm; }}
 </style></head><body>
 <header><h1>{title_hi}<span>{title_en}</span></h1><p>{subtitle}</p></header>
-<div class="meta"><div>संदर्भ संख्या / Reference no.: <b>{reference}</b></div><div>तारीख / Date: <b>{date}</b></div>{place}</div>
+<div class="meta"><div>संदर्भ संख्या / Reference no.: <b>{reference}</b></div><div>संस्करण / Version: <b>{version}</b></div><div>तारीख / Date: <b>{date}</b></div>{place}</div>
 <h2>पक्ष <span>/ Parties</span></h2>
 <table class="parties">{parties}</table>
 <div class="lead">{lead}</div>
 {clauses}
+{changes}
 <div class="block"><h2>स्वीकृति <span>/ Acceptance</span></h2><div class="signs">{accepted}</div></div>
 <div class="block"><h2>गवाह <span>/ Witness</span></h2><div class="witness">{witness}</div></div>
 <div class="block"><h2>यह दस्तावेज़ क्या है <span>/ What this document is</span></h2>

@@ -15,7 +15,6 @@ A stream that adds an outside service adds its fake here.
 """
 
 import argparse
-import json
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -25,20 +24,18 @@ from fastapi import FastAPI
 
 from app import brain
 from app.config import Settings
-from app.contracts import ChecklistItem, ItemState
 from app.main import create_app
 from tests.bridge_world import FakeLiveKit
-from tests.contract_fakes import FakeFiles, FakeSpeaker, answer_for, fake_fingerprint, fake_render_pdf
+from tests.contract_fakes import FakeFiles, FakeSpeaker, answer_to, fake_fingerprint, fake_render_pdf
 from tests.mouth.world import FakeLink, FakeRooms, FakeSeat
 from tests.whatsapp_world import FakeClock, FakeReader, FakeTwilio
 
 
 class FakeContractModel(FakeSpeaker):
-    """The contract stream's OpenAI: restates each term it is asked to word, and "speaks"."""
+    """The contract stream's OpenAI: restates everything it is asked to word, and "speaks"."""
 
     async def write(self, instructions: str, text: str, schema: dict) -> dict:
-        asked = json.loads(text)["terms"]
-        return answer_for([ChecklistItem(key=t["key"], state=ItemState.AGREED, value=t["value"]) for t in asked])
+        return answer_to(text)
 
 
 class FakeVoice:
