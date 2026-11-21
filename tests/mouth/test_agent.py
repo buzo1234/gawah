@@ -165,7 +165,7 @@ async def test_a_contradiction_says_what_was_agreed_plays_the_clip_and_asks(worl
     [spoke] = await until(lambda: said(world))
     first, then = link.asked()[-2:]
     assert "something just said does not match the record" in first and "[f-amount] confirmed" in first
-    assert "end with a short lead-in" in first and "ask Sunita and Ramesh, in one short sentence, which one they mean" in then
+    assert "end with 'Suniye'" in first and "only ask Sunita and Ramesh which one they mean" in then
     assert all(e["response"]["tool_choice"] == "none" for e in link.of("response.create")[-2:])
     assert link.items("system")[-1].startswith("The clip of fact f-amount is now playing")
     assert spoke.clip_fact_id == "f-amount" and "[clip]" in spoke.text and spoke.text.endswith("13 ya 14?")
@@ -312,3 +312,27 @@ async def test_an_answer_said_while_gawah_is_still_talking_is_checked_after(worl
     await settle(world, link)
     assert call.outcomes[-1] == {"what": "follow_up", "said": False, "why": "stayed silent"}
     assert link.of("response.create")[-1]["response"]["tool_choice"] == "required"
+
+
+async def test_a_check_for_an_answer_never_speaks_after_a_mere_lookup_and_gives_way_to_the_brain(world):
+    seat, link = await world.call()
+    call = world.mouth.calls["d1"]
+    world.bus.publish(FactRecorded(deal_id="d1", fact=FACTS[1]))
+    call._follow_left, call._follow_about = 2, "which total they mean"
+    played = len(seat.played)
+    link.replies = [{"calls": [("get_term", {"item": "amount"})]}, {"text": "Record mein 13,000 hai.", "ms": 300}]
+    world.bus.publish(line(22, Role.HIRER, "Haan, 13 hi tha."))
+    await until(lambda: call.outcomes[-1].get("why") == "stayed silent")
+    assert len(seat.played) == played and len(link.replies) == 1  # it looked up, and was not asked for words
+    link.replies.clear()
+
+    # A line that also brings the brain's moment: the pending check gives way to it.
+    call._follow_left = 2
+    seat.talks("hirer")  # nothing can be said yet, so the check is still waiting when the brain speaks
+    world.bus.publish(line(23, Role.WORKER, "Advance to 5 hazaar tha na?"))
+    world.bus.publish(JudgeSpeak(deal_id="d1", instruction="Ask Sunita when the balance will be paid.", to=Audience.HIRER,
+                                 reason=SpeakReason.TERM_UNCLEAR, item=ItemKey.BALANCE))
+    seat.stops("hirer")
+    await until(lambda: said(world))
+    whats = [o["what"] for o in call.outcomes]
+    assert "balance" in whats and {"what": "follow_up", "said": False, "why": "superseded"} in call.outcomes

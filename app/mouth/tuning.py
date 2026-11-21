@@ -194,7 +194,8 @@ WAIT_S = {
     "follow_up": 6.0,
 }
 ANSWER_WAIT_S = 8.0  # after the ack, the answer is said at the next pause within this
-FOLLOW_UP_LINES = 6  # after a contradiction or a proposed change, this many lines are checked for an answer
+FOLLOW_UP_LINES = 2  # after a contradiction or a proposed change, this many lines are checked for an answer. At 6, the
+# checks crowded out the brain's next moments, and one took a claim about the advance for a change (proof run 1).
 NOTE_MAX = 300  # characters of a line or fact sent to the model
 
 AGENT_PERSONA = (
@@ -252,20 +253,21 @@ MOMENT_ADDRESSED = (
     "\"Haan ji, ek second\" has already been said, so do not say it again."
 )
 MOMENT_CONTRADICTION = (
-    "The Judge's note: {instruction} On record: {facts} Say in one short sentence what was agreed, by whom and when "
-    "(the date, or which call), and end with a short lead-in such as 'Suniye'. Nothing else: the recording of it "
-    "plays right after you, and then you will ask which one they mean."
+    "The Judge's note: {instruction} On record: {facts} Say in one short sentence, at most 15 words, what was agreed "
+    "and when (the date, or which call), and end with 'Suniye'. Nothing else: the recording of it plays right after "
+    "you, and then you will ask which one they mean."
 )
 MOMENT_CONTRADICTION_ASK = (
-    "The recording of what was agreed has just played in the call (if there was one). Now ask {to}, in one short "
-    "sentence, which one they mean. Do not repeat the figures at length, and do not say who is right."
+    "The recording of what was agreed has just played in the call (if there was one). Now only ask {to} which one "
+    "they mean, in at most 12 words. Do not repeat what was agreed, and do not say who is right."
 )
 FOLLOW_UP = (
-    "You are waiting for an answer about: {about}. The latest lines are above. Decide, and call a tool first: "
-    "if someone now wants to change the agreed term, call propose_change with the new value in their words, and "
-    "then ask both of them, in one short sentence, to say haan if they agree to the change. "
+    "You are waiting for an answer about: {about}. The latest lines are above. Decide, and call a tool first. "
     "If the line is a clear yes or no to a proposed change, call confirm_change for that person. "
-    "Otherwise, call stay_silent."
+    "If someone clearly asks to change that same agreed term to a new value (for example 'chalo 14 kar dete hain'), "
+    "call propose_change with the new value, then ask both of them, in one short sentence, to say haan if they agree. "
+    "A claim or a question about what was agreed or paid is not a change. A line about another term is not an "
+    "answer. In those cases, and whenever you are not sure, call stay_silent."
 )
 FOLLOW_UP_CONTRADICTION = "which of the two they mean, the record ({facts}) or what was just said"
 FOLLOW_UP_CHANGE = "change {change}: {item} from \"{old}\" to \"{new}\". Still to answer: {waiting}"

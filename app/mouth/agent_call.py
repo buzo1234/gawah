@@ -34,6 +34,7 @@ class AgentCall(DealCall):
         self._follow_left = 0  # lines still to check for an answer
         self._follow_about = ""  # the contradiction put to them, while no change is open
         self._follow_queued = False
+        self._follow_job: _Job | None = None
         super().__init__(*args)
 
     def _connect(self, make_link: Callable):
@@ -45,6 +46,8 @@ class AgentCall(DealCall):
     # ---- what happens on the call ----
 
     def on_speak(self, event: JudgeSpeak) -> None:
+        if self._follow_job and self._follow_job.spoke is None and not self._follow_job.playing:
+            self._follow_job.superseded = True  # the brain's moment comes first; it reads the same lines
         addressed = event.reason is SpeakReason.ADDRESSED_DIRECTLY
         linked = self._addressed.get(event.after_line) if addressed else None
         if linked:
@@ -78,7 +81,8 @@ class AgentCall(DealCall):
         elif self._waiting_for() and not self._follow_queued:
             self._follow_left -= 1
             self._follow_queued = True  # one queued is enough: it reads every line up to when it starts
-            self._jobs.put_nowait(_Job("", False, None, "follow_up", Audience.BOTH))
+            self._follow_job = _Job("", False, None, "follow_up", Audience.BOTH)
+            self._jobs.put_nowait(self._follow_job)
 
     async def on_fact(self, event: FactRecorded | FactConflict) -> None:
         if isinstance(event, FactRecorded):
@@ -138,7 +142,9 @@ class AgentCall(DealCall):
             facts = job.speak.fact_ids if job.speak else []
             then = [("clip", facts[0])] if facts else []
             return await self.agent.turn(job.instruction, use_tools=False, then=then + [("say", moments.contradiction_ask(job.speak, self.names))])
-        if job.kind in (ADDRESSED, "follow_up"):
+        if job.kind == "follow_up":
+            return await self.agent.turn(job.instruction, first_choice="required", speak_after={"propose_change", "confirm_change"})
+        if job.kind == ADDRESSED:
             return await self.agent.turn(job.instruction, first_choice="required")  # look it up first, then speak
         # The opening, and a question the brain wants asked: nothing to look up, only the words to choose.
         return await self.agent.turn(job.instruction, use_tools=False)

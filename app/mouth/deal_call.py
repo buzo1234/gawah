@@ -39,6 +39,8 @@ class _Job:
     arrived: float = field(default_factory=time.monotonic)
     spoke: JudgeSpoke | None = None  # once said or dropped
     ack: bool = False  # the acknowledgement may come first (the agent, when spoken to)
+    superseded: bool = False  # something more important came; drop it unless it is already being said
+    playing: bool = False
 
     @property
     def what(self) -> str:
@@ -205,6 +207,8 @@ class DealCall:
         def late() -> bool:
             return time.monotonic() > deadline
 
+        if job.superseded:
+            return self._drop(job, "superseded")
         if self._agreed(job):
             return self._drop(job, "agreed in the meantime")
         if late() and not job.must_say:
@@ -214,7 +218,9 @@ class DealCall:
             return
         ack: float | None = None  # when the acknowledgement started
         while True:
-            if self._agreed(job):
+            if job.superseded:
+                why = "superseded"
+            elif self._agreed(job):
                 why = "agreed in the meantime"
             elif utterance.failed or utterance.stalled():
                 why = utterance.failed or "the voice model gave nothing"
@@ -258,6 +264,7 @@ class DealCall:
         """Gawah is about to speak this."""
 
     async def _play(self, job: _Job, utterance, ack: float | None) -> None:
+        job.playing = True
         self._starting(job, utterance)
         voice_end = self._voice_end()
         over = self.hearing.talking()

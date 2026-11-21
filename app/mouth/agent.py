@@ -47,6 +47,7 @@ class Turn:
     use_tools: bool = True
     first_choice: str = "auto"  # tool_choice for the first request: "required" makes it look up before it speaks
     then: list[tuple] = field(default_factory=list)  # fixed steps after the model's reply: ("clip", fact_id), ("say", situation)
+    speak_after: set[str] | None = None  # it may speak only after one of these tools; None: after any
 
     @property
     def audio_ms(self) -> float:
@@ -92,8 +93,11 @@ class Agent:
 
     # ---- turns ----
 
-    async def turn(self, situation: str, use_tools: bool = True, first_choice: str = "auto", then: list[tuple] = ()) -> Turn:
-        turn = Turn(situation, use_tools=use_tools, first_choice=first_choice, then=list(then))
+    async def turn(
+        self, situation: str, use_tools: bool = True, first_choice: str = "auto", then: list[tuple] = (),
+        speak_after: set[str] | None = None,
+    ) -> Turn:
+        turn = Turn(situation, use_tools=use_tools, first_choice=first_choice, then=list(then), speak_after=speak_after)
         await self._respond(turn)
         return turn
 
@@ -128,7 +132,7 @@ class Agent:
         """Stop a turn. heard_ms: it was cut off after that much was heard; None: never said.
         Either way the conversation is made to hold only what the room heard."""
         turn.cancelled = True
-        if turn.response_id and not turn.complete:
+        if turn.response_id and turn.response_id in self._by_response:
             await self.link.send({"type": "response.cancel", "response_id": turn.response_id})
         heard = heard_ms or 0.0
         for item_id, start, ms in turn.items:
@@ -190,6 +194,9 @@ class Agent:
 
     async def _done(self, turn: Turn, response: dict) -> None:
         status = response.get("status")
+        kinds = [o.get("type") for o in response.get("output") or []]
+        self.log.info("agent reply %s: %s, %s, %.0f ms of speech so far, %.1f s after the turn began", response.get("id"),
+                      status, kinds, turn.audio_ms, time.monotonic() - turn.asked_at)
         if turn.cancelled or status == "cancelled":
             turn.complete = True
             return
@@ -224,6 +231,8 @@ class Agent:
                 "type": "function_call_output", "call_id": call.get("call_id"), "output": result.output,
             }})
         turn.progress_at = time.monotonic()
+        if turn.speak_after is not None and not turn.speak_after & {str(c.get("name")) for c in calls}:
+            turn.silent = True  # looked something up, but this turn may only speak to a change
         if turn.silent or turn.cancelled:
             turn.complete = True  # nothing more to say: stay_silent ends the turn
             return
