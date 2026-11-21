@@ -1,0 +1,309 @@
+{
+  "id": "holdout_plumber_leak",
+  "description": "A homeowner in her fifties (chatty, keeps changing the subject) hires a curt plumber to fix a concealed-pipe leak behind bathroom tiles. Clean transcript in Latin-script Hinglish. The balance is brushed off and never fixed; nothing is said about late or unfinished work. Ends on 'chalo phir baat karte hain' with both still open.",
+  "people": [
+    {
+      "role": "hirer",
+      "name": "Sunita Khanna",
+      "phone": "+910000000111"
+    },
+    {
+      "role": "worker",
+      "name": "Raju",
+      "phone": "+910000000112"
+    }
+  ],
+  "lines": [
+    {
+      "line_no": 1,
+      "speaker": "worker",
+      "text": "Haan ji, Raju bol raha hoon. Plumber.",
+      "start": 0.8,
+      "end": 3.4
+    },
+    {
+      "line_no": 2,
+      "speaker": "hirer",
+      "text": "Haan Raju bhaiya, namaste, main Sunita Khanna, B-block se. Mehra ji ne aapka number diya tha. Woh hamare bathroom mein na leakage ho raha hai.",
+      "start": 4.1,
+      "end": 14.5
+    },
+    {
+      "line_no": 3,
+      "speaker": "worker",
+      "text": "Kahan se? Tap se ya neeche se?",
+      "start": 15.1,
+      "end": 17.8
+    },
+    {
+      "line_no": 4,
+      "speaker": "hirer",
+      "text": "Neeche se lagta hai, deewar mein seelan aa gayi hai, aur neeche wale flat mein bhi paani tapak raha hai. Unhone do baar complain kar diya, bahut chik chik karte hain woh log.",
+      "start": 18.4,
+      "end": 30.0
+    },
+    {
+      "line_no": 5,
+      "speaker": "worker",
+      "text": "Concealed pipe hoga. Tile todni padegi.",
+      "start": 30.6,
+      "end": 33.0
+    },
+    {
+      "line_no": 6,
+      "speaker": "hirer",
+      "text": "Haaye, tile? Abhi do saal pehle hi toh lagwayi thi. Mere bete ne pasand ki thi woh tiles, Bangalore mein hai woh, aata hi nahi hai.",
+      "start": 33.8,
+      "end": 42.7
+    },
+    {
+      "line_no": 7,
+      "speaker": "worker",
+      "text": "Do teen tile. Pipe badal ke wapas laga denge. Tile aapki hogi toh wahi lagegi.",
+      "start": 43.1,
+      "end": 48.2
+    },
+    {
+      "line_no": 8,
+      "speaker": "hirer",
+      "text": "Haan haan, extra tiles rakhi hain store mein, kahin toh hongi. Toh kitna lagega sab?",
+      "start": 49.1,
+      "end": 55.0
+    },
+    {
+      "line_no": 9,
+      "speaker": "worker",
+      "text": "Pipe, fitting, cement, labour, sab milake paintalis sau.",
+      "start": 55.3,
+      "end": 58.7
+    },
+    {
+      "line_no": 10,
+      "speaker": "hirer",
+      "text": "Paintalis sau matlab four thousand five hundred? Thoda zyada nahi hai?",
+      "start": 59.6,
+      "end": 64.0
+    },
+    {
+      "line_no": 11,
+      "speaker": "worker",
+      "text": "Concealed kaam hai madam. Itna hi lagega.",
+      "start": 64.6,
+      "end": 67.1
+    },
+    {
+      "line_no": 12,
+      "speaker": "hirer",
+      "text": "Accha theek hai. Mehra ji keh rahe the aap kaam accha karte ho. Woh unke yahan kitchen ka bhi aapne kiya tha na?",
+      "start": 67.3,
+      "end": 76.1
+    },
+    {
+      "line_no": 13,
+      "speaker": "worker",
+      "text": "Haan. Kab karwana hai?",
+      "start": 76.4,
+      "end": 77.8
+    },
+    {
+      "line_no": 14,
+      "speaker": "hirer",
+      "text": "Jitna jaldi ho sake. Kal aa sakte ho?",
+      "start": 78.2,
+      "end": 80.9
+    },
+    {
+      "line_no": 15,
+      "speaker": "worker",
+      "text": "Kal subah das baje. Ek din ka kaam hai, shaam tak ho jayega.",
+      "start": 81.5,
+      "end": 86.4
+    },
+    {
+      "line_no": 16,
+      "speaker": "hirer",
+      "text": "Theek hai das baje. Arre haan, society wale gate pe entry karwate hain, aap guard ko naam bata dena, Sunita Khanna, B-204.",
+      "start": 87.2,
+      "end": 95.6
+    },
+    {
+      "line_no": 17,
+      "speaker": "worker",
+      "text": "Theek hai. Material ke liye pandrah sau pehle dena padega. Aaj hi.",
+      "start": 96.3,
+      "end": 100.9
+    },
+    {
+      "line_no": 18,
+      "speaker": "hirer",
+      "text": "Pandrah sau aaj? Accha chalo, GPay pe bhej deti hoon, yahi number hai na?",
+      "start": 101.6,
+      "end": 106.8
+    },
+    {
+      "line_no": 19,
+      "speaker": "worker",
+      "text": "Haan yahi number. Aur baaki ka?",
+      "start": 107.3,
+      "end": 109.8
+    },
+    {
+      "line_no": 20,
+      "speaker": "hirer",
+      "text": "Arre baaki ki tension mat lo bhaiya, mil jayega, main kaun sa bhaag rahi hoon. Waise woh geyser bhi thoda awaaz karta hai, woh bhi dekh loge kal?",
+      "start": 110.8,
+      "end": 122.3
+    },
+    {
+      "line_no": 21,
+      "speaker": "worker",
+      "text": "Dekh lunga. Woh alag hoga.",
+      "start": 123.0,
+      "end": 124.8
+    },
+    {
+      "line_no": 22,
+      "speaker": "hirer",
+      "text": "Haan haan, alag de dungi. Aur kitchen ka sink bhi dheere nikalta hai paani, blockage hai shayad.",
+      "start": 125.3,
+      "end": 131.4
+    },
+    {
+      "line_no": 23,
+      "speaker": "worker",
+      "text": "Kal dekh lenge sab.",
+      "start": 131.7,
+      "end": 133.3
+    },
+    {
+      "line_no": 24,
+      "speaker": "hirer",
+      "text": "Haan wahi. Pichhle wale plumber ne toh aadha kaam karke chhod diya tha, baad mein phone hi nahi uthata tha.",
+      "start": 133.8,
+      "end": 142.1
+    },
+    {
+      "line_no": 25,
+      "speaker": "worker",
+      "text": "Hmm.",
+      "start": 142.6,
+      "end": 143.3
+    },
+    {
+      "line_no": 26,
+      "speaker": "hirer",
+      "text": "Aapko toh Mehra ji jaante hain, isliye bharosa hai. Accha, cement wagairah aap le aaoge na? Mujhe kuch mangwana toh nahi?",
+      "start": 144.1,
+      "end": 151.1
+    },
+    {
+      "line_no": 27,
+      "speaker": "worker",
+      "text": "Sab le aaunga. Aap bas tile nikaal ke rakhna.",
+      "start": 151.5,
+      "end": 155.3
+    },
+    {
+      "line_no": 28,
+      "speaker": "hirer",
+      "text": "Haan woh main aaj hi dhoond leti hoon. Bete ko bhi phone karke poochhti hoon kahan rakhi thi.",
+      "start": 155.9,
+      "end": 163.5
+    },
+    {
+      "line_no": 29,
+      "speaker": "worker",
+      "text": "Theek hai madam.",
+      "start": 164.0,
+      "end": 165.0
+    },
+    {
+      "line_no": 30,
+      "speaker": "hirer",
+      "text": "Accha chalo phir, main paise bhej deti hoon, baaki kal aap aaoge toh baat karte hain.",
+      "start": 165.7,
+      "end": 172.2
+    },
+    {
+      "line_no": 31,
+      "speaker": "worker",
+      "text": "Haan theek hai. Chalo phir baat karte hain.",
+      "start": 172.7,
+      "end": 175.4
+    },
+    {
+      "line_no": 32,
+      "speaker": "hirer",
+      "text": "Haan ji, chalo phir baat karte hain.",
+      "start": 175.9,
+      "end": 178.8
+    }
+  ],
+  "noise": "clean",
+  "wrap_up_starts_line": 30,
+  "pending_at_end": [
+    "balance",
+    "late_or_unfinished"
+  ],
+  "expected_note": "Each entry is a moment the Judge should speak. after_line is the line that makes it true: the Judge speaks in the pause after it. by_line is the last line after which speaking still counts as on time. modes lists the JUDGE_MODE values in which the entry applies. The transcript is a call with no Judge on it, so nobody answers a question and an open item stays open unless the people settle it themselves. Fields beyond the practice calls: required=false marks a moment where a reasonable listener could go either way (speaking there is fine, staying silent is fine); reason_also_ok lists other reasons that count; also_pending lists further items open at that moment; wrap_up_starts_line is where the call starts wrapping up; must_stay_silent lists lines after which the Judge must not speak even though they may sound final or look like a problem.",
+  "expected": [
+    {
+      "after_line": 20,
+      "by_line": 23,
+      "item": "balance",
+      "reason": "term_unclear",
+      "to": "hirer",
+      "modes": [
+        "live"
+      ],
+      "required": true,
+      "note": "The worker asks about the balance; the hirer says 'mil jayega' and jumps to the geyser. When the balance is paid is never said."
+    },
+    {
+      "after_line": 24,
+      "by_line": 26,
+      "item": "late_or_unfinished",
+      "reason": "term_unclear",
+      "to": "both",
+      "modes": [
+        "live"
+      ],
+      "required": false,
+      "note": "The hirer mentions the last plumber leaving the job half done, but nobody turns it into a term. Asking here is natural; waiting for wrap-up is also reasonable."
+    },
+    {
+      "after_line": 30,
+      "by_line": 32,
+      "item": "balance",
+      "reason": "wrapping_up",
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": true,
+      "note": "'Accha chalo phir ... baat karte hain' starts the close with the balance and late/unfinished still open. Speaking after line 29 ('Theek hai madam') is also acceptable.",
+      "also_pending": [
+        "late_or_unfinished"
+      ]
+    }
+  ],
+  "must_stay_silent": [
+    {
+      "after_line": 10,
+      "why": "'Paintalis sau' and 'four thousand five hundred' are the same figure, not a conflict."
+    },
+    {
+      "after_line": 12,
+      "why": "'Accha theek hai' accepts the amount; the call goes straight on."
+    },
+    {
+      "after_line": 18,
+      "why": "'Accha chalo' agrees to the advance; mid-call, not a close."
+    },
+    {
+      "after_line": 21,
+      "why": "The geyser is a separate job to be seen tomorrow; 'alag hoga' is not a second figure for this deal's amount. Borderline: a short question on whether it is part of the deal would not be wrong."
+    }
+  ]
+}
