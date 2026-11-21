@@ -97,14 +97,31 @@ async def test_the_graph_places_every_fact_once_and_ties_agreements_to_both(bus,
         assert n["item"] == got["towards"][n["id"][5:]] and n["side"] == "hirer"
 
     # The contradiction: what Ramesh said on line 19 is red, with a red edge to the agreed
-    # 13,000 in the amount, and its card open under the amount; the rows below make room.
+    # 13,000 in the amount. Its card is in the band under the last term, clear of every
+    # node, with a red link up the gap beside the terms to what Ramesh said.
     conflict = [e for e in L["edges"] if e["cls"] == "conflict"]
     assert len(conflict) == 1 and conflict[0]["key"].endswith(hubs[ItemKey.AMOUNT])
     hot = [n for n in L["nodes"] if n.get("hot")]
     assert len(hot) == 1 and hot[0]["side"] == "worker" and hot[0]["item"] == "amount"
     card = L["card"]
     assert card["item"] == "amount"
-    assert L["rows"]["amount"]["top"] + 96 < card["top"] < card["top"] + 168 < L["rows"]["advance"]["top"]
+    assert card["top"] > max(r["top"] for r in L["rows"].values()) + 96 and card["top"] + card["h"] < 990
+    for n in L["nodes"]:
+        if n["place"] != "hub":
+            assert n["y"] + n["h"] / 2 < card["top"], n["id"]
+    link = next(e for e in L["edges"] if e["key"] == f"card:{card['conflict']['id']}")
+    assert link["d"].startswith(f"M968,{card['top']} ") and link["d"].endswith(f"{hot[0]['x']},{hot[0]['y']}")
+    assert L["rows"] == got["before"]["rows"]  # the terms stay put when the card opens
+
+    # A label too long for its place is cut at a word, never inside one.
+    for n in L["nodes"]:
+        if n.get("full") and n["label"] != n["full"]:
+            assert n["label"].endswith("…") and n["full"].startswith(n["label"][:-1].rstrip(" ;,.")), n["label"]
+            assert n["full"][len(n["label"][:-1].rstrip(" ;,."))] in " ;,.", n["label"]
+    for key, row in L["rows"].items():
+        full = L["views"][key]["value"]
+        if row["value"] != full:
+            assert row["value"].endswith("…") and full.startswith(row["value"][:-1]), row["value"]
 
     pills = [n for n in L["nodes"] if n["place"] == "pill"]
     for a in pills:

@@ -37,7 +37,8 @@ function stands(f, v) {
   const by = f.status === "confirmed" ? "confirmed by both" : "agreed by both";
   return h("div", { class: `fact stands ${f.status}`, id: `fact-${f.id}`, title: f.quote ? `“${f.quote}”` : f.text },
     hasClip(f) && clipButton(f.id, null, sourceOf(f)),
-    h("span", { class: "when" }, v.when || by));
+    h("span", { class: "when" }, v.when || by),
+    v.state === "changed" && h("span", { class: "both" }, "· both said yes"));
 }
 
 export function renderChecklist(state, L, moved = [], live = false) {
@@ -58,7 +59,6 @@ export function renderChecklist(state, L, moved = [], live = false) {
       h("div", { class: `value${v.value ? "" : " none"}` }, L.rows[key].value || "Not agreed yet"),
       h("div", { class: "foot" },
         stands(L.stands[key], v),
-        v.state === "changed" && h("span", { class: "note changed-by" }, changedBy(L.stands[key])),
         v.state !== "changed" && v.note && h("span", { class: "note" }, v.note),
         v.contradicted && h("span", { class: "contradicted" }, `Contradicted · ${v.contradicted}`)));
     if (live && moved.includes(key)) {

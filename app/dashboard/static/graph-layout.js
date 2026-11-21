@@ -172,9 +172,9 @@ export function layout(state, measure = estimate) {
   const span = { lo: rows[ITEMS[0][0]].cy, hi: rows[ITEMS.at(-1)[0]].cy };
   const port = (who, y = people[who].cy) => {
     const t = Math.max(-1, Math.min(1, (y - people[who].cy) / ((span.hi - span.lo) / 2 || 1)));
-    const a = t * 1.1; // radians either side of level
-    const r = G.r + 4;
-    return { x: people[who].cx + (who === "hirer" ? 1 : -1) * r * Math.cos(a), y: people[who].cy + r * Math.sin(a) };
+    const a = t * 0.6; // radians either side of level
+    const r = G.r + 4, sx = who === "hirer" ? 1 : -1;
+    return { x: people[who].cx + sx * r * Math.cos(a), y: people[who].cy + r * Math.sin(a), dx: sx * Math.cos(a), dy: Math.sin(a) };
   };
   const hubPort = (item, who) => ({ x: who === "hirer" ? G.hubX : G.hubX + G.hubW, y: rows[item].cy });
   const outer = (n) => ({ x: n.place === "dot" ? n.x : n.side === "hirer" ? n.x : n.x + n.w, y: n.y });
@@ -224,10 +224,14 @@ export function layout(state, measure = estimate) {
 }
 
 // A bezier that leaves and arrives level, so edges fan out of a person and into a term.
+// One that leaves a person (a port with a direction) leaves along that direction, like a
+// spoke, so the edges spread out of the circle instead of running together.
 export function curve(a, b) {
   const mx = (a.x + b.x) / 2;
   const r = (n) => Math.round(n * 10) / 10;
-  return `M${r(a.x)},${r(a.y)} C${r(mx)},${r(a.y)} ${r(mx)},${r(b.y)} ${r(b.x)},${r(b.y)}`;
+  const reach = Math.abs(b.x - a.x) / 2;
+  const c1 = a.dx == null ? { x: mx, y: a.y } : { x: a.x + a.dx * reach, y: a.y + a.dy * reach };
+  return `M${r(a.x)},${r(a.y)} C${r(c1.x)},${r(c1.y)} ${r(mx)},${r(b.y)} ${r(b.x)},${r(b.y)}`;
 }
 
 export const sourceOf = (f) => (f && SOURCES.has(f.source) ? f.source : "call");

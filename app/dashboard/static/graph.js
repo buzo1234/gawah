@@ -147,10 +147,11 @@ function drawPeople(L) {
   }
   people.replaceChildren(...["hirer", "worker"].map((role) => {
     const p = L.people[role];
+    const title = role === "hirer" ? "Hirer" : "Worker";
     return h("div", { class: `person ${role}`, style: `transform: translate(${p.cx}px, ${p.cy}px)` },
       h("span", { class: "dot-big", "aria-hidden": "true" }),
       h("span", { class: "name" }, p.name),
-      h("span", { class: "role" }, role === "hirer" ? "Hirer" : "Worker"));
+      p.name !== title && h("span", { class: "role" }, title));
   }));
 }
 

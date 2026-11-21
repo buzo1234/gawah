@@ -12,6 +12,10 @@ recordings go.
 2. call_two_amounts to line 21, a line every 0.3 seconds, filmed (2-facts-arriving.mp4 and
    a contact sheet, with ffmpeg) so the motion can be judged: memory's contradiction on
    line 19, then the shot.
+2b. On the same deal (started on WhatsApp, as a real one is), voice notes from
+   fixtures/voice-notes/ through the webhook: Sunita's on the work, and Ramesh's change of
+   the amount to 25,000, which Sunita says yes to. The voice-note facts carry their own
+   mark, the amount reads "Changed by voice note, both said yes", then the shot.
 3. The first call finished, an advance paid on WhatsApp, and the amount changed by both:
    payments, what they count towards, and a superseded version, then the shot.
 
@@ -47,7 +51,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from app.contracts import (
-    CallEnded, CallKind, CallStarted, ChangeStatus, Direction, FactChanged, ItemKey, Person, Record,
+    WHATSAPP_WEBHOOK_PATH, CallEnded, CallKind, CallStarted, ChangeStatus, Direction, FactChanged, ItemKey, Person, Record,
     RecordKind, RecordReceived, Role, TranscriptLine, WhatsAppMessage, new_id,
 )
 from fakes.replayer import load
@@ -67,8 +71,11 @@ GRAPH = """JSON.stringify([...document.querySelectorAll('#graph [id^="fact-"]')]
   stands: el.classList.contains('stands'), item: el.dataset.item || el.closest('.item')?.dataset.item || '',
 })))"""
 OWED = "JSON.stringify([...document.querySelectorAll('#graph .owed')].map((el) => [el.closest('.item').dataset.item, el.textContent]))"
+# A term's value is cut at a word when it is too long for the row; its full text is the
+# first line of the row's hover text.
 CHECKLIST = """JSON.stringify(Object.fromEntries([...document.querySelectorAll('#items .item')].map((el) => [el.dataset.item, {
-  state: el.querySelector('.state').textContent, value: el.querySelector('.value').textContent,
+  state: el.querySelector('.state').textContent, value: el.title.split('\\n')[0] || el.querySelector('.value').textContent,
+  shown: el.querySelector('.value').textContent, foot: el.querySelector('.foot').textContent,
   when: el.querySelector('.when')?.textContent || '', contradicted: el.querySelector('.contradicted')?.textContent || '',
 }])))"""
 GONE = ["flow", "decisions", "records", "lanes", "real-chat", "deal-picker", "conn", "people", "status"]
@@ -251,6 +258,10 @@ async def main(port: int, out: Path) -> None:
                         continue
                     want = ("Agreed", item["value"]) if item["state"] == "agreed" else ("Pending", "Not agreed yet")
                     check((row["state"], row["value"]) == want, f"checklist {item['key']}: {row['state']} {row['value']!r}")
+                    if row["shown"] != row["value"]:
+                        kept = row["shown"].removesuffix("…")
+                        check(row["shown"].endswith("…") and row["value"].startswith(kept) and row["value"][len(kept)] in " ;,.",
+                              f"checklist {item['key']}: cut at a word, {row['shown']!r}")
                     if item["state"] == "agreed":
                         check(row["when"].startswith("Call 1 · "), f"checklist {item['key']}: settled at {row['when']!r}")
                 gone = await chrome.js(f"JSON.stringify({GONE!r}.filter((id) => document.getElementById(id)))")
@@ -317,7 +328,22 @@ async def main(port: int, out: Path) -> None:
             # ---------- 2. the contradiction on call_two_amounts ----------
             print("2. call_two_amounts, the contradiction")
             ta = load("fixtures/call_two_amounts.json")
-            deal2 = f"live-ta-{new_id()[:4]}"
+            sunita, ramesh_phone = "+919811100001", "+919822200002"
+
+            async def whatsapp(phone: str, body: str = "", note: str | None = None) -> None:
+                """One message into the webhook in Twilio's form; a note is a file in fixtures/voice-notes."""
+                nonlocal sent
+                form = {"From": f"whatsapp:{phone}", "Body": body, "NumMedia": "0", "MessageSid": f"SM{new_id()[:10]}"}
+                if note:
+                    form |= {"NumMedia": "1", "MediaContentType0": "audio/ogg",
+                             "MediaUrl0": f"https://api.twilio.com/2010-04-01/Accounts/AC0/Messages/MM0/Media/{note}"}
+                (await http.post(WHATSAPP_WEBHOOK_PATH, data=form)).raise_for_status()
+                sent += 1
+
+            await whatsapp(sunita, ramesh_phone.removeprefix("+91"))
+            await asyncio.sleep(1.0)
+            deal2 = (await http.get("/dashboard/state")).json()["deal_id"]
+            print(f"  the deal started on WhatsApp: {deal2}")
             await chrome.goto(f"{url}/dashboard?deal={deal2}")
             await chrome.wait_for(LOADED)
             frames = home / "frames"
@@ -349,6 +375,38 @@ async def main(port: int, out: Path) -> None:
             await asyncio.sleep(1.2)  # the contradiction's red wash, part faded: as the room sees it a second on
             await chrome.shot(out / "2-contradiction.png")
             await reload_check("contradiction")
+            card = json.loads(await chrome.js("""(() => { const c = document.querySelector('#graph div.conflict').getBoundingClientRect();
+              const hit = [...document.querySelectorAll('#graph .node, #items .item')].filter((n) => { const r = n.getBoundingClientRect();
+                return r.left < c.right && c.left < r.right && r.top < c.bottom && c.top < r.bottom; }).map((n) => n.id || n.dataset.item);
+              return JSON.stringify(hit); })()"""))
+            check(card == [], f"the contradiction card covers no node and no term: {card}")
+            check(await chrome.js("!!document.querySelector('#graph path.link.card-link')"), "the card's red link runs to what was just said")
+
+            # ---------- 2b. voice notes on the same deal ----------
+            print("2b. voice notes: one on the work, and a change of the amount both say yes to")
+            await play(deal2, ta, range(22, 100), start=False, end=True)
+            await settle(deal2)
+            await whatsapp(sunita, note="paint-05.ogg")
+            await settle(deal2)
+            await whatsapp(ramesh_phone, note="paint-08.ogg")
+            await settle(deal2)
+            await whatsapp(sunita, "haan")
+            memory = await settle(deal2)
+            voiced = [f for f in memory["facts"] if f["source"] == "voice_note"]
+            check(len(voiced) >= 2, f"memory holds the voice notes' facts: {[(f['kind'], f['value'], f['status']) for f in voiced]}")
+            await matches_memory(deal2)
+            marks = json.loads(await chrome.js("""JSON.stringify([...document.querySelectorAll('#graph .src-voice_note')].map((m) =>
+              m.closest('[id^="fact-"]')?.id.slice(5)).filter(Boolean))"""))
+            on_graph = [f["id"] for f in voiced if f["id"] in marks]
+            check(on_graph and set(on_graph) <= {f["id"] for f in voiced}, f"voice-note facts carry the voice-note mark ({len(on_graph)} of {len(voiced)}; the rest are dots)")
+            rows = json.loads(await chrome.js(CHECKLIST))
+            amount = rows["amount"]
+            title = await chrome.js("document.querySelector('#items .item[data-item=amount]').title")
+            check(amount["state"] == "Changed" and amount["value"].startswith("25,000") and amount["foot"].startswith("WhatsApp voice note") and amount["foot"].endswith("· both said yes")
+                  and "Changed by voice note, both said yes" in title, f"the amount changed by voice note: {amount}, hover {title!r}")
+            await asyncio.sleep(0.6)
+            await chrome.shot(out / "2b-voice-notes.png")
+            await reload_check("voice notes")
 
             # ---------- 3. after call 1: a payment, and a change both agree to ----------
             print("3. call_missing_balance finished, an advance paid, the amount changed")
