@@ -177,11 +177,15 @@ async def test_judge_spoke_carries_the_id_and_the_times(world):
 async def test_waits_for_the_second_piece_so_playback_does_not_run_dry(world, monkeypatch):
     monkeypatch.setattr(tuning, "PREBUFFER_HOLD_MS", 300)
     monkeypatch.setattr(tuning, "VOICE_TIMEOUT_S", 3.0)
+    # Well past the hold: at the quick 0.3 s the question went stale the moment its words were ready, and was dropped.
+    monkeypatch.setattr(tuning, "PAUSE_WAIT_S", 2.0)
     seat, link = await world.call()
     link.pieces, link.gap = [400, 400, 400], 0.5  # as measured: the second piece comes half a second after the first
     world.bus.publish(speak())
-    await until(lambda: answers(world))
-    said = world.mouth.calls["d1"].outcomes[-1]
+    call = world.mouth.calls["d1"]
+    await until(lambda: len(call.outcomes) == 2)  # the opening line, then this
+    said = call.outcomes[-1]
+    assert said["said"], said
     assert said["dry_ms"] == 0 and said["speech_ms"] == 1200
     assert said["wait_ms"] >= 300  # it held back instead of starting on the first 400 ms
 
