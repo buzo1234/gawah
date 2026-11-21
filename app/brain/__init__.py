@@ -80,7 +80,8 @@ class _Saved:
     async def open(self, preamble: str) -> None: ...
 
     async def append(self, seq: int, text: str) -> Answers | None:
-        fits = [call for call in self.calls if call[0].lines.get(str(seq)) == text]
+        # By the words alone: a call from a WhatsApp deal may not know the worker's name yet.
+        fits = [call for call in self.calls if _words(call[0].lines.get(str(seq))) == _words(text)]
         if self.calls and not fits:
             self.log.warning("line %s is in no recorded practice call: the brain stays quiet", seq)
         self.calls = fits
@@ -90,6 +91,17 @@ class _Saved:
 
     async def lookup(self, kind, item, transcript: str, at_line: int) -> dict | None:
         return await self.calls[0][1].lookup(kind, item, transcript, at_line) if self.calls else None
+
+
+def _words(line: str | None) -> str | None:
+    """A line as sent to Sage2 ("Name: words"), without the name."""
+    return line.split(": ", 1)[-1] if line else None
+
+
+def saved(started: CallStarted) -> tuple[Decisions, Values]:
+    """The practice calls' saved answers, for a call in any room. The offline app gives every call these."""
+    found = _Saved(recorded(), deal_log("gawah.brain", started.deal_id))
+    return found, found
 
 
 def recorded() -> list[tuple[RecordedDecisions, RecordedValues]]:
@@ -109,8 +121,7 @@ def register(app: FastAPI, bus: Bus) -> None:
         log = deal_log("gawah.brain", started.deal_id)
         practice = (started.room or "").startswith(("replay-", "fake-"))
         if practice and not live_replays:
-            saved = _Saved(recorded(), log)
-            return saved, saved
+            return saved(started)
         try:
             sage_key, openai_key = settings.require("sage_api_key"), settings.require("openai_api_key")
         except RuntimeError as missing:
@@ -125,5 +136,5 @@ def register(app: FastAPI, bus: Bus) -> None:
         for client in openai:
             await client.close()
 
-    Brain(bus, settings.judge_mode, sources)
+    app.state.brain = Brain(bus, settings.judge_mode, sources)
     app.state.on_shutdown.append(close)

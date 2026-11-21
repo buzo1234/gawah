@@ -15,30 +15,13 @@ from app.mouth import callback, tuning
 from app.store import Store
 from fakes import RAMESH, SUNITA
 from tests.mouth import sounds
-from tests.mouth.world import FakeLink, FakeSeat, until
+from tests.mouth.world import FakeLink, FakeRooms, FakeSeat, until
 
 AGREED = {
     ItemKey.WORK: "painting the 2BHK flat, two coats",
     ItemKey.AMOUNT: "22,000 rupees with material",
     ItemKey.DATES: "Monday to Friday",
 }
-
-
-class FakeRooms:
-    url = "wss://livekit.invalid"
-
-    def __init__(self) -> None:
-        self.made: list[str] = []
-        self.deleted: list[str] = []
-
-    async def create(self, name: str, empty_timeout: int, max_participants: int) -> None:
-        self.made.append(name)
-
-    async def delete(self, name: str) -> None:
-        self.deleted.append(name)
-
-    def token(self, room: str, identity: str, name: str | None = None) -> str:
-        return f"token:{room}:{identity}"
 
 
 class Desk:

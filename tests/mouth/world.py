@@ -1,6 +1,6 @@
 """Stand-ins for LiveKit and OpenAI, so the mouth runs in tests with neither.
 
-FakeSeat is Gawah's seat in a room: the test says who is talking, and reads back what
+FakeRooms makes and deletes rooms. FakeSeat is Gawah's seat in a room: the test says who is talking, and reads back what
 was played. FakeLink is the connection to the voice model: on the deal call it answers
 every request with a short speech; on the call-back the test plays the model's part.
 """
@@ -68,6 +68,23 @@ class FakeSeat:
 
     def stops(self, who: str) -> None:
         self.hears(who, sounds.room_noise((tuning.PAUSE_MS + 100) / 1000, -50))
+
+
+class FakeRooms:
+    url = "wss://livekit.invalid"
+
+    def __init__(self) -> None:
+        self.made: list[str] = []
+        self.deleted: list[str] = []
+
+    async def create(self, name: str, empty_timeout: int, max_participants: int) -> None:
+        self.made.append(name)
+
+    async def delete(self, name: str) -> None:
+        self.deleted.append(name)
+
+    def token(self, room: str, identity: str, name: str | None = None) -> str:
+        return f"token:{room}:{identity}"
 
 
 class FakeLink:

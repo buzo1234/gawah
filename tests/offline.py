@@ -1,8 +1,11 @@
 """The whole app with every outside service replaced by a fake. No .env is read, so there
-are no keys and every phone is a simulated one; WhatsApp records are read by lookup
-(FakeReader) instead of by OpenAI; practice calls get the brain's saved answers; the
-contract is worded by restating each term, "printed" without Chrome, and kept in memory
-instead of S3.
+are no keys and every phone is a simulated one; WhatsApp records are read
+by lookup (FakeReader) instead of by OpenAI; every call, in any room, gets the brain's
+saved answers for the practice call it matches; the call's room is a fake LiveKit
+(tests/bridge_world.py) whose audio is never transcribed or uploaded; Gawah's seat in a
+room and its voice model are the mouth's fakes (tests/mouth/world.py), so a test plays
+the room and the model by hand (app.state.fake_voice); the contract is worded by
+restating each term, "printed" without Chrome, and kept in memory instead of S3.
 
 tests/test_whole_flow.py runs on it. To walk a deal through a running server by hand:
 
@@ -20,10 +23,13 @@ from unittest.mock import patch
 import uvicorn
 from fastapi import FastAPI
 
+from app import brain
 from app.config import Settings
 from app.contracts import ChecklistItem, ItemState
 from app.main import create_app
+from tests.bridge_world import FakeLiveKit
 from tests.contract_fakes import FakeFiles, FakeSpeaker, answer_for, fake_fingerprint, fake_render_pdf
+from tests.mouth.world import FakeLink, FakeRooms, FakeSeat
 from tests.whatsapp_world import FakeClock, FakeReader, FakeTwilio
 
 
@@ -33,6 +39,35 @@ class FakeContractModel(FakeSpeaker):
     async def write(self, instructions: str, text: str, schema: dict) -> dict:
         asked = json.loads(text)["terms"]
         return answer_for([ChecklistItem(key=t["key"], state=ItemState.AGREED, value=t["value"]) for t in asked])
+
+
+class FakeVoice:
+    """The mouth's outside world: the call-back rooms, Gawah's seat in each room, and one
+    voice-model connection per call, newest last."""
+
+    def __init__(self) -> None:
+        self.rooms = FakeRooms()
+        self.seats: list[FakeSeat] = []
+        self.links: list[FakeLink] = []
+
+    def make_rooms(self) -> FakeRooms:
+        return self.rooms
+
+    def make_seat(self, log=None) -> FakeSeat:
+        self.seats.append(FakeSeat())
+        return self.seats[-1]
+
+    def make_link(self, config, on_event, log=None) -> FakeLink:
+        self.links.append(FakeLink(config, on_event))
+        return self.links[-1]
+
+
+async def _no_words(pcm: bytes, prompt: str) -> str:
+    return ""
+
+
+async def _keep_key(path: str, key: str, content_type: str) -> str:
+    return key
 
 
 def offline_app(database_path: str | Path, clock: FakeClock | None = None) -> FastAPI:
@@ -46,7 +81,15 @@ def offline_app(database_path: str | Path, clock: FakeClock | None = None) -> Fa
         "render_pdf": fake_render_pdf, "sha256_of": fake_fingerprint,
     }
     with patch.multiple("app.whatsapp", **fakes), patch.multiple("app.contract", **contract):
-        return create_app(settings)
+        app = create_app(settings)
+    voice = app.state.fake_voice = FakeVoice()
+    mouth = app.state.mouth
+    mouth.rooms, mouth.make_seat, mouth.make_link = voice.make_rooms, voice.make_seat, voice.make_link
+    app.state.brain.sources = brain.saved
+    calls = app.state.calls
+    calls.livekit, calls.transcribe, calls.upload = FakeLiveKit(), _no_words, _keep_key
+    calls.folder = Path(database_path).parent / "recordings"
+    return app
 
 
 if __name__ == "__main__":
