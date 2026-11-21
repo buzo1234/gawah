@@ -29,7 +29,7 @@ You do this yourself, signed in to your own Facebook account. Gawah never create
    - **To**: click "Manage phone number list" and add your phone. WhatsApp sends it a code; enter the code. Add each real phone you will use. Its number must also be in `VERIFIED_NUMBERS`.
    - Click **Generate access token** and copy it.
    - To check the token and your phone: send the **hello_world** test message from this page. It should arrive on your phone. This has worked on the user's setup.
-3. **App secret:** in the left menu, **App settings > Basic > App secret > Show**. Meta asks for your Facebook password again. Copy the secret.
+3. **App secret:** in the left menu, **App settings > Basic > App secret > Show**. Copy the secret.
 4. **Switch the app to Live.** Meta's dashboard will not let you configure webhooks until the app is published, and Meta's docs say some webhooks are not sent in development mode. On **App settings > Basic**, fill in:
    - an app icon,
    - a category,
