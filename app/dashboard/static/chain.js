@@ -44,21 +44,20 @@ async function run() {
 function brokenAt(state, broken) {
   const f = state.facts[broken.fact_id];
   const what = f ? [ITEM_LABEL[f.item] || f.kind, f.line_no != null && `call ${f.call_no ?? 1} line ${f.line_no}`].filter(Boolean).join(", ") : broken.fact_id;
-  return `Broken at link ${broken.index + 1} (${what})`;
+  return `broken at link ${broken.index + 1} (${what})`;
 }
 
 export function renderChain(state) {
   const check = state.chainCheck;
   const links = state.chain.links;
-  const verdict = !check ? ["wait", `checking ${links} links`]
+  const el = $("chain");
+  const plural = (n) => `${n} link${n === 1 ? "" : "s"}`;
+  const [tone, text] = !check ? ["wait", `checking ${plural(links)}`]
     : check.error ? ["wait", `not checked: ${check.error}`]
     : !check.verified ? ["bad", brokenAt(state, check.first_broken)]
-    : ["ok", `Verified, ${check.links} link${check.links === 1 ? "" : "s"}${links > check.links ? ` · checking ${links - check.links} new` : ""}`];
+    : ["ok", `verified · ${plural(check.links)}${links > check.links ? ` · checking ${links - check.links} new` : ""}`];
   const head = check?.verified && check.links ? check.head : null;
-  $("chain").title = head ? `Head of the chain: ${head}` : "";
-  $("chain").replaceChildren(...(!links && !check?.links ? [] : [
-    h("span", { class: "label" }, "Witness chain"),
-    head && h("code", {}, `${head.slice(0, 8)}…${head.slice(-4)}`),
-    h("span", { class: `verdict ${verdict[0]}` }, verdict[1]),
-  ].filter(Boolean)));
+  el.title = head ? `Head of the chain: ${head}` : "";
+  el.className = `chain ${tone}`;
+  el.replaceChildren(...(!links && !check?.links ? [] : ["Witness chain ", h("span", { class: "verdict" }, text)]));
 }

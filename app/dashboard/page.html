@@ -5,92 +5,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gawah</title>
 <link rel="icon" href="data:,">
+<link rel="stylesheet" href="/dashboard/static/base.css">
 <link rel="stylesheet" href="/dashboard/static/style.css">
-<link rel="stylesheet" href="/dashboard/static/ledger-and-phones.css">
-<link rel="stylesheet" href="/dashboard/static/crew.css">
 </head>
-<body>
-<header id="top">
-  <h1>Gawah</h1>
-  <div id="people" class="group"></div>
-  <div id="status" class="pill">Connecting</div>
-  <div id="terms" class="group"></div>
-  <div id="contract"></div>
-  <div class="spacer"></div>
-  <label class="picker">Deal
-    <select id="deal-picker"></select>
-  </label>
-  <div id="conn" class="conn">connecting</div>
-</header>
-
+<body class="board">
 <main>
-  <section class="panel" id="conversation">
-    <h2>Conversation</h2>
-    <div id="flow" class="scroll"></div>
+  <section class="panel" id="checklist" aria-labelledby="checklist-title">
+    <header class="panel-head">
+      <h2 id="checklist-title">Contract</h2>
+      <span id="settled-count" class="meta"></span>
+    </header>
+    <ol id="items"></ol>
   </section>
 
-  <div class="column">
-    <section class="panel" id="checklist">
-      <h2>Contract checklist <span id="agreed-count" class="count"></span></h2>
-      <ol id="items"></ol>
-    </section>
-    <section class="panel" id="why">
-      <h2>Why Gawah spoke <span id="spoke-count" class="count"></span></h2>
-      <div id="decisions" class="scroll"></div>
-    </section>
-  </div>
-
-  <section class="panel" id="crew">
-    <div class="tabs" role="tablist">
-      <button type="button" role="tab" id="tab-graph" aria-controls="graph-view">Fact graph <span id="graph-count" class="count"></span> <span id="conflict-count" class="conflicts"></span></button>
-      <button type="button" role="tab" id="tab-phones" aria-controls="phones-view">Phones and records</button>
-    </div>
-    <div id="graph-view" class="view" role="tabpanel">
-      <div id="graph" class="scroll"></div>
-      <div id="chain" class="chain"></div>
-    </div>
-    <div id="phones-view" class="view column" role="tabpanel" hidden>
-    <div class="phones">
-      <section class="panel phone" id="second-phone">
-        <h2>Second phone <span id="second-name" class="count"></span></h2>
-        <label class="number">Number
-          <input id="second-number" type="tel" inputmode="tel" autocomplete="off" spellcheck="false">
-        </label>
-        <div id="second-chat" class="chat scroll"></div>
-        <form id="composer" autocomplete="off">
-          <div id="attached" class="attached" hidden></div>
-          <div class="compose-row">
-            <label class="attach" title="Attach an image">Photo
-              <input id="file" type="file" accept="image/jpeg,image/png,image/webp" hidden>
-            </label>
-            <input id="text" type="text" placeholder="Message Gawah" aria-label="Message">
-            <button type="submit">Send</button>
-          </div>
-          <div id="send-status" class="send-status" role="status"></div>
-        </form>
-      </section>
-      <section class="panel phone" id="real-phone">
-        <h2>Real phone <span id="real-name" class="count"></span></h2>
-        <div class="number">Read only · the real WhatsApp</div>
-        <div id="real-chat" class="chat scroll"></div>
-      </section>
-    </div>
-    <section class="panel" id="ledger">
-      <h2>Record ledger <span id="record-count" class="count"></span></h2>
-      <div id="records" class="scroll"></div>
-    </section>
-    </div>
+  <section class="panel" id="knowledge" aria-labelledby="graph-title">
+    <header class="panel-head">
+      <h2 id="graph-title">Knowledge graph</h2>
+      <span id="graph-count" class="meta"></span>
+      <span id="chain" class="chain"></span>
+    </header>
+    <div id="graph"></div>
   </section>
 
-  <section id="crew-lanes" aria-label="The crew">
-    <div id="lanes"></div>
-  </section>
+  <aside class="panel" id="phone" aria-labelledby="phone-title">
+    <header class="panel-head">
+      <h2 id="phone-title">Second phone</h2>
+      <button type="button" id="phone-back" class="quiet" hidden>Back to chat</button>
+    </header>
+    <div class="device">
+      <iframe id="phone-frame" title="Second phone" allow="microphone *; autoplay *"></iframe>
+    </div>
+  </aside>
 </main>
 
-<dialog id="contract-text">
-  <h2>Contract</h2>
-  <pre id="contract-body"></pre>
-  <form method="dialog"><button>Close</button></form>
+<dialog id="deals" aria-labelledby="deals-title">
+  <h2 id="deals-title">Show another deal</h2>
+  <ol id="deal-list"></ol>
+  <form method="dialog"><button class="quiet">Close</button></form>
 </dialog>
 
 <script type="module" src="/dashboard/static/app.js"></script>

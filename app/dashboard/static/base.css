@@ -1,0 +1,89 @@
+/* Shared by the board and the second phone. Neutral throughout: colour carries meaning
+   only, --ok for agreed or confirmed, --bad for a contradiction or a dispute. Nothing is
+   set under 16px. */
+
+:root {
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --ink: #111214;
+  --ink-2: #4b4d52;
+  --ink-3: #6e7076;
+  --rule: #e3e3e0;
+  --rule-strong: #c9c9c5;
+  --wash: #f0f0ed;
+  --ok: #0f7a55;
+  --bad: #c42b1c;
+  --bad-wash: #fcebe8;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --font: "Inter", "InterVariable", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", sans-serif;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.4 var(--font);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+
+button, input { font: inherit; color: inherit; }
+
+a { color: inherit; text-decoration: underline; text-decoration-color: var(--rule-strong); text-underline-offset: 0.2em; overflow-wrap: anywhere; }
+
+.meta { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.sep { color: var(--rule-strong); }
+
+button.quiet {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 0.2em;
+}
+
+/* A clip: a hairline circle with a triangle, a square while it plays. */
+button.play {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  font-size: 16px;
+  cursor: pointer;
+}
+button.play .mark {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 50%;
+  transition: border-color 160ms var(--ease);
+}
+button.play .mark::after {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 7px;
+  border-style: solid;
+  border-width: 5.5px 0 5.5px 9px;
+  border-color: transparent transparent transparent var(--ink);
+}
+button.play:hover .mark { border-color: var(--ink); }
+button.play.playing .mark { border-color: var(--ink); }
+button.play.playing .mark::after { left: 8px; top: 8px; width: 8px; height: 8px; border: 0; background: var(--ink); }
+button.play.missing { opacity: 0.4; }

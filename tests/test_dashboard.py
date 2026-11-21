@@ -56,9 +56,13 @@ def test_the_page_and_its_files_are_served(settings):
         page = client.get("/dashboard")
         assert page.status_code == 200 and "Gawah" in page.text
         assert "/dashboard/static/style.css" in page.text and "/dashboard/static/app.js" in page.text
-        for name in ("style.css", "ledger-and-phones.css", "crew.css", "app.js", "state.js", "render.js", "phone.js", "crew-state.js", "graph.js", "lanes.js"):
+        assert 'id="phone-frame"' in page.text and 'allow="microphone *; autoplay *"' in page.text
+        phone_page = client.get("/dashboard/phone")
+        assert phone_page.status_code == 200 and "/dashboard/static/phone.js" in phone_page.text
+        for name in ("base.css", "style.css", "phone.css", "app.js", "state.js", "render.js", "checklist.js", "phone.js", "crew-state.js", "graph.js", "chain.js", "clips.js"):
             assert client.get(f"/dashboard/static/{name}").status_code == 200, name
-        assert "http://" not in page.text and "https://" not in page.text  # nothing from outside
+        for text in (page.text, phone_page.text):
+            assert "http://" not in text and "https://" not in text  # nothing from outside
         assert client.get("/dashboard/state").json() == {"deal_id": None, "deals": [], "events": []}
 
 

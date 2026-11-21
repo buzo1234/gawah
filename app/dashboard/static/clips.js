@@ -28,5 +28,9 @@ function playClip(factId, button) {
   });
 }
 
-export const clipButton = (factId, label = "Clip") =>
-  h("button", { type: "button", class: "play", title: "Play where it was said", onclick: (ev) => playClip(factId, ev.currentTarget) }, label);
+// The mark is drawn in CSS: a triangle to play, a square while playing.
+export const clipButton = (factId, label = null) =>
+  h("button", {
+    type: "button", class: `play${label ? " labelled" : ""}`, title: "Play where it was said", "aria-label": label || "Play where it was said",
+    onclick: (ev) => playClip(factId, ev.currentTarget),
+  }, h("span", { class: "mark", "aria-hidden": "true" }), label);
