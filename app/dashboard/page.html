@@ -2,57 +2,82 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Gawah - events</title>
-<style>
-  body { font: 15px/1.4 system-ui, sans-serif; margin: 0; background: #111; color: #ddd; }
-  header { padding: 10px 16px; background: #1c1c1c; position: sticky; top: 0; }
-  #status { float: right; color: #888; }
-  #log { padding: 8px 16px 40px; }
-  .row { display: grid; grid-template-columns: 90px 220px 1fr; gap: 12px; padding: 4px 0; border-bottom: 1px solid #222; }
-  .time { color: #777; }
-  .name { color: #6cb6ff; }
-  .hirer { color: #ffd479; }
-  .worker { color: #8ddb8c; }
-  .judge { color: #ff9580; }
-  .body { white-space: pre-wrap; word-break: break-word; }
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gawah</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/dashboard/static/style.css">
+<link rel="stylesheet" href="/dashboard/static/ledger-and-phones.css">
 </head>
 <body>
-<header><b>Gawah</b> - every event, live <span id="status">connecting</span></header>
-<div id="log"></div>
-<script>
-const log = document.getElementById("log");
-const status = document.getElementById("status");
-const META = ["name", "deal_id", "ts", "event_id"];
+<header id="top">
+  <h1>Gawah</h1>
+  <div id="people" class="group"></div>
+  <div id="status" class="pill">Connecting</div>
+  <div id="terms" class="group"></div>
+  <div id="contract"></div>
+  <div class="spacer"></div>
+  <label class="picker">Deal
+    <select id="deal-picker"></select>
+  </label>
+  <div id="conn" class="conn">connecting</div>
+</header>
 
-function describe(e) {
-  if (e.name === "transcript.line") return { cls: e.speaker, text: `${e.speaker}: ${e.text}` };
-  if (e.name.startsWith("judge.")) return { cls: "judge", text: e.text || `${e.reason} -> ${e.to}: ${e.instruction}` };
-  const rest = Object.fromEntries(Object.entries(e).filter(([k]) => !META.includes(k)));
-  return { cls: "", text: JSON.stringify(rest) };
-}
+<main>
+  <section class="panel" id="conversation">
+    <h2>Conversation</h2>
+    <div id="flow" class="scroll"></div>
+  </section>
 
-function show(e) {
-  const { cls, text } = describe(e);
-  const row = document.createElement("div");
-  row.className = "row";
-  for (const [c, t] of [["time", new Date(e.ts).toLocaleTimeString()], ["name", `${e.name} · ${e.deal_id}`], [`body ${cls}`, text]]) {
-    const cell = document.createElement("div");
-    cell.className = c;
-    cell.textContent = t;
-    row.append(cell);
-  }
-  log.append(row);
-  window.scrollTo(0, document.body.scrollHeight);
-}
+  <div class="column">
+    <section class="panel" id="checklist">
+      <h2>Contract checklist <span id="agreed-count" class="count"></span></h2>
+      <ol id="items"></ol>
+    </section>
+    <section class="panel" id="why">
+      <h2>Why Gawah spoke <span id="spoke-count" class="count"></span></h2>
+      <div id="decisions" class="scroll"></div>
+    </section>
+  </div>
 
-function connect() {
-  const ws = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/dashboard/ws`);
-  ws.onopen = () => (status.textContent = "live");
-  ws.onmessage = (m) => show(JSON.parse(m.data));
-  ws.onclose = () => { status.textContent = "reconnecting"; setTimeout(connect, 1000); };
-}
-connect();
-</script>
+  <div class="column">
+    <div class="phones">
+      <section class="panel phone" id="second-phone">
+        <h2>Second phone <span id="second-name" class="count"></span></h2>
+        <label class="number">Number
+          <input id="second-number" type="tel" inputmode="tel" autocomplete="off" spellcheck="false">
+        </label>
+        <div id="second-chat" class="chat scroll"></div>
+        <form id="composer" autocomplete="off">
+          <div id="attached" class="attached" hidden></div>
+          <div class="compose-row">
+            <label class="attach" title="Attach an image">Photo
+              <input id="file" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+            </label>
+            <input id="text" type="text" placeholder="Message Gawah" aria-label="Message">
+            <button type="submit">Send</button>
+          </div>
+          <div id="send-status" class="send-status" role="status"></div>
+        </form>
+      </section>
+      <section class="panel phone" id="real-phone">
+        <h2>Real phone <span id="real-name" class="count"></span></h2>
+        <div class="number">Read only · the real WhatsApp</div>
+        <div id="real-chat" class="chat scroll"></div>
+      </section>
+    </div>
+    <section class="panel" id="ledger">
+      <h2>Record ledger <span id="record-count" class="count"></span></h2>
+      <div id="records" class="scroll"></div>
+    </section>
+  </div>
+</main>
+
+<dialog id="contract-text">
+  <h2>Contract</h2>
+  <pre id="contract-body"></pre>
+  <form method="dialog"><button>Close</button></form>
+</dialog>
+
+<script type="module" src="/dashboard/static/app.js"></script>
 </body>
 </html>
