@@ -1,0 +1,326 @@
+{
+  "id": "holdout_cook_month",
+  "description": "A man of 72 hires a cook for himself and his wife for a trial month. Raw speech-to-text in Devanagari: 'नाश्ता' heard as 'नशा', one sentence split across two lines. The hirer says 'ठीक है' in almost every line without the call ending. The monthly pay is argued (8,000 against 7,000), put off with 'वो देख लेंगे ... फिर बात करते हैं', and only settled at 7,500 at the very end. Nothing is said about what happens if she skips days or leaves mid-month.",
+  "people": [
+    {
+      "role": "hirer",
+      "name": "Ramesh Chandra Sharma",
+      "phone": "+910000000141"
+    },
+    {
+      "role": "worker",
+      "name": "Kamla",
+      "phone": "+910000000142"
+    }
+  ],
+  "lines": [
+    {
+      "line_no": 1,
+      "speaker": "hirer",
+      "text": "हेलो हां हेलो कमला जी बोल रही हैं",
+      "start": 0.8,
+      "end": 3.9
+    },
+    {
+      "line_no": 2,
+      "speaker": "worker",
+      "text": "हां जी बोल रही हूं आप शर्मा जी",
+      "start": 4.5,
+      "end": 7.9
+    },
+    {
+      "line_no": 3,
+      "speaker": "hirer",
+      "text": "हां हां मैं शर्मा बोल रहा हूं वो गुप्ता जी की बहू ने बताया था आप खाना बनाती हैं",
+      "start": 8.3,
+      "end": 15.3
+    },
+    {
+      "line_no": 4,
+      "speaker": "worker",
+      "text": "हां जी बनाती हूं तीन घर में बनाती हूं अभी आपके यहां कितने लोग हैं",
+      "start": 15.6,
+      "end": 20.9
+    },
+    {
+      "line_no": 5,
+      "speaker": "hirer",
+      "text": "बस हम दो जने हैं मैं और मेरी wife ठीक है बच्चे सब बाहर हैं",
+      "start": 21.2,
+      "end": 26.6
+    },
+    {
+      "line_no": 6,
+      "speaker": "worker",
+      "text": "अच्छा तो दोनों टाइम का चाहिए या एक टाइम",
+      "start": 27.2,
+      "end": 31.2
+    },
+    {
+      "line_no": 7,
+      "speaker": "hirer",
+      "text": "दोनों टाइम सुबह का नशा और lunch एक साथ और रात का खाना ठीक है",
+      "start": 31.9,
+      "end": 37.7
+    },
+    {
+      "line_no": 8,
+      "speaker": "worker",
+      "text": "हां ठीक है सुबह दस बजे तक आ जाऊंगी नाश्ता lunch दोनों बना दूंगी और शाम को सात बजे",
+      "start": 38.2,
+      "end": 46.0
+    },
+    {
+      "line_no": 9,
+      "speaker": "hirer",
+      "text": "ठीक है ठीक है और देखिए हम लोग तीखा नहीं खाते मेरी wife को sugar है तो",
+      "start": 46.5,
+      "end": 52.5
+    },
+    {
+      "line_no": 10,
+      "speaker": "hirer",
+      "text": "मीठा बिल्कुल नहीं और रात को हल्का दलिया खिचड़ी ऐसा",
+      "start": 52.6,
+      "end": 56.9
+    },
+    {
+      "line_no": 11,
+      "speaker": "worker",
+      "text": "हां जी समझ गई बुज़ुर्ग लोगों के यहां ऐसा ही बनता है बर्तन भी मुझे करने हैं क्या",
+      "start": 57.6,
+      "end": 64.0
+    },
+    {
+      "line_no": 12,
+      "speaker": "hirer",
+      "text": "नहीं नहीं बर्तन वाली अलग आती है ठीक है",
+      "start": 64.3,
+      "end": 67.5
+    },
+    {
+      "line_no": 13,
+      "speaker": "worker",
+      "text": "तो फिर दोनों टाइम का आठ हज़ार महीना",
+      "start": 68.4,
+      "end": 71.3
+    },
+    {
+      "line_no": 14,
+      "speaker": "hirer",
+      "text": "आठ हज़ार बहुत ज़्यादा है कमला जी हम तो सात दे रहे थे पहले वाली को",
+      "start": 72.0,
+      "end": 79.0
+    },
+    {
+      "line_no": 15,
+      "speaker": "worker",
+      "text": "शर्मा जी आजकल सब यही ले रहे हैं दो टाइम का आठ से कम कोई नहीं करेगा",
+      "start": 79.3,
+      "end": 85.8
+    },
+    {
+      "line_no": 16,
+      "speaker": "hirer",
+      "text": "अच्छा ठीक है ठीक है वो देख लेंगे आप पहले खाना तो बनाइए फिर बात करते हैं",
+      "start": 86.4,
+      "end": 93.8
+    },
+    {
+      "line_no": 17,
+      "speaker": "worker",
+      "text": "ठीक है जी",
+      "start": 94.1,
+      "end": 95.3
+    },
+    {
+      "line_no": 18,
+      "speaker": "hirer",
+      "text": "और छुट्टी कितनी लेती हैं आप",
+      "start": 95.7,
+      "end": 97.8
+    },
+    {
+      "line_no": 19,
+      "speaker": "worker",
+      "text": "महीने में दो छुट्टी लेती हूं और पहले से बता देती हूं",
+      "start": 98.5,
+      "end": 103.6
+    },
+    {
+      "line_no": 20,
+      "speaker": "hirer",
+      "text": "ठीक है दो ठीक है advance वगैरह चाहिए क्या",
+      "start": 104.2,
+      "end": 107.3
+    },
+    {
+      "line_no": 21,
+      "speaker": "worker",
+      "text": "नहीं advance नहीं चाहिए महीना पूरा होने पे पूरा दे देना",
+      "start": 108.1,
+      "end": 112.6
+    },
+    {
+      "line_no": 22,
+      "speaker": "hirer",
+      "text": "ठीक है महीने के end में ठीक है कब से आ सकती हैं",
+      "start": 113.4,
+      "end": 118.3
+    },
+    {
+      "line_no": 23,
+      "speaker": "worker",
+      "text": "कल से आ जाती हूं कल सुबह दस बजे",
+      "start": 119.1,
+      "end": 122.8
+    },
+    {
+      "line_no": 24,
+      "speaker": "hirer",
+      "text": "ठीक है कल से एक महीना देखते हैं फिर आगे का सोचेंगे ठीक है",
+      "start": 123.4,
+      "end": 129.0
+    },
+    {
+      "line_no": 25,
+      "speaker": "worker",
+      "text": "हां जी एक महीना देख लीजिए पसंद आए तो रखिए",
+      "start": 129.4,
+      "end": 133.3
+    },
+    {
+      "line_no": 26,
+      "speaker": "hirer",
+      "text": "ठीक है और राशन सब्ज़ी वो सब घर में रहता है आपको कुछ लाना नहीं है",
+      "start": 134.1,
+      "end": 140.7
+    },
+    {
+      "line_no": 27,
+      "speaker": "worker",
+      "text": "ठीक है जी तो कल आती हूं",
+      "start": 141.2,
+      "end": 144.2
+    },
+    {
+      "line_no": 28,
+      "speaker": "hirer",
+      "text": "हां ठीक है अरे हां वो पैसे वाली बात तो रह गई",
+      "start": 145.0,
+      "end": 149.2
+    },
+    {
+      "line_no": 29,
+      "speaker": "worker",
+      "text": "हां जी",
+      "start": 149.6,
+      "end": 150.3
+    },
+    {
+      "line_no": 30,
+      "speaker": "hirer",
+      "text": "चलिए ना आपकी ना मेरी साढ़े सात हज़ार कर लेते हैं ठीक है",
+      "start": 150.6,
+      "end": 156.0
+    },
+    {
+      "line_no": 31,
+      "speaker": "worker",
+      "text": "ठीक है शर्मा जी साढ़े सात चलेगा",
+      "start": 156.7,
+      "end": 159.5
+    },
+    {
+      "line_no": 32,
+      "speaker": "hirer",
+      "text": "ठीक है फिर कल मिलते हैं गुप्ता जी की बहू को भी बता दूंगा ठीक है",
+      "start": 160.4,
+      "end": 166.5
+    },
+    {
+      "line_no": 33,
+      "speaker": "worker",
+      "text": "हां जी नमस्ते",
+      "start": 166.9,
+      "end": 168.0
+    }
+  ],
+  "noise": "stt",
+  "wrap_up_starts_line": 27,
+  "pending_at_end": [
+    "late_or_unfinished"
+  ],
+  "expected_note": "Each entry is a moment the Judge should speak. after_line is the line that makes it true: the Judge speaks in the pause after it. by_line is the last line after which speaking still counts as on time. modes lists the JUDGE_MODE values in which the entry applies. The transcript is a call with no Judge on it, so nobody answers a question and an open item stays open unless the people settle it themselves. Fields beyond the practice calls: required=false marks a moment where a reasonable listener could go either way (speaking there is fine, staying silent is fine); reason_also_ok lists other reasons that count; also_pending lists further items open at that moment; wrap_up_starts_line is where the call starts wrapping up; must_stay_silent lists lines after which the Judge must not speak even though they may sound final or look like a problem.",
+  "expected": [
+    {
+      "after_line": 16,
+      "by_line": 20,
+      "item": "amount",
+      "reason": "term_unclear",
+      "to": "both",
+      "modes": [
+        "live"
+      ],
+      "required": true,
+      "note": "8,000 asked, 7,000 implied, then put off with 'वो देख लेंगे ... फिर बात करते हैं' and the talk moves to leave days. 'पहले खाना तो बनाइए' pushes it past the call. The people do return to it at line 28, but the Judge cannot know that.",
+      "reason_also_ok": [
+        "conflicting_figures"
+      ]
+    },
+    {
+      "after_line": 27,
+      "by_line": 32,
+      "item": "late_or_unfinished",
+      "reason": "wrapping_up",
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": true,
+      "note": "Line 27 ('तो कल आती हूं') starts the close; the hirer reopens pay at 28 and they settle 7,500 at 30-31, then close for real at 32. A wrap-up question after 27-29 may be about the pay; after 31 it must not treat pay as open or mention 7,000/8,000, and should ask what happens if she misses more than her two days or stops mid-month. Two leave days a month (line 19) do not cover that.",
+      "also_pending": [
+        "amount (until line 31)"
+      ]
+    }
+  ],
+  "must_stay_silent": [
+    {
+      "after_line": 5,
+      "why": "'ठीक है' as a filler mid-sentence."
+    },
+    {
+      "after_line": 7,
+      "why": "'नशा' is a mis-transcribed 'नाश्ता' (line 8 says so); 'ठीक है' is filler."
+    },
+    {
+      "after_line": 9,
+      "why": "The sentence continues on line 10 (split line)."
+    },
+    {
+      "after_line": 12,
+      "why": "'ठीक है' filler; dishes are not part of the job, which is clear."
+    },
+    {
+      "after_line": 14,
+      "why": "Negotiation in progress (8,000 against 7,000). Wait for whether they settle or move on."
+    },
+    {
+      "after_line": 17,
+      "why": "'ठीक है जी' is an acknowledgement, not a close. (The amount question from line 16 is still on time here.)"
+    },
+    {
+      "after_line": 22,
+      "why": "'ठीक है' twice, with a question in the same line: mid-call."
+    },
+    {
+      "after_line": 24,
+      "why": "'फिर आगे का सोचेंगे ठीक है' sounds like a close, but it is about the trial month and the call continues. Not a wrapping_up moment."
+    },
+    {
+      "after_line": 26,
+      "why": "Filler 'ठीक है'; rations are not a term."
+    }
+  ]
+}

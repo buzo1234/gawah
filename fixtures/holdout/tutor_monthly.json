@@ -1,0 +1,290 @@
+{
+  "id": "holdout_tutor_monthly",
+  "description": "A mother hires a 21-year-old college student as a home tutor for her son in class 8. Clean transcript. All six items are settled clearly by line 14; nothing is missing or conflicting. The rest is chat about college, cricket and books, with several 'theek hai' and 'pakka' lines that sound final, before a plain goodbye.",
+  "people": [
+    {
+      "role": "hirer",
+      "name": "Ruma Das",
+      "phone": "+910000000131"
+    },
+    {
+      "role": "worker",
+      "name": "Ankit Verma",
+      "phone": "+910000000132"
+    }
+  ],
+  "lines": [
+    {
+      "line_no": 1,
+      "speaker": "hirer",
+      "text": "Hello, Ankit? Main Rohan ki mummy bol rahi hoon, Ruma Das. Sharma aunty ne aapka number diya tha.",
+      "start": 0.8,
+      "end": 7.5
+    },
+    {
+      "line_no": 2,
+      "speaker": "worker",
+      "text": "Haan ji namaste aunty, Sharma aunty ne bataya tha. Rohan class eight mein hai na?",
+      "start": 8.2,
+      "end": 14.1
+    },
+    {
+      "line_no": 3,
+      "speaker": "hirer",
+      "text": "Haan eighth mein hai, DPS mein. Maths aur science dono mein weak hai, especially maths, half yearly mein bahut kam aaye.",
+      "start": 14.6,
+      "end": 22.5
+    },
+    {
+      "line_no": 4,
+      "speaker": "worker",
+      "text": "Koi baat nahi aunty, eighth ka maths main kaafi bachchon ko padha chuka hoon. Main ghar aake padhaunga, Monday se Friday, shaam paanch se saadhe chhe, chalega?",
+      "start": 23.4,
+      "end": 34.3
+    },
+    {
+      "line_no": 5,
+      "speaker": "hirer",
+      "text": "Haan woh time theek hai, chaar baje woh school se aata hai, thoda kha pee leta hai. Fees kitni loge?",
+      "start": 34.7,
+      "end": 42.2
+    },
+    {
+      "line_no": 6,
+      "speaker": "worker",
+      "text": "Dono subject ke chaar hazaar mahina, aunty.",
+      "start": 42.9,
+      "end": 45.5
+    },
+    {
+      "line_no": 7,
+      "speaker": "hirer",
+      "text": "Chaar hazaar theek hai. Kab se start kar sakte ho?",
+      "start": 46.4,
+      "end": 50.1
+    },
+    {
+      "line_no": 8,
+      "speaker": "worker",
+      "text": "Ek December se. Aur March mein final exam tak padhaunga, uske baad aap dekh lena aage rakhna hai ya nahi.",
+      "start": 50.7,
+      "end": 58.8
+    },
+    {
+      "line_no": 9,
+      "speaker": "hirer",
+      "text": "Theek hai, ek December se March ke exam tak. Paise kaise, mahine ke end mein?",
+      "start": 59.5,
+      "end": 64.7
+    },
+    {
+      "line_no": 10,
+      "speaker": "worker",
+      "text": "Pehle mahine ke do hazaar pehle din de dijiye, baaki do hazaar mahine ke end mein. Uske baad har mahine ki pehli tareekh ko poore chaar hazaar.",
+      "start": 65.2,
+      "end": 75.0
+    },
+    {
+      "line_no": 11,
+      "speaker": "hirer",
+      "text": "Haan ye theek hai. Aur agar aap kisi din nahi aa paaye toh? College ke exam bhi toh honge aapke.",
+      "start": 75.3,
+      "end": 82.8
+    },
+    {
+      "line_no": 12,
+      "speaker": "worker",
+      "text": "Haan aunty, jo class miss hogi woh main Saturday ko cover kar dunga. Aur agar kabhi beech mein chhodna pada toh ek hafta pehle bataunga, aur us mahine jitne din padhaya utne ke hi paise lunga.",
+      "start": 83.6,
+      "end": 96.5
+    },
+    {
+      "line_no": 13,
+      "speaker": "hirer",
+      "text": "Bilkul theek hai, fair hai. Toh pakka, ek December se.",
+      "start": 97.4,
+      "end": 101.4
+    },
+    {
+      "line_no": 14,
+      "speaker": "worker",
+      "text": "Haan pakka aunty.",
+      "start": 102.1,
+      "end": 103.2
+    },
+    {
+      "line_no": 15,
+      "speaker": "hirer",
+      "text": "Waise aap khud kya padh rahe ho?",
+      "start": 103.5,
+      "end": 105.8
+    },
+    {
+      "line_no": 16,
+      "speaker": "worker",
+      "text": "BSc maths, final year, Hansraj se. Aage MSc ka socha hai, ya phir koi exam dunga.",
+      "start": 106.8,
+      "end": 112.3
+    },
+    {
+      "line_no": 17,
+      "speaker": "hirer",
+      "text": "Arre wah, Hansraj. Mere bhai ka beta bhi wahin tha, commerce mein. Rohan ko bhi thoda samjhana, sirf phone pe cricket dekhta rehta hai.",
+      "start": 112.7,
+      "end": 122.4
+    },
+    {
+      "line_no": 18,
+      "speaker": "worker",
+      "text": "Haha, aaj toh match bhi hai na, India ka. Main bhi dekhunga shaam ko.",
+      "start": 123.1,
+      "end": 127.8
+    },
+    {
+      "line_no": 19,
+      "speaker": "hirer",
+      "text": "Haan wahi toh, aaj toh woh padhega hi nahi. Kal ka score bhi subah subah poochh raha tha.",
+      "start": 128.3,
+      "end": 134.4
+    },
+    {
+      "line_no": 20,
+      "speaker": "worker",
+      "text": "Kal toh accha khela, last over mein jeete. Theek hai, pehle din Rohan se match ki baat karke hi dosti kar lunga.",
+      "start": 134.9,
+      "end": 142.0
+    },
+    {
+      "line_no": 21,
+      "speaker": "hirer",
+      "text": "Haan woh accha rahega, woh thoda shy hai, naye logon se baat nahi karta.",
+      "start": 142.6,
+      "end": 147.5
+    },
+    {
+      "line_no": 22,
+      "speaker": "worker",
+      "text": "Koi baat nahi aunty, do teen din mein khul jaayega. Uski books kaun si hain, NCERT hi na?",
+      "start": 148.0,
+      "end": 154.1
+    },
+    {
+      "line_no": 23,
+      "speaker": "hirer",
+      "text": "NCERT hai, aur ek RD Sharma bhi school ne lagwayi hai. Science mein ek lab manual bhi hai.",
+      "start": 154.4,
+      "end": 160.2
+    },
+    {
+      "line_no": 24,
+      "speaker": "worker",
+      "text": "Theek hai, RD Sharma toh mere paas hai. Main ek baar dekh lunga kaun se chapter chal rahe hain.",
+      "start": 161.1,
+      "end": 168.5
+    },
+    {
+      "line_no": 25,
+      "speaker": "hirer",
+      "text": "Haan main uska syllabus WhatsApp kar dungi aapko. Aur ghar ka address bhi bhej deti hoon, C-block, Sector nine.",
+      "start": 169.1,
+      "end": 175.4
+    },
+    {
+      "line_no": 26,
+      "speaker": "worker",
+      "text": "Haan bhej dijiye. Sector nine toh mere ghar se das minute hai.",
+      "start": 175.8,
+      "end": 179.8
+    },
+    {
+      "line_no": 27,
+      "speaker": "hirer",
+      "text": "Accha hai, phir toh barish mein bhi aa jaoge, haha.",
+      "start": 180.2,
+      "end": 183.5
+    },
+    {
+      "line_no": 28,
+      "speaker": "worker",
+      "text": "Haan haan aunty, barish ho ya match, aa jaaunga.",
+      "start": 183.9,
+      "end": 187.0
+    },
+    {
+      "line_no": 29,
+      "speaker": "hirer",
+      "text": "Theek hai Ankit, toh phir milte hain ek tareekh ko. Bye.",
+      "start": 187.4,
+      "end": 191.6
+    },
+    {
+      "line_no": 30,
+      "speaker": "worker",
+      "text": "Ji aunty, namaste. Bye.",
+      "start": 192.1,
+      "end": 193.6
+    }
+  ],
+  "noise": "clean",
+  "wrap_up_starts_line": 29,
+  "pending_at_end": [],
+  "expected_note": "Each entry is a moment the Judge should speak. after_line is the line that makes it true: the Judge speaks in the pause after it. by_line is the last line after which speaking still counts as on time. modes lists the JUDGE_MODE values in which the entry applies. The transcript is a call with no Judge on it, so nobody answers a question and an open item stays open unless the people settle it themselves. Fields beyond the practice calls: required=false marks a moment where a reasonable listener could go either way (speaking there is fine, staying silent is fine); reason_also_ok lists other reasons that count; also_pending lists further items open at that moment; wrap_up_starts_line is where the call starts wrapping up; must_stay_silent lists lines after which the Judge must not speak even though they may sound final or look like a problem.",
+  "expected": [
+    {
+      "after_line": 14,
+      "by_line": 15,
+      "item": null,
+      "reason": "wrapping_up",
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": false,
+      "note": "Every item is agreed and 'pakka' sounds like a close, but the call goes on for fifteen more lines. A read-back here is reasonable; so is waiting for the real goodbye. If the Judge reads back here, the moment at line 29 needs only a short confirmation."
+    },
+    {
+      "after_line": 29,
+      "by_line": 30,
+      "item": null,
+      "reason": "wrapping_up",
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": true,
+      "note": "The real goodbye. Nothing is pending, so this is the final read-back: work, 4,000 a month, 2,000 on day one, 2,000 at month end then 4,000 on the 1st, 1 December to the March exams, Saturday make-up and one week's notice with pro-rata pay."
+    }
+  ],
+  "must_stay_silent": [
+    {
+      "after_line": 7,
+      "why": "'Chaar hazaar theek hai' accepts the fee."
+    },
+    {
+      "after_line": 10,
+      "why": "2,000 (advance), 2,000 (balance) and 4,000 (monthly) are different items, not conflicting figures."
+    },
+    {
+      "after_line": 13,
+      "why": "'Toh pakka' sounds final but the call continues (see the optional entry after line 14)."
+    },
+    {
+      "after_line": 20,
+      "why": "'Theek hai' is about cricket, not the deal."
+    },
+    {
+      "after_line": 24,
+      "why": "'Theek hai' is about books."
+    },
+    {
+      "after_line": 26,
+      "why": "Address and distance are not contract terms."
+    },
+    {
+      "after_line": 28,
+      "why": "A joke; no deal content."
+    }
+  ]
+}
