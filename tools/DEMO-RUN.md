@@ -99,19 +99,12 @@ Speak each line close to its device. Wait a second after each line. Gawah needs 
 
 **If Gawah does not ask in 20 seconds,** go on anyway, and note it. The dashboard checklist shows what the brain heard.
 
-Then answer. Say no figure here: in the dry run, "balance satrah hazaar" next to "baees hazaar" was taken as two different totals, and Gawah lined up the wrong question.
+Then answer. Say no figure here: in the dry run "balance seventeen thousand" was heard as "seventy thousand", taken as a second total, and Gawah lined up the wrong question.
 
 | Device | Say |
 |---|---|
 | Phone | Baaki paisa kaam poora hone ke din de dungi. |
 | Laptop | Haan theek hai. |
-
-Nobody has said what happens if the work is late. Gawah may ask when you wrap up. If it does, answer:
-
-| Device | Say |
-|---|---|
-| Laptop | Late hua to har din ka paanch sau kaat lena. |
-| Phone | Theek hai. |
 
 Wrap up. Make it plain that the call is ending, in a few short lines: Gawah reads the terms back only once it hears you wrapping up, and in the dry run one summary line was not enough.
 
@@ -121,7 +114,14 @@ Wrap up. Make it plain that the call is ending, in a few short lines: Gawah read
 | Laptop | Ji madam, Somvaar subah nau baje aa jaunga. |
 | Phone | Theek hai, Somvaar ko milte hain. Bye. |
 
-**Stop again, for 15 seconds.** Gawah should ask anything still open (what happens if the work is late) and then read the terms back. Answer "haan" from both.
+**Stop again, for 15 seconds.** Nobody has said what happens if the work is late, so Gawah should ask that first. Answer:
+
+| Device | Say |
+|---|---|
+| Laptop | Late hua to har din ka paanch sau kaat lena. |
+| Phone | Theek hai. |
+
+Then Gawah should read the terms back. Answer "haan" from both.
 
 **If Gawah says nothing:** the wrap-up was not detected (it was not in the dry run either). The call-back in step 8 still reads every term to each of you.
 
