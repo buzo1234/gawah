@@ -54,6 +54,7 @@ LiveKit and Twilio are on free plans with monthly allowances. Using them up in t
 | Watch events live in a terminal, one JSON object per line | `uv run python -m fakes.tail` |
 | Public address for webhooks | `cloudflared tunnel --url http://localhost:8000` |
 | Prove the contract stream: one complete deal through the running server (real OpenAI and S3; saves the PDF and audio to `fixtures/contract-sample/`) | `uv run python -m tests.contract_proof` |
+| Prove the bridge on a real call (one LiveKit room for about a minute, about 8 transcription uploads, 2 S3 uploads) | `uv run python tests/bridge_live.py` |
 
 Python is pinned to 3.12 through `uv`. Do not use the system Python.
 

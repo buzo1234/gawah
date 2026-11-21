@@ -1,7 +1,10 @@
+import asyncio
+import threading
+
 import pytest
 
 from app.config import Settings
-from app.contracts import NO_DEAL, Backing, DealStatus, Direction, Person, Role
+from app.contracts import NO_DEAL, Backing, DealStatus, Direction, Person, Role, WhatsAppMessage
 from app.log import deal_log, mask_phone
 from app.store import S3, Store
 from fakes import RAMESH, SUNITA
@@ -129,3 +132,54 @@ async def test_a_signed_link_points_at_the_buckets_regional_address():
     url = await s3.signed_url("contracts/d7.pdf")
     # The global host (gawah-test.s3.amazonaws.com) answers a new bucket with a redirect.
     assert url.startswith("https://gawah-test.s3.us-west-2.amazonaws.com/contracts/d7.pdf?")
+
+
+class _SlowConnection:
+    """The store's connection, with the first write held open until the test lets it go."""
+
+    def __init__(self, real) -> None:
+        self.real, self.in_write, self.closed_during_write = real, False, False
+        self.started, self.go = threading.Event(), threading.Event()
+
+    def __enter__(self):
+        self.in_write = True
+        self.real.__enter__()
+        return self
+
+    def __exit__(self, *exc):
+        result = self.real.__exit__(*exc)
+        self.in_write = False
+        return result
+
+    def execute(self, sql, args=()):
+        self.started.set()
+        self.go.wait(5)
+        return self.real.execute(sql, args)
+
+    def close(self) -> None:
+        self.closed_during_write = self.in_write
+        self.real.close()
+
+
+async def test_closing_the_store_waits_for_a_write_in_flight(settings):
+    store = Store(settings.database_path)
+    await store.open()
+    slow = store._db = _SlowConnection(store._db)
+    event = WhatsAppMessage(deal_id=NO_DEAL, direction=Direction.IN, phone=SUNITA.phone, text="namaste")
+
+    writing = asyncio.create_task(store.record_event(event))
+    await asyncio.to_thread(slow.started.wait, 5)  # the write is now inside the connection
+    closing = asyncio.create_task(store.close())
+    await asyncio.sleep(0.1)  # time for close to reach the connection, if nothing holds it back
+    slow.go.set()
+    await asyncio.gather(writing, closing)
+    assert not slow.closed_during_write  # closing mid-write is what crashed the process
+
+    # After close, a late write or read is dropped quietly: at shutdown there is nobody to tell.
+    await store.record_event(event)
+    assert await store.events() == []
+
+    again = Store(settings.database_path)
+    await again.open()
+    assert await again.events() == [event]  # the write in flight was finished, not lost
+    await again.close()
