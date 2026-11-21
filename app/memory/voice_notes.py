@@ -22,6 +22,7 @@ from app.contracts import (
 from app.memory import echo
 from app.memory.book import DealBook
 from app.memory.claims import Claim
+from app.memory.normalise import one_amount
 from app.memory.scribe import ORDER_WAIT_S, Scribe
 
 log = logging.getLogger("gawah.memory")
@@ -88,10 +89,11 @@ def asked_change(deal: DealBook, event: FactChanged) -> Fact | None:
     """The change fact a voice note made, that this fact.changed was put to the other person for."""
     old = deal.latest.get(event.fact_id)
     item = event.item or (old.item if old else None)
+    rupees = one_amount(event.new_value)
     asked = [
         f for f in deal.standing()
         if is_voice(f) and f.kind == FactKind.CHANGE and f.status == FactStatus.SAID and f.item == item
-        and f.said_by == event.proposed_by
+        and f.said_by == event.proposed_by and (rupees is None or f.value_rupees in (None, rupees))
     ]
     return asked[-1] if asked else None
 

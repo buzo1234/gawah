@@ -9,9 +9,8 @@
   still owed: one reminder to the hirer, and the worker is told. Once per deal and term.
 - After a second deal call, who needs the call-back: only those who have not confirmed a
   term that call changed.
-- A voice note memory found contradicting an agreed term (fact.conflict with no call): both
-  hear what was agreed, when, and the clip. A voice note asking to change an agreed term: the
-  other person is asked yes or no, and fact.changed carries each step.
+- A voice note memory found contradicting an agreed term, or asking to change one: see
+  heard.py.
 """
 
 import logging
