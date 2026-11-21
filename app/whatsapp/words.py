@@ -15,6 +15,16 @@ OWN_NUMBER = "Yeh aapka apna number hai. Doosre vyakti ka mobile number bhejiye.
 MANY_NUMBERS = "Ek se zyada number mile. Sirf doosre vyakti ka ek mobile number bhejiye."
 READ_FAILED = "Abhi yeh padh nahi paaya. Thodi der mein dobara bhejiye."
 CONTRACT = "Aapki deal ka contract taiyaar hai. Neeche PDF aur awaaz mein summary hai."
+CONTRACT_PDF_ONLY = "Aapki deal ka contract taiyaar hai. Neeche PDF hai."
+CONTRACT_VOICE_ONLY = "Aapki deal ka contract taiyaar hai. Neeche awaaz mein summary hai. PDF abhi nahi bhej paaye."
+CONTRACT_NO_FILE = "Aapki deal ka contract taiyaar hai, par uski file abhi nahi bhej paaye."
+
+
+def contract(pdf: bool, voice: bool) -> str:
+    """The line before the files: it names only what is really attached."""
+    return {(True, True): CONTRACT, (True, False): CONTRACT_PDF_ONLY, (False, True): CONTRACT_VOICE_ONLY}.get(
+        (pdf, voice), CONTRACT_NO_FILE
+    )
 
 
 def call_link(url: str) -> str:
