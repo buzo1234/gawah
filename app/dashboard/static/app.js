@@ -2,7 +2,7 @@
 // held events through. Every event has an id, so one that arrives both ways counts once.
 
 import { NO_DEAL, apply, emptyState } from "./state.js";
-import { h, renderAll, renderChange } from "./render.js";
+import { h, renderAll, renderChange, renderView } from "./render.js";
 import * as phones from "./phone.js";
 
 const $ = (id) => document.getElementById(id);
@@ -56,13 +56,23 @@ async function catchUp() {
   } catch {}
 }
 
+const onCall = () => state.status === "in_call" || state.callback != null;
+const typing = () => document.activeElement?.closest?.("#second-phone") != null;
+
 function fold(e, live) {
   if (seen.has(e.event_id)) return;
   seen.add(e.event_id);
-  if (e.name === "whatsapp.message") return phones.add(e, live);
+  if (e.name === "whatsapp.message") {
+    if (!onCall() && (e.deal_id === state.dealId || e.deal_id === NO_DEAL)) state.view = "phones";
+    phones.add(e, live);
+    if (live) renderView(state);
+    return;
+  }
   if (e.deal_id !== state.dealId) return;
+  const view = state.view;
   const change = apply(state, e);
   if (!live) return;
+  if (view === "phones" && typing()) state.view = "phones"; // never pull the composer away mid-message
   renderChange(state, change);
   if (change.panels.includes("all")) {
     phones.setPeople(state.people);
@@ -76,7 +86,7 @@ function onEvent(e) {
   const isNewDeal = e.deal_id !== NO_DEAL && !deals.some((d) => d.id === e.deal_id);
   if (isNewDeal) {
     deals.unshift({ id: e.deal_id, ts: e.ts, names: {} });
-    if (!pinned()) {
+    if (!pinned() || pinned() === e.deal_id) {
       state = emptyState(e.deal_id);
       drawEverything();
     }
@@ -97,6 +107,13 @@ function renderPicker() {
     h("option", { value: "" }, deals.length ? "Latest deal" : "No deals yet"),
     ...deals.map((d) => h("option", { value: d.id }, label(d))));
   $("deal-picker").value = pinned() && deals.some((d) => d.id === pinned()) ? pinned() : "";
+}
+
+for (const view of ["graph", "phones"]) {
+  $(`tab-${view}`).addEventListener("click", () => {
+    state.view = view;
+    renderView(state);
+  });
 }
 
 $("deal-picker").addEventListener("change", (event) => {
