@@ -1,6 +1,6 @@
 # Presentation prompt for Claude Design
 
-Paste everything below the line into Claude Design. Upload the files listed under "Assets" along with it.
+Paste everything below the line into Claude Design.
 
 ---
 
@@ -10,7 +10,7 @@ Design a pitch deck for **Gawah** (गवाह, "witness"), a hackathon project
 
 India's economy runs on zubaan - the spoken word. Gawah gives that word a witness.
 
-Gawah is an AI that joins the phone call where a deal is made, between a household and a worker, and stays until the last rupee is paid. It listens like a third person on the line, speaks up when something is left unclear, writes the agreement, and remembers every word, so that when someone later says "aapne 25 hazaar bola tha", Gawah plays back what was actually agreed, in their own voices.
+Gawah is an AI that joins the phone call where a deal is made, between a household and a worker, and stays until the last rupee is paid. It listens like a third person on the line, in the language people actually speak, speaks up when something is left unclear, writes the agreement, and remembers every word, so that when someone later says "aapne 25 hazaar bola tha", Gawah plays back what was actually agreed, in their own voices.
 
 ## Story, slide by slide
 
@@ -24,9 +24,9 @@ Gawah is an AI that joins the phone call where a deal is made, between a househo
    - 1 in 5 construction workers were not always paid on time (same survey).
    - Over 1.14 lakh labour and industrial cases were pending in May 2026 (Newslaundry, from national court data).
 5. **What Gawah does.** Four steps, one line each:
-   - On the call: listens to both people, and when a term is skipped or two figures are said, asks - in a natural Hindi voice, at a pause, without taking sides.
+   - On the call: listens to both people in their own language, and when a term is skipped or two figures are said, asks - in a natural voice, at a pause, without taking sides.
    - After the call: confirms the terms with each person separately, by voice.
-   - The agreement: a two-language work agreement (Hindi and English) and a voice summary for anyone who cannot read, sent on WhatsApp.
+   - The agreement: a work agreement in the people's own language and English, and a voice summary for anyone who cannot read, sent on WhatsApp.
    - Through the job: payments and finished work logged on WhatsApp; reminders when something is due.
 6. **Demo.** A full-bleed slide that says "Live" with the two-call story as three beats: Day 1, the deal. Day 5, the argument. Day 7, the balance.
 7. **The showpiece: receipts mid-argument.** Use the dashboard screenshot of the contradiction. Caption: on a second call, Ramesh says the total was 25,000. Gawah: "21 November ki call mein 24,000 tay hua tha. Suniye." - and plays the original moment.
@@ -35,17 +35,17 @@ Gawah is an AI that joins the phone call where a deal is made, between a househo
 10. **Built and measured.** A grid of real numbers from the build:
     - Gawah answers a question about the deal 3.7 s after the person stops speaking, and acknowledges in 1.7 s.
     - A spoken claim becomes a fact 1.5 s after the line; a contradiction is raised 1.9 s after it.
-    - Hinglish speech: 36 to 40 of 42 amounts, dates, and names transcribed right; "haan theek hai" and "pakka" right every time.
+    - Real Hindi-English speech: 36 to 40 of 42 amounts, dates, and names transcribed right; "haan theek hai" and "pakka" right every time.
     - Room noise: 0 false interruptions in 12 minutes of noise and clicks.
     - 410 automated tests across eight streams.
     Then one honest line: tested on five calls it had never seen, our first rule-based Judge caught only 4 of 10 moments - which is why Gawah's judgement now comes from the fact graph. [Replace with the new score once the re-test is in.]
-11. **What's next.** Real phone and WhatsApp calls (the demo uses a call link in the browser); voice notes as the everyday way in; deals made face to face; a worker's history that follows them from job to job.
+11. **What's next.** More of India's languages (the speech models underneath already cover many; the demo is in Hindi and Hinglish); real phone and WhatsApp calls (the demo uses a call link in the browser); voice notes as the everyday way in; deals made face to face; a worker's history that follows them from job to job.
 12. **Close.** The tagline again, and one line: "Zubaan, with a witness."
 
 ## Tone and visual direction
 
-- Warm, trustworthy, plain. This is about dignity and trust, not pity: no stock photos of labourers, no sad imagery. Use the product itself - the dashboard, the agreement, the voice - as the imagery.
-- Bilingual touches: "गवाह" in Devanagari on the title; short Hinglish quotes in the story slides, as people actually speak ("Balance kab milega?", "aapne 25 bola tha").
+- Warm, trustworthy, plain. This is about dignity and trust, not pity: no stock photos of labourers, no sad imagery. Design the imagery yourself: a live dashboard showing facts and a contradiction, a two-language work agreement, a call with three voices, a voice waveform - whatever tells the story best.
+- Built for India's languages: "गवाह" in Devanagari on the title; short quotes in the story slides as people actually speak ("Balance kab milega?", "aapne 25 bola tha"). Where it fits, a quiet nod to other Indian scripts, without claiming support for any language beyond Hindi and Hinglish.
 - Type: a clean sans with a matching Devanagari face (for example Inter with Mukta, or Noto Sans with Noto Sans Devanagari).
 - Colour: warm off-white paper, near-black ink, and the product's own two signal colours used sparingly - deep green for agreed and confirmed, red for a contradiction.
 - One idea per slide, large type, few words. Numbers big. Sources in small grey type at the bottom of the slide.
@@ -53,13 +53,7 @@ Gawah is an AI that joins the phone call where a deal is made, between a househo
 ## Rules
 
 - Do not invent numbers, quotes, or logos. Use only the figures above, with their sources.
+- Say Gawah is built for India's languages and demonstrated in Hindi and Hinglish. Do not list other languages as supported.
 - Do not call Gawah a lawyer, and do not say its agreement is "legally binding" or "enforceable". Say it is a written record of a spoken agreement, confirmed by both people by voice.
 - Do not use any real company's branding.
 
-## Assets
-
-Upload these from the project folder:
-- `fixtures/dashboard-shots/crew/2-contradiction.png` - the contradiction on the second call (slide 7).
-- `fixtures/dashboard-shots/crew/4-after-amendment.png` - after a change both people agreed to by voice.
-- `fixtures/dashboard-shots/crew/1-mid-call-facts.png` - facts appearing during the first call.
-- `fixtures/contract-sample/contract-page-1.png` and `contract-page-2.png` - the work agreement.
