@@ -13,7 +13,7 @@ import asyncio
 import logging
 from collections.abc import Awaitable, Callable
 
-from app.contracts import AnyEvent, Event
+from app.contracts import EVENTS, AnyEvent, Event
 
 log = logging.getLogger("gawah.bus")
 
@@ -40,6 +40,8 @@ class Bus:
         """Call handler for every event of one type. Pass the event class or its name.
         Returns a function that removes the subscription."""
         name = event_type if isinstance(event_type, str) else event_type.model_fields["name"].default
+        if name not in EVENTS:
+            raise ValueError(f"no such event: {name!r}")
         return self._add(_Subscription(name, handler))
 
     def subscribe_all(self, handler: Handler) -> Callable[[], None]:

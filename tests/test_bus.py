@@ -1,5 +1,7 @@
 import asyncio
 
+import pytest
+
 from app.bus import Bus
 from app.contracts import CallStarted, TranscriptLine
 from fakes.call import say, start_call
@@ -89,3 +91,11 @@ async def test_events_published_before_start_are_delivered_and_unsubscribe_stops
     await bus.drain()
     await bus.stop()
     assert seen == ["early"]
+
+
+def test_subscribing_to_a_misspelt_event_name_fails_at_once():
+    async def handler(event):
+        pass
+
+    with pytest.raises(ValueError, match="transcript.lines"):
+        Bus().subscribe("transcript.lines", handler)
