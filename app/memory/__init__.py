@@ -1,13 +1,15 @@
 """Stream: memory. The Scribe and the Memory in Gawah's crew.
 
 - scribe.py     each transcript line to facts (a small OpenAI model, or saved replies)
+- claims.py     a claim grounded in the words, and a value compared with the term as it stands
 - status.py     status moved forward by checklist, call-back, record and change events
 - book.py       the fact store: every version in order, the lines, the calls
 - chain.py      the witness chain over every fact version
 - memory.py     MemoryQueries (get_term, owed, search, clip), conflicts, agent notes
 - vectors.py    embeddings, cached on disk under memory-cache/
 - clips.py      a fact's seconds of audio from the call recordings
-- normalise.py  rupees, dates, and lines with nothing to extract
+- normalise.py  rupees (number words in number_words.py) and lines with nothing to extract
+- dates.py      days, and whether each is the start or the finish
 
 Set on app.state.memory (MEMORY_STATE). The clip is served at clip_path(fact_id), the chain
 check at /memory/chain/<deal_id>; for the dashboard and checks by hand, /memory/term/<deal_id>/<item>,

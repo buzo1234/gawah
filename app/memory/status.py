@@ -14,7 +14,8 @@ from app.contracts import (
     Backing, ChangeStatus, ChecklistUpdated, Fact, FactChanged, FactKind, FactSource, FactStatus, ItemKey,
     ItemState, Record, RecordConfirmed, RecordKind, RecordReceived, Role, TermsConfirmed, TermsDisputed,
 )
-from app.memory.normalise import format_rupees, one_amount, pin_date
+from app.memory.dates import pin_date
+from app.memory.normalise import format_rupees, one_amount
 
 log = logging.getLogger("gawah.memory")
 

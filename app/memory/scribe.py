@@ -8,82 +8,20 @@ in code; a greeting is skipped; everything else goes to the model once.
 import asyncio
 import logging
 import time
-from dataclasses import dataclass
-from datetime import date
 
 from app.contracts import CallKind, Fact, FactKind, FactStatus, ItemKey, TranscriptLine
 from app.memory import extract
 from app.memory.book import DealBook
-from app.memory.normalise import filler_kind, format_rupees, normalise_rupees, pin_date, stated_total
+from app.memory.claims import Claim, say_day, compare, comparable, parse_claim, parts_of
+from app.memory.dates import date_candidates, date_parts
+from app.memory.normalise import (
+    bare_numbers, filler_kind, format_rupees, opens_with_yes, parse_rupees, settles_all, stated_total,
+)
 
 log = logging.getLogger("gawah.memory")
 
 ORDER_WAIT_S = 12.0  # how long a line waits for the line before it to be applied
 CLIP_SPAN_S = 20.0  # an acceptance this close to its offer is cut into the same clip
-
-
-@dataclass
-class Claim:
-    item: ItemKey | None
-    kind: FactKind
-    stance: str
-    text: str
-    value: str | None
-    rupees: int | None
-    date: date | None
-    quote: str
-    accepts_line: int | None
-    contradicts: str | None
-
-
-def _squash(text: str) -> str:
-    return "".join(ch for ch in text.lower() if ch.isalnum())
-
-
-def parse_claim(raw: dict, line: TranscriptLine, today: date) -> Claim | None:
-    """A claim the model gave, or None if it is not grounded in the line's words."""
-    quote = (raw.get("quote") or "").strip()
-    if not quote or _squash(quote) not in _squash(line.text):
-        log.info("deal=%s line %s: dropped a claim whose quote is not in the line: %r", line.deal_id, line.line_no, quote)
-        return None
-    try:
-        item = ItemKey(raw["item"]) if raw.get("item") else None
-        kind = FactKind(raw.get("kind") or "other")
-        model_date = date.fromisoformat(raw["date"]) if raw.get("date") else None
-    except ValueError:
-        return None
-    rupees = normalise_rupees(raw.get("rupees"), raw.get("value"), quote)
-    return Claim(
-        item=item, kind=kind, stance=raw.get("stance") or "state", text=raw.get("text") or quote,
-        value=raw.get("value"), rupees=rupees, date=pin_date(quote, today, model_date), quote=quote,
-        accepts_line=raw.get("accepts_line"), contradicts=raw.get("contradicts"),
-    )
-
-
-def _day(current: Fact, day: date | None) -> date | None:
-    # The dates term holds a start and a finish, so one day cannot be compared with another.
-    return None if current.item == ItemKey.DATES else day
-
-
-def comparable(current: Fact, rupees: int | None, day: date | None) -> bool:
-    return (rupees is not None and current.value_rupees is not None) or (
-        _day(current, day) is not None and current.value_date is not None
-    )
-
-
-def differs(current: Fact | None, rupees: int | None, day: date | None) -> bool:
-    if current is None or not comparable(current, rupees, day):
-        return False
-    if rupees is not None and current.value_rupees is not None:
-        return rupees != current.value_rupees
-    return _day(current, day) != current.value_date
-
-
-def same(current: Fact | None, rupees: int | None, day: date | None) -> bool:
-    if current is None:
-        return False
-    day = _day(current, day)
-    return (rupees is not None and rupees == current.value_rupees) or (day is not None and day == current.value_date)
 
 
 class Scribe:
@@ -115,6 +53,7 @@ class Scribe:
         try:
             names = {n.lower() for n in deal.names.values()}
             kind = filler_kind(line.text, names)
+            opening = kind is None and opens_with_yes(line.text, names)
             claims: list[Claim] = []
             if kind is None:
                 claims = await self._claims(deal, line)
@@ -123,10 +62,12 @@ class Scribe:
                     await asyncio.wait_for(asyncio.shield(previous), ORDER_WAIT_S)
                 except TimeoutError:
                     log.warning("deal=%s line %s applied before line %s finished", line.deal_id, line.line_no, line.line_no - 1)
-            if kind == "yes":
-                self._plain_yes(deal, line, received)
+            if kind == "yes" or opening:
+                self._plain_yes(deal, line, received, claims)
             for claim in self._with_total(deal, line, claims):
                 self._apply(deal, line, claim, received)
+            if settles_all(line.text) and not line.text.rstrip().endswith("?"):
+                self._settle_all(deal, line, received)
         except Exception:
             log.exception("deal=%s line %s: scribe failed", line.deal_id, line.line_no)
         finally:
@@ -149,9 +90,8 @@ class Scribe:
             log.warning("deal=%s line %s: the model gave no claims (%s)", line.deal_id, line.line_no, e)
             return []
         claims = [c for c in (parse_claim(r, line, today) for r in raw or []) if c]
-        if line.text.rstrip().endswith("?"):  # a question with no value in it settles nothing
-            claims = [c for c in claims if c.value or c.rupees is not None or c.date]
-        return claims
+        # A question settles nothing unless it names a figure or a day ("15 mein karoge?").
+        return [c for c in claims if not c.quote.rstrip().endswith("?") or c.rupees is not None or c.date or c.parts]
 
     def _with_total(self, deal: DealBook, line: TranscriptLine, claims: list[Claim]) -> list[Claim]:
         """Once an amount is agreed, a total stated in the words is an amount claim, whatever the
@@ -162,6 +102,8 @@ class Scribe:
         for claim in claims:
             if claim.item != ItemKey.AMOUNT and claim.rupees == total:
                 claim.rupees = None  # the total is not the balance or the advance
+            elif claim.item == ItemKey.AMOUNT and claim.rupees == total and claim.kind not in (FactKind.TERM, FactKind.CHANGE):
+                claim.kind, claim.stance = FactKind.TERM, "recall"
         if any(c.item == ItemKey.AMOUNT and c.rupees == total for c in claims):
             return claims
         said = Claim(
@@ -181,12 +123,14 @@ class Scribe:
             valid_from=deal.at(line.call_no, line.start),
         )
 
+    def _compare(self, deal: DealBook, claim: Claim) -> tuple[str | None, Fact | None, str | None]:
+        return compare(deal, claim.item, claim.rupees, claim.date, claim.parts)
+
     def _apply(self, deal: DealBook, line: TranscriptLine, claim: Claim, received: float) -> None:
         if claim.kind == FactKind.CHANGE and claim.item:
-            current = deal.current(claim.item)
-            if current is None:
+            if deal.current(claim.item) is None:
                 claim.kind = FactKind.TERM  # nothing agreed yet to change: it is an offer
-            elif same(current, claim.rupees, claim.date):
+            elif self._compare(deal, claim)[0] == "same":
                 return  # the value that already stands
         base = self._base(deal, line, claim)
         if claim.kind in (FactKind.PAYMENT, FactKind.WORK):
@@ -194,47 +138,67 @@ class Scribe:
             fact = self.m.record(Fact(**base, counts_towards=target.id if target else None), received)
             self.m.note("scribe", f"line {line.line_no}: {claim.kind.value} noted, {fact.value or fact.text}", fact, line)
             return
+        verdict, against, part = self._compare(deal, claim)
         if claim.kind != FactKind.TERM or claim.item is None:
             fact = self.m.record(Fact(**base), received)
+            if claim.kind == FactKind.CHANGE and claim.item == ItemKey.DATES and verdict == "differs":
+                self._conflict(deal, line, claim, against, part, received)  # the brain compares no dates itself
             self._model_conflict(deal, line, claim, fact, received)
             return
-        current = deal.current(claim.item)
-        if differs(current, claim.rupees, claim.date):
+        if verdict == "differs":
             if claim.stance != "accept":
                 fact = self.m.record(Fact(**base), received)
                 self.m.note("scribe", f"line {line.line_no}: {claim.item.value} {fact.value or ''} said", fact, line)
-            self.m.conflict(deal, line, current, claim.rupees, claim.date, claim.value, received)
+            self._conflict(deal, line, claim, against, part, received)
             return
+        if claim.stance in ("state", "offer") and claim.rupees and self._accepted(deal, line, claim):
+            claim.stance = "accept"  # says back the figure the other person just offered for this term
+        target = self._accepted(deal, line, claim) if claim.stance == "accept" else None
+        if claim.stance == "accept" and not target and verdict != "same" and not self._heard(deal, line, claim):
+            claim.stance = "offer"  # nothing the other person said: it is this speaker's own proposal
         if claim.stance == "accept":
-            target = self._accepted(deal, line, claim)
             if target:
                 self.upgrade(deal, target, line, received, claim)
-            elif current and same(current, claim.rupees, claim.date):
-                if line.speaker != current.said_by and line.speaker not in current.agreed_by:
-                    self.upgrade(deal, current, line, received, None)
+            elif verdict == "same":
+                if line.speaker != against.said_by and line.speaker not in against.agreed_by:
+                    self.upgrade(deal, against, line, received, None)
             else:
                 fact = self.m.record(Fact(
                     **base | {"said_by": line.speaker.other, "agreed_by": [line.speaker], "status": FactStatus.AGREED}
                 ), received)
                 self.m.note("scribe", f"line {line.line_no}: {claim.item.value} {fact.value or ''} agreed", fact, line)
             return
-        if same(current, claim.rupees, claim.date):
+        if verdict == "same":
             return  # repeats what already stands
         fact = self.m.record(Fact(**base), received)
         verb = "offered" if claim.stance == "offer" else "said"
         self.m.note("scribe", f"line {line.line_no}: {claim.item.value} {fact.value or ''} {verb}", fact, line)
         self._model_conflict(deal, line, claim, fact, received)
 
+    def _conflict(self, deal: DealBook, line: TranscriptLine, claim: Claim, against: Fact, part: str | None, received: float) -> None:
+        if part is None:
+            self.m.conflict(deal, line, against, claim.rupees, claim.date, claim.value, received)
+            return
+        said, agreed = say_day(claim.parts[part]), say_day(parts_of(deal, against)[part])
+        both = " by both" if against.agreed_by or against.confirmed_by else ""
+        where = f" (call {against.call_no}, line {against.line_no})" if against.line_no else ""
+        self.m.conflict(
+            deal, line, against, None, None, f"a {part} on {said}", received,
+            explanation=f"Says a {part} on {said}; the {part} was {against.status.value} as {agreed}{both}{where}.",
+        )
+
     def _model_conflict(self, deal: DealBook, line: TranscriptLine, claim: Claim, fact: Fact, received: float) -> None:
         """Code could not compare values and the model cited an agreed or confirmed fact: one
         short model call on just the two decides, off the line's path."""
         if claim.kind == FactKind.CHANGE:
             return  # a proposed change is not a contradiction; it goes through fact.changed
+        if claim.item == ItemKey.DATES:
+            return  # code compares a start with the start and a finish with the finish; a day that is neither is no claim
         cited = extract.resolve(claim.contradicts, deal.standing())
         if cited is None or cited.status not in (FactStatus.AGREED, FactStatus.CONFIRMED) or cited.id == fact.id:
             return
-        if comparable(cited, claim.rupees, claim.date):
-            return  # code already compared them, and they agree
+        if comparable(deal, cited, claim):
+            return  # code already compared them
         check = extract.Check(cited, claim.text, claim.quote, line.speaker, deal.call(line.call_no).room)
         self._spawn(self._check(deal, line, claim, check, received))
 
@@ -265,9 +229,33 @@ class Scribe:
         pick = on_line or recent
         return max(pick, key=lambda f: f.line_no or 0) if pick else None
 
-    def _plain_yes(self, deal: DealBook, line: TranscriptLine, received: float) -> None:
+    def _heard(self, deal: DealBook, line: TranscriptLine, claim: Claim) -> bool:
+        """An acceptance accepts something: the figure or day must be in what the other person
+        said in the last few lines. A value code cannot read must at least name a line where the
+        other person said something about the term."""
+        if not claim.rupees and claim.date is None and not claim.parts:
+            cited = deal.lines.get((line.call_no, claim.accepts_line or 0))
+            if cited is None or cited.speaker != line.speaker.other:
+                return cited is None  # no line named: taken on the model's word
+            return any(f.item == claim.item for f in deal.from_line(line.call_no, cited.line_no))
+        today = deal.call_date(line.call_no)
+        for n in range(line.line_no - 1, max(0, line.line_no - 5), -1):
+            said = deal.lines.get((line.call_no, n))
+            if said is None or said.speaker != line.speaker.other:
+                continue
+            if claim.rupees and (claim.rupees in parse_rupees(said.text) or claim.rupees / 1000 in bare_numbers(said.text)):
+                return True
+            theirs = date_parts(said.text, today)
+            if any(p in theirs and day.same(theirs[p]) for p, day in claim.parts.items()):
+                return True
+            if claim.date is not None and claim.date in date_candidates(said.text, today):
+                return True
+        return False
+
+    def _plain_yes(self, deal: DealBook, line: TranscriptLine, received: float, claims: list[Claim] = ()) -> None:
         """"Theek hai" agrees to the other person's last line only when that line put exactly
-        one value on the table; otherwise it agrees to nothing."""
+        one value on the table; otherwise it agrees to nothing. On a line that goes on after
+        its yes, a counter-offer for the same term in the rest of the line takes it back."""
         before = deal.lines.get((line.call_no, line.line_no - 1))
         if before is None or before.speaker == line.speaker:
             return
@@ -276,8 +264,25 @@ class Scribe:
             if f.kind == FactKind.TERM and f.item and f.status == FactStatus.SAID and f.said_by == before.speaker
             and (f.value_rupees is not None or f.value_date is not None or f.value)
         ]
-        if len(offers) == 1 and not differs(deal.current(offers[0].item), offers[0].value_rupees, offers[0].value_date):
-            self.upgrade(deal, offers[0], line, received, None)
+        if len(offers) != 1 or any(c.item == offers[0].item for c in claims):
+            return
+        offer = offers[0]
+        if compare(deal, offer.item, offer.value_rupees, offer.value_date, parts_of(deal, offer))[0] != "differs":
+            self.upgrade(deal, offer, line, received, None)
+
+    def _settle_all(self, deal: DealBook, line: TranscriptLine, received: float) -> None:
+        """"Sab tay ho gaya" agrees to each term the other person stated on this call that
+        nothing agreed yet covers: the last thing they said about it."""
+        for item in ItemKey:
+            if deal.current(item) is not None:
+                continue
+            said = [
+                f for f in deal.standing()
+                if f.item == item and f.kind == FactKind.TERM and f.status == FactStatus.SAID
+                and f.said_by == line.speaker.other and f.call_no == line.call_no and (f.line_no or 0) < line.line_no
+            ]
+            if said:
+                self.upgrade(deal, max(said, key=lambda f: f.line_no or 0), line, received, None)
 
     def upgrade(self, deal: DealBook, fact: Fact, line: TranscriptLine, received: float, claim: Claim | None) -> Fact:
         update: dict = {
@@ -286,7 +291,8 @@ class Scribe:
         }
         if fact.call_no == line.call_no and fact.start is not None and line.end - fact.start <= CLIP_SPAN_S:
             update["end"] = max(fact.end or 0, line.end)
-        if claim and claim.value and claim.rupees in (None, fact.value_rupees):
+        narrower = fact.item == ItemKey.DATES and not set(parts_of(deal, fact)) <= set(claim.parts if claim else {})
+        if claim and claim.value and claim.rupees in (None, fact.value_rupees) and not narrower:
             update["value"] = claim.value
         agreed = self.m.record(fact.model_copy(update=update), received)
         what = agreed.item.value if agreed.item else "term"
