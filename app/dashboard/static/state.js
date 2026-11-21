@@ -37,8 +37,9 @@ export function emptyState(dealId) {
 
 function people(state, list) {
   for (const p of list || []) {
+    // As in the store: a later event fills in what is missing and never replaces it.
     const known = state.people[p.role] || {};
-    state.people[p.role] = { name: p.name || known.name, phone: p.phone || known.phone };
+    state.people[p.role] = { name: known.name || p.name, phone: known.phone || p.phone };
   }
 }
 

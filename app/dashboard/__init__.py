@@ -53,7 +53,9 @@ def register(app: FastAPI, bus: Bus) -> None:
                 [e.requested_by, e.other] if isinstance(e, DealRequested)
                 else e.people if isinstance(e, CallStarted) else []
             )
-            entry["names"].update({p.role.value: p.name for p in people if p.name})
+            for p in people:
+                if p.name:  # as in the store: the first name known for a role stays
+                    entry["names"].setdefault(p.role.value, p.name)
         deal_id = deal if deal in deals else next(reversed(deals), None)
         return {
             "deal_id": deal_id,
