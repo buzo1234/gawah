@@ -77,6 +77,14 @@ class DealCall:
         self._tasks = [asyncio.create_task(c) for c in (self.player.run(), self._work(), self._open(), self._limit())]
         self.log.info("in room %s as %s", self.room_name, tuning.IDENTITY)
 
+    def meet(self, people: list) -> None:
+        """Names learned on the call fill the ones the call started without."""
+        known = {p.role: p for p in self.people}
+        for person in people:
+            if person.name and not (known.get(person.role) and known[person.role].name):
+                known[person.role] = person
+        self.people = list(known.values())
+
     def on_speak(self, event: JudgeSpeak) -> None:
         self._jobs.put_nowait(_Job(event.instruction, event.reason is SpeakReason.WRAPPING_UP, event))
 

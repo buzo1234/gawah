@@ -73,10 +73,10 @@ export function apply(state, e) {
       if (e.kind === "callback") {
         state.callback = e.people?.[0]?.role || null;
         say({ type: "mark", text: `Call-back with ${e.people?.[0] ? nameOf(state, e.people[0].role) : "one person"}: confirming the terms alone` });
-      } else {
+      } else if (state.status !== "in_call") {
         state.status = "in_call";
         say({ type: "mark", text: "Call started" });
-      }
+      } // else: the brain sent it again with a name learned on the call
       change.panels = ["all"];
       break;
 

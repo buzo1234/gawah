@@ -38,6 +38,10 @@ QUESTIONS: dict[str, str] = {
     # Not in the spike. topic_left_unclear needs someone to have asked; in the usual case
     # nobody asks about the balance at all, and this catches that.
     "balance_skipped": "Have the speakers agreed on an advance and then started talking about a different subject, such as the dates of the work or what happens if it is late, without anyone saying when the remaining balance will be paid? Answer no if when the balance is paid has been agreed, if no advance has been agreed yet, or if the speakers are still talking about payments.",
+    # Not in the spike. wrapping_up waits for a goodbye, which is often the last line; this
+    # says yes a line or two earlier, and once alone mid-call, so the brain wants it twice
+    # in a row, or followed by a silence (judge.py, tuning.py).
+    "closing_soon": "Have the speakers finished discussing the terms and started closing the conversation, for example by confirming when and where they will meet next, thanking each other, or saying goodbye? Answer no while a price, a payment, a date or any other term is still being discussed.",
 }
 
 

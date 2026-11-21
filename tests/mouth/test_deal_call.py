@@ -239,3 +239,19 @@ async def test_stays_out_of_replayed_and_fake_calls(world):
     world.bus.publish(speak("d9"))
     await world.bus.drain()
     assert not world.seats and not world.links and not world.of(JudgeSpoke)
+
+
+async def test_a_name_learned_on_the_call_is_taken_and_the_room_is_not_joined_again(world):
+    nameless = RAMESH.model_copy(update={"name": None})
+    world.bus.publish(CallStarted(deal_id="d1", people=[SUNITA, nameless], room="deal-d1"))
+    call = await until(lambda: world.mouth.calls.get("d1"))
+    assert "'Worker' in the instruction means the person doing the work" in call._who()
+    world.bus.publish(CallStarted(deal_id="d1", people=[SUNITA, RAMESH], room="deal-d1"))  # the brain heard "Ramesh"
+    await world.bus.drain()
+    assert len(world.seats) == 1 and world.mouth.calls["d1"] is call
+    assert "Ramesh is the person doing the work" in call._who()
+    world.mouth.calls.pop("d1")
+    await call.end()  # out of the room
+    world.bus.publish(CallStarted(deal_id="d1", people=[SUNITA, RAMESH], room="deal-d1"))
+    await world.bus.drain()
+    assert len(world.seats) == 1, "a room already started is never joined again"

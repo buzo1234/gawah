@@ -10,8 +10,27 @@ WRAPUP_GAP_S = 3.0  # the same, once they are wrapping up: they are about to han
 SPEAK_TIMEOUT_S = 12.0  # no judge.spoke by then: assume it was said and move on
 WRAPUP_HOLD_S = 30.0  # how long "they are wrapping up" stays true after Sage2 last said so
 
+# --- When they are wrapping up ---
+# Sage2's wrapping_up (a goodbye) is enough on its own. Its closing_soon comes earlier but
+# has said yes alone mid-call, on talk about when the work starts, so it counts only
+# twice in a row with no term settled on those two lines, or followed by a silence.
+# Either way only once most of the deal is agreed: closing_soon said yes twice mid-call
+# on the dry run with three of six terms agreed.
+CLOSE_MIN_AGREED = 4  # of the six items
+# closing_soon, then no new line for this long (wall clock) while the Judge is not
+# speaking. Lines in a lively call arrive 5 to 8 s apart (the dry run).
+CLOSING_SILENCE_S = 10.0
+
 # --- How often it may ask ---
 MAX_ASKS_PER_ITEM = 2  # in practice one mid-call and one at wrap-up
+# A question the mouth dropped (no pause came) was never heard, so it does not count as an
+# ask. It may be asked again mid-call this many times; wrap-up asks it regardless.
+MAX_REASKS = 1
+
+# --- Names ---
+# A name the call did not start with is looked for after each of the first lines,
+# where Gawah's opening line asks each person to say theirs.
+NAME_LINES = 6
 # An answered question is checked this many lines after the Judge asked it, so that
 # both people have had a turn.
 RESOLVE_AFTER_LINES = 2

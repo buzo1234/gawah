@@ -1,9 +1,13 @@
 """The rules the practice calls do not reach, on scripted answers and the fake call.
 The answers here are written by hand, not recorded."""
 
+import asyncio
+
 from app.brain import Brain, tuning
 from app.contracts import (
     CallKind,
+    CallStarted,
+    Person,
     ChecklistUpdated,
     ItemState,
     JudgeSpeak,
@@ -11,6 +15,7 @@ from app.contracts import (
     Role,
     SpeakReason,
 )
+from fakes import SUNITA as SUNITA_
 from fakes.call import end_call, say, start_call
 
 DEAL = "deal-1"
@@ -50,12 +55,13 @@ class Values:
 
 
 class Call:
-    def __init__(self, bus, script: Scripted, values: Values | None = None, mode="live", mouth=False) -> None:
+    def __init__(self, bus, script: Scripted, values: Values | None = None, mode="live", mouth=False, people=None) -> None:
         self.bus, self.values = bus, values or Values()
         self.speaks: list[JudgeSpeak] = []
         self.checklists: list[ChecklistUpdated] = []
         self.clock, self.line_no = 0.0, 0
-        Brain(bus, mode, lambda started: (script, self.values))
+        self.brain = Brain(bus, mode, lambda started: (script, self.values))
+        self.started: list[CallStarted] = []
 
         async def on_speak(event: JudgeSpeak) -> None:
             self.speaks.append(event)
@@ -67,9 +73,13 @@ class Call:
         async def on_checklist(event: ChecklistUpdated) -> None:
             self.checklists.append(event)
 
+        async def on_started(event: CallStarted) -> None:
+            self.started.append(event)
+
         bus.subscribe(JudgeSpeak, on_speak)
         bus.subscribe(ChecklistUpdated, on_checklist)
-        start_call(bus, DEAL)
+        bus.subscribe(CallStarted, on_started)
+        start_call(bus, DEAL, people)
 
     async def say(self, text="haan theek hai", speaker=Role.HIRER, takes=4.0) -> None:
         self.line_no += 1
@@ -294,3 +304,124 @@ async def test_nothing_is_said_after_the_call_ends(bus):
     end_call(bus, DEAL)
     await call.say()
     assert call.spoken == []
+
+
+# ---- wrap-up ----
+
+MOST = {"work_agreed", "amount_agreed", "advance_agreed", "dates_agreed"}  # tuning.CLOSE_MIN_AGREED of six
+
+
+async def test_closing_soon_once_is_not_wrap_up(bus):
+    call = Call(bus, Scripted(MOST, {*MOST, "closing_soon"}, MOST, MOST))
+    for _ in range(4):
+        await call.say(takes=20.0)
+    assert call.spoken == []
+
+
+async def test_closing_soon_twice_in_a_row_is_wrap_up_once_most_is_agreed(bus):
+    call = Call(bus, Scripted(MOST, {*MOST, "closing_soon"}, {*MOST, "closing_soon"}))
+    for _ in range(3):
+        await call.say(takes=20.0)
+    assert call.spoken == [(3, "wrapping_up", "balance")]
+
+
+async def test_closing_soon_twice_with_little_agreed_is_not_wrap_up(bus):
+    # The dry run: talk about when the work starts read as closing, with three of six agreed.
+    some = {"work_agreed", "amount_agreed", "advance_agreed"}
+    call = Call(bus, Scripted(some, {*some, "closing_soon"}, {*some, "closing_soon"}, {*some, "closing_soon"}))
+    for _ in range(4):
+        await call.say(takes=20.0)
+    assert call.spoken == []
+
+
+async def test_closing_soon_on_the_line_that_settles_a_term_waits_for_the_next_pair(bus):
+    # The demo script: "baaki paisa kaam poora hone ke din" settles the balance and reads as closing.
+    call = Call(bus, Scripted(
+        MOST, {*MOST, "balance_when", "closing_soon"}, {*MOST, "balance_when", "closing_soon"},
+        {*MOST, "balance_when", "closing_soon"},
+    ))
+    for _ in range(4):
+        await call.say(takes=20.0)
+    assert call.spoken == [(4, "wrapping_up", "late_or_unfinished")]
+
+
+async def test_closing_soon_then_silence_is_wrap_up(bus):
+    call = Call(bus, Scripted(MOST, {*MOST, "closing_soon"}))
+    for _ in range(2):
+        await call.say(takes=20.0)
+    assert call.spoken == []
+    call.brain.sessions[DEAL].silence_passed()
+    await bus.drain()
+    assert call.spoken == [(2, "wrapping_up", "balance")]
+
+
+async def test_the_silence_timer_runs_on_a_real_call(bus, monkeypatch):
+    monkeypatch.setattr(tuning, "CLOSING_SILENCE_S", 0.05)
+    call = Call(bus, Scripted(MOST, {*MOST, "closing_soon"}))
+    await call.say(takes=20.0)
+    await call.say(takes=20.0)
+    await asyncio.sleep(0.15)
+    await bus.drain()
+    assert call.spoken == [(2, "wrapping_up", "balance")]
+
+
+async def test_a_line_before_the_silence_is_up_cancels_it(bus, monkeypatch):
+    monkeypatch.setattr(tuning, "CLOSING_SILENCE_S", 0.2)
+    call = Call(bus, Scripted(MOST, {*MOST, "closing_soon"}, MOST))
+    for _ in range(3):
+        await call.say(takes=20.0)
+    await asyncio.sleep(0.3)
+    await bus.drain()
+    assert call.spoken == []
+
+
+async def test_silence_while_gawah_speaks_is_not_wrap_up(bus):
+    call = Call(bus, Scripted({*MOST, "addressed_gawah", "closing_soon"}))  # no mouth: Gawah is still talking
+    await call.say("Gawah, sab likh liya?", takes=20.0)
+    assert call.spoken == [(1, "addressed_directly", None)]
+    call.brain.sessions[DEAL].silence_passed()
+    await bus.drain()
+    assert len(call.spoken) == 1
+
+
+# ---- a dropped question ----
+
+
+async def test_a_dropped_question_is_asked_again_on_the_next_line_then_left_for_wrap_up(bus):
+    skipped = {*ITEMS, "balance_skipped"} - {"balance_when"}
+    call = Call(bus, Scripted(skipped, skipped, skipped, skipped, {*skipped, "wrapping_up"}), mouth="drops")
+    for _ in range(5):
+        await call.say(takes=20.0)
+    assert call.spoken == [
+        (1, "term_unclear", "balance"),
+        (2, "term_unclear", "balance"),  # asked again, once
+        (5, "wrapping_up", "balance"),  # and wrap-up still asks
+    ]
+
+
+# ---- names ----
+
+
+async def test_a_name_said_on_the_call_fills_the_one_the_deal_did_not_have(bus):
+    values = Values(names=[{"hirer": None, "worker": None}, {"hirer": "Kavita", "worker": "ramesh ji"}])
+    no_name = Person(role=Role.WORKER, phone="+910000000002")
+    call = Call(bus, Scripted(set(), set(), {"advance_agreed", "balance_skipped"}), values, people=[SUNITA_, no_name])
+    for _ in range(3):
+        await call.say(takes=20.0)
+    assert [a for a in values.asked if a[0] == "names"] == [("names", None, 1), ("names", None, 2)]
+    assert len(call.started) == 2
+    again = call.started[1]
+    assert again.room == call.started[0].room
+    assert [(p.name, p.phone) for p in again.people] == [("Sunita", "+910000000001"), ("Ramesh", "+910000000002")]
+    assert call.speaks[0].instruction == "Ask Sunita when the balance will be paid."  # never replaced
+    session = call.brain.sessions[DEAL]
+    assert session.who.names[Role.WORKER] == "Ramesh" and session.who.sage_names[Role.WORKER] == "Worker"
+
+
+async def test_names_are_looked_for_only_in_the_first_lines(bus):
+    values = Values(names={"hirer": None, "worker": None})
+    call = Call(bus, Scripted(*[set()] * (tuning.NAME_LINES + 3)), values, people=[SUNITA_, Person(role=Role.WORKER)])
+    for _ in range(tuning.NAME_LINES + 3):
+        await call.say()
+    assert [at for kind, _, at in values.asked if kind == "names"] == list(range(1, tuning.NAME_LINES + 1))
+    assert len(call.started) == 1
