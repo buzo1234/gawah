@@ -9,11 +9,11 @@ A spike answers one question. It is not the start of the real code.
 
 ## Steps
 
-1. Write the question as yes or no. Example: "Can a Twilio trial account call two Indian mobiles and join them in one call?"
+1. Write the question as yes or no. Example: "Can the phone and the laptop join one LiveKit room and reach the agent as two separate tracks?"
 2. Write what you will do if the answer is no. If you cannot name a fallback, find one before you start. The fallbacks for our five spikes are in `PLAN.md`.
 3. Set a time box. Default is 45 minutes. Hard stop at 90.
 4. Write the shortest script that can answer the question, in `spikes/<number>-<name>.py`. One file. Hard-code what you like. No tests, no structure.
-5. Run it against the real service with real inputs: our own verified phones, our own Hinglish speech.
+5. Run it against the real service with real inputs: our own phone, our own Hinglish speech. Use as few real rooms and messages as will answer the question, and close every room after.
 6. Write the answer at the bottom of `PLAN.md` under "Spike answers".
 
 ## The answer

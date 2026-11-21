@@ -4,54 +4,76 @@ Checked on 21 November 2026. Prices and limits come from web search today; anyth
 
 ## Verdict
 
-Buildable in 2 days, at ₹0 if the phone leg works on a free trial.
+Buildable in 2 days, at ₹0.
 
-The one real risk is placing phone calls to Indian numbers without a paid, KYC-verified telephony account. Everything else (speech, the judge, WhatsApp, the contract) is standard and covered by the OpenAI and AWS credits.
+The deal call runs on LiveKit: Gawah sends both people a link on WhatsApp, and tapping it opens the call in the browser. This replaced the earlier plan of real phone calls through Twilio, because the Twilio trial account has no phone number and no verified phones, calling Indian mobiles on a trial is unconfirmed, and we have only one real phone.
 
-So: test the phone leg in the first 3 hours. If it fails, switch to Plan B (a call that runs in the browser from a WhatsApp link) and keep everything else the same.
+What we give up: phones do not ring for the deal call, and each person needs a smartphone browser. The real product would use phone calls; the demo uses a link.
+
+The main risk is now the Judge's timing - knowing when to speak in a live conversation.
 
 ## What we have
 
-- OpenAI credits - speech-to-text, the voice agent, text-to-speech, and the reasoning model.
-- AWS credits, including Bedrock - the server, storage, and a backup for speech and reasoning.
-- Sage2 (Levanto Labs) free plan - a fast decision and extraction model, with $1 of usage a month. Enough for the demo.
+All confirmed working on 21 Nov unless marked.
+
+- OpenAI credits - key works. Speech-to-text, the realtime voice model, and the reasoning model.
+- AWS credits, including Bedrock - keys work (temporary, will expire). S3 bucket created in `us-west-2`.
+- LiveKit free plan - keys work. Runs the call.
+- Twilio trial - keys work. Used only for the WhatsApp sandbox. No phone number claimed.
+- Sage2 (Levanto Labs) free plan - $1 of usage a month. Key is in `.env`, not yet tested.
 - Up to ₹1,000 (about $11) for anything else. The plan below does not need it.
+
+## Use the free plans with care
+
+LiveKit and Twilio are both on free plans with monthly allowances. Burning them in testing means no demo.
+
+- Build and test against the fakes and the replayer. Open a real LiveKit room or send a real WhatsApp message only for a spike, a manual check, or a demo run.
+- One room at a time. Every room gets a short empty-timeout and a hard maximum length (10 minutes).
+- Always disconnect and close the room when a test ends. Never leave the agent sitting in a room.
+- No LiveKit recording service. The agent saves the audio itself.
+- No loops that send WhatsApp messages. The sandbox allows one message every three seconds; stay well under it.
+- Do not poll either service's API in a loop.
+- Automated tests never touch LiveKit or Twilio.
 
 ## Feature by feature
 
 | Feature | Feasible in 2 days | How | Risk |
 |---|---|---|---|
-| Gawah calls both parties and connects them | Yes, if the trial allows calls to India | Twilio trial: two outbound calls joined in a conference | High - test first |
-| Knowing who said what | Yes | Each person is a separate call leg; stream each leg's audio separately | Low |
-| Live transcript in Hindi / Hinglish | Yes | OpenAI `gpt-transcribe` on each leg's audio stream | Medium - phone audio is low quality |
+| Gawah connects both parties on a call | Yes | A LiveKit room per deal; each person gets a join link on WhatsApp | Medium - opening the link from inside WhatsApp needs the mic to work |
+| Knowing who said what | Yes | Each person is a separate audio track in the room | Low |
+| Live transcript in Hindi / Hinglish | Yes | Each track goes to OpenAI `gpt-transcribe` | Medium - Hinglish accuracy untested |
 | Judge tracks pending contract items, live | Yes | Sage2 stream: one yes/no question per checklist item, updated as each line is said | Medium - Hinglish support not stated |
-| Judge speaks like a person in the call | Yes | OpenAI realtime voice model joins as a third participant, silent until told to speak | Medium - needs careful session settings |
+| Judge speaks like a person in the call | Yes | OpenAI realtime voice model, published into the room as Gawah's audio, silent until told to speak | Medium - we wire this ourselves |
 | Picking the right moment to speak | Yes, with tuning | Sage2 decisions on how the call is going, plus waiting for a pause | High - this is the part to tune |
 | Read-back of full terms on the call | Yes | Same voice model | Low |
-| Independent call-back to each party | Yes | One-to-one call with OpenAI's realtime voice model | Medium |
-| Replay the clip of a disputed term | Yes, as a stretch | Keep timestamps per transcript line, cut the clip, play it in the call | Medium - extra work |
+| Independent call-back to each party | Yes | A one-to-one room; the person taps a link | Low - but it is a link, not a ring |
+| Replay the clip of a disputed term | Yes, as a stretch | Keep timestamps per transcript line, cut the clip, play it in the room | Medium - extra work |
 | Contract sent to both | Yes | Reasoning model writes it, render as PDF, send on WhatsApp with a voice summary | Low |
-| WhatsApp bot takes in records | Yes | Twilio WhatsApp sandbox or Meta's free test number | Low |
+| WhatsApp bot takes in records | Yes | Twilio WhatsApp sandbox; Meta's free test number as backup | Low |
 | Backed vs unbacked records | Yes, for demo | Vision model reads the screenshot; has a transaction ID = backed | Low - not a real bank check |
 | Bot asks the other party to confirm | Yes | WhatsApp message with a yes/no reply | Low |
-| Call only if no WhatsApp reply | Yes | Timer (2 minutes in the demo), then an outbound call | Low |
+| Follow-up if no WhatsApp reply | Yes | Timer (2 minutes in the demo), then a second message with a call link | Low - a real ring needs a Twilio number |
 
 ## Recommended setup
 
-### 1. The bridge call
+### 1. The deal call
 
 - One party messages Gawah on WhatsApp with the other person's number.
-- The server places two outbound calls through Twilio and joins them in a conference.
-- Each call leg streams its own audio to the server. This is what tells us who is speaking - no speaker-separation model needed.
+- The server creates a LiveKit room for the deal and sends each person their own join link on WhatsApp.
+- The link opens a small page served by our app: one button, mic on, audio only. No install.
+- Gawah's agent joins the same room as a third participant.
+- Each person is a separate audio track. This is what tells us who is speaking - no speaker-separation model needed.
 - The call starts with a short recording notice and both say yes.
+
+LiveKit's agent framework is built around one person talking to one agent. For two people plus Gawah we do not use that ready-made session. The agent subscribes to each person's track itself and handles them separately. LiveKit's repo has a multi-user transcriber example to start from.
 
 ### 2. Witness and Judge
 
 One live voice on the call, with a harness behind it deciding what it says and when. Four parts:
 
-- Ears (Witness): each leg's audio goes to OpenAI `gpt-transcribe` (listed at $0.0045 per minute). Transcript lines are saved with speaker and timestamp. The full call recording goes to S3.
+- Ears (Witness): each person's audio track goes to OpenAI `gpt-transcribe` (listed at $0.0045 per minute). Transcript lines are saved with speaker and timestamp. The agent also writes each track's audio to a file and uploads it to S3 at the end.
 - Fast brain (Sage2): every transcript line is appended to a Sage2 stream. Sage2 answers a fixed set of questions about the call so far and sends an update only when an answer changes (about 80-130 ms, vendor-stated).
-- Mouth (voice model): OpenAI's realtime voice model (`gpt-realtime-2.1`) sits in the call as a third participant. Automatic replies are switched off, so it stays silent until the harness tells it to speak. If someone talks over it, it stops, like a person would.
+- Mouth (voice model): OpenAI's realtime voice model (`gpt-realtime-2.1`). The agent holds a connection to it and publishes its audio into the room as Gawah's voice. Automatic replies are switched off, so it stays silent until the harness tells it to speak. If someone talks over it, the agent stops the audio, like a person would.
 - Slow brain (reasoning model): writes the contract after the call. Not in the live loop.
 
 Questions Sage2 answers during the call (limit is 32 per session):
@@ -76,15 +98,17 @@ How it stays polite:
 
 Safety switch: one setting that turns the Judge back to "speak only at wrap-up". If the timing misbehaves on demo day, flip it.
 
-### 3. Call-backs and no-reply calls
+### 3. Call-backs and follow-ups
 
-- These are one-to-one calls, so use OpenAI's realtime voice model (`gpt-realtime-2.1`, or the cheaper `gpt-realtime-2.1-mini`). Connecting a Twilio call to it is a well-documented pattern.
-- Same setup is reused for "call only if no WhatsApp reply".
+- The independent call-back is a one-to-one room. Gawah sends the person a link; when they join, the realtime voice model talks to them directly. One person and one agent is the case LiveKit's framework is built for, so this is the easy one.
+- "No WhatsApp reply" is followed by a second message with a call link.
+- Stretch: claim a Twilio trial number and verify our phone, so this one follow-up is a real ringing call. One outbound call to our own verified phone is the simplest thing a Twilio trial can do.
 
 ### 4. WhatsApp
 
-- First choice: Twilio's WhatsApp sandbox - same account as the calls, minutes to set up.
-- Backup: Meta's WhatsApp Cloud API test number - free, up to 5 verified recipients.
+- Twilio's WhatsApp sandbox. It uses a number Twilio provides, so we need no number of our own - only the account keys we already have. Ours is `+17372508034` (the number in Twilio's docs, `+14155238886`, was not the one our console showed).
+- Each person joins by sending the join code from the Twilio console to that number. Membership lasts three days. We joined on 21 Nov, so it lapses on 24 Nov.
+- Backup: Meta's WhatsApp Cloud API test number - also free, up to 5 verified recipients, more setup.
 - Both only allow free-form replies after the user has messaged first. So in the demo, each person starts by messaging Gawah. That also works as onboarding.
 
 ### 5. Records
@@ -95,73 +119,71 @@ Safety switch: one setting that turns the Judge back to "speak only at wrap-up".
 
 ### 6. Hosting and storage
 
-- One small EC2 server running the whole app. Audio streaming needs long-lived connections, so a single server is simpler than serverless.
-- A free tunnel (cloudflared or ngrok) for the public address Twilio needs during development.
-- S3 for recordings, clips, and contract PDFs. SQLite on the server for deals and records.
+- The app and the agent run on the laptop during the hackathon. An EC2 server is optional.
+- A free `cloudflared` tunnel gives the public https address. Twilio needs it to deliver WhatsApp messages, and phones need https to allow the mic on the call page.
+- S3 for recordings, clips, and contract PDFs. SQLite for deals and records.
 
 ### AWS backups
 
 - If OpenAI's Hindi transcription is weak: Amazon Transcribe.
-- If OpenAI's Hindi voice is weak: Amazon Polly.
 - If we want a second reasoning model: any text model on Bedrock.
 
-## Plan B - no phone network
+## If LiveKit fails - real phone calls through Twilio
 
-If trial accounts cannot call Indian numbers:
+The earlier plan, kept as the fallback.
 
-- Gawah sends both parties a link on WhatsApp. Tapping it opens an audio call in the phone's browser.
-- Use LiveKit (open source, free plan) for the audio room. Each person is a separate audio track, so who-said-what still works.
-- Witness, Judge, WhatsApp, records, and the contract stay exactly the same.
-- LiveKit's agent framework supports a realtime voice model joining a room (from memory, not checked today), so the live Judge may be easier to wire up here than on a phone conference.
-- What we lose: the phone does not ring. The "call only if no reply" step becomes a second WhatsApp nudge with the link.
-
-Decide by hour 3. Do not spend the first day fighting telephony.
+- Claim a Twilio trial number, verify our phones, and have Gawah dial both people and join them in a conference. Each call leg is streamed separately, so who-said-what still works.
+- Limits: a trial can only call verified numbers (up to 5), plays a trial message at the start of each call, shows a foreign caller ID, and may not be able to call Indian mobiles at all.
+- With one phone, the second person would join as a Twilio browser caller.
+- Phone audio is lower quality than a browser call, so transcription gets harder.
 
 ## Cost
 
 | Item | Cost |
 |---|---|
 | OpenAI speech and reasoning | Credits. A 10-minute demo call is well under $2. |
-| AWS server and storage | Credits |
+| AWS storage | Credits |
+| LiveKit calls | Free plan |
 | Sage2 decisions and extraction | Free plan, $1 of usage a month. A live call costs about $0.0013 at listed rates. |
-| Twilio calls and WhatsApp sandbox | Trial allowance |
-| Tunnel, LiveKit free plan | Free |
+| Twilio WhatsApp sandbox | Trial allowance |
+| Tunnel | Free |
 | Total out of pocket | ₹0 |
 
 What would cost money, and is not needed for the demo:
 
-- Removing Twilio's trial message and the verified-numbers limit means upgrading the account.
 - Sage2's first paid plan is $14 a month, just over the ₹1,000 cap. Only needed if the free usage runs out.
-- An Indian phone number from an Indian provider (Exotel, Plivo) needs KYC documents, which will not clear in 2 days.
+- A paid LiveKit plan, if we use up the free allowance.
+- Upgrading Twilio, to remove the trial limits.
 
 ## Risks, in order
 
-1. Calling Indian numbers on a trial. Trial accounts can only call verified numbers (up to 5), play a trial message at the start of each call, and may be limited to the sign-up country. Sign up with an Indian mobile number and verify the team's phones.
-2. Picking the moment to speak. A wrong interruption is worse than silence. Sage2's docs describe live call monitoring, but not turn-taking - that use is ours and unproven. Tune it on recorded practice calls, and keep the safety switch.
+1. Picking the moment to speak. A wrong interruption is worse than silence. Sage2's docs describe live call monitoring, but not turn-taking - that use is ours and unproven. Tune it on recorded practice calls, and keep the safety switch.
+2. Two people plus an agent on LiveKit. The framework's ready-made session handles one person. We wire the per-person tracks and the voice output ourselves. Prove it in the first spike.
 3. Sage2 on Hinglish. Its pages do not mention Hindi or any Indian language. Backup: ask the same questions of a small, fast OpenAI text model - slower, but known to handle Hinglish.
-4. The voice model in a three-way call. It hears both voices mixed together, and there are bug reports of it replying on its own even with automatic replies off. Test the session settings early.
-5. Hindi and Hinglish accuracy on phone audio. Sources disagree on how good OpenAI's models are for Indian languages. Test with our own voices early.
-6. Foreign caller ID. Calls will show a non-Indian number. Fine for a demo on our own phones, not fine for real users.
-7. Time. More moving parts than the simple version. See the cut list.
+4. The call link opened from WhatsApp. Some in-app browsers block the mic. Test on the real phone early; the fix is a "open in browser" prompt.
+5. Running out of free allowance. See "Use the free plans with care".
+6. Hindi and Hinglish transcription accuracy. Browser audio is clearer than phone audio, which helps. Test with our own voices early.
+7. AWS keys expiring mid-build. Replace all three together when they do.
+8. Time. See the cut list.
 
 ## Test these first (first 3 hours)
 
-1. Twilio trial: call one Indian mobile. Then call two and join them in a conference.
-2. Stream one leg's audio to `gpt-transcribe` and speak Hinglish. Read the transcript.
-3. Add the realtime voice model to the conference as a third participant. Check that it stays silent until triggered, speaks Hindi when told, and stops when talked over.
+1. LiveKit: phone (from a WhatsApp link) and laptop join one room and hear each other. The agent joins and receives the two voices as separate tracks.
+2. Send one track to `gpt-transcribe` and speak Hinglish. Read the transcript.
+3. Publish the realtime voice model's audio into the room. Check that it stays silent until triggered, speaks Hindi when told, and can be cut off.
 4. WhatsApp sandbox: receive a text and an image, reply to both.
 5. Sage2: open a stream with three questions, feed it a Hinglish transcript line by line, and check the answers and the delay.
 
-If 1 fails, go to Plan B. If 2 fails, try Amazon Transcribe. If 5 fails, use a small OpenAI text model for the decisions.
+If 1 fails, fall back to Twilio phone calls. If 2 fails, try Amazon Transcribe. If 3 fails, generate speech from text and play that into the room. If 5 fails, use a small OpenAI text model for the decisions.
 
 ## Cut list
 
 Build for real:
 
-- Bridge call with per-speaker transcript
-- Judge asking pending questions and reading back the terms
+- The deal call with per-speaker transcript
+- Judge asking at the right moment and reading back the terms
 - Contract sent on WhatsApp
-- Record intake with backed / unbacked, confirm on WhatsApp, call if no reply
+- Record intake with backed / unbacked, confirm on WhatsApp, follow up if no reply
 
 Simplify:
 
@@ -172,41 +194,52 @@ Skip:
 
 - Judge in disputes, voice forensics, Khatabook
 
+Stretch:
+
+- A real ringing phone for the no-reply follow-up, through a Twilio trial number
+
 ## Not verified
 
-- Whether a Twilio trial signed up in India can call Indian mobiles, and the per-minute rate.
-- Whether the Twilio WhatsApp sandbox works on a trial account.
-- Twilio's exact trial allowance (sources say 75 voice minutes or about $15 of credit).
-- How exactly the realtime voice model joins a Twilio conference as a participant, and whether a trial account allows it.
-- Whether Sage2 handles Hindi or Hinglish text, its free-plan rate limits, and whether signup needs a card.
-- Sage2's speed figures are the vendor's own.
-- That Amazon Transcribe and Amazon Polly support Hindi - from memory, not checked today.
+- LiveKit's free plan limits. Sources disagree (one says 1,000 agent minutes and 5,000 call minutes a month). Check the LiveKit dashboard.
+- Whether an agent running on our own laptop counts against LiveKit's agent minutes.
+- Whether the call page's mic works when the link is opened inside WhatsApp.
+- Whether our server can receive and reply to sandbox messages. Joining works on the trial (see below); the webhook is untested until the server exists.
+- Whether Sage2 handles Hindi or Hinglish text, its free-plan rate limits, and whether the key works. Sage2's speed figures are the vendor's own.
+- That Amazon Transcribe supports Hindi - from memory, not checked today.
 - Current WhatsApp message pricing - sources conflict after 1 October 2026. Irrelevant at demo volume.
-- OpenAI model names are from OpenAI's models page via search; confirm in the dashboard.
+
+Confirmed on 21 Nov:
+
+- OpenAI key: `gpt-realtime-2.1`, `gpt-realtime-2.1-mini`, and `gpt-transcribe` are all available. Also available and worth a look: `gpt-4o-transcribe-diarize`, `gpt-live-1.1`, `gpt-live-transcribe`.
+- AWS keys work; S3 bucket created and written to.
+- LiveKit keys work.
+- Twilio keys work; the account is a trial with no phone number and no verified phones.
+- WhatsApp sandbox joined from our phone on the trial account: the join message arrived and Twilio's reply was delivered and read.
 
 ## Ruled out
 
 - Amazon Connect: India is listed as outbound-only through a partner beta. Not a 2-day option.
-- Exotel: KYC is mandatory and audio streaming needs support to switch it on.
+- Exotel and Plivo Indian numbers: KYC documents will not clear in 2 days.
 - WhatsApp's own calling API: exists and has an India rate card, but needs a full business setup.
 
 ## References
 
+- [LiveKit: OpenAI realtime integration](https://docs.livekit.io/agents/models/realtime/openai/)
+- [LiveKit: OpenAI speech-to-text](https://docs.livekit.io/agents/models/stt/openai/)
+- [LiveKit: request for multi-participant sessions](https://github.com/livekit/agents/issues/6795)
+- [LiveKit: multi-participant transcription issue](https://github.com/livekit/agents/issues/3657)
+- [LiveKit: pricing](https://livekit.com/pricing)
+- [Twilio: WhatsApp sandbox](https://www.twilio.com/docs/whatsapp/sandbox.md)
 - [Twilio: free trial account](https://www.twilio.com/docs/usage/tutorials/how-to-use-your-free-trial-account)
-- [Twilio: error 21608, unverified numbers](https://www.twilio.com/docs/api/errors/21608)
 - [OpenAI: models](https://developers.openai.com/api/docs/models)
 - [OpenAI: gpt-transcribe](https://developers.openai.com/api/docs/models/gpt-transcribe)
-- [OpenAI: realtime transcription guide](https://developers.openai.com/api/docs/guides/realtime-transcription)
-- [OpenAI: new voice models announcement](https://openai.com/index/advancing-voice-intelligence-with-new-models-in-the-api/)
-- [Forasoft: OpenAI realtime pricing, Nov 2026](https://www.forasoft.com/blog/article/openai-realtime-api-pricing)
 - [OpenAI: realtime conversations guide](https://developers.openai.com/api/docs/guides/realtime-conversations)
+- [OpenAI: new voice models announcement](https://openai.com/index/advancing-voice-intelligence-with-new-models-in-the-api/)
 - [Microsoft: realtime audio, switching off automatic replies](https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/realtime-audio)
+- [Forasoft: OpenAI realtime pricing, Nov 2026](https://www.forasoft.com/blog/article/openai-realtime-api-pricing)
 - [Levanto: Sage2 model page](https://levanto.ai/model)
 - [Levanto: pricing](https://levanto.ai/pricing)
 - [Levanto: streaming docs](https://docs.levanto.ai/stream)
 - [Meta: WhatsApp calling pricing](https://developers.facebook.com/documentation/business-messaging/whatsapp/calling/pricing)
 - [RichAutomate: WhatsApp Cloud API test number limits](https://richautomate.in/blog/whatsapp-cloud-api-test-number-sandbox-india-2026)
 - [AWS: Amazon Connect telecoms coverage](https://d1v2gagwb6hfe1.cloudfront.net/Amazon_Connect_Telecoms_Coverage.pdf)
-- [LiveKit: pricing](https://livekit.com/pricing)
-- [Anchor Terminal: Plivo Voice review](https://www.anchorterminal.com/tools/plivo-voice)
-- [TalkEasy: Exotel alternatives in India](https://talk.groweasy.ai/feed/best/exotel-alternatives-india)

@@ -1,6 +1,6 @@
 ---
 name: prove-it-works
-description: Use before saying a task is done, before asking for a merge, and before reporting a spike result. Checks the change against the real thing (a replayed call, a real phone call, a real WhatsApp message) instead of "it compiles" or "tests pass".
+description: Use before saying a task is done, before asking for a merge, and before reporting a spike result. Checks the change against the real thing (a replayed call, a real call, a real WhatsApp message) instead of "it compiles" or "tests pass".
 ---
 
 # Prove it works
@@ -20,12 +20,14 @@ A change is done when you have watched it do its job, not when the code looks ri
 
 | Stream | Minimum proof | Better |
 |---|---|---|
-| bridge | Speaker-labelled lines appear on the dashboard from a real two-phone call | The recording is in S3 and plays |
+| bridge | Speaker-labelled lines appear on the dashboard from a real call between the phone and the laptop | The recording is in S3 and plays |
 | brain | Replaying both practice calls raises the expected `judge.speak` at the expected line | Same result three runs in a row |
 | mouth | A `judge.speak` event is heard on a real call | It stops when talked over |
 | whatsapp | A real message in, the right reply out, the right event on the bus | The no-reply timer fires |
 | contract | The PDF opens and the terms match the fixture | It arrives on a real phone |
 | dashboard | It shows a replayed call live | Readable from across the room |
+
+Real rooms and real messages use up free allowances. Prove with the replayer where that is enough, and use one real call for what only a real call can show.
 
 ## What does not count
 

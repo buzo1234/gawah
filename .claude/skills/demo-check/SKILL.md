@@ -11,20 +11,21 @@ The demo is the product for these two days. This check says how much of it works
 
 - Be on `main`, up to date, with a clean tree.
 - Server running, tunnel up, dashboard open.
-- Two verified phones to hand. Say which is Sunita and which is Ramesh.
+- The phone and the laptop to hand (or two phones). Say which is Sunita and which is Ramesh.
+- A full run opens real rooms and sends real messages on free plans. Run it at checkpoints, not casually, and close every room after.
 
 ## The steps
 
 Run them in order. Stop at the first failure - later steps depend on earlier ones.
 
 1. Sunita messages Gawah with Ramesh's number. A deal is created.
-2. Both phones ring. The recording notice plays. Both say yes.
+2. Both get a call link on WhatsApp and join. The recording notice plays. Both say yes.
 3. They agree the work and the amount, and move on without the balance date. The Judge waits for a pause, then asks.
 4. The Judge reads back the full terms. They hang up.
-5. Gawah calls Ramesh alone to confirm. (Stretch: he disputes a term and hears the clip.)
+5. Gawah sends Ramesh a link to confirm alone. (Stretch: he disputes a term and hears the clip.)
 6. The contract arrives on both phones.
 7. Sunita sends a payment screenshot. It is logged with no confirmation asked.
-8. Ramesh texts that the work is done. Sunita is asked, does not reply, and her phone rings.
+8. Ramesh texts that the work is done. Sunita is asked, does not reply, and gets a follow-up with a call link. (Stretch: her phone rings.)
 
 For each step, check three places: what the phones did, what the dashboard showed, and what the log says.
 

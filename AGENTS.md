@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Gawah is an AI witness for deals made on a phone call: it joins the call, asks about missing terms, writes the contract, and tracks payments on WhatsApp. This is a 2-day hackathon build.
+Gawah is an AI witness for deals made on a call: it joins the call, asks about missing terms, writes the contract, and tracks payments on WhatsApp. This is a 2-day hackathon build. For the demo the call runs in the browser on LiveKit, and WhatsApp runs on the Twilio sandbox.
 
 Read before you start:
 
@@ -17,6 +17,17 @@ Read before you start:
 5. Keep moving on reversible work without asking. Stop and ask before anything in "Stop and ask" below.
 6. Report honestly. Say what you ran, what you did not run, and what is still unverified. A skipped check is reported as skipped.
 7. Guard your context. Delegate bulk reading and searching. Pass file paths between agents, not pasted file contents.
+
+## Free plans - use them with care
+
+LiveKit and Twilio are on free plans with monthly allowances. Using them up in testing means no demo.
+
+- Build and test against the fakes and the replayer.
+- Open a real LiveKit room or send a real WhatsApp message only for a spike, a manual check, or a demo run.
+- One room at a time. Give every room a short empty-timeout and a 10-minute maximum. Always close it when you are done.
+- Never leave the agent sitting in a room, and never use LiveKit's recording service.
+- No loops that send WhatsApp messages or poll either service's API.
+- Say in your report how many real rooms you opened and messages you sent.
 
 ## Stop and ask
 
@@ -45,7 +56,7 @@ Python is pinned to 3.12 through `uv`. Do not use the system Python.
 ## Code rules
 
 - Async throughout. Shared types are pydantic models in `app/contracts.py`.
-- Outside services (Twilio, OpenAI, Sage2, WhatsApp, S3) are called only from the stream that owns them, each behind one small client file with a timeout and one retry. Inside the app, trust the types.
+- Outside services (LiveKit, Twilio, OpenAI, Sage2, S3) are called only from the stream that owns them, each behind one small client file with a timeout and one retry. Inside the app, trust the types.
 - Every log line carries the deal id. Mask phone numbers to the last 4 digits.
 - Keep files small and named for what they do. Split a file before it passes about 300 lines.
 - No comments that restate the code. Comment only what a reader could not work out.
