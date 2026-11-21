@@ -1,0 +1,1826 @@
+[
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-01",
+  "audio_s": 7.08,
+  "text": "हेलो, रमेश जी बोल रहे हैं। मैं सुनीता बोल रही हूँ। शर्मा जी ने आपका नंबर दिया था।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.921,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-02",
+  "audio_s": 4.38,
+  "text": "हाँ जी मैडम, नमस्ते, बोलिए क्या काम है?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.697,
+  "usage": {
+   "type": "duration",
+   "seconds": 5
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-03",
+  "audio_s": 7.02,
+  "text": "मुझे अपना फ्लैट पेंट करवाना है, 2 BHK, इंद्रापुरम में, थर्ड फ्लोर पर।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.881,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-04",
+  "audio_s": 5.46,
+  "text": "ठीक है मैडम, सिर्फ अंदर का काम है या बाहर की ग्रिल भी करनी है?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.857,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-05",
+  "audio_s": 6.36,
+  "text": "अंदर का पूरा, दोनों बेडरूम, हॉल और किचन, बालकनी की ग्रिल भी कर दे।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.96,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-06",
+  "audio_s": 7.08,
+  "text": "पेंट कौन सा लगवाना है, Asian Paints का Royale लगे या normal Tractor Emulsion?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.801,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "mix"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-07",
+  "audio_s": 6.9,
+  "text": "प्रोडक्ट पॉजिटिव लगता है, आप ट्राई करना चाहिए, लेकिन दो कोट होनी चाहिए।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.243,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-08",
+  "audio_s": 6.18,
+  "text": "दो कमरों पुट्टी का, मटेरियल के साथ पच्चीस हज़ार लगेगा।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.759,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-09",
+  "audio_s": 4.38,
+  "text": "पच्चीस हज़ार बहुत ज़्यादा है, मेरा बजट बीस थाउज़ेंड का है।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.877,
+  "usage": {
+   "type": "duration",
+   "seconds": 5
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-10",
+  "audio_s": 7.02,
+  "text": "मैडम, प्लीज नहीं हो पाएगा। लेबर ही तीन आदमी का है। चलो बाईस हज़ार फाइनल कर लो।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.939,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-11",
+  "audio_s": 7.56,
+  "text": "ठीक है, 22,000 है, लेकिन मटेरियल आपका होगा, ऊपर से कोई एक्स्ट्रा चार्ज नहीं।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.78,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-12",
+  "audio_s": 2.34,
+  "text": "हाँ, ठीक है।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.642,
+  "usage": {
+   "type": "duration",
+   "seconds": 3
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-13",
+  "audio_s": 5.64,
+  "text": "एडवांस कितना दोगे? मटेरियल लेने के लिए पाँच हज़ार तो पहले चाहिए।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.812,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-14",
+  "audio_s": 6.3,
+  "text": "पांच हजार एडवांस में कल जीपे कर दूँ, UPI से आपका यही नंबर है ना?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.902,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-15",
+  "audio_s": 5.1,
+  "text": "जी हाँ, इसी नंबर पे कर देना, रमेश कुमार नाम है।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.672,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-16",
+  "audio_s": 5.64,
+  "text": "और बजट सेवेंटी थाउज़ंड काम पूरा होने के बाद सेम डे दे दूँगा।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.846,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-17",
+  "audio_s": 6.42,
+  "text": "मैडम आधा काम होने पे थोड़ा दे देना, सात हज़ार, बाकी दस हज़ार लास्ट में।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.478,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-18",
+  "audio_s": 3.54,
+  "text": "चलो ठीक है, काम कब से स्टार्ट करोगे?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.673,
+  "usage": {
+   "type": "duration",
+   "seconds": 4
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-19",
+  "audio_s": 5.76,
+  "text": "अगले सोमवार से शुरू कर देंगे। सुबह नौ बजे तक पहुंच जाएंगे।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.725,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-20",
+  "audio_s": 4.92,
+  "text": "और खत्म कब तक होगा? पंद्रह तारीख को मेरे घर पे गेस्ट आ रहे हैं।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.833,
+  "usage": {
+   "type": "duration",
+   "seconds": 5
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-21",
+  "audio_s": 6.72,
+  "text": "पांच दिन का काम है, मतलब शुक्रवार तक फिनिश, पंद्रह तारीख से पहले हो जाएगी।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.91,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-22",
+  "audio_s": 2.7,
+  "text": "पक्का।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.634,
+  "usage": {
+   "type": "duration",
+   "seconds": 3
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-23",
+  "audio_s": 1.74,
+  "text": "पक्का।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.657,
+  "usage": {
+   "type": "duration",
+   "seconds": 2
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 1,
+  "line": "paint-24",
+  "audio_s": 8.94,
+  "text": "तो फाइनल टोटल बाईस हज़ार, पाँच एडवांस, सात बीच में और दस काम के बाद, सोमवार को मिलते हैं।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.847,
+  "usage": {
+   "type": "duration",
+   "seconds": 9
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-01",
+  "audio_s": 7.08,
+  "text": "हेलो, रमेश जी बोल रहे हैं। मैं सुनीता बोल रही हूँ। शर्मा जी ने आपका नंबर दिया था।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.018,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-02",
+  "audio_s": 4.38,
+  "text": "हाँ जी मैडम, नमस्ते। बोलिए क्या काम है?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.747,
+  "usage": {
+   "type": "duration",
+   "seconds": 5
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-03",
+  "audio_s": 7.02,
+  "text": "मुझे अपना फ्लैट पेंट करवाना है, 2 BHK, इंदिरापुरम में, थर्ड फ्लोर।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.09,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-04",
+  "audio_s": 5.46,
+  "text": "ठीक है मैडम, सिर्फ अंदर का काम है या बाहर की ग्रिल भी करनी है?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.948,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-05",
+  "audio_s": 6.36,
+  "text": "अंदर का पूरा, दोनों बेडरूम, हॉल और किचन। बालकनी की ग्रिल भी कर दे।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.98,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-06",
+  "audio_s": 7.08,
+  "text": "पेंट कौन सा लगवाना है, Asian Paints का Royale लगे या normal Tractor Emulsion?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.745,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "mix"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-07",
+  "audio_s": 6.9,
+  "text": "थोड़ा पॉजिटिव रखो, आप टाइम करना चाहिए, लेकिन दो फुट होनी चाहिए।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.078,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-08",
+  "audio_s": 6.18,
+  "text": "दो कमरों पुट्टी कट, मटेरियल के साथ पच्चीस हज़ार लगेगा।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.314,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-09",
+  "audio_s": 4.38,
+  "text": "पच्चीस हज़ार बहुत ज़्यादा है, मेरा बजट बीस थाउज़ेंड का है।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.815,
+  "usage": {
+   "type": "duration",
+   "seconds": 5
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-10",
+  "audio_s": 7.02,
+  "text": "मैडम, प्लीज नहीं हो पाएगा। लेबर ही तीन आदमी का है। चलो, बाईस हज़ार फाइनल कर लो।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.884,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-11",
+  "audio_s": 7.56,
+  "text": "ठीक है, 22,000 का, लेकिन मटेरियल आपका होगा, ऊपर से कोई एक्स्ट्रा चार्ज नहीं।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.709,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-12",
+  "audio_s": 2.34,
+  "text": "हाँ, ठीक है।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.684,
+  "usage": {
+   "type": "duration",
+   "seconds": 3
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-13",
+  "audio_s": 5.64,
+  "text": "एडवांस कितना दोगे? मटेरियल लेने के लिए पाँच हज़ार तो पहले चाहिए।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.964,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-14",
+  "audio_s": 6.3,
+  "text": "पांच हज़ार एडवांस में कल जीपे कर दूँ, UPI से आपका यही नंबर है ना?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.879,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-15",
+  "audio_s": 5.1,
+  "text": "जी हाँ, इसी नंबर पे कर देना, रमेश कुमार नाम है।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.76,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-16",
+  "audio_s": 5.64,
+  "text": "और बजट सेवेंटी थाउज़ंड काम पूरा होने के बाद सेम डे दे दूँगा।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.713,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-17",
+  "audio_s": 6.42,
+  "text": "मैडम आधा काम होने पे थोड़ा दे देना, सात हज़ार, बाकी दस हज़ार लास्ट में।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.898,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-18",
+  "audio_s": 3.54,
+  "text": "चलो ठीक है, काम कब से स्टार्ट करोगे?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.708,
+  "usage": {
+   "type": "duration",
+   "seconds": 4
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-19",
+  "audio_s": 5.76,
+  "text": "अगले सोमवार से शुरू कर देंगे, सुबह नौ बजे तक पहुंच जाएंगे।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.669,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-20",
+  "audio_s": 4.92,
+  "text": "और खत्म कब तक होगा? पंद्रह तारीख को मेरे घर पे गेस्ट आ रहे हैं।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.707,
+  "usage": {
+   "type": "duration",
+   "seconds": 5
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-21",
+  "audio_s": 6.72,
+  "text": "पांच दिन का काम है, मतलब शुक्रवार तक फिनिश, पंद्रह तारीख से पहले हो जाएगी।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.802,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-22",
+  "audio_s": 2.7,
+  "text": "पक्का।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.612,
+  "usage": {
+   "type": "duration",
+   "seconds": 3
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-23",
+  "audio_s": 1.74,
+  "text": "पक्का।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.669,
+  "usage": {
+   "type": "duration",
+   "seconds": 2
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "hi+en+prompt",
+  "run": 2,
+  "line": "paint-24",
+  "audio_s": 8.94,
+  "text": "तो फाइनल टोटल बाईस हज़ार, पाँच एडवांस, सात बीच में और दस काम के बाद सोमवार को मिलते हैं।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.805,
+  "usage": {
+   "type": "duration",
+   "seconds": 9
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-01",
+  "audio_s": 7.08,
+  "text": "हेलो, रमेश जी बोल रहे हैं, मैं सुनीता बोल रही हूँ। शर्मा जी ने आपका नंबर दिया था।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.381,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-02",
+  "audio_s": 4.38,
+  "text": "हाँ जी मैडम, नमस्ते, बोलिए क्या काम है?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.056,
+  "usage": {
+   "type": "duration",
+   "seconds": 5
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-03",
+  "audio_s": 7.02,
+  "text": "मुझे अपना फ्लैट पेंट करवाना है, 2 BHK, इंद्रापुरम में, थर्ड फ्लोर।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.123,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-04",
+  "audio_s": 5.46,
+  "text": "ठीक है मैडम, सिर्फ अंदर का काम है या बाहर के भी…",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.157,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-05",
+  "audio_s": 6.36,
+  "text": "अंदर का पूरा, दोनों बेडरूम, हॉल और किचन। बालकनी की ग्रिल भी कर दे।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.212,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-06",
+  "audio_s": 7.08,
+  "text": "बिल कौन सा लगवाना है, Asian Paints का Royale OK या normal Tractor Emulsion?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.36,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "mix"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-07",
+  "audio_s": 6.9,
+  "text": "रोयल प्रोडक्ट पॉजिटिव लगेगा, आप टाइम का मैच नहीं रहेगा, लेकिन दो कोट होनी चाहिए।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.978,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-08",
+  "audio_s": 6.18,
+  "text": "दो कमरों और पट्टी का टच, मटेरियल के साथ पच्चीस हज़ार लगेगा।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.875,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-09",
+  "audio_s": 4.38,
+  "text": "पच्चीस हज़ार बहुत ज़्यादा है, मेरा बजट ट्वेंटी थाउज़ेंड का है।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.826,
+  "usage": {
+   "type": "duration",
+   "seconds": 5
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-10",
+  "audio_s": 7.02,
+  "text": "मैडम, प्लीज नहीं, नहीं हो पाएगा। लेबर ही तीन आदमी का है। चलो, बाईस हज़ार फाइनल कर लो।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.874,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-11",
+  "audio_s": 7.56,
+  "text": "ठीक है, 22,000 तक, लेकिन मटेरियल आपका होगा, ऊपर से कोई एक्स्ट्रा चार्ज नहीं।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.972,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-12",
+  "audio_s": 2.34,
+  "text": "हाँ, ठीक है।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.637,
+  "usage": {
+   "type": "duration",
+   "seconds": 3
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-13",
+  "audio_s": 5.64,
+  "text": "एडवांस कितना दोगे? मटेरियल लेने के लिए पाँच हज़ार तो पहले चाहिए।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.977,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-14",
+  "audio_s": 6.3,
+  "text": "पांच हज़ार एडवांस में कल जीपे कर दूँ, UPI से आपका यही नंबर है ना?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.957,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-15",
+  "audio_s": 5.1,
+  "text": "जी हाँ, इसी नंबर पे कर देना, रमेश कुमार नाम है।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.843,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-16",
+  "audio_s": 5.64,
+  "text": "और बजट सेवेंटी थाउज़ंड काम पूरा होने के बाद सेम डे दे दूँगी।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.881,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-17",
+  "audio_s": 6.42,
+  "text": "मैडम आधा काम होने पे थोड़ा दे देना, सात हज़ार, बाकी दस हज़ार लास्ट में।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 2.314,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-18",
+  "audio_s": 3.54,
+  "text": "चलो ठीक है, काम कब से स्टार्ट करोगे?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.762,
+  "usage": {
+   "type": "duration",
+   "seconds": 4
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-19",
+  "audio_s": 5.76,
+  "text": "अगले सोमवार से शुरू कर देंगे, सुबह नौ बजे तक पहुंच जाएंगे।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.994,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-20",
+  "audio_s": 4.92,
+  "text": "और खत्म कब तक होगा? पंद्रह तारीख को मेरे घर पे गेस्ट आ रहे हैं।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.906,
+  "usage": {
+   "type": "duration",
+   "seconds": 5
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-21",
+  "audio_s": 6.72,
+  "text": "पांच दिन का काम है, मतलब शुक्रवार तक फिनिश, पंद्रह तारीख से पहले हो जाएगी।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.827,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-22",
+  "audio_s": 2.7,
+  "text": "पक्का।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.755,
+  "usage": {
+   "type": "duration",
+   "seconds": 3
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-23",
+  "audio_s": 1.74,
+  "text": "पक्का।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.847,
+  "usage": {
+   "type": "duration",
+   "seconds": 2
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 1,
+  "line": "paint-24",
+  "audio_s": 8.94,
+  "text": "तो फाइनल टोटल बाईस हज़ार, पाँच एडवांस, सात बीच में और दस काम के बाद, सोमवार को मिलते हैं।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.253,
+  "usage": {
+   "type": "duration",
+   "seconds": 9
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-01",
+  "audio_s": 7.08,
+  "text": "हेलो, रमेश जी बोल रहे हैं, मैं सुनीता बोल रही हूँ। शर्मा जी ने आपका नंबर दिया था।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.915,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-02",
+  "audio_s": 4.38,
+  "text": "हाँ जी मैडम, नमस्ते, बोलिए क्या काम है?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.743,
+  "usage": {
+   "type": "duration",
+   "seconds": 5
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-03",
+  "audio_s": 7.02,
+  "text": "मुझे अपना फ्लैट पेंट करवाना है, 2 BHK, इंद्रापुरम में, थर्ड फ्लोर।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.948,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-04",
+  "audio_s": 5.46,
+  "text": "ठीक है मैडम, सिर्फ अंदर का काम है या बाहर की ग्रिल भी करनी है?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.925,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-05",
+  "audio_s": 6.36,
+  "text": "अंदर का पूरा, दोनों बेडरूम, हॉल और किचन। बालकनी की ग्रिल भी कर दे।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.909,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-06",
+  "audio_s": 7.08,
+  "text": "पेंट कौन सा लगवाना है? Asian Paints का Royale OK या normal Tractor Emulsion.",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.972,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "mix"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-07",
+  "audio_s": 6.9,
+  "text": "रोयल प्रोडक्ट पॉजिटिव लगेगा, आप टाइम का मैच नहीं रहेगा, लेकिन दो कोट होनी चाहिए।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.811,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-08",
+  "audio_s": 6.18,
+  "text": "दो कमरों और पट्टी का टच, मटेरियल के साथ पच्चीस हज़ार लगेगा।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.81,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-09",
+  "audio_s": 4.38,
+  "text": "पच्चीस हज़ार बहुत ज़्यादा है, मेरा बजट बीस थाउज़ेंड का है।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.852,
+  "usage": {
+   "type": "duration",
+   "seconds": 5
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-10",
+  "audio_s": 7.02,
+  "text": "मैडम, प्लीज नहीं हो पाएगा। लेबर ही तीन आदमी का है। चलो, बाईस हज़ार फाइनल कर लो।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.885,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-11",
+  "audio_s": 7.56,
+  "text": "ठीक है, 22,000 तक, लेकिन मटेरियल आपका होगा, ऊपर से कोई एक्स्ट्रा चार्ज नहीं।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.947,
+  "usage": {
+   "type": "duration",
+   "seconds": 8
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-12",
+  "audio_s": 2.34,
+  "text": "हाँ, ठीक है।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.644,
+  "usage": {
+   "type": "duration",
+   "seconds": 3
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-13",
+  "audio_s": 5.64,
+  "text": "एडवांस कितना दोगे? मटेरियल लेने के लिए पाँच हज़ार तो पहले चाहिए।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.012,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-14",
+  "audio_s": 6.3,
+  "text": "पांच हज़ार एडवांस में कल जीपे कर दूँ, UPI से आपका यही नंबर है ना?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.89,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-15",
+  "audio_s": 5.1,
+  "text": "जी हाँ, इसी नंबर पे कर देना, रमेश कुमार नाम है।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.742,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-16",
+  "audio_s": 5.64,
+  "text": "और बजट सेवेंटी थाउज़ंड काम पूरा होने के बाद सेम डे दे दूँगा।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.878,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-17",
+  "audio_s": 6.42,
+  "text": "मैडम आधा काम होने पे थोड़ा दे देना, सात हज़ार, बाकी दस हज़ार लास्ट में।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.98,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-18",
+  "audio_s": 3.54,
+  "text": "चलो ठीक है, काम कब से स्टार्ट करोगे?",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.68,
+  "usage": {
+   "type": "duration",
+   "seconds": 4
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-19",
+  "audio_s": 5.76,
+  "text": "अगले सोमवार से शुरू कर देंगे, सुबह नौ बजे तक पहुंच जाएंगे।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.767,
+  "usage": {
+   "type": "duration",
+   "seconds": 6
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-20",
+  "audio_s": 4.92,
+  "text": "और खत्म कब तक होगा? पंद्रह तारीख को मेरे घर पे गेस्ट आ रहे हैं।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.778,
+  "usage": {
+   "type": "duration",
+   "seconds": 5
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-21",
+  "audio_s": 6.72,
+  "text": "पांच दिन का काम है, मतलब शुक्रवार तक फिनिश, पंद्रह तारीख से पहले हो जाएगी।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.876,
+  "usage": {
+   "type": "duration",
+   "seconds": 7
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-22",
+  "audio_s": 2.7,
+  "text": "पक्का।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.609,
+  "usage": {
+   "type": "duration",
+   "seconds": 3
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-23",
+  "audio_s": 1.74,
+  "text": "पक्का।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 0.739,
+  "usage": {
+   "type": "duration",
+   "seconds": 2
+  },
+  "script": "deva"
+ },
+ {
+  "model": "gpt-transcribe",
+  "setting": "prompt",
+  "run": 2,
+  "line": "paint-24",
+  "audio_s": 8.94,
+  "text": "तो फाइनल टोटल बाईस हज़ार, पाँच एडवांस, सात बीच में और दस काम के बाद, सोमवार को मिलते हैं।",
+  "languages": [
+   {
+    "code": "hi"
+   }
+  ],
+  "wall_s": 1.008,
+  "usage": {
+   "type": "duration",
+   "seconds": 9
+  },
+  "script": "deva"
+ }
+]

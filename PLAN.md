@@ -197,7 +197,12 @@ Keep the safety switch from `tech-feasibility.md`: one setting that makes the Ju
 Fill in at hour 3.
 
 1. Call:
-2. Ears:
+2. Ears: PARTLY. Use OpenAI `gpt-transcribe`; Amazon Transcribe is not needed.
+   - Use `gpt-transcribe` with a short prompt (the speakers' names, the kind of words to expect) and Hindi plus English language hints, one stream per person. Our own end-of-speech detection decides when a line ends. Send each line as a file upload; the text is back in about 0.9 seconds.
+   - Right: 36 to 40 of the 42 amounts, dates, names and brands in 24 recorded Hinglish lines, against 30 to 34 without the prompt. "Haan theek hai" and "pakka" came back right every time. Text is always Devanagari. The contract values `gpt-5.4-mini` pulled from the transcript matched the ones from the script.
+   - Wrong: "seventeen thousand" came back as "seventy thousand" in 42 of 43 runs and was never right. "Bees mein" came back as "please". With OpenAI's own end-of-speech detection, a "haan" or "Hindi" that nobody said was added to 5 of 24 lines.
+   - For the build: an amount said only once cannot be trusted. The brain checks figures against each other, and the read-back and the separate confirmation are what protect the contract. The bridge does not use OpenAI's end-of-speech detection. Tests must not expect exact transcript text; it changes from run to run.
+   - For the bridge stream: the calling pattern, what to expect to go wrong, and every transcript are in `spikes/2-ears.md` and `spikes/2-results/`.
 3. Mouth:
 4. WhatsApp:
 5. Sage2: PARTLY. Use it for the live yes/no decisions; do not use its extract call.
