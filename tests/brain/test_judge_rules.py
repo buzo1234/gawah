@@ -282,13 +282,17 @@ async def test_a_contradiction_settles_only_when_both_confirm(bus):
 async def test_a_change_to_an_agreed_figure_is_asked_about_an_added_detail_is_not(bus):
     call = Call(bus, Scripted({"amount_agreed", "work_agreed"}, set(), set(), set()), mouth=True)
     await call.say(takes=20.0)
+    agreed = call.facts[ItemKey.AMOUNT]
     call.record(Fact(
         deal_id=DEAL, text="The worker adds two helpers.", item=ItemKey.WORK, kind=FactKind.CHANGE, value="two more workers",
         said_by=Role.WORKER, quote="do ladke aur", call_no=1, line_no=2,
     ))
+    call.record(Fact(
+        deal_id=DEAL, text="The new board is free.", item=ItemKey.AMOUNT, kind=FactKind.CHANGE, value="free",
+        value_rupees=0, said_by=Role.WORKER, quote="naya board free mein", call_no=1, line_no=2,
+    ))
     await call.say(takes=20.0)
-    assert call.spoken == []
-    agreed = call.facts[ItemKey.AMOUNT]
+    assert call.spoken == [], "an added detail, and an addition at no cost, change no figure"
     change = call.record(Fact(
         deal_id=DEAL, text="Balcony costs 2,000 more.", item=ItemKey.AMOUNT, kind=FactKind.CHANGE, value="15,000 rupees",
         value_rupees=15000, said_by=Role.WORKER, quote="balcony ke 2,000 extra", call_no=1, line_no=3,

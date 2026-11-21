@@ -164,6 +164,8 @@ class Session:
         if current is None or fact.call_no != self.call_no or any(c.id == cid for c in self.conflicts):
             return
         rupees = fact.value_rupees is not None and fact.value_rupees != current.value_rupees
+        if fact.item is ItemKey.AMOUNT and fact.value_rupees == 0:
+            return  # a job's total is never nothing: "free mein" is an addition at no cost
         # The dates term holds a start and a finish, so one day is not compared with another
         # (memory does not either); a date change comes as a fact.conflict from its model.
         day = fact.item is not ItemKey.DATES and fact.value_date is not None and current.value_date is not None
