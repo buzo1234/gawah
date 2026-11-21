@@ -92,7 +92,8 @@ class Memory:
         deal = self.book.deal(event.deal_id)
         call = deal.call(event.call_no)
         if isinstance(event, CallStarted):
-            call.started_at, call.room = event.ts, event.room
+            # The brain sends call.started again for the same call when it learns a name.
+            call.started_at, call.room = call.started_at or event.ts, call.room or event.room
             deal.learn_people(event)
         else:
             call.recordings.update({Role(k): v for k, v in event.recording_keys.items() if k in Role._value2member_map_})

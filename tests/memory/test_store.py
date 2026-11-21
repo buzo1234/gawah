@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 
 from app import memory as memory_stream
 from app.contracts import MEMORY_STATE, FactRecorded, ItemKey, MemoryQueries, clip_path
-from app.main import create_app
+from app.main import STREAMS, create_app
 from app.memory import Memory
 from app.memory.chain import GENESIS
 from app.memory.vectors import WordHashEmbedder
@@ -43,9 +43,9 @@ async def test_the_chain_formula_in_the_docstring_checks_out_by_hand(bus, tmp_pa
         previous = stored
 
 
-def test_register_serves_the_memory_clip_chain_and_state(settings, tmp_path):
+def test_the_app_registers_memory_and_serves_its_clip_chain_and_state(settings, tmp_path):
     app = create_app(settings)
-    memory_stream.register(app, app.state.bus)
+    assert memory_stream in STREAMS
     with TestClient(app) as client:
         memory = getattr(app.state, MEMORY_STATE)
         assert isinstance(memory, MemoryQueries)

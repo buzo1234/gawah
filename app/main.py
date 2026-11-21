@@ -14,12 +14,12 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app import brain, call, contract, dashboard, dev, ears, mouth, records, whatsapp
+from app import brain, call, contract, dashboard, dev, ears, memory, mouth, records, whatsapp
 from app.bus import Bus
 from app.config import Settings, get_settings
 from app.store import Store
 
-STREAMS = (call, ears, brain, mouth, whatsapp, records, contract, dashboard, dev)
+STREAMS = (call, memory, ears, brain, mouth, whatsapp, records, contract, dashboard, dev)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 
