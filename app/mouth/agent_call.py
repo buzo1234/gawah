@@ -25,6 +25,9 @@ from app.mouth.deal_call import ADDRESSED, DealCall, _Job
 from app.mouth.tools import Tools
 
 
+# Moments about one agreed term, released while a change to that term waits for both to say yes.
+_ABOUT_A_TERM = (SpeakReason.CONTRADICTS_RECORD, SpeakReason.CHANGE_PROPOSED, SpeakReason.WRAPPING_UP)
+
 class AgentCall(DealCall):
     def __init__(self, *args, memory: Callable[[], MemoryQueries | None] = lambda: None) -> None:
         self._memory = memory
@@ -46,7 +49,7 @@ class AgentCall(DealCall):
     # ---- what happens on the call ----
 
     def on_speak(self, event: JudgeSpeak) -> None:
-        if event.item and event.reason in (SpeakReason.CONTRADICTS_RECORD, SpeakReason.WRAPPING_UP) and any(
+        if event.item and event.reason in _ABOUT_A_TERM and any(
             c.event.item == event.item for c in self.tools.open_changes()
         ):
             # A change to this term is waiting for both to say yes. The brain sees the new figure as a
@@ -148,7 +151,8 @@ class AgentCall(DealCall):
             facts = job.speak.fact_ids if job.speak else []
             then = [("clip", facts[0])] if facts else []
             return await self.agent.turn(job.instruction, use_tools=False, then=then + [("say", moments.contradiction_ask(job.speak, self.names))])
-        if job.kind == "follow_up":
+        if job.kind in ("follow_up", SpeakReason.CHANGE_PROPOSED.value):
+            # A change: propose it (or record a yes already said), then ask both. It needs the tools.
             return await self.agent.turn(job.instruction, first_choice="required", speak_after={"propose_change", "confirm_change"})
         if job.kind == ADDRESSED:
             return await self.agent.turn(job.instruction, first_choice="required")  # look it up first, then speak

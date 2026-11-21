@@ -191,6 +191,7 @@ CLIP_PAD_MS = 250  # silence either side of a clip, so it does not run into Gawa
 WAIT_S = {
     "addressed_directly": 6.0,  # for the ack; the answer then has ANSWER_WAIT_S more
     "contradicts_record": 8.0,
+    "change_proposed": 8.0,
     "follow_up": 6.0,
 }
 ANSWER_WAIT_S = 8.0  # after the ack, the answer is said at the next pause within this
@@ -237,6 +238,7 @@ MOMENT_WHY = {
     "wrapping_up": "they are about to hang up",
     "ambiguous": "an agreement that can mean two things",
     "contradicts_record": "something just said does not match the record",
+    "change_proposed": "someone wants to change an agreed term, and both should agree to it",
     "addressed_directly": "someone spoke to you",
     "follow_up": "checking a line for an answer you are waiting for",
     "opening": "the call has just started",
@@ -256,6 +258,12 @@ MOMENT_CONTRADICTION = (
     "The Judge's note: {instruction} On record: {facts} Say in one short sentence, at most 15 words, what was agreed "
     "and when (the date, or which call), and end with 'Suniye'. Nothing else: the recording of it plays right after "
     "you, and then you will ask which one they mean."
+)
+MOMENT_CHANGE = (
+    "The Judge's note: {instruction} On record: {facts} First call propose_change for fact {fact}, with the new "
+    "value as it was said, proposed_by the person who said it, and their words. Then ask {to}, in one short sentence, "
+    "to say haan if they both agree. Do not say whether they should. A yes you have already seen in a line since: "
+    "record it with confirm_change."
 )
 MOMENT_CONTRADICTION_ASK = (
     "The recording of what was agreed has just played in the call (if there was one). Now only ask {to} which one "
