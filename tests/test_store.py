@@ -1,8 +1,9 @@
 import pytest
 
+from app.config import Settings
 from app.contracts import NO_DEAL, Backing, DealStatus, Direction, Role
 from app.log import deal_log, mask_phone
-from app.store import Store
+from app.store import S3, Store
 from fakes import RAMESH, SUNITA
 from fakes.call import end_call, say, start_call
 from fakes.replayer import replay
@@ -107,3 +108,14 @@ def test_logs_carry_the_deal_id_and_mask_phones(caplog):
         deal_log("gawah.test", "d7").info("sent link to %s", mask_phone("+919812345678"))
     assert "deal=d7 sent link to ***5678" in caplog.text
     assert "98123" not in caplog.text
+
+
+async def test_a_signed_link_points_at_the_buckets_regional_address():
+    """Signing is done locally, so this needs no network and no real keys."""
+    s3 = S3(Settings(
+        _env_file=None, aws_access_key_id="AKIAEXAMPLE", aws_secret_access_key="not-a-real-secret",
+        aws_session_token="not-a-real-token", aws_default_region="us-west-2", s3_bucket="gawah-test",
+    ))
+    url = await s3.signed_url("contracts/d7.pdf")
+    # The global host (gawah-test.s3.amazonaws.com) answers a new bucket with a redirect.
+    assert url.startswith("https://gawah-test.s3.us-west-2.amazonaws.com/contracts/d7.pdf?")

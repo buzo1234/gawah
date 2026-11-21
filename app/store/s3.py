@@ -1,5 +1,5 @@
 """S3 helper: upload a file, make a short-lived signed link. The bucket stays private.
-Tests never call this."""
+Tests never call the service: signing a link is done locally, uploading is not."""
 
 import asyncio
 
@@ -24,7 +24,13 @@ class S3:
                 aws_secret_access_key=s.require("aws_secret_access_key"),
                 aws_session_token=s.aws_session_token.get_secret_value() if s.aws_session_token else None,
                 # max_attempts counts the first try, so 2 means one retry.
-                config=Config(connect_timeout=5, read_timeout=30, retries={"max_attempts": 2}),
+                # "virtual" puts the region in the host (bucket.s3.<region>.amazonaws.com), so a
+                # signed link is answered directly. Without it the link goes to the global host,
+                # which answers a new bucket with a redirect.
+                config=Config(
+                    connect_timeout=5, read_timeout=30, retries={"max_attempts": 2},
+                    s3={"addressing_style": "virtual"},
+                ),
             )
         return self._client
 
