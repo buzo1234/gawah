@@ -61,9 +61,10 @@ class FakeLink:
 
 
 @pytest.fixture
-def world(tmp_path):
+def world(tmp_path, request):
     settings = ActorSettings(
         _env_file=None, database_path=str(tmp_path / "test.db"), actor_routes=True,
+        access_key=getattr(request, "param", None),
         **{k: getattr(LIVEKIT_SETTINGS, k) for k in ("livekit_url", "livekit_api_key", "livekit_api_secret")},
     )
     app = create_app(settings)
@@ -74,7 +75,8 @@ def world(tmp_path):
     with TestClient(app) as client:
 
         def publish(event) -> None:
-            assert client.post("/dev/publish", content=event.model_dump_json()).status_code == 200
+            sent = client.post("/dev/publish", content=event.model_dump_json(), headers={"x-access-key": settings.access_key.get_secret_value()} if settings.access_key else {})
+            assert sent.status_code == 200
             client.portal.call(app.state.bus.drain)
 
         publish(DealRequested(deal_id="d1", requested_by=SUNITA, other=Person(role=Role.WORKER, phone=RAMESH.phone)))
@@ -100,6 +102,23 @@ def test_the_tunnel_is_refused(world):
     assert client.get("/actor/status", params={"deal_id": "d1"}, headers={"cf-connecting-ip": "1.2.3.4"}).status_code == 403
     started = client.post("/actor/start", json={"deal_id": "d1", "role": "worker", "kind": "deal"}, headers={"x-forwarded-for": "1.2.3.4"})
     assert started.status_code == 403
+
+
+@pytest.mark.parametrize("world", ["test-access-key"], indirect=True)
+def test_on_a_server_with_the_access_key_the_routes_work_through_the_proxy_with_the_cookie(world):
+    """Behind Caddy every request has x-forwarded-for. The dashboard's toggle and the framed
+    call page's status poll send the board's cookie; a person's own phone has none, gets 401,
+    and its page stops asking."""
+    client, *_ = world
+    proxy = {"x-forwarded-for": "203.0.113.9"}
+    assert client.get("/actor/status", params={"deal_id": "d1"}, headers=proxy).status_code == 401
+    assert client.post("/actor/start", json={"deal_id": "d1", "role": "worker", "kind": "deal"}, headers=proxy).status_code == 401
+    assert client.post("/access", data={"key": "test-access-key", "next": "/dashboard"}).status_code == 200
+    assert client.get("/actor/status", params={"deal_id": "d1"}, headers=proxy).json()["active"] is False
+    started = client.post("/actor/start", json={"deal_id": "d1", "role": "worker", "kind": "deal"}, headers=proxy)
+    assert started.status_code == 200 and started.json()["active"] is True
+    assert client.get("/actor/status", params={"deal_id": "d1"}, headers=proxy).json()["role"] == "worker"
+    assert client.post("/actor/stop", json={"deal_id": "d1", "role": "worker"}, headers=proxy).status_code == 200
 
 
 def test_it_takes_the_workers_seat_through_the_pages_own_join(world):

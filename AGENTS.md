@@ -39,6 +39,7 @@ LiveKit, Twilio and Meta's WhatsApp test number are on free plans with monthly a
 - Deleting recordings, the database, or another stream's files
 - Force-pushing, or committing straight to `main`
 - Adding a new outside service
+- Running anything in `tools/deploy/` (it creates, changes or deletes AWS resources), or setting the GitHub variables
 
 ## Commands
 
@@ -52,6 +53,11 @@ LiveKit, Twilio and Meta's WhatsApp test number are on free plans with monthly a
 | Carry the dry run on from call 2 (or `day7`) on the server's latest deal, to retry a broken step | `uv run python tools/dry_run.py --from call2` |
 | The same story with nothing outside: `tests/offline.py` in-process, Gawah's model faked and its change by voice stood in for; Meta's message shapes by default, `--whatsapp twilio` for Twilio's | `uv run python tools/dry_run.py --offline` |
 | Run the tests | `uv run pytest -q` |
+| Run CI as GitHub does, before a merge (workmux's pre-merge hook runs it) | `tools/ci.sh` |
+| Build the AWS server from nothing, or finish what is missing (us-west-2, everything tagged `app=gawah`; creates paid resources, so ask first) | `tools/deploy/provision.sh` |
+| Write `.env` (plus `.env.deploy`, without the AWS keys) to the server's secret `gawah/prod` and restart the app | `tools/deploy/push-secrets.sh` |
+| Deploy the committed `HEAD` (or a commit) to the server: built there, data kept, ends with `/health` | `tools/deploy/deploy.sh [<commit>]` |
+| Remove everything tagged `app=gawah` from AWS, after typing `gawah` | `tools/deploy/teardown.sh` |
 | Record the Scribe's replies for a practice call: the live model reads each line (about 31 small-model calls), prints the facts, conflicts and time per line, and saves the replies to `tests/memory/recorded/` | `uv run python -m tests.memory.record fixtures/<call>.json --save` |
 | Replay a practice call into the running server, at real speed | `uv run python -m fakes.replayer fixtures/<call>.json` |
 | Replay it faster (10 = ten times faster, 0 = no waiting) | `uv run python -m fakes.replayer fixtures/<call>.json --speed 10` |
@@ -104,6 +110,14 @@ Memory's Scribe does the same: a replayed or fake call gets the saved replies in
 - Memory's queries are the `MemoryQueries` protocol in `app/contracts.py`: `get_term`, `owed`, `search` (each takes the deal id first) and `clip(fact_id)`, returning `TermView`, `OwedRow`, `Fact` and WAV bytes. The memory stream sets the running implementation as `app.state.memory` (`MEMORY_STATE`); other streams type it as `MemoryQueries` and never import `app.memory`. The dashboard plays a clip from `clip_path(fact_id)` (`/memory/clip/<fact_id>`, served by memory). The event log stays the source of truth: the fact store is built from `fact.recorded`. `transcript.line`, `call.started` and `call.ended` carry `call_no` (1 for the first deal call), so a fact can name the call its clip is cut from.
 - Testing with one real phone: `app/actor` is an AI that plays the second person on a deal call or a call-back. `POST /actor/start` `{deal_id, role, kind}` (kind `deal` or `callback`), `POST /actor/stop` `{deal_id, role}`, `GET /actor/status?deal_id=` (`{active, role, kind}`, plus `state`, `seconds`, `name`, `room` while active). The routes exist only with `ACTOR_ROUTES=1` (shell or `.env`) and `DEV_ROUTES` on, and refuse the tunnel. It joins through the page's own join route, so to the call it is that person; it talks with `gpt-realtime-2.1`, hears the room, and calls a `wait` tool to stay quiet when it is not its turn. Its persona is built from `fixtures/demo/demo_call_<n>.json` in `app/actor/persona.py`. One actor at a time; it leaves on `call.ended`, when the room closes, when nobody else comes in 2 minutes, or at 11 minutes (5.5 for a call-back). A call page inside a frame (the dashboard's phone) asks `/actor/status` every 2 seconds and shows "AI is playing <name>" instead of joining; a page that is not framed never asks. The frame needs `allow="microphone; autoplay"` for a person to join from it.
 - Use `deal_log` and `mask_phone` from `app/log.py` for log lines.
+
+## Deployment
+
+The server is one EC2 instance at `https://<elastic ip>.sslip.io`, built and run by the scripts in `tools/deploy/` (steps in `tools/deploy/README.md`, reasons in `.plans/deployment.md`). CI and CD run only on a push to `main` (`.github/workflows/main.yml`), never on pull requests.
+
+- Settings: with `GAWAH_SECRET_ID` set, `app/config.py` reads that secret from Secrets Manager (`app/secret_store.py`). First wins: values in code, the environment, the secret, `.env`.
+- `ACCESS_KEY` set makes the app a public server (`app/access.py`): `/dashboard`, `/actor`, `/dev` and `/memory` ask for the key once (a cookie; scripts send `X-Access-Key`), clip links sent on WhatsApp are signed, an unsigned Meta post is refused, and Meta without `META_APP_SECRET` stops the server at start. It lives in `.env.deploy`, never in `.env`. A route that used to refuse proxied requests uses `local_or_keyed` from `app/access.py` instead, or it breaks behind Caddy.
+- The image (`Dockerfile`) copies only what `.dockerignore` lets in. A new folder the app reads at run time must be added there.
 
 ## Code rules
 

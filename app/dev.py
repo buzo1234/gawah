@@ -2,18 +2,19 @@
 
 The bus lives inside the server process, so the replayer and tests publish through
 here. Nothing in the app does: the LiveKit agent runs in-process and uses the bus.
-Set DEV_ROUTES=false to remove it. It also refuses
-anything that came in through the tunnel, so the public address cannot inject events.
+Set DEV_ROUTES=false to remove it. It also refuses anything that came in through the
+tunnel or a proxy, so the public address cannot inject events; on a server with ACCESS_KEY
+set, it takes them only with the key (app/access.py guards /dev).
 """
 
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import ValidationError
 
+from app.access import local_or_keyed
 from app.bus import Bus
 from app.contracts import parse_event
 
 PUBLISH_PATH = "/dev/publish"
-_PROXY_HEADERS = ("cf-connecting-ip", "x-forwarded-for")
 
 
 def register(app: FastAPI, bus: Bus) -> None:
@@ -22,8 +23,7 @@ def register(app: FastAPI, bus: Bus) -> None:
 
     @app.post(PUBLISH_PATH)
     async def publish(request: Request) -> dict[str, str]:
-        if any(h in request.headers for h in _PROXY_HEADERS):
-            raise HTTPException(403, "local only")
+        local_or_keyed(request)
         try:
             event = parse_event(await request.body())
         except ValidationError as e:

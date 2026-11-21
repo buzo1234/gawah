@@ -5,6 +5,7 @@ Hindi font, so there is no PDF library and no font file to install.
 """
 
 import asyncio
+import os
 import re
 import shutil
 import tempfile
@@ -18,8 +19,12 @@ _CANDIDATES = (
     "google-chrome",
     "chromium",
     "chromium-browser",
+    "chromium-headless-shell",  # the server's image (Dockerfile): Debian's headless-only build
 )
 _TIMEOUT = 30
+# Chrome's sandbox cannot start inside Docker's default seccomp profile. The image sets this;
+# the page printed is our own contract, written from the deal.
+_SANDBOX = ("--no-sandbox",) if os.environ.get("GAWAH_CHROME_NO_SANDBOX") == "1" else ()
 
 
 def find_chrome() -> str | None:
@@ -52,6 +57,7 @@ async def _print(chrome: str, html: str, out: Path) -> None:
         out.unlink(missing_ok=True)
         process = await asyncio.create_subprocess_exec(
             chrome, "--headless=new", "--disable-gpu", "--no-first-run", "--no-pdf-header-footer",
+            *_SANDBOX,
             f"--user-data-dir={tmp}/profile", f"--print-to-pdf={out}", page.as_uri(),
             stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
         )

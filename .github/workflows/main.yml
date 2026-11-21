@@ -1,0 +1,46 @@
+# CI and CD, only on a merge to main (and by hand), never on pull requests: the repo is
+# private and Actions minutes are limited. Before a merge, run tools/ci.sh locally.
+name: main
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: main
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: bash tools/ci.sh
+
+  cd:
+    needs: ci
+    # The deploy freeze: the repository variable DEPLOY_ENABLED set to false stops deploys on
+    # a merge. "Run workflow" by hand still deploys. Nothing deploys until provision.sh has
+    # been run and AWS_DEPLOY_ROLE_ARN is set.
+    if: vars.AWS_DEPLOY_ROLE_ARN != '' && (vars.DEPLOY_ENABLED != 'false' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write  # OIDC: no AWS keys are stored in GitHub
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: us-west-2
+      - id: deploy
+        run: bash tools/deploy/deploy.sh "$GITHUB_SHA"
+      - name: Check the server
+        run: curl -fsS --retry 5 --retry-delay 5 --retry-all-errors "https://${{ steps.deploy.outputs.address }}/health"

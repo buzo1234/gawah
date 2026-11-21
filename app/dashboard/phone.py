@@ -21,6 +21,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 
+from app.access import local_or_keyed
 from app.contracts import NO_DEAL, WHATSAPP_WEBHOOK_PATH
 from app.log import deal_log, mask_phone
 
@@ -31,7 +32,6 @@ MEDIA_DIR = Path(tempfile.gettempdir()) / "gawah-second-phone"
 MEDIA_TYPES = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp"}
 MEDIA_NAME = re.compile(r"[0-9a-f]{32}\.(jpg|png|webp)")
 MAX_MEDIA_BYTES = 16 * 1024 * 1024  # WhatsApp's own limit
-_PROXY_HEADERS = ("cf-connecting-ip", "x-forwarded-for")
 
 
 class Outgoing(BaseModel):
@@ -80,10 +80,6 @@ def signature(url: str, form: dict[str, str], auth_token: str) -> str:
 def register(app: FastAPI) -> None:
     settings = app.state.settings
 
-    def local_only(request: Request) -> None:
-        if any(h in request.headers for h in _PROXY_HEADERS):
-            raise HTTPException(403, "local only")
-
     @app.get("/dashboard/phone", response_class=HTMLResponse)
     async def page() -> str:
         return PAGE.read_text()
@@ -91,7 +87,7 @@ def register(app: FastAPI) -> None:
     @app.post("/dashboard/media")
     async def upload(request: Request) -> dict[str, str]:
         """Keep an attached image and give it an address, as the provider would."""
-        local_only(request)
+        local_or_keyed(request)
         content_type = request.headers.get("content-type", "").split(";")[0].strip().lower()
         if content_type not in MEDIA_TYPES:
             raise HTTPException(415, "attach a JPEG, PNG, or WebP image")
@@ -111,7 +107,7 @@ def register(app: FastAPI) -> None:
 
     @app.post("/dashboard/phone/send")
     async def send(msg: Outgoing, request: Request) -> dict:
-        local_only(request)
+        local_or_keyed(request)
         if not msg.text.strip() and not msg.media_url:
             raise HTTPException(422, "nothing to send")
         try:
