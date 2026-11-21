@@ -1,7 +1,7 @@
 {
  "fixture": "spike_painter_call",
  "recorded_at": "spike 5 (spikes/5-results/sage2-hinglish-v2.json)",
- "note": "Copied from the spike's saved run, not re-recorded: the ten spike questions with the spike's preamble. balance_skipped was not asked, so it is absent and counts as no.",
+ "note": "Copied from the spike's saved run, not re-recorded: the ten spike questions with the spike's preamble. balance_skipped was not asked, so it is absent and counts as no. closing_soon recorded on its own on 21 November 2026 with the brain's preamble (31 updates) and merged in.",
  "questions": {
   "work_agreed": "Have both speakers agreed on what work is to be done (the scope of the job)? Answer yes only if one person has described the work and the other has accepted it.",
   "amount_agreed": "Have both speakers agreed on the total price for the whole job? Answer yes only if one final total amount has been accepted by both. An offer or counter-offer that the other person has not accepted is not an agreement.",
@@ -12,7 +12,8 @@
   "addressed_gawah": "In the last line of the transcript, is the speaker talking directly to Gawah, the AI witness, for example by calling it by name?",
   "topic_left_unclear": "Is there a contract term (price, advance, when the balance is paid, or dates) that one speaker asked about, where the other speaker has already replied without giving a clear answer and moved on to a different topic? A question in the last line that the other speaker has not yet had a chance to answer does not count. Answer yes only if that term is still unsettled.",
   "conflicting_figures": "Has a figure that both speakers had already accepted (for example the total price or the advance) later been stated as a different number for that same term? Answer no for bargaining: an offer, a counter-offer, or a lower or higher number proposed before both speakers accepted is not a conflict.",
-  "wrapping_up": "Is the call ending right now? Answer yes only if, in the last two lines, a speaker says goodbye, says they are hanging up, or thanks the other person to close the conversation. Agreeing to a term (for example 'theek hai', 'pakka', 'done') or promising to finish the work on time is not ending the call."
+  "wrapping_up": "Is the call ending right now? Answer yes only if, in the last two lines, a speaker says goodbye, says they are hanging up, or thanks the other person to close the conversation. Agreeing to a term (for example 'theek hai', 'pakka', 'done') or promising to finish the work on time is not ending the call.",
+  "closing_soon": "Have the speakers finished discussing the terms and started closing the conversation, for example by confirming when and where they will meet next, thanking each other, or saying goodbye? Answer no while a price, a payment, a date or any other term is still being discussed."
  },
  "lines": {
   "1": "Sunita: Hello Ramesh ji, namaste. Main Sunita bol rahi hoon, apne flat ki painting ke liye baat karni thi.\n",
@@ -57,7 +58,8 @@
    "addressed_gawah": 6.959971569560499e-05,
    "topic_left_unclear": 0.0007479360101139162,
    "conflicting_figures": 0.016275903373080294,
-   "wrapping_up": 0.00010656210136847712
+   "wrapping_up": 0.00010656210136847712,
+   "closing_soon": 0.0008255217767894582
   },
   "2": {
    "work_agreed": 0.22137813902572773,
@@ -69,7 +71,8 @@
    "addressed_gawah": 0.00010152416005510589,
    "topic_left_unclear": 0.0003996346193630397,
    "conflicting_figures": 0.0023347449590479822,
-   "wrapping_up": 6.651356186574373e-05
+   "wrapping_up": 6.651356186574373e-05,
+   "closing_soon": 0.00036214788169120605
   },
   "3": {
    "work_agreed": 0.10804953971105928,
@@ -81,7 +84,8 @@
    "addressed_gawah": 8.329714349957999e-05,
    "topic_left_unclear": 0.0020921911181060134,
    "conflicting_figures": 0.0017251248882068197,
-   "wrapping_up": 0.00012065562357712089
+   "wrapping_up": 0.00012065562357712089,
+   "closing_soon": 0.0008342662716494572
   },
   "4": {
    "work_agreed": 0.005208975045079747,
@@ -93,7 +97,8 @@
    "addressed_gawah": 5.304856329771368e-05,
    "topic_left_unclear": 0.0003708671140078679,
    "conflicting_figures": 0.0004548658262357964,
-   "wrapping_up": 4.938721536907337e-05
+   "wrapping_up": 4.938721536907337e-05,
+   "closing_soon": 0.0002107542036397891
   },
   "5": {
    "work_agreed": 0.8849194738440679,
@@ -105,7 +110,8 @@
    "addressed_gawah": 7.37871840799823e-05,
    "topic_left_unclear": 0.0024930158801361423,
    "conflicting_figures": 0.0002435187354412861,
-   "wrapping_up": 7.188487075982689e-05
+   "wrapping_up": 7.188487075982689e-05,
+   "closing_soon": 0.001131573076458935
   },
   "6": {
    "work_agreed": 0.9990678028646349,
@@ -117,7 +123,8 @@
    "addressed_gawah": 7.105930361808212e-05,
    "topic_left_unclear": 0.001792626865998355,
    "conflicting_figures": 0.0003118722048499136,
-   "wrapping_up": 8.860395785983736e-05
+   "wrapping_up": 8.860395785983736e-05,
+   "closing_soon": 0.023620487449336022
   },
   "7": {
    "work_agreed": 0.9996615601408962,
@@ -129,7 +136,8 @@
    "addressed_gawah": 6.597484076934061e-05,
    "topic_left_unclear": 0.0016197067250853308,
    "conflicting_figures": 0.0006342756604026925,
-   "wrapping_up": 6.569734448804966e-05
+   "wrapping_up": 6.569734448804966e-05,
+   "closing_soon": 0.00022098528939378854
   },
   "8": {
    "work_agreed": 0.9996903663637012,
@@ -141,7 +149,8 @@
    "addressed_gawah": 0.00011373281193955464,
    "topic_left_unclear": 0.009580406509810728,
    "conflicting_figures": 0.00150431610104966,
-   "wrapping_up": 0.00014656063860218443
+   "wrapping_up": 0.00014656063860218443,
+   "closing_soon": 0.008739090917978927
   },
   "9": {
    "work_agreed": 0.9998618099700526,
@@ -153,7 +162,8 @@
    "addressed_gawah": 5.483883587823008e-05,
    "topic_left_unclear": 0.016671323425978817,
    "conflicting_figures": 0.002607298895018261,
-   "wrapping_up": 6.164096098731816e-05
+   "wrapping_up": 6.164096098731816e-05,
+   "closing_soon": 0.00015574842814854853
   },
   "10": {
    "work_agreed": 0.999872304884582,
@@ -165,7 +175,8 @@
    "addressed_gawah": 8.917603196663315e-05,
    "topic_left_unclear": 0.08423984493036137,
    "conflicting_figures": 0.0036597004234048603,
-   "wrapping_up": 0.00011497371249851845
+   "wrapping_up": 0.00011497371249851845,
+   "closing_soon": 0.00590744983051709
   },
   "11": {
    "work_agreed": 0.9997028724232537,
@@ -177,7 +188,8 @@
    "addressed_gawah": 6.802970451687361e-05,
    "topic_left_unclear": 0.008401505199148245,
    "conflicting_figures": 0.001009400822858378,
-   "wrapping_up": 0.0001559749221068178
+   "wrapping_up": 0.0001559749221068178,
+   "closing_soon": 0.023668129657251385
   },
   "12": {
    "work_agreed": 0.9998487176404471,
@@ -189,7 +201,8 @@
    "addressed_gawah": 3.841465191401536e-05,
    "topic_left_unclear": 0.02309700914428896,
    "conflicting_figures": 0.00021579648434945356,
-   "wrapping_up": 2.409923157531099e-05
+   "wrapping_up": 2.409923157531099e-05,
+   "closing_soon": 0.005317161021830792
   },
   "13": {
    "work_agreed": 0.9998654989516267,
@@ -201,7 +214,8 @@
    "addressed_gawah": 3.983286843786395e-05,
    "topic_left_unclear": 0.007834814522559751,
    "conflicting_figures": 0.00017306772690860398,
-   "wrapping_up": 6.260300683390987e-05
+   "wrapping_up": 6.260300683390987e-05,
+   "closing_soon": 0.00015236042878362675
   },
   "14": {
    "work_agreed": 0.9998447931358032,
@@ -213,7 +227,8 @@
    "addressed_gawah": 7.640184274314533e-05,
    "topic_left_unclear": 0.02089843670973378,
    "conflicting_figures": 0.00041580044674957697,
-   "wrapping_up": 7.229169541825535e-05
+   "wrapping_up": 7.229169541825535e-05,
+   "closing_soon": 0.010597003082996732
   },
   "15": {
    "work_agreed": 0.9998859276622376,
@@ -225,7 +240,8 @@
    "addressed_gawah": 6.226352606914571e-05,
    "topic_left_unclear": 0.10646920054778815,
    "conflicting_figures": 0.011540631973263944,
-   "wrapping_up": 0.00045945501678901484
+   "wrapping_up": 0.00045945501678901484,
+   "closing_soon": 0.04143574941460359
   },
   "16": {
    "work_agreed": 0.9998227292874914,
@@ -237,7 +253,8 @@
    "addressed_gawah": 5.5442962351725824e-05,
    "topic_left_unclear": 0.10373071542665854,
    "conflicting_figures": 0.00051526863116469,
-   "wrapping_up": 0.0015184040037186232
+   "wrapping_up": 0.0015184040037186232,
+   "closing_soon": 0.27066656025553404
   },
   "17": {
    "work_agreed": 0.9997984135084872,
@@ -249,7 +266,8 @@
    "addressed_gawah": 6.764150876372926e-05,
    "topic_left_unclear": 0.005409074988150339,
    "conflicting_figures": 0.00046787495337188996,
-   "wrapping_up": 0.00011576149410635681
+   "wrapping_up": 0.00011576149410635681,
+   "closing_soon": 0.000342373728085053
   },
   "18": {
    "work_agreed": 0.9998251495020491,
@@ -261,7 +279,8 @@
    "addressed_gawah": 6.822818283012184e-05,
    "topic_left_unclear": 0.9783601288410574,
    "conflicting_figures": 0.0004158674392356669,
-   "wrapping_up": 8.364889285404963e-05
+   "wrapping_up": 8.364889285404963e-05,
+   "closing_soon": 0.0033614726670082693
   },
   "19": {
    "work_agreed": 0.9996073043800178,
@@ -273,7 +292,8 @@
    "addressed_gawah": 0.00014121812241972242,
    "topic_left_unclear": 0.9853318663079599,
    "conflicting_figures": 0.0013673264210737758,
-   "wrapping_up": 0.001611490864940999
+   "wrapping_up": 0.001611490864940999,
+   "closing_soon": 0.18809375972228862
   },
   "20": {
    "work_agreed": 0.9997291923566347,
@@ -285,7 +305,8 @@
    "addressed_gawah": 7.031526229636985e-05,
    "topic_left_unclear": 0.9744172233495585,
    "conflicting_figures": 0.000542408004532556,
-   "wrapping_up": 0.0014067902972312821
+   "wrapping_up": 0.0014067902972312821,
+   "closing_soon": 0.23712985587712296
   },
   "21": {
    "work_agreed": 0.9996044523357065,
@@ -297,7 +318,8 @@
    "addressed_gawah": 7.874719212978135e-05,
    "topic_left_unclear": 0.9672381041276177,
    "conflicting_figures": 0.0015783394194320006,
-   "wrapping_up": 0.0002644427476535143
+   "wrapping_up": 0.0002644427476535143,
+   "closing_soon": 0.03404179727593198
   },
   "22": {
    "work_agreed": 0.9998352777861577,
@@ -309,7 +331,8 @@
    "addressed_gawah": 2.9185129632791988e-05,
    "topic_left_unclear": 0.9647919736126125,
    "conflicting_figures": 0.000264964910161119,
-   "wrapping_up": 0.0009257914391468422
+   "wrapping_up": 0.0009257914391468422,
+   "closing_soon": null
   },
   "23": {
    "work_agreed": 0.9998557450874851,
@@ -321,7 +344,8 @@
    "addressed_gawah": 0.9999621773188604,
    "topic_left_unclear": 0.9790901641954336,
    "conflicting_figures": 0.0006163500523392236,
-   "wrapping_up": 0.0008956147849442647
+   "wrapping_up": 0.0008956147849442647,
+   "closing_soon": 0.7961937553023924
   },
   "24": {
    "work_agreed": 0.9982520045627135,
@@ -333,7 +357,8 @@
    "addressed_gawah": 0.00913954891271439,
    "topic_left_unclear": 0.9756970066074778,
    "conflicting_figures": 0.9987391198203531,
-   "wrapping_up": 0.001380217313191031
+   "wrapping_up": 0.001380217313191031,
+   "closing_soon": 0.00680209157301562
   },
   "25": {
    "work_agreed": 0.9983521196454755,
@@ -345,7 +370,8 @@
    "addressed_gawah": 0.022285853060089705,
    "topic_left_unclear": 0.9623575227181853,
    "conflicting_figures": 0.9997681250743689,
-   "wrapping_up": 0.0017608057489037925
+   "wrapping_up": 0.0017608057489037925,
+   "closing_soon": 0.017875674469016133
   },
   "26": {
    "work_agreed": 0.9991260979175455,
@@ -357,7 +383,8 @@
    "addressed_gawah": 0.0009630636835664714,
    "topic_left_unclear": 0.9617491690776097,
    "conflicting_figures": 0.9997734509578832,
-   "wrapping_up": 0.0009611259022975663
+   "wrapping_up": 0.0009611259022975663,
+   "closing_soon": 0.07610169370667742
   },
   "27": {
    "work_agreed": 0.9996341997704289,
@@ -369,7 +396,8 @@
    "addressed_gawah": 0.0006945410668290298,
    "topic_left_unclear": 0.9742266089748391,
    "conflicting_figures": 0.9996755783710074,
-   "wrapping_up": 0.9989826506644608
+   "wrapping_up": 0.9989826506644608,
+   "closing_soon": 0.9773025073598536
   },
   "28": {
    "work_agreed": 0.9997526008870812,
@@ -381,7 +409,8 @@
    "addressed_gawah": 0.00023089253446806208,
    "topic_left_unclear": 0.9581976699773639,
    "conflicting_figures": 0.999629420215107,
-   "wrapping_up": 0.9990590211812977
+   "wrapping_up": 0.9990590211812977,
+   "closing_soon": 0.9916878070114564
   },
   "29": {
    "work_agreed": 0.9996688789330884,
@@ -393,7 +422,8 @@
    "addressed_gawah": 0.00024385586317401066,
    "topic_left_unclear": 0.973986812709144,
    "conflicting_figures": 0.999565373650503,
-   "wrapping_up": 0.9980361611736335
+   "wrapping_up": 0.9980361611736335,
+   "closing_soon": 0.9851081094651823
   },
   "30": {
    "work_agreed": 0.9995694601565769,
@@ -405,7 +435,8 @@
    "addressed_gawah": 0.0005218319770801436,
    "topic_left_unclear": 0.9633580643184512,
    "conflicting_figures": 0.9996292513081041,
-   "wrapping_up": 0.9984043179794189
+   "wrapping_up": 0.9984043179794189,
+   "closing_soon": 0.9879733217796961
   }
  }
 }

@@ -1,0 +1,211 @@
+{
+ "id": "dry_run_call",
+ "description": "The deal call of the first whole-demo dry run (runs/dry-20261121-194050, 21 November 2026), as transcribed. REBUILT: that run's events file was deleted; its timings and the first 50 characters of each line survive in a log, and the rest of each line is filled in from the script it played (fixtures/audio/state.json), in the same style. The deal was started on WhatsApp, so the worker's name is not known at the start. Gawah asked about the balance after line 16; the answer at 18 was heard as 'seventy thousand'. The call ended 25 seconds after the last line (ended_at).",
+ "people": [
+  {
+   "role": "hirer",
+   "name": "Sunita",
+   "phone": "+919000000001"
+  },
+  {
+   "role": "worker",
+   "name": null,
+   "phone": "+919000000002"
+  }
+ ],
+ "ended_at": 202.6,
+ "lines": [
+  {
+   "line_no": 1,
+   "speaker": "hirer",
+   "text": "हेलो, रवेश जी बोल रहे हैं, मैं सुनीता बोल रही हूँ। शर्मा जी ने आपका नंबर दिया था।",
+   "start": 5.74,
+   "end": 12.08
+  },
+  {
+   "line_no": 2,
+   "speaker": "worker",
+   "text": "हाँ जी मैडम, नमस्ते। बोलिए, क्या काम है?",
+   "start": 13.44,
+   "end": 17.42
+  },
+  {
+   "line_no": 3,
+   "speaker": "hirer",
+   "text": "मुझे अपना फ्लैट पेंट करवाना है, टू बीएचके, एक तरफ पुरम में, थर्ड फ्लोर पे।",
+   "start": 18.48,
+   "end": 25.48
+  },
+  {
+   "line_no": 4,
+   "speaker": "worker",
+   "text": "ठीक है, सर, जिसका काम है, भाई करें कि…",
+   "start": 26.46,
+   "end": 31.98
+  },
+  {
+   "line_no": 5,
+   "speaker": "hirer",
+   "text": "अंदर का पूरा दोनों बेडरूम, हॉल और किचन, बालकनी के ग्रिल भी कर देना।",
+   "start": 32.98,
+   "end": 39.3
+  },
+  {
+   "line_no": 6,
+   "speaker": "worker",
+   "text": "पेंट कौन सा लगवाना है? … का … और नॉर्मल …",
+   "start": 40.46,
+   "end": 47.36
+  },
+  {
+   "line_no": 7,
+   "speaker": "hirer",
+   "text": "प्रोजेक्ट थोड़ा पॉजिटिव रहेगा। आप टाइटल मेंशन नहीं लगाओ, लेकिन दो कोट होने चाहिए।",
+   "start": 48.38,
+   "end": 55.26
+  },
+  {
+   "line_no": 8,
+   "speaker": "worker",
+   "text": "दो क्वार्टर मट्टी कट, मटेरियल के साथ पच्चीस हज़ार लगेगा मैडम।",
+   "start": 56.34,
+   "end": 62.44
+  },
+  {
+   "line_no": 9,
+   "speaker": "hirer",
+   "text": "पच्चीस हज़ार बहुत ज़्यादा है, मेरा बजट ट्वेंटी थाउज़ंड का है।",
+   "start": 63.44,
+   "end": 67.82
+  },
+  {
+   "line_no": 10,
+   "speaker": "worker",
+   "text": "मैडम, प्लीज नहीं हो पाएगा। लेबर ही तीन आदमी का है, चलो बाईस हज़ार फाइनल कर लो।",
+   "start": 68.88,
+   "end": 75.78
+  },
+  {
+   "line_no": 11,
+   "speaker": "hirer",
+   "text": "ठीक है, 22,000 है, लेकिन मटेरियल आपका होगा, ऊपर से कोई एक्स्ट्रा चार्ज नहीं।",
+   "start": 76.84,
+   "end": 84.4
+  },
+  {
+   "line_no": 12,
+   "speaker": "worker",
+   "text": "हाँ, ठीक है।",
+   "start": 85.66,
+   "end": 87.78
+  },
+  {
+   "line_no": 13,
+   "speaker": "worker",
+   "text": "एडवांस कितना लोगे? मटेरियल लेने के लिए पाँच हज़ार तो पहले चाहिए।",
+   "start": 88.8,
+   "end": 94.38
+  },
+  {
+   "line_no": 14,
+   "speaker": "hirer",
+   "text": "पांच हजार, इसमें मैं कल जीपे कर दूँ। यूपीआई से आपका यही नंबर है ना?",
+   "start": 95.6,
+   "end": 101.66
+  },
+  {
+   "line_no": 15,
+   "speaker": "worker",
+   "text": "जी हाँ, इसी नंबर पे कर देना। रमेश कुमार नाम।",
+   "start": 102.66,
+   "end": 107.76
+  },
+  {
+   "line_no": 16,
+   "speaker": "hirer",
+   "text": "चलो ठीक है, काम कल से स्टार्ट करो।",
+   "start": 108.92,
+   "end": 112.3
+  },
+  {
+   "line_no": 17,
+   "speaker": "worker",
+   "text": "अगले सोमवार से शुरू कर देंगे, सुबह नौ बजे तक पहुंच जाएंगे।",
+   "start": 113.42,
+   "end": 118.82
+  },
+  {
+   "line_no": 18,
+   "speaker": "hirer",
+   "text": "और पहले सेवेंटी थाउज़ंड काम पूरा होने के बाद सेम डे दे दूंगी।",
+   "start": 134.08,
+   "end": 139.56
+  },
+  {
+   "line_no": 19,
+   "speaker": "worker",
+   "text": "मैडम आधा काम होने पे थोड़ा दे देना, सात हज़ार, बाकी दस हज़ार लास्ट में।",
+   "start": 140.74,
+   "end": 147.14
+  },
+  {
+   "line_no": 20,
+   "speaker": "hirer",
+   "text": "और खत्म कब तक होगा? पंद्रह तारीख को मेरे घर पे गेस्ट्स आ रहे हैं।",
+   "start": 148.12,
+   "end": 152.76
+  },
+  {
+   "line_no": 21,
+   "speaker": "worker",
+   "text": "पांच दिन का काम है, मैडम। शुक्रवार तक फिनिश। पंद्रह तारीख से पहले हो जाएगा।",
+   "start": 154.12,
+   "end": 160.5
+  },
+  {
+   "line_no": 22,
+   "speaker": "hirer",
+   "text": "पक्का।",
+   "start": 161.74,
+   "end": 164.44
+  },
+  {
+   "line_no": 23,
+   "speaker": "worker",
+   "text": "पक्का।",
+   "start": 165.46,
+   "end": 167.2
+  },
+  {
+   "line_no": 24,
+   "speaker": "hirer",
+   "text": "तो फाइनल टोटल बाईस हज़ार, पाँच एडवांस, सात बीच में, और दस काम के बाद। सोमवार को मिलते हैं।",
+   "start": 168.2,
+   "end": 177.16
+  }
+ ],
+ "expected": [
+  {
+   "after_line": 16,
+   "by_line": 17,
+   "item": "balance",
+   "reason": "term_unclear",
+   "to": "hirer",
+   "modes": [
+    "live"
+   ]
+  },
+  {
+   "after_line": 24,
+   "by_line": 24,
+   "item": "late_or_unfinished",
+   "reason": "wrapping_up",
+   "to": "both",
+   "modes": [
+    "live",
+    "wrapup"
+   ]
+  }
+ ],
+ "expected_note": "As in the practice calls in fixtures/: after_line to by_line is when the Judge should speak, in the given modes."
+}

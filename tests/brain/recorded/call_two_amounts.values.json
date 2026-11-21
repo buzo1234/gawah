@@ -1,6 +1,6 @@
 {
  "fixture": "call_two_amounts",
- "recorded_at": "2026-11-21T11:32:28+00:00",
+ "recorded_at": "2026-11-21T14:45:03+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "value:work@4": {
@@ -68,6 +68,35 @@
    "value": "If the work is left unfinished, the remaining money will not be paid and the advance will be returned; if it is late, 300 rupees will be deducted per day.",
    "source_text": "Nahi madam, aisa nahi karunga. Agar kaam adhoora chhoda to baaki paise mat dena, aur advance bhi wapas kar dunga.",
    "line_no": 27
+  },
+  "names:-@1": {
+   "hirer": "Sunita",
+   "worker": "Ramesh"
+  },
+  "value:work@31": {
+   "value": "paint the 2BHK flat: two coats on walls, one coat on the ceiling, enamel on the doors and balcony railing, with putty where needed",
+   "source_text": "Walls do coat, ceiling ek coat, darwaze aur railing pe enamel. Putty jahan zaroorat ho wahan kar dunga.",
+   "line_no": 5
+  },
+  "value:advance@31": {
+   "value": "3,000 rupees tomorrow morning in cash",
+   "source_text": "Theek hai, 3 hazaar kal subah de dungi, cash mein.",
+   "line_no": 16
+  },
+  "value:balance@31": {
+   "value": "the remaining balance will be paid after the work is completed and checked, on the same day",
+   "source_text": "Baaki kaam poora hone ke baad, jis din finish karoge usi din.",
+   "line_no": 18
+  },
+  "value:dates@31": {
+   "value": "Wednesday 25 November 2026 to Monday 30 November 2026",
+   "source_text": "Chhe din lagenge ji, agle Monday tak ho jayega.",
+   "line_no": 23
+  },
+  "value:late_or_unfinished@31": {
+   "value": "If the work is left unfinished, the remaining money will not be paid and the advance will be returned; if it is late, 300 rupees will be deducted per day",
+   "source_text": "Late hua to roz ka 300 rupaye kaat lena madam.",
+   "line_no": 29
   }
  }
 }

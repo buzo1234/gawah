@@ -1,0 +1,76 @@
+{
+ "fixture": "demo_script_call",
+ "recorded_at": "2026-11-21T14:41:08+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "names:-@1": {
+   "hirer": "Sunita",
+   "worker": "Ramesh"
+  },
+  "value:work@2": {
+   "value": "tractor emulsion, two coats, with material, 25,000 rupees",
+   "source_text": "हाँ जी मैडम। ट्रैक्टर इमल्शन, दो कोट, मटेरियल के साथ पच्चीस हज़ार लगेगा।",
+   "line_no": 2
+  },
+  "value:amount@4": {
+   "value": "22,000 rupees for labour, with your material",
+   "source_text": "पच्चीस बहुत ज़्यादा है। बाईस हज़ार फाइनल करो, मटेरियल आपका।",
+   "line_no": 3
+  },
+  "value:advance@6": {
+   "value": "5,000 rupees in advance, paid tomorrow by GPay",
+   "source_text": "पाँच हज़ार एडवांस मैं कल जीपे कर दूँगी।",
+   "line_no": 6
+  },
+  "value:dates@9": {
+   "value": "Monday 23 November 2026 to Friday 27 November 2026",
+   "source_text": "अगले सोमवार से शुरू, शुक्रवार तक फिनिश।",
+   "line_no": 9
+  },
+  "value:balance@10": {
+   "value": "on the day the work is completed, against completion of the work",
+   "source_text": "बाकी पैसा काम पूरा होने के दिन दे दूँगी।",
+   "line_no": 10
+  },
+  "value:balance@12": {
+   "value": "remaining balance on the day the work is completed",
+   "source_text": "बाकी पैसा काम पूरा होने के दिन दे दूँगी।",
+   "line_no": 10
+  },
+  "value:dates@12": {
+   "value": "Monday 23 November 2026 to Friday 27 November 2026",
+   "source_text": "अगले सोमवार से शुरू, शुक्रवार तक फिनिश।",
+   "line_no": 9
+  },
+  "value:advance@12": {
+   "value": "5,000 rupees as advance, paid by GPay tomorrow Sunday 22 November 2026",
+   "source_text": "पाँच हज़ार एडवांस मैं कल जीपे कर दूँगी।",
+   "line_no": 6
+  },
+  "value:work@12": {
+   "value": "paint a 2BHK flat in Indirapuram with Tractor Emulsion, two coats",
+   "source_text": "ट्रैक्टर इमल्शन, दो कोट, मटेरियल के साथ पच्चीस हज़ार लगेगा।",
+   "line_no": 2
+  },
+  "value:amount@12": {
+   "value": "22,000 rupees, material by you",
+   "source_text": "पच्चीस बहुत ज़्यादा है। बाईस हज़ार फाइनल करो, मटेरियल आपका।",
+   "line_no": 3
+  },
+  "value:late_or_unfinished@15": {
+   "value": null,
+   "source_text": null,
+   "line_no": null
+  },
+  "value:late_or_unfinished@17": {
+   "value": "if late, deduct 500 rupees for each day",
+   "source_text": "लेट हुआ तो हर दिन का पाँच सौ काट लेना।",
+   "line_no": 15
+  },
+  "value:late_or_unfinished@18": {
+   "value": "500 rupees deducted for each day late",
+   "source_text": "लेट हुआ तो हर दिन का पाँच सौ काट लेना।",
+   "line_no": 15
+  }
+ }
+}
