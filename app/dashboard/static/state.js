@@ -121,11 +121,14 @@ export function apply(state, e) {
       const decision =
         state.decisions.find((d) => d.id === e.speak_id) ||
         (e.speak_id ? null : state.decisions.findLast((d) => d.spoken == null));
+      const dropped = !e.text && e.start == null;  // the moment passed and nothing was said
       if (decision) {
-        decision.spoken = e.text;
+        decision.spoken = dropped ? null : e.text;
+        decision.dropped = dropped;
         decision.interrupted = e.interrupted;
         change.panels = ["why"];
       }
+      if (dropped) break;
       say({
         type: "gawah", text: e.text, start: e.start, interrupted: e.interrupted,
         reason: e.reason || decision?.reason, item: e.item || decision?.item,

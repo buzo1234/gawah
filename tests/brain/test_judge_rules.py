@@ -59,7 +59,9 @@ class Call:
 
         async def on_speak(event: JudgeSpeak) -> None:
             self.speaks.append(event)
-            if mouth:  # says it at once, and takes two seconds
+            if mouth == "drops":  # the moment passes and nothing is said
+                bus.publish(JudgeSpoke(deal_id=DEAL, text="", speak_id=event.event_id))
+            elif mouth:  # says it at once, and takes two seconds
                 bus.publish(JudgeSpoke(deal_id=DEAL, text="...", speak_id=event.event_id, end=self.clock + 2.0))
 
         async def on_checklist(event: ChecklistUpdated) -> None:
@@ -190,6 +192,19 @@ async def test_one_at_a_time_until_judge_spoke_or_timeout(bus):
     # Answers at 4s; nothing more until 16s, then the next thing in line.
     assert call.spoken == [(1, "addressed_directly", None), (4, "addressed_directly", None)]
     assert all(s.to == "hirer" for s in call.speaks)
+
+
+async def test_a_question_the_mouth_dropped_neither_holds_up_nor_uses_up_the_gap(bus):
+    call = Call(
+        bus,
+        Scripted({"advance_agreed", "balance_skipped"}, {"advance_agreed", "balance_skipped", "conflicting_figures"}),
+        Values(conflict={"item": "advance", "figures": ["3,000 rupees", "4,000 rupees"]}),
+        mouth="drops",
+    )
+    await call.say(takes=4.0)
+    await call.say(takes=4.0)
+    # Without the empty judge.spoke the conflict would wait SPEAK_TIMEOUT_S, then MIN_GAP_S.
+    assert call.spoken == [(1, "term_unclear", "balance"), (2, "conflicting_figures", "advance")]
 
 
 async def test_answering_someone_does_not_use_up_the_gap(bus):

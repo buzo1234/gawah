@@ -1,7 +1,8 @@
 """Stream: mouth. Gawah's voice on the deal call, and the one-to-one call-back.
 
 On the deal call it listens to call.started, call.ended, judge.speak and checklist.updated,
-and sends judge.spoke. On the call-back it sends call.started and call.ended (kind
+and sends judge.spoke (an empty one with no start time for a question it dropped, so the
+brain stops waiting). On the call-back it sends call.started and call.ended (kind
 callback), record.confirmed, terms.confirmed and terms.disputed.
 
 - tuning.py     every delay, threshold and persona

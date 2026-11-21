@@ -112,6 +112,10 @@ class Session:
         speak = self.speaks.get(event.speak_id or "") or (list(self.speaks.values()) or [None])[-1]
         if speak is None:
             return
+        if not event.text and event.start is None:
+            # The mouth dropped it unsaid: stop waiting, and do not count it as a question heard.
+            self.judge.waiting_since = None
+            return
         now = self.lines[-1].end if self.lines else 0.0
         self.judge.spoke(max(now, event.end or 0.0), speak.reason is not SpeakReason.ADDRESSED_DIRECTLY)
         if speak.item:

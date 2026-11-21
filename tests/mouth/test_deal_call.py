@@ -19,7 +19,12 @@ def speak(deal_id="d1", item=ItemKey.BALANCE, reason=SpeakReason.TERM_UNCLEAR, t
 
 def answers(world, deal_id="d1") -> list[JudgeSpoke]:
     """Everything Gawah said after its opening line."""
-    return [e for e in world.of(JudgeSpoke, deal_id) if e.speak_id]
+    return [e for e in world.of(JudgeSpoke, deal_id) if e.speak_id and e.start is not None]
+
+
+def dropped(world, deal_id="d1") -> list[JudgeSpoke]:
+    """The judge.spoke sent for each question dropped unsaid."""
+    return [e for e in world.of(JudgeSpoke, deal_id) if e.speak_id and e.start is None]
 
 
 async def test_opening_line_is_the_only_thing_said_unasked(world):
@@ -93,6 +98,7 @@ async def test_drops_a_question_whose_item_was_agreed_meanwhile(world):
     await asyncio.sleep(tuning.PAUSE_WAIT_S + 0.2)
     assert not answers(world) and len(seat.played) == played
     assert world.mouth.calls["d1"].outcomes[-1]["why"] == "agreed in the meantime"
+    assert len(dropped(world)) == 1
 
 
 async def test_an_item_still_pending_is_asked(world):
@@ -112,6 +118,8 @@ async def test_drops_a_question_when_no_pause_comes(world):
     await asyncio.sleep(0.15)
     assert not answers(world) and len(seat.played) == played
     assert world.mouth.calls["d1"].outcomes[-1]["why"] == "no pause came"
+    [gone] = dropped(world)  # so the brain need not wait out its timeout
+    assert (gone.text, gone.end, gone.item, gone.interrupted) == ("", None, ItemKey.BALANCE, False)
 
 
 async def test_says_a_wrapup_question_even_when_no_pause_comes(world):
