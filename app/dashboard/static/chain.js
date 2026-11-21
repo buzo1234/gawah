@@ -47,6 +47,8 @@ function brokenAt(state, broken) {
   return `broken at link ${broken.index + 1} (${what})`;
 }
 
+// The verdict on the whole chain, under the fact layer; the layer's own row shows the
+// links of the term on screen (layer.js).
 export function renderChain(state) {
   const check = state.chainCheck;
   const links = state.chain.links;
@@ -58,6 +60,7 @@ export function renderChain(state) {
     : ["ok", `verified · ${plural(check.links)}${links > check.links ? ` · checking ${links - check.links} new` : ""}`];
   const head = check?.verified && check.links ? check.head : null;
   el.title = head ? `Head of the chain: ${head}` : "";
-  el.className = `chain ${tone}`;
+  el.className = `chain label ${tone}`;
   el.replaceChildren(...(!links && !check?.links ? [] : ["Witness chain ", h("span", { class: "verdict" }, text)]));
+  $("chain-head").textContent = head ? `head ${head.slice(0, 12)}` : "";
 }

@@ -9,34 +9,51 @@
 <link rel="stylesheet" href="/dashboard/static/style.css">
 </head>
 <body class="board">
-<main>
-  <section class="panel" id="checklist" aria-labelledby="checklist-title">
-    <header class="panel-head">
-      <h2 id="checklist-title">Contract</h2>
-      <span id="settled-count" class="meta"></span>
-    </header>
-    <ol id="items"></ol>
-  </section>
+<div id="stage">
+  <header class="top">
+    <h1 id="deal-title">Gawah</h1>
+    <span id="call-pill" class="pill"></span>
+    <span class="mark" lang="hi" aria-label="Gawah">गवाह</span>
+  </header>
 
-  <section class="panel" id="knowledge" aria-labelledby="graph-title">
-    <header class="panel-head">
-      <h2 id="graph-title">Knowledge graph</h2>
-      <span id="graph-count" class="meta"></span>
-      <span id="chain" class="chain"></span>
-    </header>
-    <div id="graph"></div>
-  </section>
+  <main id="board">
+    <section class="contract" aria-labelledby="contract-title">
+      <h2 class="label" id="contract-title">The contract · <span id="settled-count"></span></h2>
+      <ol id="items" class="card"></ol>
+    </section>
 
-  <aside class="panel" id="phone" aria-labelledby="phone-title">
-    <header class="panel-head">
-      <h2 id="phone-title">Second phone</h2>
+    <section class="feed" aria-labelledby="feed-title">
+      <h2 class="label" id="feed-title">Facts · <span id="graph-count"></span></h2>
+      <ol id="feed" class="card"></ol>
+    </section>
+
+    <section class="hear" aria-labelledby="hear-title">
+      <h2 class="label" id="hear-title">On the call</h2>
+      <div id="tracks" class="card"></div>
+    </section>
+
+    <section class="layer" aria-labelledby="layer-title">
+      <div class="layer-head"><h2 class="label" id="layer-title">The fact layer</h2><span id="layer-time" class="label"></span></div>
+      <div id="layer"></div>
+      <div id="chain-row"></div>
+      <div class="chain-foot"><span id="chain" class="chain label"></span><span id="chain-head" class="label"></span></div>
+    </section>
+
+    <section class="below" aria-live="polite">
+      <div id="below"></div>
+    </section>
+  </main>
+
+  <aside id="phone" aria-labelledby="phone-title">
+    <header class="phone-head">
+      <h2 class="label" id="phone-title">Second phone</h2>
       <button type="button" id="phone-back" class="quiet" hidden>Back to chat</button>
     </header>
     <div class="device">
       <iframe id="phone-frame" title="Second phone" allow="microphone *; autoplay *"></iframe>
     </div>
   </aside>
-</main>
+</div>
 
 <dialog id="deals" aria-labelledby="deals-title">
   <h2 id="deals-title">Show another deal</h2>

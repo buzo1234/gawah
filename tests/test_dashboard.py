@@ -59,7 +59,7 @@ def test_the_page_and_its_files_are_served(settings):
         assert 'id="phone-frame"' in page.text and 'allow="microphone *; autoplay *"' in page.text
         phone_page = client.get("/dashboard/phone")
         assert phone_page.status_code == 200 and "/dashboard/static/phone.js" in phone_page.text
-        for name in ("base.css", "style.css", "phone.css", "app.js", "state.js", "render.js", "checklist.js", "phone.js", "crew-state.js", "graph.js", "chain.js", "clips.js"):
+        for name in ("base.css", "style.css", "phone.css", "app.js", "state.js", "render.js", "checklist.js", "phone.js", "crew-state.js", "board.js", "feed.js", "tracks.js", "layer.js", "wave.js", "chain.js", "clips.js", "fonts/public-sans-latin-600-normal.woff2", "fonts/ibm-plex-mono-latin-400-normal.woff2"):
             assert client.get(f"/dashboard/static/{name}").status_code == 200, name
         for text in (page.text, phone_page.text):
             assert "http://" not in text and "https://" not in text  # nothing from outside

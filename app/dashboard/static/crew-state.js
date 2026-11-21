@@ -7,13 +7,13 @@ const NOT_COUNTED = new Set(["disputed", "superseded"]);
 
 export function emptyCrew() {
   return {
-    facts: {}, // id -> the latest version, plus seq (when it was first seen) and last (its newest link)
+    facts: {}, // id -> the latest version, plus seq (when it was first seen), ts (the event's time then) and last (its newest link)
     factOrder: [], // ids, first seen first
     seq: 0, // one counter for facts and changes, to tell what came after what
     conflicts: [], // each fact.conflict
     changes: {}, // change_id -> the latest step, plus seq and steps seen
     changeOrder: [],
-    chain: { links: 0 }, // one link per fact.recorded
+    chain: { links: 0, list: [] }, // one link per fact.recorded, each with where it came from
     chainCheck: null, // memory's answer from /memory/chain/<deal>, set by chain.js
   };
 }
@@ -59,13 +59,27 @@ export function settledBy(state, change) {
     .find((f) => f.replaces === change.fact_id && f.seq > change.seq) || null;
 }
 
+// The stretch of the deal a link was sealed in, for the timeline under the graph. A fact
+// from a call takes the call going on when it is sealed (a call-1 term confirmed on call 2
+// is sealed on call 2), or its own call if it lands just after the call ends; anything
+// from WhatsApp goes by the day.
+export function sealedIn(fact, live, ts) {
+  if (fact.source === "call" || fact.source === "callback") {
+    if (live) return live.kind === "callback" ? "Call-backs" : `Call ${live.callNo}`;
+    return fact.source === "callback" ? "Call-backs" : `Call ${fact.call_no ?? 1}`;
+  }
+  const day = ts ? new Date(ts) : null;
+  return day && !isNaN(day) ? `WhatsApp · ${day.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}` : "WhatsApp";
+}
+
 // Folds one crew event into state and fills in change. Returns false if it is not one.
 export function applyCrew(state, e, change) {
   switch (e.name) {
     case "fact.recorded": {
       const known = state.facts[e.fact.id];
       if (!known) state.factOrder.push(e.fact.id);
-      state.facts[e.fact.id] = { ...e.fact, seq: known ? known.seq : ++state.seq, last: ++state.chain.links };
+      state.facts[e.fact.id] = { ...e.fact, seq: known ? known.seq : ++state.seq, ts: known ? known.ts : e.ts, last: ++state.chain.links };
+      state.chain.list.push({ factId: e.fact.id, status: e.fact.status, where: sealedIn(e.fact, state.live, e.ts) });
       // Memory sends a replacement first and the old version again as superseded after
       // it: the highlight stays on the replacement.
       change.fact = e.fact.status === "superseded"
@@ -78,7 +92,7 @@ export function applyCrew(state, e, change) {
     case "fact.conflict":
       state.conflicts.push({
         id: e.event_id, factIds: e.fact_ids, explanation: e.explanation, said: e.said,
-        speaker: e.speaker, callNo: e.call_no, lineNo: e.line_no, confidence: e.confidence,
+        speaker: e.speaker, callNo: e.call_no, lineNo: e.line_no, confidence: e.confidence, seq: ++state.seq, ts: e.ts,
       });
       change.conflict = e.event_id;
       change.panels.push("graph", "checklist");
