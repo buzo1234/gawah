@@ -168,6 +168,16 @@ async def test_two_figures_without_the_model_still_asks(bus):
     assert call.item("amount").note == "two different figures said"
 
 
+async def test_two_figures_for_no_term_anyone_can_name_wipe_nothing(bus):
+    # Dry run, 21 Nov: the model's lookup timed out, Sage2 still said the amount was agreed,
+    # and a guess of "amount" emptied the agreed 22,000 for the rest of the deal.
+    call = Call(bus, Scripted({"amount_agreed", "advance_agreed"}, {"amount_agreed", "advance_agreed", "conflicting_figures"}), Values(conflict=None))
+    await call.say()
+    await call.say()
+    assert call.spoken == []
+    assert call.item("amount").state is ItemState.AGREED and call.item("amount").value == "the amount"
+
+
 async def test_minimum_gap_between_interruptions(bus):
     call = Call(
         bus,
