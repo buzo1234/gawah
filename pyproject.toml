@@ -11,6 +11,9 @@ dependencies = [
     "boto3",
     "httpx",
     "websockets",
+    "livekit==1.3.0",
+    "livekit-api==2.0.1",
+    "numpy>=2.5.5",
 ]
 
 [dependency-groups]
