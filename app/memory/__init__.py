@@ -1,6 +1,7 @@
 """Stream: memory. The Scribe and the Memory in Gawah's crew.
 
 - scribe.py     each transcript line to facts (a small OpenAI model, or saved replies)
+- claims.py     a claim grounded in the words, and a value compared with the term as it stands
 - status.py     status moved forward by checklist, call-back, record and change events
 - book.py       the fact store: every version in order, the lines, the calls
 - chain.py      the witness chain over every fact version
