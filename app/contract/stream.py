@@ -1,5 +1,6 @@
 """Watches each deal's confirmations and, once both people have confirmed, writes the
-contract, the PDF and the spoken summary, uploads them, and publishes contract.ready."""
+contract, the PDF and the spoken summary, uploads them, and publishes contract.ready.
+When a change both confirmed reaches memory, it writes the next version."""
 
 import asyncio
 import tempfile
@@ -9,11 +10,14 @@ from pathlib import Path
 from typing import Protocol
 
 from app.bus import Bus
-from app.contract import document, page
+from app.contract import chain, document, page
 from app.contract.pdf import page_count
-from app.contract.trigger import WATCHED, DealState
+from app.contract.terms import also_agreed, change_list, resolve
+from app.contract.trigger import WATCHED, Call, DealState
 from app.contract.writer import Writer, write_draft
-from app.contracts import CallEnded, CallKind, ContractReady, Event, Role
+from app.contracts import (
+    AgentNote, CallKind, ChecklistItem, ContractReady, CrewAgent, Event, Fact, ItemKey, MemoryQueries, Role,
+)
 from app.log import deal_log, mask_phone
 from app.store import Store
 
@@ -31,16 +35,17 @@ class Files(Protocol):
 
 RenderPdf = Callable[[str, Path], Awaitable[None]]
 Fingerprint = Callable[[str], Awaitable[str]]  # a signed link in, the file's SHA-256 out
+Memory = Callable[[], MemoryQueries | None]  # the running memory, looked up when a contract is written
 
 
 class ContractStream:
     def __init__(
         self, bus: Bus, store: Store, writer: Writer, speaker: Speaker, files: Files,
-        render_pdf: RenderPdf, fingerprint: Fingerprint,
+        render_pdf: RenderPdf, fingerprint: Fingerprint, memory: Memory = lambda: None,
     ) -> None:
         self._bus, self._store = bus, store
         self._writer, self._speaker, self._files, self._render_pdf = writer, speaker, files, render_pdf
-        self._fingerprint = fingerprint
+        self._fingerprint, self._memory = fingerprint, memory
         self._states: dict[str, DealState] = {}
         self._seen: set[str] = set()
         self._tasks: dict[str, asyncio.Task[None]] = {}
@@ -80,38 +85,53 @@ class ContractStream:
         log = deal_log(LOG, deal_id)
         try:
             while state.should_write():
-                version = state.version
-                ready = await self._make(deal_id, state)
-                if state.version != version:
+                disputes, changes = state.disputes, set(state.landed)
+                ready, note = await self._make(deal_id, state)
+                if state.disputes != disputes:
                     log.warning("a term was disputed while the contract was being written; it was thrown away")
                     continue
-                state.written = True
+                state.wrote(changes)
                 self._bus.publish(ready)
+                self._bus.publish(note)
                 log.info("contract.ready published: %s and %s", ready.pdf_key, ready.voice_summary_key)
         except Exception:
             log.exception("CONTRACT NOT WRITTEN, contract.ready not published")
 
-    async def _make(self, deal_id: str, state: DealState) -> ContractReady:
+    async def _make(self, deal_id: str, state: DealState) -> tuple[ContractReady, AgentNote]:
         log = deal_log(LOG, deal_id)
-        items, confirmed_at, confirmed_said, call = (
-            list(state.items), dict(state.confirmed_at), dict(state.confirmed_said), state.call
-        )
+        version = state.versions + 1
+        checklist, confirmed_at, confirmed_said = state.checklist(), dict(state.confirmed_at), dict(state.confirmed_said)
+        calls = {n: Call(c.started, c.ended) for n, c in state.calls.items()}
+        facts, latest, landed, proposed = list(state.facts), state.latest(), list(state.landed.values()), dict(state.proposed)
+        new_changes = [new for change_id, (_, new) in state.landed.items() if change_id not in state.written_changes]
         deal = await self._store.deal(deal_id)
         people = {p.role: p for p in deal.people} if deal else {}
         transcript = [line for line in await self._store.transcript(deal_id) if line.kind is CallKind.DEAL]
         log.info(
-            "both confirmed, writing the contract for %s and %s",
+            "both confirmed, writing version %d of the contract for %s and %s", version,
             *(mask_phone(people[r].phone if r in people else None) for r in Role),
         )
+        memory = self._memory()
+        current = {key: (await memory.get_term(deal_id, key)).current if memory else None for key in ItemKey}
+        starts = {n: c.started for n, c in calls.items() if c.started}
+        changes, changed_facts = change_list(landed, proposed, latest, starts)
+        lines = {(line.call_no, line.line_no): line for line in transcript if line.line_no is not None}
+        terms = resolve(checklist, current, changes, changed_facts, lines, starts)
+        also = also_agreed(latest, starts)
+        items = [t.item for t in terms]
         draft, fingerprints = await asyncio.gather(
-            write_draft(self._writer, deal_id, items, transcript), self._fingerprints(deal_id, call)
+            write_draft(self._writer, deal_id, items, transcript, changes, also), self._fingerprints(deal_id, calls)
         )
+        head = chain.head(facts)
+        if facts and head is None:
+            log.warning("the witness chain over %d fact versions does not hold; it is left off the contract", len(facts))
         doc = document.build(
-            deal_id=deal_id, people=people, names=draft.names, place=draft.place, items=items, bodies=draft.terms,
-            transcript=transcript, confirmed_at=confirmed_at, confirmed_said=confirmed_said, call=call,
-            fingerprints=fingerprints, now=datetime.now(UTC),
+            deal_id=deal_id, people=people, names=draft.names, place=draft.place, terms=terms, bodies=draft.terms,
+            confirmed_at=confirmed_at, confirmed_said=confirmed_said, calls=calls, fingerprints=fingerprints,
+            now=datetime.now(UTC), version=version, changes=changes, change_texts=draft.changes, also=also,
+            also_texts=draft.also, chain=head,
         )
-        pdf_key, voice_key = f"contracts/{deal_id}.pdf", f"contracts/{deal_id}.ogg"
+        pdf_key, voice_key = f"contracts/{deal_id}-v{version}.pdf", f"contracts/{deal_id}-v{version}.ogg"
         with tempfile.TemporaryDirectory() as tmp:
             pdf_path, voice_path = Path(tmp) / "contract.pdf", Path(tmp) / "summary.ogg"
             _, voice = await asyncio.gather(self._render_pdf(page.html(doc), pdf_path), self._speaker.speak(draft.summary))
@@ -120,28 +140,43 @@ class ContractStream:
             # Nothing is published unless every upload and every link worked.
             await self._files.upload(str(pdf_path), pdf_key, "application/pdf")
             await self._files.upload(str(voice_path), voice_key, "audio/ogg")
-        return ContractReady(
+        written = {i.key: i for i in items}
+        ready = ContractReady(
             deal_id=deal_id,
             pdf_key=pdf_key, pdf_url=await self._files.signed_url(pdf_key),
             voice_summary_key=voice_key, voice_summary_url=await self._files.signed_url(voice_key),
-            text=doc.text(), items=items,
+            text=doc.text(), items=[written.get(key) or ChecklistItem(key=key) for key in ItemKey],
         )
+        return ready, _note(deal_id, version, len(terms), changes, new_changes, head)
 
-    async def _fingerprints(self, deal_id: str, call: CallEnded | None) -> dict[Role, str]:
-        """The SHA-256 of each person's recording. One that cannot be read is left out."""
+    async def _fingerprints(self, deal_id: str, calls: dict[int, Call]) -> dict[tuple[int, Role], str]:
+        """The SHA-256 of each person's recording of each call. One that cannot be read is left out."""
         found = {}
-        for role in Role:
-            key = call.recording_keys.get(role.value) if call else None
-            if not key:
-                continue
-            try:
-                found[role] = await self._fingerprint(await self._files.signed_url(key))
-            except Exception as e:
-                # Only the kind of error: its message can hold the signed link.
-                deal_log(LOG, deal_id).warning(
-                    "could not read the %s recording (%s); its fingerprint is left out", role.value, type(e).__name__
-                )
+        for n, call in sorted(calls.items()):
+            for role in Role:
+                key = call.ended.recording_keys.get(role.value) if call.ended else None
+                if not key:
+                    continue
+                try:
+                    found[(n, role)] = await self._fingerprint(await self._files.signed_url(key))
+                except Exception as e:
+                    # Only the kind of error: its message can hold the signed link.
+                    deal_log(LOG, deal_id).warning(
+                        "could not read the %s recording of call %d (%s); its fingerprint is left out",
+                        role.value, n, type(e).__name__,
+                    )
         return found
+
+
+def _note(deal_id: str, version: int, terms: int, changes: list, new: list[Fact], head) -> AgentNote:
+    text = f"contract v{version} written: {terms} terms"
+    if new:
+        text += ", " + "; ".join(f"{f.item.value if f.item else 'term'} now {f.value}" for f in new)
+    elif changes:
+        text += f", {len(changes)} change(s) listed"
+    if head:
+        text += f", chain {head[1]} links"
+    return AgentNote(deal_id=deal_id, agent=CrewAgent.CLERK, text=text[:160], fact_ids=[f.id for f in new])
 
 
 def ogg_seconds(data: bytes) -> float:

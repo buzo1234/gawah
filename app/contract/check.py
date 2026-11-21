@@ -1,8 +1,9 @@
-"""Checks the model's text against the checklist values, in code.
+"""Checks the model's text against the values it was given, in code.
 
 Every figure and day in an agreed value must be in that term's Hindi and English text,
-and no figure may appear that is not in an agreed value. A failed check is a rejected
-draft: the caller retries with the problems listed.
+and no figure may appear that is not in an agreed value. The other texts (each side of a
+change, each fact that was also agreed) are held to their own value alone. A failed check
+is a rejected draft: the caller retries with the problems listed.
 """
 
 import re
@@ -74,41 +75,57 @@ def _has_devanagari(text: str) -> bool:
     return bool(re.search(r"[ऀ-ॿ]", text))
 
 
+def _has_letters(text: str) -> bool:
+    return any(c.isalpha() for c in text)
+
+
 def _show(values: set[float]) -> str:
     return ", ".join(f"{v:g}" for v in sorted(values))
 
 
-def problems(items: list[ChecklistItem], terms: dict[str, dict[str, str]], summary: str) -> list[str]:
-    """What is wrong with a draft. terms is {item key: {"hi": ..., "en": ...}}. Empty means it passes."""
+def problems(
+    items: list[ChecklistItem], terms: dict[str, dict[str, str]], summary: str,
+    extras: dict[str, str] | None = None, extra_texts: dict[str, dict[str, str]] | None = None,
+) -> list[str]:
+    """What is wrong with a draft. terms is {item key: {"hi": ..., "en": ...}}. extras is
+    {key: value} for the other texts, and extra_texts the model's {key: {"hi": ..., "en": ...}}
+    for them. Empty means it passes."""
     agreed = [i for i in items if i.state is ItemState.AGREED and i.value]
+    extras, extra_texts = extras or {}, extra_texts or {}
     allowed = set().union(*(numbers(i.value) for i in agreed))
-    values_spell_amounts = any(_spelled(i.value) for i in agreed)
+    everything = allowed.union(*(numbers(v) for v in extras.values()))
+    values_spell_amounts = any(_spelled(v) for v in [*(i.value for i in agreed), *extras.values()])
     found = []
 
-    def foreign(where: str, text: str) -> None:
+    def foreign(where: str, text: str, allowed: set[float]) -> None:
         if extra := numbers(text) - allowed:
             found.append(f"{where} has the figure {_show(extra)}, which is not in the agreed terms")
         if not values_spell_amounts and _spelled(text):
             found.append(f"{where} spells an amount in words; write figures in digits")
 
-    for item in agreed:
+    def restates(key: str, value: str, texts: dict[str, str], allowed: set[float]) -> None:
         for lang in ("hi", "en"):
-            text = terms.get(item.key.value, {}).get(lang, "").strip()
-            where = f"{item.key.value}.{lang}"
+            text = texts.get(lang, "").strip()
+            where = f"{key}.{lang}"
             if not text:
                 found.append(f"{where} is empty")
                 continue
-            if _has_devanagari(text) != (lang == "hi"):
+            if _has_devanagari(text) != (lang == "hi") and _has_letters(text):  # "₹13,000" fits either
                 found.append(f"{where} is in the wrong script")
-            if missing := numbers(item.value) - numbers(text):
+            if missing := numbers(value) - numbers(text):
                 found.append(f"{where} is missing the figure {_show(missing)}; write it in digits")
-            if missing := days(item.value) - days(text):
+            if missing := days(value) - days(text):
                 found.append(f"{where} is missing the day or month {', '.join(sorted(missing))}")
-            foreign(where, text)
+            foreign(where, text, allowed)
+
+    for item in agreed:
+        restates(item.key.value, item.value, terms.get(item.key.value, {}), allowed)
+    for key, value in extras.items():
+        restates(key, value, extra_texts.get(key, {}), numbers(value))
 
     if not _has_devanagari(summary):
         found.append("summary_hi must be in Hindi, in Devanagari script")
-    foreign("summary_hi", summary)
+    foreign("summary_hi", summary, everything)
     low, high = SUMMARY_WORDS
     if not low <= len(summary.split()) <= high:
         found.append(f"summary_hi has {len(summary.split())} words; it must have {low} to {high}")

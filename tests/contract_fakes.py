@@ -1,6 +1,7 @@
 """Stand-ins for the model, the speech, S3 and Chrome, and the terms of a practice call."""
 
 import hashlib
+import json
 from pathlib import Path
 
 from app.contracts import ChecklistItem, ChecklistUpdated, ItemKey, ItemState
@@ -43,8 +44,23 @@ def answer_for(items: list[ChecklistItem], **changes) -> dict:
     return answer | changes
 
 
+def answer_to(text: str) -> dict:
+    """A well-behaved model's answer to whatever the request asks: every term, both sides of
+    every change, and every other thing agreed, restated in both languages."""
+    asked, _ = json.JSONDecoder().raw_decode(text)  # a retry has the problems after the JSON
+    answer = answer_for([ChecklistItem(key=t["key"], state=ItemState.AGREED, value=t["value"]) for t in asked["terms"]])
+    if asked.get("changes"):
+        answer["changes"] = {
+            c["key"]: {side: {"hi": f"तय हुआ: {c[side]}", "en": c[side]} for side in ("before", "now")}
+            for c in asked["changes"]
+        }
+    if asked.get("also_agreed"):
+        answer["also_agreed"] = {a["key"]: {"hi": f"तय हुआ: {a['fact']}", "en": a["fact"]} for a in asked["also_agreed"]}
+    return answer
+
+
 class FakeWriter:
-    """Answers from a list, one per call; after the list runs out, a good answer."""
+    """Answers from a list, one per call; after the list runs out, a good answer to what it is asked."""
 
     def __init__(self, items: list[ChecklistItem] | None = None, answers: list[dict] | None = None) -> None:
         self.items, self.answers, self.calls = items, list(answers or []), []
@@ -53,7 +69,7 @@ class FakeWriter:
         self.calls.append(text)
         if self.answers:
             return self.answers.pop(0)
-        return answer_for(self.items or agreed_items())
+        return answer_to(text)
 
 
 class FakeSpeaker:

@@ -66,7 +66,7 @@ async def test_both_confirm_and_the_contract_is_written_uploaded_and_announced(r
     [ready] = await rig.settle()
 
     assert ready.deal_id == deal_id
-    assert (ready.pdf_key, ready.voice_summary_key) == (f"contracts/{deal_id}.pdf", f"contracts/{deal_id}.ogg")
+    assert (ready.pdf_key, ready.voice_summary_key) == (f"contracts/{deal_id}-v1.pdf", f"contracts/{deal_id}-v1.ogg")
     assert ready.pdf_url == f"https://signed.invalid/{ready.pdf_key}"
     assert ready.voice_summary_url == f"https://signed.invalid/{ready.voice_summary_key}"
     assert rig.files.uploaded[ready.pdf_key][1] == "application/pdf"
@@ -74,7 +74,8 @@ async def test_both_confirm_and_the_contract_is_written_uploaded_and_announced(r
     assert ready.items == agreed_items()
     assert "13,000 rupees" in ready.text and "सुनीता (Sunita), फ़ोन / phone +910000000001" in ready.text
     # the amount, line 12, starts at 59.8s
-    assert "2. कीमत और उसमें क्या शामिल है / The price and what it covers  [कॉल / call 0:59]" in ready.text
+    assert "2. कीमत और उसमें क्या शामिल है / The price and what it covers  [कॉल / call 1, 0:59]" in ready.text
+    assert "संस्करण / Version: संस्करण 1 / Version 1" in ready.text
     assert "कहा / Said" not in ready.text and "SHA-256" not in ready.text  # nothing to print, so no line
     assert len(rig.speaker.spoken) == 1
 
@@ -90,9 +91,9 @@ async def test_the_words_each_person_said_and_the_recordings_fingerprints_are_pr
     assert "कहा / Said: “haan sab sahi hai”" in ready.text and ready.text.count("कहा / Said") == 1
     assert "and lasted 2 min 25 sec." in ready.text
     hirer_print = await fake_fingerprint(f"https://signed.invalid/{recordings['hirer']}")
-    assert f"First party's audio: {hirer_print}" in ready.text
+    assert f"Call 1 · First party's audio: {hirer_print}" in ready.text
     assert "Second party's audio" not in ready.text  # that recording could not be read: no line, not a blank
-    assert f"deal={deal_id} could not read the worker recording (RuntimeError)" in caplog.text
+    assert f"deal={deal_id} could not read the worker recording of call 1 (RuntimeError)" in caplog.text
     assert "signed.invalid" not in caplog.text  # a signed link never goes to the log
 
 
@@ -126,7 +127,8 @@ async def test_it_is_written_once_and_again_only_after_a_dispute_is_settled(rig)
     assert len(await rig.settle()) == 1
     rig.confirm(deal_id, Role.WORKER)
     first, second = await rig.settle()
-    assert second.pdf_key == first.pdf_key  # the new one replaces the old
+    assert (first.pdf_key, second.pdf_key) == (f"contracts/{deal_id}-v1.pdf", f"contracts/{deal_id}-v2.pdf")
+    assert "Version 2 (replaces version 1)" in second.text
 
 
 async def test_confirming_every_agreed_term_one_by_one_counts_as_all(rig):

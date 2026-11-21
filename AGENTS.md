@@ -57,7 +57,7 @@ LiveKit and Twilio are on free plans with monthly allowances. Using them up in t
 | Watch events live | open `http://localhost:8000/dashboard` |
 | Watch events live in a terminal, one JSON object per line | `uv run python -m fakes.tail` |
 | Public address for webhooks | `cloudflared tunnel --url http://localhost:8000` |
-| Prove the contract stream: one complete deal through the running server (real OpenAI and S3; saves the PDF and audio to `fixtures/contract-sample/`) | `uv run python -m tests.contract_proof` |
+| Prove the contract stream: one deal through the running server with two calls and a change both confirm, so version 1 and then version 2 with its change history (real OpenAI and S3: 2 contract writes, 2 speech calls, 8 S3 uploads, and memory's Scribe reads call 2's 8 lines; about a minute of call 2 at real speed; saves both PDFs, the summary and version 2's page images to `fixtures/contract-sample/v2/`) | `uv run python -m tests.contract_proof` |
 | Prove the bridge on a real call (one LiveKit room for about a minute, about 8 transcription uploads, 2 S3 uploads) | `uv run python tests/bridge_live.py` |
 | Prove a second call on the same deal: two real calls one after the other from the same links (about 6 LiveKit participant-minutes with Gawah's voice in both, 8 transcription uploads, 4 S3 uploads) | `uv run python tests/bridge_followup_live.py` |
 | Prove Gawah's voice on a deal call in a real room (about 9 LiveKit participant-minutes and a minute of generated speech) | `uv run python -m tests.mouth.prove_deal_call` |
