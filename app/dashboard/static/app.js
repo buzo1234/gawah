@@ -133,5 +133,13 @@ function connect() {
   };
 }
 
+// The board is laid out for 1920 by 1080 and scaled to whatever window shows it.
+function fit() {
+  const scale = Math.min(innerWidth / 1920, innerHeight / 1080);
+  $("stage").style.transform = `scale(${scale})`;
+}
+addEventListener("resize", fit);
+fit();
+
 renderAll(state);
 connect();

@@ -29,7 +29,7 @@ console.log(JSON.stringify({
   facts: state.factOrder.map((id) => state.facts[id].status),
   conflicts: state.conflicts.map((c) => [c.factIds, c.callNo, c.lineNo]),
   changes: state.changeOrder.map((id) => [state.changes[id].status, state.changes[id].confirmed_by]),
-  chain: state.chain.links,
+  chain: state.chain.links, sealed: state.chain.list.map((l) => l.where),
   earlier: Object.keys(state.earlier), items: state.items.map((i) => i.state),
   terms: Object.fromEntries(ITEMS.map(([key]) => [key, termView(state, key)])), moved,
 }));
@@ -70,6 +70,7 @@ def test_the_fold_keeps_calls_apart_and_follows_the_crew(tmp_path):
     assert got["conflicts"] == [[[advance.id], 2, 7]]
     assert got["changes"] == [["confirmed_one", ["worker"]], ["confirmed_both", ["worker", "hirer"]]]
     assert got["chain"] == 2  # links; memory checks them (/memory/chain), not the page
+    assert got["sealed"] == ["Call 1", "Call 2"]  # the advance said on call 1 was replaced on call 2
     assert got["earlier"] == ["amount"] and got["items"] == ["pending"] * 6  # kept in view, not hidden
     terms = got["terms"]
     # Agreed on call 1 at line 14 (0:41), kept through call 2's fresh checklist; one of

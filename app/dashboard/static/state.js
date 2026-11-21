@@ -33,6 +33,7 @@ export function emptyState(dealId) {
     people: {}, // role -> { name, phone }
     lines: {}, // "call:line" -> the deal-call line, for "when was it said"
     calls: [], // the deal calls seen, by call_no
+    live: null, // the call going on now, if any: { kind, callNo }, for where a chain link was sealed
     currentCall: 1,
     itemCall: {}, // item -> the call it was last changed on, to find its line
     earlier: {}, // item -> its last agreed value on an earlier call, with callNo
@@ -74,6 +75,7 @@ function applyDeal(state, e, change) {
     case "call.started": {
       people(state, e.people);
       const no = e.call_no ?? 1;
+      state.live = { kind: e.kind || "deal", callNo: no };
       if (e.kind !== "callback" && !state.calls.includes(no)) {
         // The brain starts each call with a fresh checklist, so keep what was agreed so far.
         for (const i of state.items) if (i.state === "agreed") state.earlier[i.key] = { ...i, callNo: state.itemCall[i.key] ?? state.currentCall };
@@ -83,6 +85,10 @@ function applyDeal(state, e, change) {
       change.panels = ["all"];
       break;
     }
+
+    case "call.ended":
+      state.live = null;
+      break;
 
     case "transcript.line":
       if (e.kind !== "callback" && e.line_no != null) state.lines[`${e.call_no ?? 1}:${e.line_no}`] = e;
@@ -156,7 +162,7 @@ export function termView(state, key) {
     view.note = `Change asked: ${asked.new_value}${yes}`;
   }
   // A contradiction on this call that came after the term's last change is still open.
-  if (view.state === "agreed" || view.state === "pending") {
+  if (["agreed", "confirmed", "pending"].includes(view.state)) {
     const c = state.conflicts.findLast((x) => (x.callNo ?? state.currentCall) === state.currentCall
       && x.factIds.some((id) => state.facts[id]?.item === key));
     if (c) view.contradicted = at(c.callNo, c.lineNo == null ? null : lineAt(state, c.lineNo, c.callNo)?.start) || "On WhatsApp";

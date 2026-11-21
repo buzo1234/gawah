@@ -13,7 +13,7 @@ export function emptyCrew() {
     conflicts: [], // each fact.conflict
     changes: {}, // change_id -> the latest step, plus seq and steps seen
     changeOrder: [],
-    chain: { links: 0 }, // one link per fact.recorded
+    chain: { links: 0, list: [] }, // one link per fact.recorded, each with where it came from
     chainCheck: null, // memory's answer from /memory/chain/<deal>, set by chain.js
   };
 }
@@ -59,6 +59,19 @@ export function settledBy(state, change) {
     .find((f) => f.replaces === change.fact_id && f.seq > change.seq) || null;
 }
 
+// The stretch of the deal a link was sealed in, for the timeline under the graph. A fact
+// from a call takes the call going on when it is sealed (a call-1 term confirmed on call 2
+// is sealed on call 2), or its own call if it lands just after the call ends; anything
+// from WhatsApp goes by the day.
+export function sealedIn(fact, live, ts) {
+  if (fact.source === "call" || fact.source === "callback") {
+    if (live) return live.kind === "callback" ? "Call-backs" : `Call ${live.callNo}`;
+    return fact.source === "callback" ? "Call-backs" : `Call ${fact.call_no ?? 1}`;
+  }
+  const day = ts ? new Date(ts) : null;
+  return day && !isNaN(day) ? `WhatsApp · ${day.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}` : "WhatsApp";
+}
+
 // Folds one crew event into state and fills in change. Returns false if it is not one.
 export function applyCrew(state, e, change) {
   switch (e.name) {
@@ -66,6 +79,7 @@ export function applyCrew(state, e, change) {
       const known = state.facts[e.fact.id];
       if (!known) state.factOrder.push(e.fact.id);
       state.facts[e.fact.id] = { ...e.fact, seq: known ? known.seq : ++state.seq, last: ++state.chain.links };
+      state.chain.list.push({ factId: e.fact.id, status: e.fact.status, where: sealedIn(e.fact, state.live, e.ts) });
       // Memory sends a replacement first and the old version again as superseded after
       // it: the highlight stays on the replacement.
       change.fact = e.fact.status === "superseded"

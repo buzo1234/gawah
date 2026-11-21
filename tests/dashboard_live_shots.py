@@ -5,10 +5,13 @@ recordings go.
 
     PYTHONPATH=. uv run python tests/dashboard_live_shots.py
 
-1. call_missing_balance to line 17, then the shot: mid-call.
+1. call_missing_balance to line 17, then the shot: mid-call; two lines more, caught while
+   their nodes come in (1b; lines 18 to 22).
    The user's recorded lines (fixtures/audio) are laid out as the call's two recordings,
    at the times of the call's lines, so a clip button plays real audio from memory.
-2. call_two_amounts to line 21: memory's contradiction on line 19, then the shot.
+2. call_two_amounts to line 21, a line every 0.3 seconds, filmed (2-facts-arriving.mp4 and
+   a contact sheet, with ffmpeg) so the motion can be judged: memory's contradiction on
+   line 19, then the shot.
 3. The first call finished, an advance paid on WhatsApp, and the amount changed by both:
    payments, what they count towards, and a superseded version, then the shot.
 
@@ -27,8 +30,11 @@ link that broke.
 
 import argparse
 import asyncio
+import base64
 import io
 import json
+import shutil
+import subprocess
 import tempfile
 import wave
 from pathlib import Path
@@ -54,12 +60,13 @@ SNAPSHOT = """JSON.stringify({
 })""" % PANELS
 LOADED = "document.body.dataset.conn === 'live' && document.body.dataset.loaded === 'true'"
 VERIFIED = "document.getElementById('chain').textContent.includes('verified') && !document.getElementById('chain').textContent.includes('new')"
-GRAPH = """JSON.stringify([...document.querySelectorAll('#graph .fact[id^="fact-"]')].map((el) => ({
+# Every fact is a node: a pill or a dot on its speaker's side of its term, or, for the fact a
+# term stands on, the line under the term itself.
+GRAPH = """JSON.stringify([...document.querySelectorAll('#graph [id^="fact-"]')].map((el) => ({
   id: el.id.slice(5), status: [...el.classList].find((c) => ['said','agreed','confirmed','disputed','superseded'].includes(c)),
-  stands: el.classList.contains('stands'), row: el.closest('.lane').querySelector('.lane-label').textContent,
-  below: !!el.closest('.track.below'),
+  stands: el.classList.contains('stands'), item: el.dataset.item || el.closest('.item')?.dataset.item || '',
 })))"""
-OWED = "JSON.stringify([...document.querySelectorAll('#graph .owed')].map((el) => [el.closest('.lane').dataset.item, el.textContent]))"
+OWED = "JSON.stringify([...document.querySelectorAll('#graph .owed')].map((el) => [el.closest('.item').dataset.item, el.textContent]))"
 CHECKLIST = """JSON.stringify(Object.fromEntries([...document.querySelectorAll('#items .item')].map((el) => [el.dataset.item, {
   state: el.querySelector('.state').textContent, value: el.querySelector('.value').textContent,
   when: el.querySelector('.when')?.textContent || '', contradicted: el.querySelector('.contradicted')?.textContent || '',
@@ -67,6 +74,12 @@ CHECKLIST = """JSON.stringify(Object.fromEntries([...document.querySelectorAll('
 GONE = ["flow", "decisions", "records", "lanes", "real-chat", "deal-picker", "conn", "people", "status"]
 IN_VIEW = """(() => { const el = document.querySelector('%s'), g = document.getElementById('graph').getBoundingClientRect();
   const r = el.getBoundingClientRect(); return r.top >= g.top && r.bottom <= g.bottom; })()"""
+ARRIVING = """new Promise((done) => {
+  const seen = new MutationObserver(() => {
+    if (document.querySelector('#graph .node.enter')) { seen.disconnect(); done(true); }
+  });
+  seen.observe(document.getElementById('graph'), { subtree: true, childList: true, attributes: true });
+})"""
 AUDIO = Path("fixtures/audio")
 FRAME = "document.getElementById('phone-frame').contentWindow"
 PROBE = "/actor/status"  # the phone asks once whether the actor is there; its 404 is the answer "not yet"
@@ -104,6 +117,22 @@ def stand_in_actor(app) -> dict:
     app.add_api_route("/actor/start", start, methods=["POST"])
     app.add_api_route("/actor/stop", stop, methods=["POST"])
     return actor
+
+
+def film_to(frames: Path, video: Path, sheet: Path) -> None:
+    """The frames as a video at their real pace, and a contact sheet of every third one.
+    Needs ffmpeg; without it the frames are left where they are."""
+    shots = sorted(frames.glob("*.jpg"))
+    if not shutil.which("ffmpeg"):
+        print(f"  no ffmpeg: {len(shots)} frames left in {frames}")
+        return
+    seconds = max(1.0, (shots[-1].stat().st_mtime - shots[0].stat().st_mtime)) if shots else 1.0
+    rate = f"{len(shots) / seconds:.2f}"
+    common = ["ffmpeg", "-loglevel", "error", "-y", "-framerate", rate, "-i", str(frames / "%04d.jpg")]
+    subprocess.run([*common, "-c:v", "libx264", "-pix_fmt", "yuv420p", str(video)], check=True)
+    rows = max(1, -(-len(shots) // 12))
+    subprocess.run([*common, "-vf", f"select='not(mod(n\\,3))',scale=480:-1,tile=4x{rows}", "-frames:v", "1", str(sheet)], check=True)
+    print(f"  {len(shots)} frames over {seconds:.1f} s: {video}, {sheet}")
 
 
 def lay_recordings(folder: Path, fixture: dict) -> list[int]:
@@ -169,14 +198,14 @@ async def main(port: int, out: Path) -> None:
                 last = (state["versions"], count)
                 await asyncio.sleep(1.0)
 
-        async def play(deal: str, fixture: dict, lines: range, start: bool = True, end: bool = False) -> None:
+        async def play(deal: str, fixture: dict, lines: range, start: bool = True, end: bool = False, gap: float = 0.05) -> None:
             people = [Person(**p) for p in fixture["people"]]
             if start:
                 await publish(CallStarted(deal_id=deal, people=people, room=f"replay-{deal}"))
             for line in fixture["lines"]:
                 if line["line_no"] in lines:
                     await publish(TranscriptLine(deal_id=deal, **line))
-                    await asyncio.sleep(0.05)
+                    await asyncio.sleep(gap)
             if end:
                 await publish(CallEnded(deal_id=deal, people=people, room=f"replay-{deal}", duration=fixture["lines"][-1]["end"]))
 
@@ -188,7 +217,7 @@ async def main(port: int, out: Path) -> None:
                 await chrome.wait_for(VERIFIED)
                 shown = {c["id"]: c for c in json.loads(await chrome.js(GRAPH))}
                 held = {f["id"]: f for f in memory["facts"]}
-                check(shown.keys() == held.keys(), f"every fact memory holds is a card, and no other ({len(held)})")
+                check(shown.keys() == held.keys(), f"every fact memory holds is a node, and no other ({len(held)})")
                 wrong = [i for i in held if i in shown and shown[i]["status"] != held[i]["status"]]
                 check(not wrong, f"each card shows memory's latest status{f': wrong on {wrong}' if wrong else ''}")
                 for item in ItemKey:
@@ -198,7 +227,7 @@ async def main(port: int, out: Path) -> None:
                 for i, f in held.items():
                     target = held.get(f.get("counts_towards") or "")
                     if target and target["item"] and i in shown:
-                        check(shown[i]["below"], f"{f['kind']} {f['value']} sits under the {target['item']} term it counts towards")
+                        check(shown[i]["item"] == target["item"], f"{f['kind']} {f['value']} sits with the {target['item']} term it counts towards")
                 owed = {r["item"]: r for r in memory["owed"]}
                 for label, text in json.loads(await chrome.js(OWED)):
                     r = owed[label]
@@ -255,6 +284,14 @@ async def main(port: int, out: Path) -> None:
             await matches_memory(deal)
             await asyncio.sleep(0.5)
             await chrome.shot(out / "1-mid-call.png")
+            # Facts arriving: five more lines, caught while the first new node and its edges
+            # come in (watched from inside the page: the motion is over in 400 ms).
+            entering = asyncio.create_task(chrome.js(ARRIVING))
+            await play(deal, mb, range(18, 23), start=False, gap=0.6)
+            await asyncio.wait_for(entering, 10)
+            await asyncio.sleep(0.12)
+            await chrome.shot(out / "1b-facts-arriving.png")
+            await settle(deal)
 
             # A clip: the line-3 card, clicked as a person would, plays to its end.
             memory = await settle(deal)
@@ -283,7 +320,25 @@ async def main(port: int, out: Path) -> None:
             deal2 = f"live-ta-{new_id()[:4]}"
             await chrome.goto(f"{url}/dashboard?deal={deal2}")
             await chrome.wait_for(LOADED)
-            await play(deal2, ta, range(1, 22))  # the contradiction is on line 19; two lines on, it is still in view
+            frames = home / "frames"
+            frames.mkdir(parents=True, exist_ok=True)
+            shooting = True
+
+            async def film() -> None:
+                """Half-size frames, as fast as Chrome gives them (about ten a second)."""
+                n = 0
+                while shooting:
+                    data = (await chrome.send("Page.captureScreenshot", format="jpeg", quality=80,
+                                              clip={"x": 0, "y": 0, "width": 1920, "height": 1080, "scale": 0.5}))["data"]
+                    (frames / f"{n:04d}.jpg").write_bytes(base64.b64decode(data))
+                    n += 1
+
+            camera = asyncio.create_task(film())
+            await play(deal2, ta, range(1, 22), gap=0.3)  # the contradiction is on line 19; two lines on, it is still in view
+            await asyncio.sleep(2.0)
+            shooting = False
+            await camera
+            film_to(frames, out / "2-facts-arriving.mp4", out / "2-facts-arriving-sheet.png")
             await matches_memory(deal2)
             conflict = await chrome.js("document.querySelector('#graph div.conflict')?.textContent || ''")
             check("14,000" in conflict and "13,000" in conflict, f"contradiction card: {conflict[:140]!r}")
@@ -299,7 +354,7 @@ async def main(port: int, out: Path) -> None:
             print("3. call_missing_balance finished, an advance paid, the amount changed")
             await chrome.goto(f"{url}/dashboard?deal={deal}")
             await chrome.wait_for(LOADED)
-            await play(deal, mb, range(18, 100), start=False, end=True)
+            await play(deal, mb, range(23, 100), start=False, end=True)
             await settle(deal)
             await publish(RecordReceived(deal_id=deal, record=Record(sender=Role.HIRER, kind=RecordKind.ADVANCE, amount=8000, text="8000 advance GPay kar diya")))
             await publish(RecordReceived(deal_id=deal, record=Record(sender=Role.HIRER, kind=RecordKind.PAYMENT, amount=5000, text="5000 aur diye")))
@@ -313,7 +368,6 @@ async def main(port: int, out: Path) -> None:
             check(len(json.loads(await chrome.js(OWED))) == 3, "paid and owed shown on the amount, the advance and the balance")
             rows = json.loads(await chrome.js(CHECKLIST))
             check((rows["amount"]["state"], rows["amount"]["value"]) == ("Changed", "26,000 rupees, with the balcony"), f"the checklist shows the change: {rows['amount']}")
-            await chrome.js("document.getElementById('graph').scrollTop = 0")
             await asyncio.sleep(0.5)
             await chrome.shot(out / "3-payments-and-change.png")
             await reload_check("payments and change")
@@ -398,6 +452,6 @@ async def main(port: int, out: Path) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--port", type=int, default=8021)
-    parser.add_argument("--out", type=Path, default=Path("fixtures/dashboard-shots/minimal"))
+    parser.add_argument("--out", type=Path, default=Path("fixtures/dashboard-shots/visual"))
     args = parser.parse_args()
     asyncio.run(main(args.port, args.out))

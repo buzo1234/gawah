@@ -9,26 +9,26 @@
 <link rel="stylesheet" href="/dashboard/static/style.css">
 </head>
 <body class="board">
-<main>
-  <section class="panel" id="checklist" aria-labelledby="checklist-title">
-    <header class="panel-head">
-      <h2 id="checklist-title">Contract</h2>
-      <span id="settled-count" class="meta"></span>
-    </header>
-    <ol id="items"></ol>
+<div id="stage">
+  <header class="heads">
+    <div class="heading graph-head"><h2 id="graph-title">Knowledge graph</h2><span id="graph-count" class="meta"></span></div>
+    <div class="heading contract-head"><h2 id="checklist-title">Contract</h2><span id="settled-count" class="meta"></span></div>
+  </header>
+
+  <section id="graph" aria-labelledby="graph-title">
+    <svg id="edges" aria-hidden="true"></svg>
+    <div id="nodes"></div>
+    <ol id="items" aria-labelledby="checklist-title"></ol>
+    <div id="card-slot"></div>
   </section>
 
-  <section class="panel" id="knowledge" aria-labelledby="graph-title">
-    <header class="panel-head">
-      <h2 id="graph-title">Knowledge graph</h2>
-      <span id="graph-count" class="meta"></span>
-      <span id="chain" class="chain"></span>
-    </header>
-    <div id="graph"></div>
-  </section>
+  <footer id="timeline">
+    <div class="chain-text"><span id="chain" class="chain"></span><span id="chain-head" class="meta"></span></div>
+    <svg id="chain-links" aria-hidden="true"></svg>
+  </footer>
 
-  <aside class="panel" id="phone" aria-labelledby="phone-title">
-    <header class="panel-head">
+  <aside id="phone" aria-labelledby="phone-title">
+    <header class="heading phone-head">
       <h2 id="phone-title">Second phone</h2>
       <button type="button" id="phone-back" class="quiet" hidden>Back to chat</button>
     </header>
@@ -36,7 +36,7 @@
       <iframe id="phone-frame" title="Second phone" allow="microphone *; autoplay *"></iframe>
     </div>
   </aside>
-</main>
+</div>
 
 <dialog id="deals" aria-labelledby="deals-title">
   <h2 id="deals-title">Show another deal</h2>
