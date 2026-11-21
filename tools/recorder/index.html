@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recorder</title>
+<link rel="icon" href="data:,">
+<style>
+  body { font: 16px/1.4 system-ui, sans-serif; color: #000; background: #fff; max-width: 56rem; margin: 0 auto; padding: 1.5rem; }
+  #speaker { font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 0; }
+  #text { font-size: clamp(1.75rem, 4.5vw, 3rem); line-height: 1.25; margin: .5rem 0 1.5rem; min-height: 3.75em; }
+  #controls { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; min-height: 3.5rem; }
+  button { font: inherit; color: inherit; background: #fff; border: 1px solid #000; padding: .6rem 1.2rem; cursor: pointer; }
+  button:disabled { opacity: .4; cursor: default; }
+  #record { font-size: 1.25rem; min-width: 10rem; }
+  #status { min-height: 1.5em; }
+  body.recording { box-shadow: inset 0 0 0 .5rem #c00; }
+  body.recording #record { background: #c00; border-color: #c00; color: #fff; }
+  body.recording #status, #status.error { color: #c00; font-weight: 600; }
+  ol { list-style: none; padding: 0; margin: 2rem 0 0; }
+  ol button { display: block; width: 100%; text-align: left; border: 0; padding: .3rem .5rem; }
+  ol button.done { color: #070; }
+  ol button.current { font-weight: 700; outline: 1px solid #000; }
+</style>
+
+<p id="progress">Loading…</p>
+<p id="speaker"></p>
+<p id="text"></p>
+<div id="controls">
+  <button id="record" disabled>Record</button>
+  <audio id="player" controls hidden></audio>
+  <button id="keep" hidden>Keep and next</button>
+</div>
+<p id="status"></p>
+<ol id="list"></ol>
+
+<script>
+const $ = id => document.getElementById(id);
+let lines = [], state = {}, index = 0;
+// idle -> starting -> recording -> review -> saving -> idle
+let mode = 'idle', error = '';
+let stream = null, recorder = null, take = null, startedAt = 0, stoppedAt = 0;
+
+async function getJSON(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`${url} returned ${r.status}`);
+  return r.json();
+}
+
+function firstUnrecorded(from) {
+  for (let i = 0; i < lines.length; i++) {
+    const j = (from + i) % lines.length;
+    if (!state[lines[j].id]) return j;
+  }
+  return -1;
+}
+
+function render() {
+  const line = lines[index], saved = state[line.id];
+  const done = lines.filter(l => state[l.id]).length;
+  $('progress').textContent = `${index + 1} of ${lines.length} · ${done} recorded`;
+  $('speaker').textContent = line.speaker;
+  $('text').textContent = line.text;
+
+  $('record').textContent = {
+    idle: saved ? 'Record again' : 'Record', starting: 'Starting…', recording: 'Stop', review: 'Redo', saving: 'Saving…',
+  }[mode];
+  $('record').disabled = mode === 'starting' || mode === 'saving';
+  const reviewing = mode === 'review' || mode === 'saving';
+  $('player').hidden = $('keep').hidden = !reviewing;
+  $('keep').disabled = mode === 'saving';
+  document.body.classList.toggle('recording', mode === 'recording');
+
+  let status = 'Space to record.';
+  if (error) status = error;
+  else if (mode === 'recording') status = '● Recording. Space to stop.';
+  else if (mode === 'review') status = `${take.seconds.toFixed(1)} s. Enter to keep and go on, space to redo.`;
+  else if (mode === 'saving') status = 'Saving…';
+  else if (saved) status = `Recorded, ${saved.seconds} s. Space to record it again.` + (done === lines.length ? ' All lines are recorded.' : '');
+  $('status').textContent = status;
+  $('status').className = error ? 'error' : '';
+
+  [...$('list').children].forEach((li, i) => {
+    const l = lines[i], b = li.firstChild;
+    b.textContent = `${state[l.id] ? '✓' : '·'} ${i + 1}. ${l.speaker}: ${l.text}`;
+    b.className = (state[l.id] ? 'done ' : '') + (i === index ? 'current' : '');
+  });
+}
+
+function discardTake() {
+  if (!take) return;
+  $('player').removeAttribute('src');
+  $('player').load();
+  URL.revokeObjectURL(take.url);
+  take = null;
+}
+
+async function startRecording() {
+  discardTake();
+  error = '';
+  mode = 'starting';
+  render();
+  try {
+    // The microphone stays open between lines so the start of a take is not clipped.
+    if (!stream) stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const type = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus']
+      .find(t => MediaRecorder.isTypeSupported(t));
+    const rec = recorder = new MediaRecorder(stream, type ? { mimeType: type } : {});
+    const chunks = [];
+    rec.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+    rec.onstart = () => { startedAt = performance.now(); mode = 'recording'; render(); };
+    rec.onstop = () => {
+      if (rec.discarded) return;
+      const blob = new Blob(chunks, { type: rec.mimeType || type || 'audio/webm' });
+      take = { blob, seconds: (stoppedAt - startedAt) / 1000, url: URL.createObjectURL(blob) };
+      $('player').src = take.url;
+      mode = 'review';
+      render();
+    };
+    rec.start();
+  } catch (e) {
+    error = `Microphone not available: ${e.message}`;
+    mode = 'idle';
+    render();
+  }
+}
+
+function stopRecording() {
+  if (recorder.state !== 'recording') return;
+  stoppedAt = performance.now();
+  recorder.stop();
+}
+
+function toggle() {
+  if (mode === 'recording') stopRecording();
+  else if (mode === 'idle' || mode === 'review') startRecording();
+}
+
+async function keep() {
+  if (mode !== 'review') return;
+  const line = lines[index];
+  error = '';
+  mode = 'saving';
+  render();
+  try {
+    const r = await fetch(`/api/recordings/${encodeURIComponent(line.id)}?seconds=${take.seconds.toFixed(2)}`, {
+      method: 'POST', headers: { 'Content-Type': take.blob.type }, body: take.blob,
+    });
+    if (!r.ok) throw new Error((await r.json()).error || r.status);
+    state[line.id] = await r.json();
+  } catch (e) {
+    error = `Not saved: ${e.message}. Enter to try again.`;
+    mode = 'review';
+    render();
+    return;
+  }
+  discardTake();
+  const next = firstUnrecorded(index);
+  if (next >= 0) index = next;
+  mode = 'idle';
+  render();
+}
+
+function jump(i) {
+  if (mode === 'starting' || mode === 'saving') return;
+  if (recorder && recorder.state !== 'inactive') { recorder.discarded = true; recorder.stop(); }
+  discardTake();
+  error = '';
+  index = i;
+  mode = 'idle';
+  render();
+}
+
+// Clicked buttons give up focus so space and enter never re-press them.
+$('record').onclick = e => { e.currentTarget.blur(); toggle(); };
+$('keep').onclick = e => { e.currentTarget.blur(); keep(); };
+
+function isShortcut(e) {
+  return (e.code === 'Space' || e.key === 'Enter') && !e.metaKey && !e.ctrlKey && !e.altKey
+    && !e.target.closest('#list');
+}
+document.addEventListener('keydown', e => {
+  if (!isShortcut(e) || !lines.length) return;
+  e.preventDefault();
+  if (e.repeat) return;
+  if (e.code === 'Space') toggle(); else keep();
+}, true);
+// Firefox presses a focused button on space keyup, so that is swallowed too.
+document.addEventListener('keyup', e => { if (isShortcut(e)) e.preventDefault(); }, true);
+
+(async () => {
+  try {
+    [lines, state] = await Promise.all([getJSON('/api/lines'), getJSON('/api/state')]);
+  } catch (e) {
+    $('progress').textContent = `Could not load: ${e.message}`;
+    return;
+  }
+  lines.forEach((_, i) => {
+    const li = document.createElement('li'), b = document.createElement('button');
+    b.onclick = () => { b.blur(); jump(i); };
+    li.append(b);
+    $('list').append(li);
+  });
+  const next = firstUnrecorded(0);
+  index = next >= 0 ? next : lines.length - 1;
+  render();
+})();
+</script>
+</html>
