@@ -1,0 +1,134 @@
+{
+ "id": "demo_call_2",
+ "description": "Day 5 of the demo: the second call on the same deal. Ramesh says the total was 25,000 (his offer on call 1; both agreed 22,000), then both agree a change by voice: the balcony wall, 2,000 extra, 24,000 in all. Fields as in demo_call_1.json.",
+ "call_no": 2,
+ "follows": "demo/demo_call_1",
+ "people": [
+  {
+   "role": "hirer",
+   "name": "Sunita",
+   "phone": "+919000000001"
+  },
+  {
+   "role": "worker",
+   "name": "Ramesh",
+   "phone": "+919000000002"
+  }
+ ],
+ "ended_at": 124.43,
+ "lines": [
+  {
+   "line_no": 1,
+   "speaker": "worker",
+   "text": "Main Ramesh. Main sehmat hoon.",
+   "start": 4.0,
+   "end": 6.85,
+   "audio": "voice"
+  },
+  {
+   "line_no": 2,
+   "speaker": "hirer",
+   "text": "Main Sunita. Main bhi sehmat hoon.",
+   "start": 8.05,
+   "end": 11.16,
+   "audio": "voice"
+  },
+  {
+   "line_no": 3,
+   "speaker": "worker",
+   "text": "Madam, aadha kaam ho gaya. Total pachees hazaar tay hua tha na?",
+   "start": 12.36,
+   "end": 17.36,
+   "audio": "voice",
+   "then": {
+    "gawah": "says both agreed 22,000 on call 1, plays that moment, and asks which they mean",
+    "within_s": 45
+   }
+  },
+  {
+   "line_no": 4,
+   "speaker": "hirer",
+   "text": "Nahi, baees hazaar hi tay hua tha.",
+   "start": 38.56,
+   "end": 41.67,
+   "audio": "voice"
+  },
+  {
+   "line_no": 5,
+   "speaker": "worker",
+   "text": "Haan ji, baees hi. Galti ho gayi.",
+   "start": 42.87,
+   "end": 45.91,
+   "audio": "voice",
+   "then": {
+    "gawah": "may note it stays 22,000",
+    "within_s": 10,
+    "optional": true
+   }
+  },
+  {
+   "line_no": 6,
+   "speaker": "hirer",
+   "text": "Ek kaam aur hai. Balcony ki deewar bhi paint kar dijiye.",
+   "start": 57.11,
+   "end": 61.65,
+   "audio": "voice"
+  },
+  {
+   "line_no": 7,
+   "speaker": "worker",
+   "text": "Ho jayega madam. Uske do hazaar extra lagenge.",
+   "start": 62.85,
+   "end": 66.74,
+   "audio": "voice"
+  },
+  {
+   "line_no": 8,
+   "speaker": "hirer",
+   "text": "Theek hai, do hazaar extra. Total chaubees hazaar.",
+   "start": 67.94,
+   "end": 72.09,
+   "audio": "voice",
+   "then": {
+    "gawah": "says the change, 22,000 to 24,000, and asks both to say haan",
+    "within_s": 35
+   }
+  },
+  {
+   "line_no": 9,
+   "speaker": "hirer",
+   "text": "Haan.",
+   "start": 93.29,
+   "end": 94.52,
+   "audio": "voice"
+  },
+  {
+   "line_no": 10,
+   "speaker": "worker",
+   "text": "Haan ji.",
+   "start": 95.72,
+   "end": 97.14,
+   "audio": "voice",
+   "then": {
+    "gawah": "says the change holds: the total is now 24,000",
+    "within_s": 25
+   }
+  },
+  {
+   "line_no": 11,
+   "speaker": "hirer",
+   "text": "Theek hai, bye.",
+   "start": 118.34,
+   "end": 120.22,
+   "audio": "voice"
+  },
+  {
+   "line_no": 12,
+   "speaker": "worker",
+   "text": "Namaste madam.",
+   "start": 121.42,
+   "end": 123.23,
+   "audio": "voice"
+  }
+ ]
+}

@@ -1,0 +1,319 @@
+{
+ "model": "gpt-5.4-mini",
+ "effort": "none",
+ "replies": {
+  "Main Sunita hoon. Main sehmat hoon.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "accept",
+    "text": "Sunita says she agrees.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Main Sunita hoon. Main sehmat hoon.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Main Ramesh, painter. Main bhi sehmat hoon.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "Ramesh says he is a painter.",
+    "value": "painter",
+    "rupees": null,
+    "date": null,
+    "quote": "Main Ramesh, painter.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "accept",
+    "text": "Ramesh accepts Sunita's agreement.",
+    "value": "agreement",
+    "rupees": null,
+    "date": null,
+    "quote": "Main bhi sehmat hoon.",
+    "accepts_line": 1,
+    "contradicts": null
+   }
+  ],
+  "Mujhe apna flat paint karwana hai. Two BHK hai, Indirapuram mein, third floor pe.": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "Sunita says she wants her flat painted.",
+    "value": "paint a flat",
+    "rupees": null,
+    "date": null,
+    "quote": "Mujhe apna flat paint karwana hai.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita says the flat is a two BHK in Indirapuram on the third floor.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Two BHK hai, Indirapuram mein, third floor pe.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Do coat aur putty ka touch-up, material ke saath pachees hazaar lagega madam.": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says the job is two coats and putty touch-up, with material included.",
+    "value": "two coats and putty touch-up with material",
+    "rupees": null,
+    "date": null,
+    "quote": "Do coat aur putty ka touch-up, material ke saath pachees hazaar lagega madam.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says the total price will be 25,000 rupees.",
+    "value": "25,000 rupees",
+    "rupees": 25000,
+    "date": null,
+    "quote": "Do coat aur putty ka touch-up, material ke saath pachees hazaar lagega madam.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Pachees hazaar bahut zyada hai. Mera budget twenty thousand ka hai.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "offer",
+    "text": "Sunita says her budget is 20,000 rupees.",
+    "value": "20,000 rupees",
+    "rupees": 20000,
+    "date": null,
+    "quote": "Pachees hazaar bahut zyada hai. Mera budget twenty thousand ka hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Madam bees mein nahi ho payega, labour hi teen aadmi ka hai. Chalo baees hazaar final kar lo.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The worker says it cannot be done for 20,000 rupees and proposes 22,000 rupees as the final price.",
+    "value": "22,000 rupees",
+    "rupees": 22000,
+    "date": null,
+    "quote": "Madam bees mein nahi ho payega, labour hi teen aadmi ka hai. Chalo baees hazaar final kar lo.",
+    "accepts_line": null,
+    "contradicts": "amount@1.5"
+   }
+  ],
+  "Theek hai, twenty two thousand done. Lekin material aapka hoga, upar se koi extra charge nahi.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "accept",
+    "text": "Sunita accepts 22,000 rupees as the total price.",
+    "value": "22,000 rupees",
+    "rupees": 22000,
+    "date": null,
+    "quote": "Theek hai, twenty two thousand done. Lekin material aapka hoga, upar se koi extra charge nahi.",
+    "accepts_line": 6,
+    "contradicts": "amount@1.4"
+   },
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "state",
+    "text": "Sunita says the material will be provided by the worker.",
+    "value": "material aapka",
+    "rupees": null,
+    "date": null,
+    "quote": "Theek hai, twenty two thousand done. Lekin material aapka hoga, upar se koi extra charge nahi.",
+    "accepts_line": null,
+    "contradicts": "work@1.4"
+   },
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "state",
+    "text": "Sunita says there will be no extra charge.",
+    "value": "no extra charge",
+    "rupees": null,
+    "date": null,
+    "quote": "Theek hai, twenty two thousand done. Lekin material aapka hoga, upar se koi extra charge nahi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Advance kitna doge madam? Material lene ke liye paanch hazaar toh pehle chahiye.": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker asks how much advance the hirer will give and says he needs 5,000 rupees upfront for buying material.",
+    "value": "5,000 rupees",
+    "rupees": 5000,
+    "date": null,
+    "quote": "Advance kitna doge madam? Material lene ke liye paanch hazaar toh pehle chahiye.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Paanch hazaar advance main kal GPay kar dungi.": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "state",
+    "text": "Sunita says she will pay a 5,000 rupee advance tomorrow by GPay.",
+    "value": "5,000 rupees",
+    "rupees": 5000,
+    "date": "2026-11-22",
+    "quote": "Paanch hazaar advance main kal GPay kar dungi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Chalo theek hai. Kaam kab se start karoge?": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "offer",
+    "text": "Sunita asks when the work will start.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Chalo theek hai. Kaam kab se start karoge?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Agle somvaar se shuru kar denge, subah nau baje tak pahunch jayenge.": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "offer",
+    "text": "The worker says they will start from next Monday and reach by 9 in the morning.",
+    "value": "start next Monday",
+    "rupees": null,
+    "date": "2026-11-23",
+    "quote": "Agle somvaar se shuru kar denge, subah nau baje tak pahunch jayenge.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Aur khatam kab tak hoga? 15 tareekh ko mere ghar pe guests aa rahe hain.": [
+   {
+    "item": "dates",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita asks when the work will be finished and says guests are coming to her home on the 15th.",
+    "value": "15th",
+    "rupees": null,
+    "date": "2026-12-15",
+    "quote": "Aur khatam kab tak hoga? 15 tareekh ko mere ghar pe guests aa rahe hain.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Paanch din ka kaam hai madam. Shukravaar tak finish, pandrah tareekh se pehle ho jayega.": [
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says the job will take five days and will be finished by Friday, before the 15th.",
+    "value": "five days, finish by Friday, before the 15th",
+    "rupees": null,
+    "date": null,
+    "quote": "Paanch din ka kaam hai madam. Shukravaar tak finish, pandrah tareekh se pehle ho jayega.",
+    "accepts_line": null,
+    "contradicts": "dates@1.13"
+   }
+  ],
+  "Baaki paisa kaam poora hone ke din de dungi.": [
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "state",
+    "text": "Sunita says she will pay the remaining money on the day the work is completed.",
+    "value": "remaining money on completion day",
+    "rupees": null,
+    "date": null,
+    "quote": "Baaki paisa kaam poora hone ke din de dungi.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Late hua to har din ka paanch sau kaat lena.": [
+   {
+    "item": "late_or_unfinished",
+    "kind": "term",
+    "stance": "state",
+    "text": "The worker says that if the job is late, 500 rupees should be cut for each day.",
+    "value": "500 rupees per day",
+    "rupees": 500,
+    "date": null,
+    "quote": "Late hua to har din ka paanch sau kaat lena.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Gawah ji, advance kitna tay hua tha?": [
+   {
+    "item": "advance",
+    "kind": "other",
+    "stance": "recall",
+    "text": "The worker asks what advance was fixed.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Gawah ji, advance kitna tay hua tha?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Chalo, sab tay ho gaya. Dhanyavaad Ramesh ji.": [
+   {
+    "item": "amount",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita says everything has been settled.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Chalo, sab tay ho gaya.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Ji madam, dhanyavaad.": [
+   {
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says thanks.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Ji madam, dhanyavaad.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ]
+ },
+ "checks": {}
+}

@@ -1,0 +1,155 @@
+{
+ "model": "gpt-5.4-mini",
+ "effort": "none",
+ "replies": {
+  "Main Ramesh. Main sehmat hoon.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Ramesh says he is the painter and agrees.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Main Ramesh. Main sehmat hoon.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Main Sunita. Main bhi sehmat hoon.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Sunita says she also agrees.",
+    "value": null,
+    "rupees": null,
+    "date": null,
+    "quote": "Main Sunita. Main bhi sehmat hoon.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Madam, aadha kaam ho gaya. Total pachees hazaar tay hua tha na?": [
+   {
+    "item": "work",
+    "kind": "work",
+    "stance": "recall",
+    "text": "Ramesh says half the work is done.",
+    "value": "half the work",
+    "rupees": null,
+    "date": null,
+    "quote": "Madam, aadha kaam ho gaya. Total pachees hazaar tay hua tha na?",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "recall",
+    "text": "Ramesh says the total was agreed at 25,000 rupees.",
+    "value": "25,000 rupees",
+    "rupees": 25000,
+    "date": null,
+    "quote": "Madam, aadha kaam ho gaya. Total pachees hazaar tay hua tha na?",
+    "accepts_line": null,
+    "contradicts": "amount@1.6"
+   }
+  ],
+  "Nahi, baees hazaar hi tay hua tha.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "recall",
+    "text": "Sunita says no, 22,000 rupees was the agreed total.",
+    "value": "22,000 rupees",
+    "rupees": 22000,
+    "date": null,
+    "quote": "Nahi, baees hazaar hi tay hua tha.",
+    "accepts_line": null,
+    "contradicts": "amount@2.3"
+   }
+  ],
+  "Haan ji, baees hi. Galti ho gayi.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "accept",
+    "text": "Ramesh accepts the agreed amount as 22,000 rupees.",
+    "value": "22,000 rupees",
+    "rupees": 22000,
+    "date": null,
+    "quote": "Haan ji, baees hi. Galti ho gayi.",
+    "accepts_line": 4,
+    "contradicts": null
+   }
+  ],
+  "Ek kaam aur hai. Balcony ki deewar bhi paint kar dijiye.": [
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "offer",
+    "text": "Sunita proposes adding painting the balcony wall to the job.",
+    "value": "paint the balcony wall",
+    "rupees": null,
+    "date": null,
+    "quote": "Ek kaam aur hai. Balcony ki deewar bhi paint kar dijiye.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Ho jayega madam. Uske do hazaar extra lagenge.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "Ramesh says the balcony wall will be done for an extra 2,000 rupees.",
+    "value": "2,000 rupees",
+    "rupees": 2000,
+    "date": null,
+    "quote": "Ho jayega madam. Uske do hazaar extra lagenge.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "offer",
+    "text": "Ramesh says the balcony wall paint work will be added as extra work.",
+    "value": "paint the balcony wall",
+    "rupees": null,
+    "date": null,
+    "quote": "Ho jayega madam. Uske do hazaar extra lagenge.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek hai, do hazaar extra. Total chaubees hazaar.": [
+   {
+    "item": "work",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Sunita accepts the extra balcony wall painting for 2,000 rupees.",
+    "value": "paint the balcony wall",
+    "rupees": 2000,
+    "date": null,
+    "quote": "Theek hai, do hazaar extra.",
+    "accepts_line": 7,
+    "contradicts": null
+   },
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Sunita accepts a total of 24,000 rupees.",
+    "value": "24,000 rupees",
+    "rupees": 24000,
+    "date": null,
+    "quote": "Total chaubees hazaar.",
+    "accepts_line": 7,
+    "contradicts": "amount@2.3"
+   }
+  ]
+ },
+ "checks": {}
+}
