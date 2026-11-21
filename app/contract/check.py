@@ -75,6 +75,10 @@ def _has_devanagari(text: str) -> bool:
     return bool(re.search(r"[ऀ-ॿ]", text))
 
 
+def _has_letters(text: str) -> bool:
+    return any(c.isalpha() for c in text)
+
+
 def _show(values: set[float]) -> str:
     return ", ".join(f"{v:g}" for v in sorted(values))
 
@@ -106,7 +110,7 @@ def problems(
             if not text:
                 found.append(f"{where} is empty")
                 continue
-            if _has_devanagari(text) != (lang == "hi"):
+            if _has_devanagari(text) != (lang == "hi") and _has_letters(text):  # "₹13,000" fits either
                 found.append(f"{where} is in the wrong script")
             if missing := numbers(value) - numbers(text):
                 found.append(f"{where} is missing the figure {_show(missing)}; write it in digits")

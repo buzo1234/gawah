@@ -100,3 +100,14 @@ async def test_the_place_of_work_is_used_only_if_it_was_said_on_the_call():
     said = [*LINES, TranscriptLine(deal_id="d", speaker=Role.HIRER, text="Mera flat Indirapuram mein hai.", start=5, end=8)]
     draft = await write_draft(FakeWriter(ITEMS, answers=[indirapuram]), "d", ITEMS, said)
     assert draft.place == Bi("इंदिरापुरम", "Indirapuram")
+
+
+def test_each_side_of_a_change_is_held_to_its_own_value():
+    extras = {"change_1.before": "13,000 rupees", "change_1.now": "15,000 rupees, with the balcony wall"}
+    good = {"change_1.before": {"hi": "₹13,000", "en": "₹13,000"},  # a bare figure fits either script
+            "change_1.now": {"hi": "₹15,000, बालकनी की दीवार समेत", "en": "₹15,000, with the balcony wall"}}
+    assert problems(ITEMS, GOOD["terms"], GOOD["summary_hi"], extras, good) == []
+    bad = good | {"change_1.now": {"hi": "₹15,000 और ₹2,000", "en": "15,000 rupees, balcony wall"}}
+    assert problems(ITEMS, GOOD["terms"], GOOD["summary_hi"], extras, bad) == [
+        "change_1.now.hi has the figure 2000, which is not in the agreed terms"
+    ]
