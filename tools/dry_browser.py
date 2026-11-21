@@ -23,6 +23,16 @@ MICROPHONE = """
 (() => {
   const ctx = new AudioContext({ sampleRate: 48000 });
   const out = ctx.createMediaStreamDestination();
+  // A faint room hiss, as a real microphone always has. Pure digital silence sends no audio, and the
+  // server then waits out its timeouts: Gawah's opening line, and "this person has gone".
+  const hiss = ctx.createBuffer(1, 48000, 48000);
+  const h = hiss.getChannelData(0);
+  for (let i = 0; i < h.length; i++) h[i] = (Math.random() * 2 - 1) * 0.004;
+  const floor = ctx.createBufferSource();
+  floor.buffer = hiss;
+  floor.loop = true;
+  floor.connect(out);
+  floor.start();
   window.__say = async (b64, rate) => {
     if (ctx.state !== 'running') await ctx.resume();
     const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));

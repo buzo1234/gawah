@@ -1,6 +1,6 @@
 {
  "id": "demo_call_1",
- "description": "Day 1 of the demo (tools/DEMO-RUN.md): the deal call. The lines the user says, and the lines tools/dry_run.py plays: 'audio' names the user's recording in fixtures/audio/, or 'voice' for speech generated as tests/mouth/voices.py makes it. 'then' is where Gawah should speak before the next line. Times are estimates for a replay; the dry run waits on Gawah instead.",
+ "description": "Day 1 of the demo (tools/DEMO-RUN.md): the deal call. The lines the user says, and the lines tools/dry_run.py plays: 'audio' names the user's recording in fixtures/audio/, or 'voice' for speech generated as tests/mouth/voices.py makes it. 'then' is where Gawah should speak before the next line; 'spoken', if there, is what the generated voice reads (so the name Gawah comes out clearly). Times are estimates for a replay; the dry run waits on Gawah instead.",
  "call_no": 1,
  "people": [
   {
@@ -14,7 +14,7 @@
    "phone": "+919000000002"
   }
  ],
- "ended_at": 210.23,
+ "ended_at": 211.33,
  "lines": [
   {
    "line_no": 1,
@@ -91,110 +91,111 @@
   {
    "line_no": 10,
    "speaker": "hirer",
-   "text": "Paanch hazaar advance main kal GPay kar dungi.",
+   "text": "Theek hai, paanch hazaar advance.",
    "start": 61.8,
-   "end": 65.69,
+   "end": 64.84,
    "audio": "voice"
   },
   {
    "line_no": 11,
    "speaker": "worker",
    "text": "Ji madam, theek hai.",
-   "start": 66.89,
-   "end": 69.09,
+   "start": 66.04,
+   "end": 68.24,
    "audio": "voice"
   },
   {
    "line_no": 12,
    "speaker": "hirer",
    "text": "Chalo theek hai. Kaam kab se start karoge?",
-   "start": 70.29,
-   "end": 73.83,
-   "audio": "paint-18"
+   "start": 69.44,
+   "end": 72.98,
+   "audio": "paint-18",
+   "then": {
+    "gawah": "asks Sunita when the balance will be paid",
+    "within_s": 25
+   }
   },
   {
    "line_no": 13,
-   "speaker": "worker",
-   "text": "Agle somvaar se shuru kar denge, subah nau baje tak pahunch jayenge.",
-   "start": 75.03,
-   "end": 80.79,
-   "audio": "paint-19"
+   "speaker": "hirer",
+   "text": "Baaki paisa kaam poora hone ke din de dungi.",
+   "start": 94.18,
+   "end": 97.94,
+   "audio": "voice"
   },
   {
    "line_no": 14,
-   "speaker": "hirer",
-   "text": "Aur khatam kab tak hoga? 15 tareekh ko mere ghar pe guests aa rahe hain.",
-   "start": 81.99,
-   "end": 86.91,
-   "audio": "paint-20"
+   "speaker": "worker",
+   "text": "Ji madam, theek hai.",
+   "start": 99.14,
+   "end": 101.34,
+   "audio": "voice"
   },
   {
    "line_no": 15,
    "speaker": "worker",
-   "text": "Paanch din ka kaam hai madam. Shukravaar tak finish, pandrah tareekh se pehle ho jayega.",
-   "start": 88.11,
-   "end": 94.83,
-   "audio": "paint-21"
+   "text": "Agle somvaar se shuru kar denge, subah nau baje tak pahunch jayenge.",
+   "start": 102.54,
+   "end": 108.3,
+   "audio": "paint-19"
   },
   {
    "line_no": 16,
    "speaker": "hirer",
-   "text": "Pakka?",
-   "start": 96.03,
-   "end": 98.73,
-   "audio": "paint-22"
+   "text": "Aur khatam kab tak hoga? 15 tareekh ko mere ghar pe guests aa rahe hain.",
+   "start": 109.5,
+   "end": 114.42,
+   "audio": "paint-20"
   },
   {
    "line_no": 17,
    "speaker": "worker",
-   "text": "Pakka.",
-   "start": 99.93,
-   "end": 101.67,
-   "audio": "paint-23",
-   "then": {
-    "gawah": "asks Sunita when the balance will be paid",
-    "within_s": 30
-   }
+   "text": "Paanch din ka kaam hai madam. Shukravaar tak finish, pandrah tareekh se pehle ho jayega.",
+   "start": 115.62,
+   "end": 122.34,
+   "audio": "paint-21"
   },
   {
    "line_no": 18,
    "speaker": "hirer",
-   "text": "Baaki paisa kaam poora hone ke din de dungi.",
-   "start": 122.87,
-   "end": 126.63,
-   "audio": "voice"
+   "text": "Pakka?",
+   "start": 123.54,
+   "end": 126.24,
+   "audio": "paint-22"
   },
   {
    "line_no": 19,
    "speaker": "worker",
-   "text": "Ji madam, theek hai.",
-   "start": 127.83,
-   "end": 130.03,
-   "audio": "voice"
+   "text": "Pakka.",
+   "start": 127.44,
+   "end": 129.18,
+   "audio": "paint-23"
   },
   {
    "line_no": 20,
    "speaker": "worker",
    "text": "Late hua to har din ka paanch sau kaat lena.",
-   "start": 131.23,
-   "end": 134.99,
+   "start": 130.38,
+   "end": 134.14,
    "audio": "voice"
   },
   {
    "line_no": 21,
    "speaker": "hirer",
-   "text": "Theek hai.",
-   "start": 136.19,
-   "end": 137.74,
+   "text": "Theek hai, paanch sau kaat lena.",
+   "start": 135.34,
+   "end": 138.32,
    "audio": "voice"
   },
   {
    "line_no": 22,
    "speaker": "worker",
    "text": "Gawah ji, advance kitna tay hua tha?",
-   "start": 138.94,
-   "end": 142.18,
+   "start": 139.52,
+   "end": 142.76,
    "audio": "voice",
+   "spoken": "गवाह जी, advance कितना तय हुआ था?",
    "then": {
     "gawah": "says 'Haan ji, ek second', then the advance: 5,000",
     "within_s": 25
@@ -204,16 +205,16 @@
    "line_no": 23,
    "speaker": "hirer",
    "text": "Chalo, sab tay ho gaya. Dhanyavaad Ramesh ji.",
-   "start": 163.38,
-   "end": 167.21,
+   "start": 163.96,
+   "end": 167.79,
    "audio": "voice"
   },
   {
    "line_no": 24,
    "speaker": "worker",
    "text": "Ji madam, dhanyavaad.",
-   "start": 168.41,
-   "end": 170.68,
+   "start": 168.99,
+   "end": 171.26,
    "audio": "voice",
    "then": {
     "gawah": "reads the terms back and asks both to say haan",
@@ -223,17 +224,17 @@
   {
    "line_no": 25,
    "speaker": "hirer",
-   "text": "Haan, sahi hai.",
-   "start": 191.88,
-   "end": 193.76,
+   "text": "Haan, sab sahi hai.",
+   "start": 192.46,
+   "end": 194.6,
    "audio": "voice"
   },
   {
    "line_no": 26,
    "speaker": "worker",
-   "text": "Haan ji, sahi hai.",
-   "start": 194.96,
-   "end": 197.03,
+   "text": "Haan ji, sab sahi hai.",
+   "start": 195.8,
+   "end": 198.13,
    "audio": "voice",
    "then": {
     "gawah": "may thank them; nothing more is needed",

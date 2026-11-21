@@ -15,6 +15,7 @@ mouth sends it, on the lines where both agree the change (CHANGE).
 
 import asyncio
 import re
+import tempfile
 import time
 from pathlib import Path
 
@@ -38,8 +39,8 @@ def path_of(link: str) -> str:
 class LivePlayers:
     offline = False
 
-    def __init__(self, folder: Path, speech: dict[int, dict[int, tuple[bytes, int]]]) -> None:
-        self.folder, self.speech = folder, speech  # call no -> line no -> (pcm, rate)
+    def __init__(self, folder: Path, speech: dict[int, dict[int, tuple[bytes, int]]], local: str) -> None:
+        self.folder, self.speech, self.local = folder, speech, local  # speech: call no -> line no -> (pcm, rate)
         self.people: dict[str, Person] = {}
         self.callbacks: list = []
         self.joined_at: dict[str, float] = {}  # role -> when its browser joined the current call
@@ -47,10 +48,15 @@ class LivePlayers:
 
     async def join(self, role: str, link: str) -> None:
         if role not in self.people:
-            self.people[role] = Person(self.folder, 9600 + len(self.people), role)
+            self.people[role] = Person(Path(tempfile.mkdtemp(prefix="gawah-dry-")), 9600 + len(self.people), role)
             await self.people[role].start()
         person = self.people[role]
-        await person.open(link)
+        try:
+            await person.open(link)
+        except TimeoutError:
+            # The laptop may not resolve a new tunnel's name yet (tools/DEMO-RUN.md, step 1): same page, locally.
+            print(f"{role}: {link} did not load; opening it on {self.local}", flush=True)
+            await person.open(self.local + path_of(link))
         await person.click("join")
         self.joined_at[role] = time.monotonic()
         if not await person.until("['waiting', 'on'].includes(document.body.dataset.state)", 30):

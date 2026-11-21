@@ -97,6 +97,11 @@ class Run:
         notes = [e["text"][6:] for e in self.of("agent.note", agent="gawah") if e["_at"] >= after and e["text"].startswith("said: ")]
         return said + [n for n in notes if n not in said]
 
+    def unsaid_speaks(self, after: float) -> list[dict]:
+        """The brain's questions since then that Gawah has neither said nor dropped yet."""
+        answered = {e.get("speak_id") for e in self.of("judge.spoke")}
+        return [e for e in self.of("judge.speak") if e["_at"] >= after and e["event_id"] not in answered]
+
     def speaks_since(self, after: float) -> list[dict]:
         return [{"reason": e["reason"], "item": e.get("item"), "after_line": e.get("after_line")}
                 for e in self.of("judge.speak") if e["_at"] >= after - 5]

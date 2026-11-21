@@ -7,7 +7,7 @@
     "item": "work",
     "kind": "other",
     "stance": "state",
-    "text": "Ramesh says he is the painter and agrees.",
+    "text": "The worker says his name is Ramesh and that he agrees.",
     "value": null,
     "rupees": null,
     "date": null,
@@ -21,7 +21,7 @@
     "item": "work",
     "kind": "other",
     "stance": "state",
-    "text": "Sunita says she also agrees.",
+    "text": "The hirer says she is Sunita and that she agrees.",
     "value": null,
     "rupees": null,
     "date": null,
@@ -34,9 +34,9 @@
    {
     "item": "work",
     "kind": "work",
-    "stance": "recall",
-    "text": "Ramesh says half the work is done.",
-    "value": "half the work",
+    "stance": "state",
+    "text": "The worker says half the work is done.",
+    "value": "half the work done",
     "rupees": null,
     "date": null,
     "quote": "Madam, aadha kaam ho gaya. Total pachees hazaar tay hua tha na?",
@@ -45,23 +45,23 @@
    },
    {
     "item": "amount",
-    "kind": "term",
+    "kind": "other",
     "stance": "recall",
-    "text": "Ramesh says the total was agreed at 25,000 rupees.",
+    "text": "The worker says the total was agreed at 25,000 rupees.",
     "value": "25,000 rupees",
     "rupees": 25000,
     "date": null,
     "quote": "Madam, aadha kaam ho gaya. Total pachees hazaar tay hua tha na?",
     "accepts_line": null,
-    "contradicts": "amount@1.6"
+    "contradicts": null
    }
   ],
   "Nahi, baees hazaar hi tay hua tha.": [
    {
     "item": "amount",
-    "kind": "change",
+    "kind": "term",
     "stance": "recall",
-    "text": "Sunita says no, 22,000 rupees was the agreed total.",
+    "text": "Sunita says the agreed total was 22,000 rupees.",
     "value": "22,000 rupees",
     "rupees": 22000,
     "date": null,
@@ -73,14 +73,14 @@
   "Haan ji, baees hi. Galti ho gayi.": [
    {
     "item": "amount",
-    "kind": "term",
-    "stance": "accept",
-    "text": "Ramesh accepts the agreed amount as 22,000 rupees.",
+    "kind": "other",
+    "stance": "recall",
+    "text": "The worker says the agreed total was 22,000 rupees.",
     "value": "22,000 rupees",
     "rupees": 22000,
     "date": null,
-    "quote": "Haan ji, baees hi. Galti ho gayi.",
-    "accepts_line": 4,
+    "quote": "Haan ji, baees hi.",
+    "accepts_line": null,
     "contradicts": null
    }
   ],
@@ -103,21 +103,9 @@
     "item": "amount",
     "kind": "change",
     "stance": "offer",
-    "text": "Ramesh says the balcony wall will be done for an extra 2,000 rupees.",
-    "value": "2,000 rupees",
+    "text": "Ramesh says the balcony wall work will cost 2,000 rupees extra.",
+    "value": "2,000 rupees extra",
     "rupees": 2000,
-    "date": null,
-    "quote": "Ho jayega madam. Uske do hazaar extra lagenge.",
-    "accepts_line": null,
-    "contradicts": null
-   },
-   {
-    "item": "work",
-    "kind": "change",
-    "stance": "offer",
-    "text": "Ramesh says the balcony wall paint work will be added as extra work.",
-    "value": "paint the balcony wall",
-    "rupees": null,
     "date": null,
     "quote": "Ho jayega madam. Uske do hazaar extra lagenge.",
     "accepts_line": null,
@@ -126,28 +114,68 @@
   ],
   "Theek hai, do hazaar extra. Total chaubees hazaar.": [
    {
-    "item": "work",
+    "item": "amount",
     "kind": "change",
     "stance": "accept",
-    "text": "Sunita accepts the extra balcony wall painting for 2,000 rupees.",
-    "value": "paint the balcony wall",
+    "text": "Sunita accepts the extra 2,000 rupees and states the total is 24,000 rupees.",
+    "value": "2,000 rupees extra",
     "rupees": 2000,
     "date": null,
-    "quote": "Theek hai, do hazaar extra.",
+    "quote": "Theek hai, do hazaar extra. Total chaubees hazaar.",
     "accepts_line": 7,
     "contradicts": null
    },
    {
     "item": "amount",
-    "kind": "change",
-    "stance": "accept",
-    "text": "Sunita accepts a total of 24,000 rupees.",
+    "kind": "term",
+    "stance": "state",
+    "text": "Sunita states the total is 24,000 rupees.",
     "value": "24,000 rupees",
     "rupees": 24000,
     "date": null,
-    "quote": "Total chaubees hazaar.",
+    "quote": "Theek hai, do hazaar extra. Total chaubees hazaar.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Haan, mujhe manzoor hai.": [
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The hirer accepts the extra 2,000 rupees and the total of 24,000 rupees.",
+    "value": "2,000 rupees extra",
+    "rupees": 2000,
+    "date": null,
+    "quote": "Haan, mujhe manzoor hai.",
     "accepts_line": 7,
-    "contradicts": "amount@2.3"
+    "contradicts": null
+   },
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "accept",
+    "text": "The hirer accepts the extra 2,000 rupees and the total of 24,000 rupees.",
+    "value": "24,000 rupees",
+    "rupees": 24000,
+    "date": null,
+    "quote": "Haan, mujhe manzoor hai.",
+    "accepts_line": 8,
+    "contradicts": null
+   }
+  ],
+  "Haan ji, mujhe bhi manzoor hai.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "The worker accepts the extra 2,000 rupees for the balcony wall.",
+    "value": "2,000 rupees extra",
+    "rupees": 2000,
+    "date": null,
+    "quote": "Haan ji, mujhe bhi manzoor hai.",
+    "accepts_line": 8,
+    "contradicts": "amount@2.8"
    }
   ]
  },

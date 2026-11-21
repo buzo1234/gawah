@@ -15,7 +15,7 @@
    "phone": "+919000000002"
   }
  ],
- "ended_at": 124.43,
+ "ended_at": 127.8,
  "lines": [
   {
    "line_no": 1,
@@ -91,43 +91,43 @@
    "audio": "voice",
    "then": {
     "gawah": "says the change, 22,000 to 24,000, and asks both to say haan",
-    "within_s": 35
+    "within_s": 45
    }
   },
   {
    "line_no": 9,
    "speaker": "hirer",
-   "text": "Haan.",
+   "text": "Haan, mujhe manzoor hai.",
    "start": 93.29,
-   "end": 94.52,
+   "end": 95.75,
    "audio": "voice"
   },
   {
    "line_no": 10,
    "speaker": "worker",
-   "text": "Haan ji.",
-   "start": 95.72,
-   "end": 97.14,
+   "text": "Haan ji, mujhe bhi manzoor hai.",
+   "start": 96.95,
+   "end": 99.87,
    "audio": "voice",
    "then": {
     "gawah": "says the change holds: the total is now 24,000",
-    "within_s": 25
+    "within_s": 30
    }
   },
   {
    "line_no": 11,
    "speaker": "hirer",
-   "text": "Theek hai, bye.",
-   "start": 118.34,
-   "end": 120.22,
+   "text": "Theek hai Ramesh ji, bye.",
+   "start": 121.07,
+   "end": 123.59,
    "audio": "voice"
   },
   {
    "line_no": 12,
    "speaker": "worker",
    "text": "Namaste madam.",
-   "start": 121.42,
-   "end": 123.23,
+   "start": 124.79,
+   "end": 126.6,
    "audio": "voice"
   }
  ]

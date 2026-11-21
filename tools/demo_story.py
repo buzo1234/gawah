@@ -60,7 +60,7 @@ async def speech(lines: list[dict], openai_key: str | None) -> dict[int, tuple[b
         if openai_key is None:
             raise SystemExit("a generated line needs OPENAI_API_KEY")
         voice = voices.SUNITA if line["speaker"] == "hirer" else voices.RAMESH
-        [pcm] = await voices.speak(openai_key, VOICES, [(voice, line["text"])])
+        [pcm] = await voices.speak(openai_key, VOICES, [(voice, line.get("spoken", line["text"]))])
         samples = np.frombuffer(pcm, dtype=np.int16).astype(np.float32)
         scaled = np.clip(samples * (target / _level(samples.astype(np.int16))), -32768, 32767).astype(np.int16)
         out[line["line_no"]] = (scaled.tobytes(), 24000)

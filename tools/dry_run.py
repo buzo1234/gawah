@@ -44,7 +44,7 @@ from tools.dry_players import ROLES, LivePlayers, OfflinePlayers  # noqa: E402
 
 GAP_S = 1.0  # between one person's line and the next
 QUIET_S = 1.5  # Gawah silent this long before a person speaks
-DONE_QUIET_S = 3.0  # after Gawah has said something, silent this long: it has finished
+RESUME_S = 6.0  # after Gawah has said something, silent this long: it has finished (it often goes on after 3 to 5)
 STAGES = ("call1", "call2", "day7")
 
 
@@ -59,7 +59,9 @@ async def wait_quiet(run: Run, players, cap: float = 40.0) -> None:
 
 
 async def gawah_moment(run: Run, players, call_no: int, line: dict) -> dict:
-    """Wait for Gawah to speak where the script says it should, and to finish."""
+    """Wait for Gawah to speak where the script says it should, and to finish: as a person following
+    the run sheet does, keep quiet while Gawah talks, while it picks up again within a few seconds
+    (a clip, then a question), and while a question the brain has sent it is still unsaid."""
     then, t0 = line["then"], time.monotonic()
     heard = lambda: run.gawah_said(after=t0)  # noqa: E731
     started = None
@@ -69,12 +71,12 @@ async def gawah_moment(run: Run, players, call_no: int, line: dict) -> dict:
             break
         await asyncio.sleep(0.25)
     if started:
-        quiet_since, cap = time.monotonic(), time.monotonic() + 90
+        quiet_since, cap = time.monotonic(), time.monotonic() + 120
         while time.monotonic() < cap:
-            if await players.gawah_talking():
+            if await players.gawah_talking() or run.unsaid_speaks(after=t0):
                 quiet_since = time.monotonic()
             quiet = time.monotonic() - quiet_since
-            if (heard() and quiet >= (0.5 if players.offline else DONE_QUIET_S)) or quiet >= 10:
+            if (heard() and quiet >= (0.5 if players.offline else RESUME_S)) or quiet >= 12:
                 break
             await asyncio.sleep(0.25)
     said = heard()
@@ -223,9 +225,9 @@ async def main(args) -> None:
     else:
         from app.config import get_settings
 
-        key = get_settings().openai_api_key
+        key = get_settings().require("openai_api_key")
         speech = {no: await story.speech(story.call(no)["lines"], key) for no in (1, 2)}
-        players, url = LivePlayers(out, speech), args.url
+        players, url = LivePlayers(out, speech, args.url), args.url
     run = Run(url, out)
     await run.begin()
     try:
