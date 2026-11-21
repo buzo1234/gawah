@@ -22,11 +22,11 @@ from datetime import UTC, datetime, time, timedelta, timezone
 
 from app.bus import Bus
 from app.contracts import (
-    AgentNote, ChangeStatus, CrewAgent, Fact, FactChanged, FactConflict, FactKind, FactRecorded, FactSource,
-    FactStatus, ItemKey, MemoryQueries, OwedRow, Record, RecordConfirmed, RecordKind, Role, clip_path,
+    AgentNote, CrewAgent, Fact, FactConflict, FactKind, FactRecorded, FactSource, FactStatus, ItemKey,
+    MemoryQueries, OwedRow, Record, RecordConfirmed, RecordKind, Role, clip_path,
 )
 from app.log import deal_log
-from app.records import tuning, words
+from app.records import heard, tuning, words
 from app.records.reminders import Reminders
 from app.store import Store
 
@@ -64,6 +64,13 @@ class Sentinel:
         self.bus.subscribe(RecordConfirmed, self.on_record_confirmed)
         self.bus.subscribe(FactRecorded, self.on_fact)
         self.bus.subscribe(FactConflict, self.on_conflict)
+
+    async def on_conflict(self, event: FactConflict) -> None:
+        await heard.on_conflict(self, event)
+
+    @staticmethod
+    def when(fact: Fact | None) -> str | None:
+        return _when(fact)
 
     # ---------- a record comes in ----------
 
@@ -133,7 +140,7 @@ class Sentinel:
         if (fact.source is FactSource.VOICE_NOTE and fact.kind is FactKind.CHANGE and fact.status is FactStatus.SAID
                 and fact.item and fact.said_by and fact.id not in self._asked):
             self._asked.add(fact.id)
-            await self._put_change(fact)
+            await heard.put_change(self, fact)
         if (fact.kind is FactKind.TERM and fact.item in DATED and fact.value_date
                 and fact.status in (FactStatus.AGREED, FactStatus.CONFIRMED)):
             passed = datetime.combine(fact.value_date + timedelta(days=1), time(), IST)
@@ -152,57 +159,6 @@ class Sentinel:
             self.outbox.send(deal_id, person.phone, person.role, line)
         self._note(deal_id, f"{record.kind.value} of {words.rupees(round(record.amount))} stands: "
                    f"{words.rupees(_owed(total)) if _owed(total) is not None else 'nothing'} still owed")
-
-    # ---------- a voice note ----------
-
-    async def on_conflict(self, event: FactConflict) -> None:
-        """A contradiction found outside a call: a voice note. Told to both, as a payment
-        claim larger than what is owed is."""
-        if event.call_no is not None or not event.fact_ids:
-            return
-        against = await self._fact(event.deal_id, event.fact_ids[0])
-        people = {p.role: p for p in await self._people(event.deal_id)}
-        speaker = people.get(event.speaker) if event.speaker else None
-        if against is None or speaker is None:
-            return
-        clip = await self._clip(against)
-        value = words.rupees(against.value_rupees) if against.value_rupees is not None else against.value or against.text
-        line = words.contradicted(speaker, event.said or "", against.item, value, _when(against), clip)
-        for person in people.values():
-            self.outbox.send(event.deal_id, person.phone, person.role, line, link=clip, link_label=words.CLIP_BUTTON)
-        term = against.item.value if against.item else "deal"
-        self._note(event.deal_id, f"voice note from the {speaker.role.value} differs from the {term} agreed: "
-                   "told both what was agreed" + (", with the clip" if clip else ""), against)
-
-    async def _put_change(self, fact: Fact) -> None:
-        """A change asked for in a voice note: nothing changes until the other person says yes."""
-        current = (await self.memory.get_term(fact.deal_id, fact.item)).current
-        people = {p.role: p for p in await self._people(fact.deal_id)}
-        sender, other = people.get(fact.said_by), people.get(fact.said_by.other)
-        if current is None or sender is None or self.ask_change is None:
-            return
-        if other is None:
-            self._note(fact.deal_id, f"change to the {fact.item.value} asked by voice note: no one to ask", fact)
-            return
-        money = fact.value_rupees is not None and fact.item in DATED + (ItemKey.AMOUNT,)
-        new = f"{fact.value_rupees:,} rupees" if money else fact.value or fact.text
-        old = words.rupees(current.value_rupees) if money and current.value_rupees is not None else current.value or current.text
-        change = FactChanged(
-            deal_id=fact.deal_id, fact_id=current.id, new_value=new, item=fact.item, proposed_by=fact.said_by,
-            confirmed_by=[fact.said_by], status=ChangeStatus.CONFIRMED_ONE, said=fact.quote,
-        )
-        shown = words.rupees(fact.value_rupees) if money else new
-        self.ask_change(change, sender, other, words.change_question(sender, fact.quote or fact.text, fact.item, old, shown))
-        self._note(fact.deal_id, f"change to the {fact.item.value} asked by voice note ({new}): "
-                   f"asked the {other.role.value} to confirm", fact)
-
-    async def _fact(self, deal_id: str, fact_id: str) -> Fact | None:
-        """A fact as it stands, by id: MemoryQueries finds facts by term, so look in each."""
-        for item in ItemKey:
-            found = [f for f in (await self.memory.get_term(deal_id, item)).history if f.id == fact_id]
-            if found:
-                return found[-1]
-        return None
 
     # ---------- reminders ----------
 

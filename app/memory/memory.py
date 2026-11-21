@@ -139,7 +139,7 @@ class Memory:
         text = f"Says {claimed}; the {item} was {current.status.value} at {stands}{both}{when}{where}."
         offer = next((
             f for f in deal.standing()
-            if f.item == current.item and f.status == FactStatus.SAID and rupees is not None
+            if f.item == current.item and f.status == FactStatus.SAID and rupees is not None and f.call_no is not None
             and f.value_rupees == rupees and (f.call_no, f.line_no) != (line.call_no, line.line_no)
         ), None)
         if offer:

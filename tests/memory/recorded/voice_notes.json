@@ -1,0 +1,93 @@
+{
+ "model": "gpt-5.4-mini",
+ "effort": "none",
+ "replies": {
+  "Andar ka poora, dono bedroom, hall aur kitchen. Balcony ki grill bhi kar dena.": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "Sunita says the whole interior is included, both bedrooms, the hall, the kitchen, and the balcony grill too.",
+    "value": "whole interior: both bedrooms, hall, kitchen, and balcony grill",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Andar ka poora, dono bedroom, hall aur kitchen. Balcony ki grill bhi kar dena.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Do coat aur putty ka touch-up, material ke saath pachees hazaar lagega madam.": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "offer",
+    "text": "Ramesh says the work is coat and putty touch-up, with material included.",
+    "value": "coat and putty touch-up with material",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Do coat aur putty ka touch-up, material ke saath pachees hazaar lagega madam.",
+    "accepts_line": null,
+    "contradicts": "9963f172166d"
+   },
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "offer",
+    "text": "Ramesh says the job will cost 25,000 rupees including material.",
+    "value": "25,000 rupees",
+    "rupees": 25000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Do coat aur putty ka touch-up, material ke saath pachees hazaar lagega madam.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek hai, twenty two thousand done. Lekin material aapka hoga, upar se koi extra charge nahi.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Sunita says the price of 22,000 rupees is agreed.",
+    "value": "22,000 rupees",
+    "rupees": 22000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Theek hai, twenty two thousand done. Lekin material aapka hoga, upar se koi extra charge nahi.",
+    "accepts_line": null,
+    "contradicts": "amount@1.11"
+   },
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "Sunita says the material will be provided by the worker.",
+    "value": "material aapka hoga",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Theek hai, twenty two thousand done. Lekin material aapka hoga, upar se koi extra charge nahi.",
+    "accepts_line": null,
+    "contradicts": "work@1.6"
+   }
+  ],
+  "Paanch hazaar advance main kal GPay kar dungi. UPI pe aapka yahi number hai na?": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "state",
+    "text": "Sunita says she will pay 5,000 rupees as an advance by GPay tomorrow.",
+    "value": "5,000 rupees",
+    "rupees": 5000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Paanch hazaar advance main kal GPay kar dungi.",
+    "accepts_line": null,
+    "contradicts": "advance@1.15"
+   }
+  ]
+ },
+ "checks": {}
+}

@@ -14,7 +14,7 @@ const SVG = "http://www.w3.org/2000/svg";
 const LANES = [...ITEMS, ["payments", "Payments"], ["other", "Other details"]];
 const MONEY = new Set(["amount", "advance", "balance"]);
 const STATUS = { said: "Said", agreed: "Agreed", confirmed: "Confirmed", disputed: "Disputed", superseded: "Replaced" };
-const SOURCE = { voice_note: "Voice note", text: "WhatsApp", screenshot: "Screenshot", record: "WhatsApp" };
+const SOURCE = { voice_note: "WhatsApp voice note", text: "WhatsApp", screenshot: "Screenshot", record: "WhatsApp" };
 const rupees = (n) => "₹" + Number(n).toLocaleString("en-IN");
 const hasClip = (f) => f && f.start != null && ["call", "callback", "voice_note"].includes(f.source);
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;

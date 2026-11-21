@@ -1,7 +1,8 @@
 """The whole app with every outside service replaced by a fake. No .env is read, so there
 are no keys and every phone is a simulated one; WhatsApp records are read
 by lookup (FakeReader) instead of by OpenAI; every call, in any room, gets the brain's
-saved answers for the practice call it matches; the call's room is a fake LiveKit
+saved answers for the practice call it matches; a voice note is "heard" by its length,
+so the notes in fixtures/voice-notes/ say what their recordings say, and stays on disk; the call's room is a fake LiveKit
 (tests/bridge_world.py) whose audio is never transcribed or uploaded; Gawah's seat in a
 room and its voice model are the mouth's fakes (tests/mouth/world.py), so a test plays
 the room and the model by hand (app.state.fake_voice); the contract is worded by
@@ -34,7 +35,7 @@ from tests.bridge_world import FakeLiveKit
 from tests.contract_fakes import FakeFiles, FakeSpeaker, answer_to, fake_fingerprint, fake_render_pdf
 from tests.meta_fakes import FakeGraph
 from tests.mouth.world import FakeLink, FakeRooms, FakeSeat
-from tests.whatsapp_world import FakeClock, FakeReader, FakeTwilio
+from tests.whatsapp_world import FakeClock, FakeReader, FakeTranscriber, FakeTwilio
 
 
 class FakeContractModel(FakeSpeaker):
@@ -96,6 +97,8 @@ def offline_app(database_path: str | Path, clock: FakeClock | None = None, whats
     calls = app.state.calls
     calls.livekit, calls.transcribe, calls.upload = FakeLiveKit(), _no_words, _keep_key
     calls.folder = Path(database_path).parent / "recordings"
+    voice = app.state.whatsapp.voice  # a voice note: heard by its length from fixtures/voice-notes, kept on disk
+    voice.transcriber, voice.upload, voice.root = FakeTranscriber(), _keep_key, Path(database_path).parent
     return app
 
 

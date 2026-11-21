@@ -29,8 +29,13 @@ log = deal_log("gawah.dashboard", NO_DEAL)
 
 PAGE = Path(__file__).parent / "phone.html"
 MEDIA_DIR = Path(tempfile.gettempdir()) / "gawah-second-phone"
-MEDIA_TYPES = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp"}
-MEDIA_NAME = re.compile(r"[0-9a-f]{32}\.(jpg|png|webp)")
+MEDIA_TYPES = {
+    "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp",
+    # a voice note, in the types WhatsApp and a browser's recorder give
+    "audio/ogg": "ogg", "audio/mpeg": "mp3", "audio/mp4": "m4a", "audio/x-m4a": "m4a", "audio/amr": "amr",
+    "audio/webm": "webm", "audio/wav": "wav", "audio/x-wav": "wav",
+}
+MEDIA_NAME = re.compile(r"[0-9a-f]{32}\.(jpg|png|webp|ogg|mp3|m4a|amr|webm|wav)")
 MAX_MEDIA_BYTES = 16 * 1024 * 1024  # WhatsApp's own limit
 
 
@@ -62,7 +67,7 @@ def provider_form(msg: Outgoing, to: str, account_sid: str) -> dict[str, str]:
         "WaId": digits,
         "SmsStatus": "received",
         "ApiVersion": "2010-04-01",
-        "MessageType": "image" if msg.media_url else "text",
+        "MessageType": ("audio" if (msg.media_type or "").startswith("audio/") else "image") if msg.media_url else "text",
     }
     if msg.media_url:
         form["MediaUrl0"] = msg.media_url
@@ -86,14 +91,14 @@ def register(app: FastAPI) -> None:
 
     @app.post("/dashboard/media")
     async def upload(request: Request) -> dict[str, str]:
-        """Keep an attached image and give it an address, as the provider would."""
+        """Keep an attached image or voice note and give it an address, as the provider would."""
         local_or_keyed(request)
         content_type = request.headers.get("content-type", "").split(";")[0].strip().lower()
         if content_type not in MEDIA_TYPES:
-            raise HTTPException(415, "attach a JPEG, PNG, or WebP image")
+            raise HTTPException(415, "attach a JPEG, PNG, or WebP image, or a voice note")
         body = await request.body()
         if not body or len(body) > MAX_MEDIA_BYTES:
-            raise HTTPException(413, "the image is empty or larger than 16 MB")
+            raise HTTPException(413, "the file is empty or larger than 16 MB")
         name = f"{uuid4().hex}.{MEDIA_TYPES[content_type]}"
         MEDIA_DIR.mkdir(exist_ok=True)
         (MEDIA_DIR / name).write_bytes(body)

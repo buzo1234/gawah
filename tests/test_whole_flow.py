@@ -16,9 +16,9 @@ import pytest
 from app.call.session import Limits
 from app.contracts import (
     MEMORY_STATE, WHATSAPP_WEBHOOK_PATH, AgentNote, Backing, CallEnded, CallKind, CallOpened, CallStarted, ChecklistUpdated,
-    ContractReady, DealRequested, DealStatus, Direction, Event, FactRecorded, FactStatus, ItemKey, ItemState, JudgeSpeak,
+    ContractReady, DealRequested, DealStatus, Direction, Event, FactConflict, FactRecorded, FactStatus, ItemKey, ItemState, JudgeSpeak,
     JudgeSpoke, RecordConfirmed,
-    RecordConfirmRequested, RecordReceived, ReplyTimeout, Role, TermsConfirmed, TranscriptLine, WhatsAppMessage,
+    RecordConfirmRequested, RecordReceived, ReplyTimeout, Role, TermsConfirmed, TranscriptLine, VoiceNote, WhatsAppMessage,
     call_path, callback_path,
 )
 from app.records import tuning
@@ -27,7 +27,7 @@ from app.whatsapp import words
 from fakes.replayer import load
 from tests.mouth import sounds
 from tests.offline import offline_app
-from tests.whatsapp_world import FakeClock
+from tests.whatsapp_world import VOICE_NOTES, FakeClock, note_words
 
 # Neither number is in VERIFIED_NUMBERS, so both are simulated phones, like the dashboard's.
 PHONE = {Role.HIRER: "+919000000001", Role.WORKER: "+919000000002"}
@@ -278,6 +278,24 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     assert flow.sent_to(Role.WORKER)[-1] == "Gawah ne Sunita ji ko ₹22,000 baaki ki yaad dila di hai."
     assert [r.confirmed for r in await flow.store.records(deal_id)] == [True, True]
     assert {m.phone for m in flow.of(WhatsAppMessage)} == set(PHONE.values())
+
+    # whatsapp, memory and sentinel: a voice note from the second phone (Twilio's form; the
+    # offline Meta has no way to fetch the phone's file) promising a 5,000 advance is heard,
+    # read by the Scribe, and found to contradict the advance agreed: both are told.
+    if not flow.app.state.whatsapp.outbox.rich:
+        ogg = (VOICE_NOTES / "paint-14.ogg").read_bytes()
+        up = (await flow.client.post("/dashboard/media", content=ogg, headers={"content-type": "audio/ogg"})).json()
+        sent = await flow.client.post("/dashboard/phone/send", json={
+            "phone": PHONE[Role.HIRER], "media_url": up["url"], "media_type": up["content_type"], "profile_name": "Sunita"})
+        assert sent.json()["form"]["MessageType"] == "audio"
+        [note] = await flow.until(VoiceNote)
+        assert (note.speaker, note.text, note.record_id) == (Role.HIRER, note_words("paint-14.ogg"), None)
+        [conflict] = await flow.until(lambda: [c for c in flow.of(FactConflict) if c.call_no is None])
+        advance = flow.app.state.memory.book.fact(conflict.fact_ids[0])
+        await flow.until(lambda: flow.sent_to(Role.WORKER)[-1].startswith("Sunita ji ne voice note mein kaha"))
+        for role in Role:
+            assert f"Deal mein advance ₹{advance.value_rupees:,} tay hua tha" in flow.sent_to(role)[-1]
+        assert (flow.app.state.memory.root / note.media_key).read_bytes() == ogg
 
     # dashboard: a fresh page load gets the deal's people and every event above, in order.
     await flow.settle()

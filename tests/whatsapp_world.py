@@ -3,6 +3,7 @@ clock, and a World that wires the real bot to them on a real bus and store."""
 
 import asyncio
 import json
+import mimetypes
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from app.bus import Bus
 from app.config import Settings
 from app.contracts import Direction, Event, WhatsAppMessage
 from app.records.reader import Reading
+from app.dashboard.phone import MEDIA_DIR, MEDIA_NAME
 from app.store import Store
 from app.whatsapp import wire
 from app.whatsapp.hearing import HearingError, seconds_of
@@ -77,11 +79,14 @@ class FakeTwilio:
         return f"SM{len(self.sent)}"
 
     async def fetch_media(self, url: str) -> tuple[bytes, str | None]:
-        """A voice note from fixtures/voice-notes by its file name in the link; else a picture."""
+        """A voice note from fixtures/voice-notes by its file name in the link, or a file the
+        dashboard's second phone attached; else a picture."""
         self.fetched.append(url)
         name = url.rsplit("/", 1)[-1]
         if name in NOTES:
             return (VOICE_NOTES / name).read_bytes(), "audio/ogg"
+        if "/dashboard/media/" in url and MEDIA_NAME.fullmatch(name) and (MEDIA_DIR / name).is_file():
+            return (MEDIA_DIR / name).read_bytes(), mimetypes.guess_type(name)[0]
         return b"png bytes", "image/png"
 
 
