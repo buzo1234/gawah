@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generated Labels Prototype</title>
+<style>
+  :root { --ink: #1d1d1b; --ink-2: #55554f; --rule: #d9d8d0; --paper: #f4f3ee; --tag: #e6efe6; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --ink: #ecebe4; --ink-2: #b4b3ab; --rule: #3a3a36; --paper: #1b1b19; --tag: #24352a; }
+  }
+  :root[data-theme="dark"] { --ink: #ecebe4; --ink-2: #b4b3ab; --rule: #3a3a36; --paper: #1b1b19; --tag: #24352a; }
+  body { margin: 0; padding: 24px 16px 48px; background: var(--paper); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  main { max-width: 1400px; margin: 0 auto; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h2 { font-size: 20px; margin: 36px 0 8px; }
+  p { color: var(--ink-2); max-width: 70ch; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 800px) { .pair { grid-template-columns: 1fr; } }
+  figure { margin: 0; }
+  figure img { width: 100%; height: auto; border: 1px solid var(--rule); display: block; }
+  figcaption { font-size: 14px; color: var(--ink-2); padding: 6px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; margin-top: 8px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-weight: 600; }
+  .wrap { overflow-x: auto; }
+  code { background: var(--tag); padding: 0 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Generated labels on the real dashboard</h1>
+  <p>Shot from the offline app with memory's saved replies. Only the names change: <code>state.js</code> is served with
+  gpt-6-luna's labels for that call (its read of the whole call; a label that fails the length or no-values lint keeps
+  its static name). The "Also discussed" rows are drawn on after load: today's board has no place for them.
+  Made by <code>spikes/7-prototype.py</code>; the numbers are in <code>spikes/7-labels.md</code>.</p>
+
+  <h2>Cook, a trial month (holdout_cook_month)</h2>
+  <div class="pair">
+    <figure><img src="cook-static.png" alt="Dashboard for the cook call with the six static names"><figcaption>Today: Work, Amount, Advance, Balance, Dates, If late or unfinished</figcaption></figure>
+    <figure><img src="cook-generated.png" alt="Dashboard for the cook call with generated names and two extra rows"><figcaption>Generated: Meals and timings, Monthly pay, Monthly payment, Work dates, If work falls short, plus Monthly days off and Household groceries (both raised by both people)</figcaption></figure>
+  </div>
+
+  <h2>Painter, the demo call (demo_call_1)</h2>
+  <div class="pair">
+    <figure><img src="painter-static.png" alt="Dashboard for the demo painter call with the six static names"><figcaption>Today</figcaption></figure>
+    <figure><img src="painter-generated.png" alt="Dashboard for the demo painter call with generated names"><figcaption>Generated: Coats and putty touch-up, Total painting cost, Advance, Balance, Painting dates, If painting is late. No extras on this call.</figcaption></figure>
+  </div>
+
+  <h2>What Gawah would ask about the work, if it were left open</h2>
+  <div class="wrap"><table>
+    <tr><th>Call</th><th>Today (judge.py)</th><th>Generated</th></tr>
+    <tr><td>Cook</td><td>Ask the hirer what exactly the work is.</td><td>Ask the hirer what meals to cook and when to make them.</td></tr>
+    <tr><td>Painter</td><td>Ask the hirer what exactly the work is.</td><td>"Ask both speakers to confirm what painting work is included": the model dropped <code>{who}</code>, so the design falls back to today's wording.</td></tr>
+  </table></div>
+</main>
+</body>
+</html>
