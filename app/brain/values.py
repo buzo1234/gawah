@@ -17,7 +17,7 @@ import httpx
 from app.brain import tuning
 from app.contracts import ItemKey
 
-Kind = Literal["value", "conflict", "unclear"]
+Kind = Literal["value", "conflict", "unclear", "names"]
 
 URL = "https://api.openai.com/v1/chat/completions"
 
@@ -67,6 +67,16 @@ def prompt(kind: Kind, item: ItemKey | None) -> str:
             'digits and nothing else ("13,000 rupees").\n'
             '- "line_nos": the line each figure was said on, in the same order.\n'
             "Bargaining before both accepted is not a conflict."
+        )
+    if kind == "names":
+        return _RULES + (
+            "Find the first name of each speaker, as it was said on the call: a person saying their own name, "
+            "or the other speaker calling them by name. A name of anyone else they mention is not theirs. "
+            "Leave out words like ji, madam, sir, bhaiya, didi.\n"
+            "Keys:\n"
+            '- "hirer": the first name of the hirer, written in Roman letters even if the transcript is in another script. '
+            "null if it has not been said.\n"
+            '- "worker": the same for the worker.'
         )
     return _RULES + (
         "One speaker asked about a term of the deal, and the other replied without a clear answer and moved on to something else. "

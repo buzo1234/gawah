@@ -5,11 +5,14 @@ import asyncio
 from dataclasses import dataclass
 
 from app.brain import sage, tuning
+from app.brain.closing import Closing
 from app.brain.judge import Judge, View
+from app.brain.names import People
 from app.brain.sage import Answers, Decisions, yes
 from app.brain.values import Kind, Values
 from app.bus import Bus
 from app.contracts import (
+    CallKind,
     CallStarted,
     ChecklistItem,
     ChecklistUpdated,
@@ -17,6 +20,7 @@ from app.contracts import (
     ItemState,
     JudgeSpeak,
     JudgeSpoke,
+    Person,
     Role,
     SpeakReason,
     TranscriptLine,
@@ -60,8 +64,9 @@ class Session:
         self.deal_id = started.deal_id
         self.log = deal_log("gawah.brain", self.deal_id)
         self.bus, self.decisions, self.values = bus, decisions, values
-        self.people = started.people
-        self.names = {role: sage.speaker_name(self.people, role) for role in Role}
+        self.room = started.room
+        self.who = People(started.people)
+        self.naming = False
         self.judge = Judge(mode)
         self.items: dict[ItemKey, ChecklistItem] = {key: ChecklistItem(key=key) for key in ItemKey}
         self.lines: list[_Line] = []
@@ -77,19 +82,21 @@ class Session:
         self.fetching: set[ItemKey] = set()
         self.refreshed: set[ItemKey] = set()
         self.wrapping_up = False
+        self.closing = False  # the latest line, or the silence after it, says they are wrapping up
+        self.ending = Closing()
         self.tasks: set[asyncio.Task] = set()
         self.ended = False
 
     # ---- events ----
 
     async def start(self) -> None:
-        self.answers = await self.decisions.open(sage.preamble(self.people)) or {}
+        self.answers = await self.decisions.open(sage.preamble(self.who.all)) or {}
         self._publish_checklist([])
 
     async def on_line(self, event: TranscriptLine) -> None:
         line = _Line(event.line_no or len(self.lines) + 1, event.speaker, event.text, event.end)
         self.lines.append(line)
-        got = await self.decisions.append(line.no, sage.line_text(self.names[line.speaker], line.text))
+        got = await self.decisions.append(line.no, sage.line_text(self.who.sage_names[line.speaker], line.text))
         if got is None:
             self.log.info("line %s: no answer from sage2", line.no)
             # Keep what we knew, but "did the last line speak to Gawah" is not about this line.
@@ -99,12 +106,15 @@ class Session:
         self.answers = got
 
         self._latch_agreed_items()
+        self._closing_signal()
         if yes(got, "conflicting_figures") and not self.conflict_seen:
             self.conflict_seen = True  # Sage2 keeps saying yes from here on, so one conflict a call
             await self._open_conflict()
         await self._find_unclear_item()
         self._fetch_missing_values()
+        self._look_for_names()
         self._decide()
+        self._wait_for_silence()
         # A value that is already there (a recorded one) lands before the next line.
         await asyncio.sleep(0)
 
@@ -114,15 +124,20 @@ class Session:
             return
         if not event.text and event.start is None:
             # The mouth dropped it unsaid: stop waiting, and do not count it as a question heard.
-            self.judge.waiting_since = None
+            self.judge.dropped(speak.item, speak.reason, self.lines[-1].end if self.lines else 0.0)
             return
         now = self.lines[-1].end if self.lines else 0.0
         self.judge.spoke(max(now, event.end or 0.0), speak.reason is not SpeakReason.ADDRESSED_DIRECTLY)
         if speak.item:
             self.asked_at_line[speak.item] = len(self.lines)
 
+    def meet(self, people: list[Person]) -> None:
+        """call.started again for this call: take any name we did not have."""
+        self.who.meet(people)
+
     async def end(self) -> None:
         self.ended = True
+        self.ending.stop()
         await self.decisions.close()
         if self.tasks:
             _, late = await asyncio.wait(self.tasks, timeout=tuning.END_WAIT_S)
@@ -146,8 +161,60 @@ class Session:
             if item.state is ItemState.PENDING and key not in self.conflicts and yes(self.answers, question):
                 item.state, item.confidence, item.line_no = ItemState.AGREED, self.answers[question], self.lines[-1].no
                 changed.append(key)
+                self.ending.settled_on.add(self.lines[-1].no)
         if changed:
             self._publish_checklist(changed)
+
+    # ---- the end of the call ----
+
+    def _closing_signal(self) -> None:
+        self.closing = self.ending.on_line(self.answers, self.lines[-1].no, self._agreed())
+        if self.closing and not self.wrapping_up:
+            self.log.info("wrapping up at line %s", self.lines[-1].no)
+        self.wrapping_up = self.wrapping_up or self.closing
+
+    def _agreed(self) -> int:
+        return sum(item.state is ItemState.AGREED for item in self.items.values())
+
+    def _wait_for_silence(self) -> None:
+        """closing_soon on the latest line: if nobody says anything more, they are done.
+        Not while Gawah is about to talk, which is no silence."""
+        quiet = not self.closing and self.judge.waiting_since is None
+        due = quiet and Closing.silence_would_close(self.answers, self._agreed())
+        self.ending.wait(self._so_far() if due else None, self.silence_passed)
+
+    def _so_far(self) -> tuple[int, int]:
+        return len(self.lines), len(self.speaks)
+
+    def silence_passed(self) -> None:
+        """CLOSING_SILENCE_S has gone by with no new line. The timer calls this; a test replaying a call may too."""
+        if self.ended or not self.ending.silence_passed(self._so_far()) or self.judge.waiting_since is not None:
+            return
+        self.log.info("wrapping up: silence after line %s", self.lines[-1].no)
+        self.closing = self.wrapping_up = True
+        self._fetch_missing_values()
+        self._decide(silence=tuning.CLOSING_SILENCE_S)
+        self.closing = False
+
+    # ---- names ----
+
+    def _look_for_names(self) -> None:
+        if self.who.unknown() and not self.naming and len(self.lines) <= tuning.NAME_LINES:
+            self.naming = True
+            self._spawn(self._fetch_names(self._transcript(), self.lines[-1].no))
+
+    async def _fetch_names(self, transcript: str, at_line: int) -> None:
+        learned = await self.who.ask(self.values, transcript, at_line, self.log)
+        self.naming = False
+        if learned and not self.ended:
+            # call.started is the event the store, the dashboard and the mouth take people from.
+            # Sent again for the same room it only fills in names (brain, mouth, dashboard).
+            self.bus.publish(CallStarted(deal_id=self.deal_id, people=self.who.all, kind=CallKind.DEAL, room=self.room))
+
+    def _spawn(self, work) -> None:
+        task = asyncio.create_task(work)
+        self.tasks.add(task)
+        task.add_done_callback(self.tasks.discard)
 
     async def _open_conflict(self) -> None:
         got = await self._lookup_now("conflict", None) or {}
@@ -190,7 +257,6 @@ class Session:
 
     def _fetch_missing_values(self) -> None:
         n = len(self.lines)
-        self.wrapping_up = self.wrapping_up or yes(self.answers, "wrapping_up")
         for key, item in self.items.items():
             if key in self.fetching:
                 continue
@@ -215,11 +281,7 @@ class Session:
                 self.tries[key] = self.tries.get(key, 0) + 1
                 self.tried_at_line[key] = n
                 self.fetching.add(key)
-                task = asyncio.create_task(
-                    self._fetch_value(key, self._transcript(), self.lines[-1].no, settles_conflict=key in self.conflicts)
-                )
-                self.tasks.add(task)
-                task.add_done_callback(self.tasks.discard)
+                self._spawn(self._fetch_value(key, self._transcript(), self.lines[-1].no, settles_conflict=key in self.conflicts))
 
     async def _fetch_value(self, key: ItemKey, transcript: str, at_line: int, settles_conflict: bool) -> None:
         try:
@@ -255,8 +317,8 @@ class Session:
             return None
 
     def _transcript(self) -> str:
-        head = sage.preamble(self.people)
-        return head + "\n".join(f"{line.no}. {self.names[line.speaker]}: {line.text}" for line in self.lines)
+        head = sage.preamble(self.who.all)
+        return head + "\n".join(f"{line.no}. {self.who.names[line.speaker]}: {line.text}" for line in self.lines)
 
     def _publish_checklist(self, changed: list[ItemKey]) -> None:
         self.bus.publish(
@@ -267,13 +329,13 @@ class Session:
 
     # ---- the Judge ----
 
-    def _decide(self) -> None:
+    def _decide(self, silence: float = 0.0) -> None:
         if self.ended or not self.lines:
             return
         line = self.lines[-1]
         view = View(
-            now=line.end, speaker=line.speaker, text=line.text, answers=self.answers, items=self.items,
-            conflicts=self.conflicts, unclear=self.unclear, values_on_their_way=bool(self.fetching), names=self.names,
+            now=line.end + silence, closing=self.closing, speaker=line.speaker, text=line.text, answers=self.answers, items=self.items,
+            conflicts=self.conflicts, unclear=self.unclear, values_on_their_way=bool(self.fetching), names=self.who.names,
         )
         speak = self.judge.decide(view)
         if speak is None:

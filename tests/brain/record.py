@@ -2,11 +2,13 @@
 
     uv run python -m tests.brain.record sage fixtures/call_missing_balance.json
     uv run python -m tests.brain.record values fixtures/call_missing_balance.json
+    uv run python -m tests.brain.record values-missing fixtures/call_missing_balance.json
 
 `sage` costs one Sage2 update per line plus one. Sage2's free allowance is small: run it
 once per fixture, and again only if the questions in app/brain/sage.py change.
 `values` replays the saved Sage2 answers through the brain with the real OpenAI model
-and saves what it returned. It uses no Sage2.
+and saves what it returned. It uses no Sage2. `values-missing` keeps every reply already
+saved and asks the model only for lookups the brain now makes that are not saved yet.
 """
 
 import asyncio
@@ -20,7 +22,8 @@ from app.brain.values import OpenAIValues, key
 from app.bus import Bus
 from app.config import get_settings
 from app.contracts import Event, Person, Role
-from fakes.replayer import load, play
+from fakes.replayer import load
+from tests.brain.replaying import play
 
 OUT = Path(__file__).parent / "recorded"
 
@@ -51,40 +54,45 @@ async def record_sage(fixture_path: str, extra_questions: dict[str, str]) -> Non
 
 
 class _Saving:
-    def __init__(self, inner: OpenAIValues) -> None:
-        self.inner, self.replies = inner, {}
+    def __init__(self, inner: OpenAIValues, saved: dict | None = None) -> None:
+        self.inner, self.replies, self.saved = inner, {}, saved or {}
 
     async def lookup(self, kind, item, transcript, at_line):
+        if key(kind, item, at_line) in self.saved:
+            reply = self.replies[key(kind, item, at_line)] = self.saved[key(kind, item, at_line)]
+            return reply
         reply = await self.inner.lookup(kind, item, transcript, at_line)
         self.replies[key(kind, item, at_line)] = reply
         print(" ", key(kind, item, at_line), json.dumps(reply, ensure_ascii=False), flush=True)
         return reply
 
 
-async def record_values(fixture_path: str) -> None:
+async def record_values(fixture_path: str, keep: bool = False) -> None:
     fixture = load(fixture_path)
+    out = OUT / f"{fixture['id']}.values.json"
     tuning.LOOKUP_WAIT_S = 30.0
+    silence_s, tuning.CLOSING_SILENCE_S = tuning.CLOSING_SILENCE_S, 3600.0  # play() passes silences, in call seconds
     openai = OpenAIValues(get_settings().require("openai_api_key"))
-    saving = _Saving(openai)
+    saving = _Saving(openai, json.loads(out.read_text())["replies"] if keep and out.exists() else None)
     bus = Bus()
     bus.start()
     brain = Brain(bus, "live", lambda started: (sage.RecordedDecisions(OUT / f"{fixture['id']}.sage.json"), saving))
 
-    async def emit(event: Event) -> None:
+    async def emit(event: Event | None) -> None:
         # One event at a time, and wait for its values: the tests replay with replies
         # that are there at once, so the recording has to settle between lines too.
-        bus.publish(event)
+        if event:
+            bus.publish(event)
         await bus.drain(60)
         await brain.idle()
         await bus.drain(60)
 
-    await play(fixture, emit, speed=0, deal_id=fixture["id"])
+    await play(fixture, brain, emit, fixture["id"], silence_s)
     await bus.stop()
     await openai.close()
-    out = OUT / f"{fixture['id']}.values.json"
     out.write_text(json.dumps({
         "fixture": fixture["id"], "recorded_at": datetime.now(UTC).isoformat(timespec="seconds"),
-        "model": tuning.VALUES_MODEL, "replies": saving.replies,
+        "model": tuning.VALUES_MODEL, "replies": saving.saved | saving.replies,
     }, ensure_ascii=False, indent=1) + "\n")
     print(f"saved {out}; openai calls: {openai.calls}")
 
@@ -94,7 +102,7 @@ if __name__ == "__main__":
     if command == "sage":
         extra = json.loads(Path(sys.argv[3]).read_text()) if len(sys.argv) > 3 else {}
         asyncio.run(record_sage(fixture_path, extra))
-    elif command == "values":
-        asyncio.run(record_values(fixture_path))
+    elif command in ("values", "values-missing"):
+        asyncio.run(record_values(fixture_path, keep=command == "values-missing"))
     else:
         raise SystemExit(__doc__)

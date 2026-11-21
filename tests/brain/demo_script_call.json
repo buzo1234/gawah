@@ -1,0 +1,180 @@
+{
+ "id": "demo_script_call",
+ "description": "The deal call as tools/DEMO-RUN.md step 7 has the user say it, written in Devanagari as the transcription gives it. Not a recording: the timings are made up, with the silences the run sheet asks for (after line 9 for Gawah's balance question, after line 14 for the late-work question, after line 16 for the read-back). The deal was started on WhatsApp, so the worker's name is not known at the start.",
+ "people": [
+  {
+   "role": "hirer",
+   "name": "Sunita",
+   "phone": "+919000000001"
+  },
+  {
+   "role": "worker",
+   "name": null,
+   "phone": "+919000000002"
+  }
+ ],
+ "ended_at": 134.8,
+ "lines": [
+  {
+   "line_no": 1,
+   "speaker": "hirer",
+   "text": "हेलो रमेश जी, मैं सुनीता बोल रही हूँ। मुझे अपना टू बीएचके फ्लैट पेंट करवाना है, इंदिरापुरम में।",
+   "start": 6.0,
+   "end": 13.0
+  },
+  {
+   "line_no": 2,
+   "speaker": "worker",
+   "text": "हाँ जी मैडम। ट्रैक्टर इमल्शन, दो कोट, मटेरियल के साथ पच्चीस हज़ार लगेगा।",
+   "start": 14.2,
+   "end": 19.7
+  },
+  {
+   "line_no": 3,
+   "speaker": "hirer",
+   "text": "पच्चीस बहुत ज़्यादा है। बाईस हज़ार फाइनल करो, मटेरियल आपका।",
+   "start": 20.9,
+   "end": 25.4
+  },
+  {
+   "line_no": 4,
+   "speaker": "worker",
+   "text": "ठीक है मैडम, बाईस हज़ार फाइनल।",
+   "start": 26.6,
+   "end": 29.6
+  },
+  {
+   "line_no": 5,
+   "speaker": "worker",
+   "text": "एडवांस कितना दोगे? मटेरियल के लिए पाँच हज़ार पहले चाहिए।",
+   "start": 30.8,
+   "end": 35.3
+  },
+  {
+   "line_no": 6,
+   "speaker": "hirer",
+   "text": "पाँच हज़ार एडवांस मैं कल जीपे कर दूँगी।",
+   "start": 36.5,
+   "end": 40.0
+  },
+  {
+   "line_no": 7,
+   "speaker": "worker",
+   "text": "जी, इसी नंबर पे कर देना।",
+   "start": 41.2,
+   "end": 43.7
+  },
+  {
+   "line_no": 8,
+   "speaker": "hirer",
+   "text": "चलो ठीक है। काम कब से स्टार्ट करोगे?",
+   "start": 44.9,
+   "end": 47.9
+  },
+  {
+   "line_no": 9,
+   "speaker": "worker",
+   "text": "अगले सोमवार से शुरू, शुक्रवार तक फिनिश।",
+   "start": 49.1,
+   "end": 52.6
+  },
+  {
+   "line_no": 10,
+   "speaker": "hirer",
+   "text": "बाकी पैसा काम पूरा होने के दिन दे दूँगी।",
+   "start": 67.8,
+   "end": 71.3
+  },
+  {
+   "line_no": 11,
+   "speaker": "worker",
+   "text": "हाँ ठीक है।",
+   "start": 72.5,
+   "end": 74.0
+  },
+  {
+   "line_no": 12,
+   "speaker": "hirer",
+   "text": "चलो ठीक है फिर। सब तय हो गया।",
+   "start": 75.2,
+   "end": 78.2
+  },
+  {
+   "line_no": 13,
+   "speaker": "worker",
+   "text": "जी मैडम, सोमवार सुबह नौ बजे आ जाऊँगा।",
+   "start": 79.4,
+   "end": 82.9
+  },
+  {
+   "line_no": 14,
+   "speaker": "hirer",
+   "text": "ठीक है, सोमवार को मिलते हैं। बाय।",
+   "start": 84.1,
+   "end": 87.1
+  },
+  {
+   "line_no": 15,
+   "speaker": "worker",
+   "text": "लेट हुआ तो हर दिन का पाँच सौ काट लेना।",
+   "start": 103.3,
+   "end": 106.8
+  },
+  {
+   "line_no": 16,
+   "speaker": "hirer",
+   "text": "ठीक है।",
+   "start": 108.0,
+   "end": 109.2
+  },
+  {
+   "line_no": 17,
+   "speaker": "hirer",
+   "text": "हाँ।",
+   "start": 122.4,
+   "end": 123.4
+  },
+  {
+   "line_no": 18,
+   "speaker": "worker",
+   "text": "हाँ जी।",
+   "start": 124.6,
+   "end": 125.6
+  }
+ ],
+ "expected": [
+  {
+   "after_line": 8,
+   "by_line": 9,
+   "item": "balance",
+   "reason": "term_unclear",
+   "to": "hirer",
+   "modes": [
+    "live"
+   ]
+  },
+  {
+   "after_line": 12,
+   "by_line": 13,
+   "item": "late_or_unfinished",
+   "reason": "wrapping_up",
+   "to": "both",
+   "modes": [
+    "live",
+    "wrapup"
+   ]
+  },
+  {
+   "after_line": 16,
+   "by_line": 16,
+   "item": null,
+   "reason": "wrapping_up",
+   "to": "both",
+   "modes": [
+    "live",
+    "wrapup"
+   ]
+  }
+ ],
+ "expected_note": "As in the practice calls in fixtures/: after_line to by_line is when the Judge should speak, in the given modes."
+}

@@ -1,0 +1,66 @@
+{
+ "fixture": "dry_run_call",
+ "recorded_at": "2026-11-21T14:40:50+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "names:-@1": {
+   "hirer": "Sunita",
+   "worker": "Ravesh"
+  },
+  "value:work@8": {
+   "value": "paint the inside of the entire two-bedroom flat, including both bedrooms, hall, kitchen and balcony grills, with two coats and no title mention",
+   "source_text": "अंदर का पूरा दोनों बेडरूम, हॉल और किचन, बालकनी के ग्रिल भी कर देना।",
+   "line_no": 5
+  },
+  "value:amount@11": {
+   "value": "22,000 rupees, labour and material, with no extra charge",
+   "source_text": "ठीक है, 22,000 है, लेकिन मटेरियल आपका होगा, ऊपर से कोई एक्स्ट्रा चार्ज नहीं।",
+   "line_no": 11
+  },
+  "value:advance@14": {
+   "value": "5,000 rupees, paid by GPay tomorrow to this UPI number",
+   "source_text": "पांच हजार, इसमें मैं कल जीपे कर दूँ।",
+   "line_no": 14
+  },
+  "conflict:-@19": {
+   "item": null,
+   "figures": null,
+   "line_nos": null
+  },
+  "value:dates@21": {
+   "value": "Monday 23 November 2026 to Friday 27 November 2026",
+   "source_text": "पांच दिन का काम है, मैडम। शुक्रवार तक फिनिश। पंद्रह तारीख से पहले हो जाएगा।",
+   "line_no": 21
+  },
+  "value:balance@23": {
+   "value": "10,000 rupees at the end, after half the work",
+   "source_text": "मैडम आधा काम होने पे थोड़ा दे देना, सात हज़ार, बाकी दस हज़ार लास्ट में।",
+   "line_no": 19
+  },
+  "value:balance@24": {
+   "value": "10,000 rupees after the work is finished",
+   "source_text": "तो फाइनल टोटल बाईस हज़ार, पाँच एडवांस, सात बीच में, और दस काम के बाद।",
+   "line_no": 24
+  },
+  "value:advance@24": {
+   "value": "5,000 rupees, paid by GPay tomorrow to that number",
+   "source_text": "पांच हजार, इसमें मैं कल जीपे कर दूँ।",
+   "line_no": 14
+  },
+  "value:amount@24": {
+   "value": "22,000 rupees for the whole job, with material from you and no extra charge",
+   "source_text": "ठीक है, 22,000 है, लेकिन मटेरियल आपका होगा, ऊपर से कोई एक्स्ट्रा चार्ज नहीं।",
+   "line_no": 11
+  },
+  "value:work@24": {
+   "value": "Paint the full inside of the 2BHK flat, including both bedrooms, hall, kitchen and balcony grills, with two coats.",
+   "source_text": "अंदर का पूरा दोनों बेडरूम, हॉल और किचन, बालकनी के ग्रिल भी कर देना।",
+   "line_no": 5
+  },
+  "value:dates@24": {
+   "value": "Monday 23 November 2026 to Friday 27 November 2026",
+   "source_text": "अगले सोमवार से शुरू कर देंगे, सुबह नौ बजे तक पहुंच जाएंगे।",
+   "line_no": 17
+  }
+ }
+}

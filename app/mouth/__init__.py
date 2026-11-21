@@ -44,6 +44,7 @@ class Mouth:
         self.bus, self.make_seat, self.make_link = bus, make_seat, make_link
         self.rooms: Callable = lambda: None  # the call-back's rooms; set by register
         self.calls: dict[str, DealCall] = {}
+        self._seen: set[str] = set()  # deal-call rooms already started
         self._ending: set[asyncio.Task] = set()
         # One subscription for everything, so a call's events are handled in order.
         bus.subscribe_all(self.on_event)
@@ -64,9 +65,13 @@ class Mouth:
     async def _start(self, started: CallStarted, running: DealCall | None) -> None:
         if not started.room or started.room.startswith(PRACTICE):
             return
+        if started.room in self._seen:
+            # The brain sends call.started again when it learns a name: take the name, never rejoin.
+            if running and running.room_name == started.room:
+                running.meet(started.people)
+            return
+        self._seen.add(started.room)
         if running:
-            if running.room_name == started.room:
-                return
             await self._end(running)
         try:
             call = DealCall(started, self.bus, self.make_seat, self.make_link)

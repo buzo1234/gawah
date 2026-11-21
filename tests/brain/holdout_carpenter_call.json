@@ -1,0 +1,130 @@
+{
+ "id": "holdout_carpenter_call",
+ "description": "The 16-line held-out carpenter call from spikes/5-transcript-holdout.txt, never used for tuning: scored only after the wrap-up rules were committed (a382fdb). Made-up timings (1.5 s plus a second per 15 characters, 1 s apart); the call ends 1 s after the last line. Meena hires Vijay for a wardrobe. The deal is taken as started on WhatsApp, so Vijay's name is not known at the start.",
+ "people": [
+  {
+   "role": "hirer",
+   "name": "Meena",
+   "phone": "+910000000011"
+  },
+  {
+   "role": "worker",
+   "name": null,
+   "phone": "+910000000012"
+  }
+ ],
+ "lines": [
+  {
+   "line_no": 1,
+   "speaker": "hirer",
+   "text": "Vijay bhaiya, bedroom mein ek wardrobe banwana hai, floor se ceiling tak.",
+   "start": 1.0,
+   "end": 7.4
+  },
+  {
+   "line_no": 2,
+   "speaker": "worker",
+   "text": "Ban jayega didi. Kitna chauda chahiye?",
+   "start": 8.4,
+   "end": 12.4
+  },
+  {
+   "line_no": 3,
+   "speaker": "hirer",
+   "text": "Saat foot chauda, teen darwaze, andar do drawer.",
+   "start": 13.4,
+   "end": 18.1
+  },
+  {
+   "line_no": 4,
+   "speaker": "worker",
+   "text": "Theek hai, saat foot ka teen door wardrobe, do drawer ke saath, plywood aur laminate mera. Yeh pakka.",
+   "start": 19.1,
+   "end": 27.3
+  },
+  {
+   "line_no": 5,
+   "speaker": "hirer",
+   "text": "Gawah, yeh sab record ho raha hai na?",
+   "start": 28.3,
+   "end": 32.3
+  },
+  {
+   "line_no": 6,
+   "speaker": "worker",
+   "text": "Haan didi, ho raha hoga. Toh kaam ka 60 hazaar lagega.",
+   "start": 33.3,
+   "end": 38.4
+  },
+  {
+   "line_no": 7,
+   "speaker": "hirer",
+   "text": "Bahut zyada hai. 50 mein karo.",
+   "start": 39.4,
+   "end": 42.9
+  },
+  {
+   "line_no": 8,
+   "speaker": "worker",
+   "text": "50 mein nahi padta didi, 55 last.",
+   "start": 43.9,
+   "end": 47.6
+  },
+  {
+   "line_no": 9,
+   "speaker": "hirer",
+   "text": "Chalo theek hai, 55 hazaar. Kaam kab tak poora hoga?",
+   "start": 48.6,
+   "end": 53.6
+  },
+  {
+   "line_no": 10,
+   "speaker": "worker",
+   "text": "Jaldi kar denge didi, aap chinta mat karo. Advance 20 hazaar bhej dena aaj.",
+   "start": 54.6,
+   "end": 61.1
+  },
+  {
+   "line_no": 11,
+   "speaker": "hirer",
+   "text": "20 theek hai, aaj shaam ko bhej dungi. Baaki kaam poora hone ke baad.",
+   "start": 62.1,
+   "end": 68.2
+  },
+  {
+   "line_no": 12,
+   "speaker": "worker",
+   "text": "Haan didi, baaki 35 kaam khatam hone par de dena.",
+   "start": 69.2,
+   "end": 74.0
+  },
+  {
+   "line_no": 13,
+   "speaker": "hirer",
+   "text": "Theek hai. Toh 20 advance aur total 50, sahi hai na?",
+   "start": 75.0,
+   "end": 80.0
+  },
+  {
+   "line_no": 14,
+   "speaker": "worker",
+   "text": "Ji didi. Kal subah aata hoon naap lene.",
+   "start": 81.0,
+   "end": 85.1
+  },
+  {
+   "line_no": 15,
+   "speaker": "hirer",
+   "text": "Theek hai bhaiya, kal milte hain. Thank you.",
+   "start": 86.1,
+   "end": 90.5
+  },
+  {
+   "line_no": 16,
+   "speaker": "worker",
+   "text": "Ji didi, namaste.",
+   "start": 91.5,
+   "end": 94.1
+  }
+ ]
+}

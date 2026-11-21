@@ -2,7 +2,8 @@
 and decides when the Judge speaks and what about.
 
 Listens to call.started, transcript.line, call.ended, judge.spoke (deal calls only).
-Sends checklist.updated and judge.speak.
+Sends checklist.updated and judge.speak, and call.started again (same room) when it
+learns a name on the call that the deal did not have.
 
 - sage.py     the fast yes/no decisions (Sage2 stream), live or recorded
 - values.py   the value of an agreed term (a small OpenAI model), live or recorded
@@ -47,6 +48,9 @@ class Brain:
     async def on_event(self, event: Event) -> None:
         session = self.sessions.get(event.deal_id)
         if isinstance(event, CallStarted) and event.kind is CallKind.DEAL:
+            if session and session.room == event.room:
+                session.meet(event.people)  # sent again with a name learned on the call
+                return
             if session:
                 await session.end()
             decisions, values = self.sources(event)

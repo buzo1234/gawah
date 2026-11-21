@@ -1,5 +1,5 @@
-"""The brain on both practice calls, on answers recorded from the real Sage2 and the
-real OpenAI model (tests/brain/recorded/). No outside calls."""
+"""The brain on the practice calls, the dry run's call and the demo's script, on answers
+recorded from the real Sage2 and the real OpenAI model (tests/brain/recorded/). No outside calls."""
 
 from pathlib import Path
 
@@ -10,7 +10,8 @@ from app.bus import Bus
 from app.contracts import ChecklistUpdated, ItemKey, ItemState, JudgeSpeak
 from tests.brain.replaying import run_call
 
-CALLS = sorted(Path("fixtures").glob("call_*.json"))
+CALLS = sorted(Path("fixtures").glob("call_*.json")) + [Path("tests/brain/dry_run_call.json"), Path("tests/brain/demo_script_call.json")]
+ALL = CALLS + [Path("tests/brain/spike_painter_call.json")]
 MODES = ["live", "wrapup"]
 both = pytest.mark.parametrize("path", CALLS, ids=lambda p: p.stem)
 modes = pytest.mark.parametrize("mode", MODES)
@@ -138,3 +139,84 @@ async def test_spike_call_covers_a_dodged_question_and_speaking_to_gawah(bus):
 async def test_spike_call_in_wrapup_mode_only_speaks_at_the_end(bus):
     run = await run_call(bus, "tests/brain/spike_painter_call.json", "wrapup")
     assert run.spoken == [(27, "wrapping_up", "amount", "both")]
+
+
+# The first line on which wrap-up may fire without being mid-call (the first closing words:
+# a meeting time, thanks or goodbye), and the last line it may fire on: two lines before
+# the end, or the last line where that is the only closing line and a silence follows.
+WRAP = {
+    "call_missing_balance": (29, 30),  # "Chalo theek hai phir. Monday subah 9 baje aa jana" ... 32 lines
+    "call_two_amounts": (30, 31),  # "Chalo theek hai. To Wednesday subah aa jao, 10 baje." ... 33
+    "spike_painter_call": (27, 28),  # "Chalo theek hai phir, kal advance bhej deti hoon. Ab rakhti hoon." ... 30
+    "dry_run_call": (24, 24),  # its one closing line is its last, then 25 seconds of silence
+    "demo_script_call": (12, 13),  # "चलो ठीक है फिर। सब तय हो गया।" ... then the late-work question
+}
+
+
+async def fresh_run(path, mode: str, drop: set[int] = frozenset()):
+    """A run on its own bus: a brain stays subscribed to the bus it was made on."""
+    bus = Bus()
+    bus.start()
+    try:
+        return await run_call(bus, path, mode, drop)
+    finally:
+        await bus.stop()
+
+
+@pytest.mark.parametrize("path", ALL, ids=lambda p: p.stem)
+async def test_wrap_up_comes_at_the_closing_words_never_before(path):
+    # In wrapup mode the Judge's first word is the moment it saw wrap-up (every call has something pending).
+    run = await fresh_run(path, "wrapup")
+    first, last = WRAP[run.fixture["id"]]
+    assert run.speaks and run.speaks[0].reason == "wrapping_up"
+    assert first <= run.speaks[0].after_line <= last, run.spoken
+    live = await fresh_run(path, "live")
+    assert all(s.after_line >= first for s in live.speaks if s.reason == "wrapping_up"), live.spoken
+
+
+@pytest.mark.parametrize(
+    ("path", "first", "again"),
+    [
+        ("fixtures/call_missing_balance.json", (19, "term_unclear", "balance", "hirer"), 20),
+        ("fixtures/call_two_amounts.json", (19, "conflicting_figures", "amount", "both"), 20),
+        ("tests/brain/spike_painter_call.json", (18, "term_unclear", "balance", "hirer"), 19),
+        ("tests/brain/demo_script_call.json", (8, "term_unclear", "balance", "hirer"), 9),
+    ],
+    ids=lambda v: Path(v).stem if isinstance(v, str) else None,
+)
+async def test_a_dropped_question_is_asked_again_and_wrap_up_still_asks(path, first, again):
+    plain = await fresh_run(path, "live")
+    dropped = await fresh_run(path, "live", drop={0})
+    assert dropped.spoken[0] == first
+    assert dropped.spoken[1] == (again, *first[1:]), "asked again on the next line"
+    wrapups = {s.item for s in dropped.speaks if s.reason == "wrapping_up"}
+    plain_wrapups = {s.item for s in plain.speaks if s.reason == "wrapping_up"}
+    assert wrapups == plain_wrapups
+
+    twice = await fresh_run(path, "live", drop={0, 1})
+    mid_call = [s for s in twice.speaks if s.item == first[2] and s.reason != "wrapping_up"]
+    assert len(mid_call) == 2, "asked again once, not on every line"
+    assert {s.item for s in twice.speaks if s.reason == "wrapping_up"} == plain_wrapups
+
+
+@pytest.mark.parametrize(
+    ("path", "worker"), [("tests/brain/dry_run_call.json", "Ravesh"), ("tests/brain/demo_script_call.json", "Ramesh")]
+)
+async def test_a_name_said_on_the_call_is_learned_and_used(bus, path, worker):
+    # Both deals were started on WhatsApp, which knows only the worker's phone.
+    # On the dry run line 1 was heard as "रवेश जी": the name is as good as the transcription.
+    run = await run_call(bus, path, "live")
+    started, again = run.started
+    assert [p.name for p in started.people] == ["Sunita", None]
+    assert again.room == started.room and [(p.role, p.name, p.phone) for p in again.people] == [
+        ("hirer", "Sunita", "+919000000001"), ("worker", worker, "+919000000002"),
+    ]
+    both = [s.instruction for s in run.speaks if s.to == "both"]
+    assert both and all(f"Sunita and {worker}" in text for text in both)
+    assert not any("Worker" in s.instruction for s in run.speaks)
+
+
+@pytest.mark.parametrize("path", ALL[:2] + ALL[-1:], ids=lambda p: p.stem)
+async def test_a_call_that_starts_with_both_names_never_looks_them_up(bus, path):
+    run = await run_call(bus, path, "live")
+    assert all(p.name for p in run.started[0].people) and len(run.started) == 1

@@ -64,6 +64,7 @@ class View:
     unclear: ItemKey | None  # the item someone asked about and got no clear answer on
     values_on_their_way: bool
     names: dict[Role, str]
+    closing: bool = False  # this line (or the silence after it) says they are wrapping up
 
 
 @dataclass
@@ -77,14 +78,18 @@ class Judge:
     waiting_on_question: bool = False  # False when it is an answer to someone who spoke to it
     last_question_end: float | None = None
     wrapup_until: float | None = None
+    reasked: dict[ItemKey | None, int] = field(default_factory=dict)
+    dropped_at: float | None = None  # the moment a question was dropped: that was no pause
 
     def decide(self, view: View) -> Speak | None:
-        if yes(view.answers, "wrapping_up"):
+        if view.closing:
             self.wrapup_until = view.now + tuning.WRAPUP_HOLD_S
         if self.waiting_since is not None:
             if view.now - self.waiting_since < tuning.SPEAK_TIMEOUT_S:
                 return None
             self.spoke(self.waiting_since, self.waiting_on_question)
+        if self.dropped_at is not None and view.now <= self.dropped_at:
+            return None  # wait for the next line
 
         speak = self._choose(view)
         if speak is None:
@@ -106,6 +111,19 @@ class Judge:
         self.waiting_since = None
         if was_question:
             self.last_question_end = max(end, self.last_question_end or 0.0)
+
+    def dropped(self, item: ItemKey | None, reason: SpeakReason | None, now: float) -> None:
+        """The mouth let the moment pass and said nothing. Nobody heard it, so it was not an
+        ask: take it back, so the item can be asked again mid-call, a limited number of times."""
+        self.waiting_since, self.dropped_at = None, now
+        if reason is SpeakReason.ADDRESSED_DIRECTLY or self.reasked.get(item, 0) >= tuning.MAX_REASKS:
+            return  # past the limit it counts as asked; wrap-up still has its own ask
+        self.reasked[item] = self.reasked.get(item, 0) + 1
+        if item is None:
+            self.read_back_done = False
+            return
+        self.asked[item] = max(0, self.asked.get(item, 0) - 1)
+        (self.asked_at_wrapup if reason is SpeakReason.WRAPPING_UP else self.asked_mid_call).discard(item)
 
     def _gap_ok(self, view: View, gap: float) -> bool:
         return self.last_question_end is None or view.now - self.last_question_end >= gap

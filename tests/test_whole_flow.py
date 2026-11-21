@@ -166,15 +166,18 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     assert started.room in flow.app.state.calls.livekit.deleted
     await flow.until(lambda: seat.gone)  # and Gawah left with it
 
-    # whatsapp: after call.ended both get their call-back link. The deal keeps the people who
-    # made it on WhatsApp; the worker's name is still unknown (open item 10).
+    # whatsapp: after call.ended both get their call-back link. The deal was made on WhatsApp
+    # without the worker's name; the brain heard it on the call ("Hello, Ramesh ji?") and sent
+    # call.started again for the same room, so the store has it and nothing was rejoined.
     for role in Role:
         assert callback_path(deal_id, role) in flow.sent_to(role)[-1]
     deal = await flow.store.deal(deal_id)
     assert deal.status is DealStatus.CALL_ENDED
     assert {p.role: (p.name, p.phone) for p in deal.people} == {
-        Role.HIRER: ("Sunita", PHONE[Role.HIRER]), Role.WORKER: (None, PHONE[Role.WORKER]),
+        Role.HIRER: ("Sunita", PHONE[Role.HIRER]), Role.WORKER: ("Ramesh", PHONE[Role.WORKER]),
     }
+    [_, named] = flow.of(CallStarted, kind=CallKind.DEAL)
+    assert named.room == started.room and len(flow.voice.seats) == 1
 
     # mouth: each person's call-back reads every agreed term, they agree, and it ends in terms.confirmed.
     agreed = [i.key.value for i in flow.of(ChecklistUpdated)[-1].items if i.state is ItemState.AGREED]
@@ -223,7 +226,7 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     # dashboard: a fresh page load gets the deal's people and every event above, in order.
     await flow.settle()
     state = (await flow.client.get("/dashboard/state", params={"deal": deal_id})).json()
-    assert state["deals"][0]["names"]["hirer"] == "Sunita"
+    assert state["deals"][0]["names"] == {"hirer": "Sunita", "worker": "Ramesh"}
     assert state["events"] == [e.model_dump(mode="json") for e in flow.events]
 
     # No stream raised on an event or logged an error anywhere along the way.
