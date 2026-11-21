@@ -131,7 +131,8 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     for role in Role:
         seat.hears(role.value, sounds.room_noise(1.0, -50))
     [opening] = await flow.until(lambda: flow.of(JudgeSpoke))
-    assert opening.speak_id is None and "record ho rahi hai" in flow.voice.links[0].of("response.create")[0]["response"]["instructions"]
+    gawah = flow.voice.links[0]
+    assert opening.speak_id is None and any("record ho rahi hai" in i for i in gawah.asked())
 
     # The practice call's lines, as the ears send them. Whenever the brain asks something,
     # the next line waits until Gawah has said it, as people do when Gawah speaks.
@@ -163,7 +164,9 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     chain = (await flow.client.get(f"/memory/chain/{deal_id}")).json()
     assert chain["verified"] and chain["links"] == len(facts) and chain["head"] == facts[-1].hash
 
-    # mouth: each judge.speak was said in the room, in call seconds counted from call.started.
+    # mouth: Gawah the agent followed the call as text, one labelled line per transcript line,
+    # and each judge.speak was said in the room, in call seconds counted from call.started.
+    assert len(gawah.items("user")) == len(load(CALL)["lines"]) and gawah.items("user")[0].startswith("Sunita (hirer), line 1:")
     since_start = (datetime.now(UTC) - started.ts).total_seconds()
     for speak in speaks:
         [spoke] = flow.of(JudgeSpoke, speak_id=speak.event_id)
