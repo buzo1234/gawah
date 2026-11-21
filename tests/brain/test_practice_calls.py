@@ -9,7 +9,7 @@ import pytest
 from app.brain import tuning
 from app.bus import Bus
 from app.contracts import ChecklistUpdated, ItemKey, ItemState, JudgeSpeak, SpeakReason
-from tests.brain.replaying import run_call
+from tests.brain.replaying import run_call, run_followup
 
 CALLS = sorted(Path("fixtures").glob("call_*.json")) + [Path("tests/brain/dry_run_call.json"), Path("tests/brain/demo_script_call.json")]
 ALL = CALLS + [Path("tests/brain/spike_painter_call.json")]
@@ -257,3 +257,31 @@ async def test_a_name_said_on_the_call_is_learned_and_used(bus, path, worker):
 async def test_a_call_that_starts_with_both_names_never_looks_them_up(bus, path):
     run = await run_call(bus, path, "live")
     assert all(p.name for p in run.started[0].people) and len(run.started) == 1
+
+
+async def test_a_second_call_replayed_keeps_the_checklist_and_catches_the_contradiction(bus):
+    """call_two_amounts, then tests/brain/second_call.json as call 2 of the same deal, with the
+    memory's Scribe on its saved replies: Ramesh says 14,000 again on call 2."""
+    first, second = await run_followup(bus, "tests/brain/second_call.json")
+    end_of_one = {i.key: (i.state, i.value) for i in first.checklists[-1].items}
+    assert {i.key: (i.state, i.value) for i in second.checklists[0].items} == end_of_one, "not restarted"
+    agreed = {k for k, (state, _) in end_of_one.items() if state is ItemState.AGREED}
+    assert agreed == {ItemKey.WORK, ItemKey.AMOUNT, ItemKey.ADVANCE, ItemKey.DATES}
+
+    [conflict] = second.conflicts
+    contradiction, wrap = second.speaks
+    assert (contradiction.after_line, contradiction.reason, contradiction.item, contradiction.to) == (
+        3, "contradicts_record", "amount", "both",
+    )
+    assert contradiction.fact_ids == conflict.fact_ids
+    assert 'Ramesh said: "Achha madam, ek baat. Labour ka total 14 hazaar tay hua tha na?"' in contradiction.instruction
+    assert "the amount was agreed at 13,000 rupees by both" in contradiction.instruction
+    # Nothing agreed on call 1 is asked again. What wrap-up raises: the contradiction, still
+    # unconfirmed, and the two terms the facts never had agreed. No read-back of the whole deal.
+    assert all(s.reason != "term_unclear" for s in second.speaks)
+    assert (wrap.after_line, wrap.reason, wrap.item) == (8, "wrapping_up", "amount")
+    asked = wrap.instruction.split("(1)")[1]
+    for label in ("the work", "the advance", "the dates"):
+        assert f"Ask Sunita and Ramesh to confirm {label}" not in asked and f"what {label}" not in asked
+    assert "(2) Ask Sunita and Ramesh to confirm the balance" in wrap.instruction
+    assert second.values.missing == [] and first.values.missing == []

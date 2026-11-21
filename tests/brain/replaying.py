@@ -113,3 +113,33 @@ async def run_call(bus, fixture_path: str | Path, mode: str, drop: set[int] = fr
     run = Run(fixture, events, values)
     run.started = started
     return run
+
+
+async def run_followup(bus, fixture_path: str | Path, mode: str = "live", values2=None) -> tuple[Run, Run]:
+    """A second call on a deal: call 1 (the fixture's "follows") replayed, then the fixture as
+    call 2 on the same deal, through one brain and one memory. Returns each call's run."""
+    second = load(fixture_path)
+    first = load(Path("fixtures") / f"{second['follows']}.json")
+    memory = memory_on(bus)
+    values = {1: RecordedValues(RECORDINGS / f"{first['id']}.values.json")}
+    values[2] = values2 or RecordedValues(RECORDINGS / f"{second['id']}.values.json")
+    sage = {1: RECORDINGS / f"{first['id']}.sage.json", 2: RECORDINGS / f"{second['id']}.sage.json"}
+    brain = Brain(bus, mode, lambda started: (RecordedDecisions(sage[started.call_no]), values[started.call_no]), memory)
+    events: list = []
+
+    async def collect(event) -> None:
+        if isinstance(event, (JudgeSpeak, ChecklistUpdated, FactConflict, CallStarted)):
+            events.append(event)
+
+    bus.subscribe_all(collect)
+    emit = settling(bus, memory, brain)
+    deal = f"{second['id']}-test"
+    await play(first, brain, emit, deal)
+    split = len(events)
+    await play(second, brain, emit, deal, call_no=second["call_no"])
+    runs = []
+    for fixture, part, call_values in ((first, events[:split], values[1]), (second, events[split:], values[2])):
+        run = Run(fixture, [e for e in part if not isinstance(e, CallStarted)], call_values)
+        run.started = [e for e in part if isinstance(e, CallStarted)]
+        runs.append(run)
+    return runs[0], runs[1]

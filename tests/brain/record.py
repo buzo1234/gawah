@@ -11,6 +11,13 @@ its saved replies (tests/memory/recorded/, record those first with tests.memory.
 and the real OpenAI model for names, the term left unclear and two meanings, and saves
 what it returned. It uses no Sage2. `values-missing` keeps every reply already
 saved and asks the model only for lookups the brain now makes that are not saved yet.
+
+    uv run python -m tests.brain.record followup tests/brain/second_call.json
+
+A second call on a deal (the fixture's "follows" names call 1): replays call 1 into the
+memory on the Scribe's saved replies, then call 2 with the live Scribe model, which sees
+call 1's facts as on a real follow-up call, and saves call 2's replies to
+tests/memory/recorded/. One small-model call per line of call 2 that is not a plain yes.
 """
 
 import asyncio
@@ -25,7 +32,7 @@ from app.bus import Bus
 from app.config import get_settings
 from app.contracts import Person, Role
 from fakes.replayer import load
-from tests.brain.replaying import memory_on, play, settling
+from tests.brain.replaying import memory_on, play, run_followup, settling
 
 OUT = Path(__file__).parent / "recorded"
 
@@ -92,11 +99,84 @@ async def record_values(fixture_path: str, keep: bool = False) -> None:
     print(f"saved {out}; openai calls: {openai.calls}")
 
 
+async def record_followup(fixture_path: str) -> None:
+    from app.memory import extract
+    from app.memory.openai_client import OpenAIClient
+    from tests.memory.record import Recorder
+
+    second = load(fixture_path)
+    first = load(Path(fixture_path).parent.parent.parent / "fixtures" / f"{second['follows']}.json")
+    client = OpenAIClient(get_settings())
+    recorder = Recorder(extract.LiveExtractor(client))
+    saved = extract.Routed(None, extract.RecordedExtractor())
+
+    class Switch:  # call 1 from the saved replies, call 2 from the live model
+        async def claims(self, request):
+            return await (recorder if request.line.call_no == second["call_no"] else saved).claims(request)
+
+        async def check(self, check):
+            return await recorder.check(check)
+
+    bus = Bus()
+    memory = memory_on(bus, extractor=Switch())
+    bus.start()
+
+    async def emit(event) -> None:
+        if event:
+            bus.publish(event)
+        for _ in range(3):
+            await bus.drain(60)
+            await memory.settle()
+
+    from app.contracts import CallEnded, CallStarted, TranscriptLine
+    deal = f"record-{second['id']}"
+    for fixture, call_no in ((first, 1), (second, second["call_no"])):
+        people = [Person(**p) for p in fixture["people"]]
+        room = f"record-{deal}-{call_no}"
+        await emit(CallStarted(deal_id=deal, people=people, room=room, call_no=call_no))
+        for line in fixture["lines"]:
+            await emit(TranscriptLine(deal_id=deal, call_no=call_no, **line))
+        await emit(CallEnded(deal_id=deal, people=people, room=room, call_no=call_no))
+    for conflict in memory.conflicts:
+        print(f"  CONFLICT call {conflict.call_no} line {conflict.line_no}: {conflict.explanation}")
+    out = extract.RECORDED / f"{second['id']}.json"
+    out.write_text(json.dumps(
+        {"model": extract.MODEL, "effort": extract.EFFORT, "replies": recorder.replies, "checks": recorder.checks},
+        indent=1, ensure_ascii=False,
+    ) + "\n")
+    print(f"saved {out}; openai calls: {dict(client.calls)}")
+    await client.close()
+    await bus.stop()
+
+
+async def record_followup_values(fixture_path: str) -> None:
+    """The brain's model lookups on call 2 of a deal (names, unclear, two meanings), saved."""
+    second = load(fixture_path)
+    out = OUT / f"{second['id']}.values.json"
+    tuning.LOOKUP_WAIT_S = 30.0
+    openai = OpenAIValues(get_settings().require("openai_api_key"))
+    saving = _Saving(openai)
+    bus = Bus()
+    bus.start()
+    await run_followup(bus, fixture_path, values2=saving)
+    await bus.stop()
+    await openai.close()
+    out.write_text(json.dumps({
+        "fixture": second["id"], "recorded_at": datetime.now(UTC).isoformat(timespec="seconds"),
+        "model": tuning.VALUES_MODEL, "replies": saving.replies,
+    }, ensure_ascii=False, indent=1) + "\n")
+    print(f"saved {out}; openai calls: {openai.calls}")
+
+
 if __name__ == "__main__":
     command, fixture_path = sys.argv[1], sys.argv[2]
     if command == "sage":
         extra = json.loads(Path(sys.argv[3]).read_text()) if len(sys.argv) > 3 else {}
         asyncio.run(record_sage(fixture_path, extra))
+    elif command == "followup":
+        asyncio.run(record_followup(fixture_path))
+    elif command == "followup-values":
+        asyncio.run(record_followup_values(fixture_path))
     elif command in ("values", "values-missing"):
         asyncio.run(record_values(fixture_path, keep=command == "values-missing"))
     else:
