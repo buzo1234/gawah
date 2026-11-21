@@ -20,9 +20,10 @@ RATE = 16000
 
 
 def claim(item, stance="state", rupees=None, quote="", text=None, kind="term", value=None, date=None,
-          accepts_line=None, contradicts=None) -> dict:
+          accepts_line=None, contradicts=None, figure="whole") -> dict:
     """One claim in the shape the Scribe's model returns it."""
     return {
+        "figure": figure,
         "item": item, "kind": kind, "stance": stance, "text": text or f"The {item} is {value or rupees}.",
         "value": value or (f"{rupees:,} rupees" if rupees is not None else None), "rupees": rupees,
         "date": date, "quote": quote, "accepts_line": accepts_line, "contradicts": contradicts,
