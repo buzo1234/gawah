@@ -42,6 +42,19 @@ from app.whatsapp.outbox import Outbox, Provider
 
 LOCAL_BASE_URL = "http://localhost:8000"  # used for links until PUBLIC_BASE_URL is set
 
+# "delete my data", "mera data delete karo", "data hata do": the privacy policy promises
+# that this request is heard. The removal itself is done by hand (tools/DELETE-DATA.md).
+_DELETE = re.compile(
+    r"\b(delete|remove|erase)\s+(all\s+)?(of\s+)?my\s+(deal\s+)?data\b"
+    r"|\bdata\s+(delete|del|hata|hatao|hataa|hatado|mita|mitao|remove|nikal|nikalo)\b"
+    r"|डेटा\s+(डिलीट|हटा|मिटा)",
+    re.IGNORECASE,
+)
+
+
+def asks_to_delete(text: str) -> bool:
+    return bool(_DELETE.search(text))
+
 
 def link_for(settings: Settings) -> Callable[[str], str]:
     """A path on this server as a link a person can open."""
@@ -149,6 +162,9 @@ class Bot:
         if message.kind == "reaction":
             return  # logged above; a reaction asks for no answer
         self.outbox.typing(message.phone, message.sid)
+        if asks_to_delete(message.text):
+            self._delete_asked(message, deal_id, role)
+            return
         if not message.media_url and self.intake.answer(message.phone, message.text, message.name, message.button):
             return
         if read_button(message.button):  # a yes or no tapped on a question already answered
@@ -170,6 +186,20 @@ class Bot:
             reply(words.HELP)
         else:
             reply(words.HELP_NO_DEAL)
+
+    def _delete_asked(self, message: Inbound, deal_id: str, role: Role | None) -> None:
+        """Say the request is received, and leave it where a person will act on it: the log
+        and the event log. Nothing is deleted here."""
+        deal_log("gawah.whatsapp", deal_id).warning(
+            "DATA DELETION ASKED by %s (%s): remove by hand, see tools/DELETE-DATA.md",
+            mask_phone(message.phone), role.value if role else "no deal",
+        )
+        self.bus.publish(AgentNote(
+            deal_id=deal_id, agent=CrewAgent.SENTINEL,
+            text=f"{role.value if role else 'someone with no deal'} ({mask_phone(message.phone)}) asked for "
+                 "this deal's data to be deleted: to be removed by hand (tools/DELETE-DATA.md)",
+        ))
+        self.outbox.send(deal_id, message.phone, role, words.DELETE_RECEIVED)
 
     def _start_deal(self, message: Inbound, other_phone: str) -> None:
         role = Role.WORKER if phone.says_worker(message.text) else Role.HIRER

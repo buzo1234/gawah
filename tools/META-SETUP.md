@@ -98,6 +98,10 @@ It costs about 12 WhatsApp messages to your phone (all free, inside the window),
 
 Stop the server and the tunnel with Ctrl-C. Report how many messages Gawah sent: the dashboard shows each one.
 
+## Deleting a person's data
+
+The privacy policy promises that "delete my data" (or "mera data delete karo", "data hata do") sent to Gawah is heard. Gawah answers that the request is received, and logs `DATA DELETION ASKED` with the deal id. Nothing is deleted automatically: the steps are in `tools/DELETE-DATA.md`.
+
 ## If something is wrong
 
 | Server log says | Means |

@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 from fastapi.testclient import TestClient
 from whatsapp_world import BASE, GEETA, RAMESH, REAL, SUNITA, world  # noqa: F401
@@ -7,7 +9,7 @@ from app.contracts import (
     NO_DEAL, WHATSAPP_WEBHOOK_PATH, CallKind, ContractReady, Direction, Role, call_path, callback_path,
 )
 from app.main import create_app
-from app.whatsapp import phone, words
+from app.whatsapp import bot, phone, words
 from app.whatsapp.twilio import TwilioError, signature
 from fakes import call as fake_call
 
@@ -186,3 +188,36 @@ def test_the_signature_matches_the_worked_example_in_twilios_docs():
 def test_a_twilio_error_keeps_its_reason_but_not_a_phone_number():
     error = TwilioError(400, 21211, "The 'To' number whatsapp:+919811100001 is not a valid phone number")
     assert str(error) == "twilio http 400 code 21211: The 'To' number whatsapp:***0001 is not a valid phone number"
+
+
+@pytest.mark.parametrize(
+    ("text", "asks"),
+    [
+        ("delete my data", True), ("Delete my data please", True), ("please remove my deal data", True),
+        ("mera data delete karo", True), ("Mera data delete kar do", True), ("data hata do", True),
+        ("mera saara data hatao", True), ("data mita do", True), ("मेरा डेटा हटा दो", True),
+        ("2000 cash diya", False), ("data entry ka kaam hai", False), ("delete", False), ("haan", False),
+    ],
+)
+def test_a_request_to_delete_data_is_recognised_in_english_and_hinglish(text, asks):
+    assert bot.asks_to_delete(text) is asks
+
+
+async def test_delete_my_data_is_answered_logged_and_noted_and_nothing_is_deleted(world, caplog):
+    deal_id = await world.start_deal()
+    await world.say(SUNITA, "2000 cash diya")
+    with caplog.at_level(logging.WARNING, "gawah.whatsapp"):
+        await world.say(RAMESH, "mera data delete karo")
+    assert world.texts_to(RAMESH)[-1] == words.DELETE_RECEIVED
+    [note] = [e for e in world.named("agent.note") if "deleted" in e.text]
+    assert (note.deal_id, note.agent) == (deal_id, "sentinel")
+    assert note.text.startswith("worker (***0002) asked for this deal's data to be deleted")
+    [line] = [r.getMessage() for r in caplog.records if "DATA DELETION" in r.getMessage()]
+    assert line == f"deal={deal_id} DATA DELETION ASKED by ***0002 (worker): remove by hand, see tools/DELETE-DATA.md"
+    assert world.named("record.confirmed") == []  # not taken as an answer to the open question
+    assert await world.store.deal(deal_id) and len(await world.store.records(deal_id)) == 1
+    assert world.reader.calls == [("2000 cash diya", False)]  # never sent to the model
+
+    await world.say(GEETA, "delete my data")  # no deal: still heard, still logged
+    assert world.texts_to(GEETA) == [words.DELETE_RECEIVED]
+    assert [e.deal_id for e in world.named("agent.note") if "deleted" in e.text][-1] == NO_DEAL
