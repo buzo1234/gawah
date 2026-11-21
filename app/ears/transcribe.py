@@ -5,6 +5,7 @@ short prompt. The line is uploaded whole; OpenAI's own end-of-speech detection i
 """
 
 import io
+import re
 import wave
 
 import httpx
@@ -30,8 +31,11 @@ def prompt_for(deal: Deal, about: str | None = None) -> str:
         "Expect rupee amounts (hazaar, thousand), advance and balance, dates and weekdays, "
         "and short replies such as haan, theek hai, pakka."
     )
+    # The message that asked for the deal names the job. It also carries the other person's
+    # phone number, which OpenAI has no need to see.
+    about = re.sub(r"\+?\d[\d\s-]{5,}\d", " ", about or "").strip()
     if about:
-        text += f" The job was first described as: {about.strip()[:200]}"
+        text += f" The job was first described as: {about[:200]}"
     return text
 
 

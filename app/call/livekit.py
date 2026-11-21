@@ -41,6 +41,7 @@ class RoomEvents(Protocol):
     def joined(self, identity: str) -> None: ...
     def left(self, identity: str) -> None: ...
     def audio(self, identity: str, pcm: bytes) -> None: ...
+    def lost(self) -> None: ...  # the listener is out of the room and did not ask to be
 
 
 class Listener:
@@ -106,7 +107,7 @@ class LiveKit:
                 async for event in stream:
                     events.audio(identity, bytes(event.frame.data))
             except Exception:
-                log.exception("room=%s audio from %s stopped", room_name, identity)
+                log.exception("deal=%s audio from %s stopped", deal_of(room_name), identity)
             finally:
                 await stream.aclose()
 
@@ -126,6 +127,10 @@ class LiveKit:
             if old:
                 old.cancel()
             pumps[p.identity] = asyncio.create_task(pump(p.identity, track))
+
+        @room.on("disconnected")
+        def _lost(*_: object) -> None:
+            events.lost()
 
         token = self.token(room_name, LISTENER, listener=True)
         await room.connect(self.url, token, rtc.RoomOptions(connect_timeout=CONNECT_TIMEOUT))

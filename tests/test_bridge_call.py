@@ -120,6 +120,17 @@ async def test_call_ends_at_our_own_time_limit(world):
     assert world.livekit.deleted == ["deal-d1"] and world.livekit.listeners[0].disconnected
 
 
+async def test_call_ends_if_the_listener_loses_the_room(world):
+    await world.deal()
+    await world.join(role=Role.HIRER)
+    await world.join(role=Role.WORKER)
+    world.talk(seconds=2)
+    world.room().lost()
+    ended = await world.ended()
+    assert ended.reason == "listener_lost" and len(ended.recording_keys) == 2
+    assert world.livekit.deleted == ["deal-d1"]
+
+
 async def test_a_room_where_the_other_person_never_comes_is_closed_at_the_time_limit(world):
     world.calls.limits.max_age = 0.1
     await world.deal()

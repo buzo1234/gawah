@@ -92,6 +92,13 @@ class CallSession:
         at = self._recordings[role].write(pcm, self._clock() - self.started_at)
         self.ears.hear(role, pcm, at)
 
+    def lost(self) -> None:
+        # The listener gave up reconnecting, or the room was deleted from outside. Nobody is
+        # listening any more, so the call is over as far as Gawah is concerned.
+        if not self._closing:
+            self.log.warning("listener lost the room")
+            self._timer("lost", 0, "listener_lost")
+
     # ---- start and end ----
 
     def _start(self) -> None:

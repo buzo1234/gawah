@@ -186,9 +186,11 @@ async def test_a_line_being_spoken_when_the_call_ends_is_still_published_before_
 
 def test_the_prompt_names_the_people_when_we_know_them():
     deal = Deal(id="d1", people=[SUNITA, Person(role=Role.WORKER, phone=RAMESH.phone)])
-    prompt = prompt_for(deal, "Ramesh painter se flat paint karwana hai")
+    prompt = prompt_for(deal, f"Ramesh painter {RAMESH.phone} se flat paint karwana hai, 98765 43210 pe bhi")
     assert "Hinglish" in prompt and "Sunita" in prompt and "painter" in prompt and "hazaar" in prompt
-    assert RAMESH.phone not in prompt and "None" not in prompt
+    assert "None" not in prompt and "flat paint karwana hai" in prompt
+    assert not any(number in prompt for number in ("0000000002", "98765", "43210"))  # no phone numbers to OpenAI
+    assert "first described" not in prompt_for(deal, RAMESH.phone) and "first described" not in prompt_for(deal)
 
 
 async def test_transcriber_sends_the_spike_settings_and_retries_once():
