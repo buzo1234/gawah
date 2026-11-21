@@ -37,29 +37,48 @@ async def _let_tasks_run() -> None:
 class FakeClock:
     def __init__(self) -> None:
         self.time = 0.0
-        self._sleepers: list[tuple[float, asyncio.Future]] = []
+        self._sleepers: list[tuple[float, asyncio.Future, asyncio.Task | None]] = []
+        self._woken: list[asyncio.Task] = []
 
     def now(self) -> float:
         return self.time
 
     async def sleep(self, seconds: float) -> None:
         future = asyncio.get_running_loop().create_future()
-        self._sleepers.append((self.time + seconds, future))
+        self._sleepers.append((self.time + seconds, future, asyncio.current_task()))
         await future
 
     async def advance(self, seconds: float) -> None:
         """Move time forward, waking each sleeper at the moment it asked for."""
         end = self.time + seconds
         while True:
-            await _let_tasks_run()
+            await self.idle()
             self._sleepers = [s for s in self._sleepers if not s[1].done()]
             due = [s for s in self._sleepers if s[0] <= end]
             if not due:
                 break
-            wake_at, future = min(due, key=lambda s: s[0])
+            wake_at, future, task = min(due, key=lambda s: s[0])
             self.time = max(self.time, wake_at)
             future.set_result(None)
+            if task:
+                self._woken.append(task)
         self.time = end
+
+    async def idle(self, timeout: float = 5.0) -> None:
+        """Wait until every task this clock woke has finished or is asleep on it again. What
+        a woken task does can wait on a thread (the store), which no count of loop turns
+        covers on a slow machine."""
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + timeout
+        while True:
+            await _let_tasks_run()
+            asleep = {task for _, future, task in self._sleepers if not future.done()}
+            self._woken = [t for t in self._woken if not t.done() and t not in asleep]
+            if not self._woken:
+                return
+            if loop.time() > deadline:
+                raise AssertionError(f"still busy after the fake clock woke them: {self._woken}")
+            await asyncio.sleep(0.001)
 
 
 class FakeTwilio:
@@ -171,7 +190,7 @@ class World:
         self.events.append(event)
 
     async def settle(self) -> None:
-        await _let_tasks_run()
+        await self.clock.idle()
         await self.bus.drain()
 
     async def say(self, phone: str, text: str = "", media: str | None = None, name: str | None = None) -> None:
