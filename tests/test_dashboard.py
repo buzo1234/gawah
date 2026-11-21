@@ -30,6 +30,13 @@ def as_json(events) -> list[dict]:
     return [e.model_dump(mode="json") for e in events]
 
 
+def only(published, listed: list[dict]) -> list[dict]:
+    """Streams answer some events with events of their own (the brain's checklist, the
+    call-back links), so keep only the ones this test published."""
+    ids = {e.event_id for e in published}
+    return [e for e in listed if e["event_id"] in ids]
+
+
 def capture_webhook(app) -> list[tuple[dict, dict]]:
     """Stand in for the whatsapp stream's intake: keep each request's headers and form.
     Put first, so it still catches the post once the real route exists."""
@@ -65,27 +72,28 @@ def test_a_fresh_page_load_gets_every_event_published_so_far(settings):
     asyncio.run(play(fixture, keep, speed=0, deal_id="d-call"))
     half = len(played) // 2
     early = WhatsAppMessage(deal_id=NO_DEAL, direction=Direction.IN, phone=SUNITA.phone, text="Deal karni hai")
+    samples = sample_events("d-next")
+    ours = [early, *played, *samples]
     with TestClient(create_app(settings)) as client:
         publish(client, early, *played[:half])
         state = client.get("/dashboard/state").json()
         assert state["deal_id"] == "d-call"
-        assert state["events"] == as_json([early, *played[:half]])  # mid-call: nothing lost, in order
+        assert only(ours, state["events"]) == as_json([early, *played[:half]])  # mid-call: nothing lost, in order
 
         publish(client, *played[half:])
-        assert client.get("/dashboard/state").json()["events"] == as_json([early, *played])
+        assert only(ours, client.get("/dashboard/state").json()["events"]) == as_json([early, *played])
 
         # A second deal becomes the one shown; the first can still be picked.
-        samples = sample_events("d-next")
         publish(client, *samples)
         state = client.get("/dashboard/state").json()
         assert state["deal_id"] == "d-next"
         assert [d["id"] for d in state["deals"]] == ["d-next", "d-call"]
         assert state["deals"][0]["names"] == {"hirer": "Sunita", "worker": "Ramesh"}
         # Chats are per phone, not per deal, so the message from before any deal comes too.
-        assert state["events"] == as_json([early, *samples])
+        assert only(ours, state["events"]) == as_json([early, *samples])
         picked = client.get("/dashboard/state", params={"deal": "d-call"}).json()
         assert picked["deal_id"] == "d-call"
-        assert picked["events"] == as_json([early, *played, samples[-1]])
+        assert only(ours, picked["events"]) == as_json([early, *played, samples[-1]])
         assert client.get("/dashboard/state", params={"deal": "no-such"}).json()["deal_id"] == "d-next"
 
 
@@ -112,12 +120,14 @@ async def test_the_socket_still_feeds_the_tail(settings, capsys):
         events = sample_events("d-tail")
         for event in events:
             app.state.bus.publish(event)
+        # Streams answer some of these with events of their own, which the tail prints too.
+        sent = [e.model_dump_json() for e in events]
         printed = ""
         async with asyncio.timeout(5):
-            while printed.count("\n") < len(events):
+            while sent[-1] not in printed.splitlines():
                 await asyncio.sleep(0.02)
                 printed += capsys.readouterr().out
-        assert printed.splitlines() == [e.model_dump_json() for e in events]
+        assert [line for line in printed.splitlines() if line in sent] == sent
     finally:
         tailing.cancel()
         await asyncio.gather(tailing, return_exceptions=True)
@@ -161,9 +171,14 @@ def test_a_second_phone_message_reaches_the_webhook_in_the_provider_shape(settin
 def test_the_second_phone_refuses_what_it_should(settings, tmp_path, monkeypatch):
     monkeypatch.setattr(phone, "MEDIA_DIR", tmp_path / "media")
     app = create_app(settings)
+
+    async def webhook_down(request: Request) -> Response:
+        return Response(status_code=503)
+
+    app.router.routes.insert(0, Route(WHATSAPP_WEBHOOK_PATH, webhook_down, methods=["POST"]))
     with TestClient(app) as client:
-        # No whatsapp stream yet: the webhook's own answer is passed back, not hidden.
-        assert client.post("/dashboard/phone/send", json={"phone": RAMESH.phone, "text": "hello"}).json()["status"] == 404
+        # The webhook's own answer is passed back, not hidden.
+        assert client.post("/dashboard/phone/send", json={"phone": RAMESH.phone, "text": "hello"}).json()["status"] == 503
         assert client.post("/dashboard/phone/send", json={"phone": RAMESH.phone, "text": "  "}).status_code == 422
         assert client.post("/dashboard/phone/send", json={"phone": "none", "text": "hello"}).status_code == 422
         tunnel = {"cf-connecting-ip": "1.2.3.4"}
