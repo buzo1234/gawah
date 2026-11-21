@@ -15,7 +15,7 @@ from app.memory.book import DealBook
 from app.memory.claims import Claim, say_day, compare, comparable, parse_claim, parts_of
 from app.memory.dates import date_candidates, date_parts
 from app.memory.normalise import (
-    bare_numbers, filler_kind, format_rupees, opens_with_yes, parse_rupees, stated_total,
+    bare_numbers, filler_kind, format_rupees, opens_with_yes, parse_rupees, settles_all, stated_total,
 )
 
 log = logging.getLogger("gawah.memory")
@@ -66,6 +66,8 @@ class Scribe:
                 self._plain_yes(deal, line, received, claims)
             for claim in self._with_total(deal, line, claims):
                 self._apply(deal, line, claim, received)
+            if settles_all(line.text) and not line.text.rstrip().endswith("?"):
+                self._settle_all(deal, line, received)
         except Exception:
             log.exception("deal=%s line %s: scribe failed", line.deal_id, line.line_no)
         finally:
@@ -148,6 +150,8 @@ class Scribe:
                 self.m.note("scribe", f"line {line.line_no}: {claim.item.value} {fact.value or ''} said", fact, line)
             self._conflict(deal, line, claim, against, part, received)
             return
+        if claim.stance in ("state", "offer") and claim.rupees and self._accepted(deal, line, claim):
+            claim.stance = "accept"  # says back the figure the other person just offered for this term
         target = self._accepted(deal, line, claim) if claim.stance == "accept" else None
         if claim.stance == "accept" and not target and verdict != "same" and not self._heard(deal, line, claim):
             claim.stance = "offer"  # nothing the other person said: it is this speaker's own proposal
@@ -262,6 +266,20 @@ class Scribe:
         offer = offers[0]
         if compare(deal, offer.item, offer.value_rupees, offer.value_date, parts_of(deal, offer))[0] != "differs":
             self.upgrade(deal, offer, line, received, None)
+
+    def _settle_all(self, deal: DealBook, line: TranscriptLine, received: float) -> None:
+        """"Sab tay ho gaya" agrees to each term the other person stated on this call that
+        nothing agreed yet covers: the last thing they said about it."""
+        for item in ItemKey:
+            if deal.current(item) is not None:
+                continue
+            said = [
+                f for f in deal.standing()
+                if f.item == item and f.kind == FactKind.TERM and f.status == FactStatus.SAID
+                and f.said_by == line.speaker.other and f.call_no == line.call_no and (f.line_no or 0) < line.line_no
+            ]
+            if said:
+                self.upgrade(deal, max(said, key=lambda f: f.line_no or 0), line, received, None)
 
     def upgrade(self, deal: DealBook, fact: Fact, line: TranscriptLine, received: float, claim: Claim | None) -> Fact:
         update: dict = {

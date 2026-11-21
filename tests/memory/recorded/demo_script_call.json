@@ -7,8 +7,8 @@
     "item": "work",
     "kind": "term",
     "stance": "state",
-    "text": "Sunita says she wants her 2BHK flat painted in Indirapuram.",
-    "value": "paint a 2BHK flat",
+    "text": "Sunita says she wants her 2 BHK flat painted in Indirapuram.",
+    "value": "2 BHK flat painting in Indirapuram",
     "rupees": null,
     "date": null,
     "quote": "हेलो रमेश जी, मैं सुनीता बोल रही हूँ। मुझे अपना टू बीएचके फ्लैट पेंट करवाना है, इंदिरापुरम में।",
@@ -20,20 +20,20 @@
    {
     "item": "work",
     "kind": "term",
-    "stance": "offer",
-    "text": "The worker says the job is tractor emulsion paint in two coats with material included.",
+    "stance": "state",
+    "text": "The worker says the job is tractor emulsion, two coats, with material included.",
     "value": "tractor emulsion, two coats, with material",
     "rupees": null,
     "date": null,
     "quote": "हाँ जी मैडम। ट्रैक्टर इमल्शन, दो कोट, मटेरियल के साथ पच्चीस हज़ार लगेगा।",
     "accepts_line": null,
-    "contradicts": null
+    "contradicts": "work@1.1"
    },
    {
     "item": "amount",
     "kind": "term",
     "stance": "offer",
-    "text": "The worker says the total price will be 25,000 rupees including material.",
+    "text": "The worker says the total price will be 25,000 rupees.",
     "value": "25,000 rupees",
     "rupees": 25000,
     "date": null,
@@ -47,7 +47,7 @@
     "item": "amount",
     "kind": "change",
     "stance": "offer",
-    "text": "Sunita offers 22,000 rupees as the final price and says the material will be yours.",
+    "text": "Sunita offers 22,000 rupees as the final price for the job.",
     "value": "22,000 rupees",
     "rupees": 22000,
     "date": null,
@@ -60,7 +60,7 @@
     "kind": "change",
     "stance": "offer",
     "text": "Sunita says the material will be provided by the worker.",
-    "value": "material your side",
+    "value": "material by worker",
     "rupees": null,
     "date": null,
     "quote": "पच्चीस बहुत ज़्यादा है। बाईस हज़ार फाइनल करो, मटेरियल आपका।",
@@ -87,7 +87,7 @@
     "item": "advance",
     "kind": "term",
     "stance": "offer",
-    "text": "The worker asks what advance will be given and says he needs 5,000 rupees upfront for material.",
+    "text": "The worker asks how much advance the hirer will give and says 5,000 rupees is needed upfront for material.",
     "value": "5,000 rupees",
     "rupees": 5000,
     "date": null,
@@ -100,41 +100,41 @@
    {
     "item": "advance",
     "kind": "term",
-    "stance": "accept",
-    "text": "Sunita accepts a 5,000 rupee advance to be paid tomorrow by GPay.",
+    "stance": "state",
+    "text": "Sunita says she will pay a 5,000 rupee advance tomorrow by GPay.",
     "value": "5,000 rupees",
     "rupees": 5000,
     "date": "2026-11-22",
     "quote": "पाँच हज़ार एडवांस मैं कल जीपे कर दूँगी।",
-    "accepts_line": 5,
+    "accepts_line": null,
     "contradicts": null
    }
   ],
   "जी, इसी नंबर पे कर देना।": [
    {
     "item": "advance",
-    "kind": "term",
-    "stance": "accept",
-    "text": "The worker accepts the 5,000 rupees advance on the same number.",
-    "value": "5,000 rupees",
-    "rupees": 5000,
+    "kind": "payment",
+    "stance": "state",
+    "text": "The worker says to send the advance to this number.",
+    "value": "this number",
+    "rupees": null,
     "date": null,
     "quote": "जी, इसी नंबर पे कर देना।",
-    "accepts_line": 6,
+    "accepts_line": null,
     "contradicts": null
    }
   ],
   "चलो ठीक है। काम कब से स्टार्ट करोगे?": [
    {
-    "item": "dates",
-    "kind": "other",
-    "stance": "state",
-    "text": "The hirer asks when the worker will start the work.",
-    "value": null,
-    "rupees": null,
+    "item": "advance",
+    "kind": "payment",
+    "stance": "accept",
+    "text": "Sunita accepts the 5,000 rupees advance proposed just before.",
+    "value": "5,000 rupees",
+    "rupees": 5000,
     "date": null,
     "quote": "चलो ठीक है। काम कब से स्टार्ट करोगे?",
-    "accepts_line": null,
+    "accepts_line": 6,
     "contradicts": null
    }
   ],
@@ -143,7 +143,7 @@
     "item": "dates",
     "kind": "term",
     "stance": "state",
-    "text": "The worker says the job will start next Monday and finish by Friday.",
+    "text": "The worker says the work will start next Monday and finish by Friday.",
     "value": "start next Monday, finish by Friday",
     "rupees": null,
     "date": null,
@@ -157,8 +157,8 @@
     "item": "balance",
     "kind": "term",
     "stance": "state",
-    "text": "Sunita says she will pay the remaining money on the day the work is completed.",
-    "value": "remaining money on completion day",
+    "text": "The hirer says the remaining money will be paid on the day the work is completed.",
+    "value": "rest on completion day",
     "rupees": null,
     "date": null,
     "quote": "बाकी पैसा काम पूरा होने के दिन दे दूँगी।",
@@ -166,46 +166,32 @@
     "contradicts": null
    }
   ],
-  "हाँ ठीक है।": [
+  "चलो ठीक है फिर। सब तय हो गया।": [
    {
-    "item": "balance",
-    "kind": "term",
+    "item": null,
+    "kind": "other",
     "stance": "accept",
-    "text": "The worker accepts that the rest will be paid on the day the work is completed.",
-    "value": "on completion day",
+    "text": "Sunita accepts the earlier agreed deal by saying everything is settled.",
+    "value": "everything decided",
     "rupees": null,
     "date": null,
-    "quote": "हाँ ठीक है।",
-    "accepts_line": 10,
+    "quote": "चलो ठीक है फिर। सब तय हो गया।",
+    "accepts_line": 11,
     "contradicts": null
    }
   ],
-  "चलो ठीक है फिर। सब तय हो गया।": [],
-  "जी मैडम, सोमवार सुबह नौ बजे आ जाऊँगा।": [
-   {
-    "item": "dates",
-    "kind": "term",
-    "stance": "state",
-    "text": "The worker says he will come on Monday morning at 9 o'clock.",
-    "value": "Monday morning at 9 o'clock",
-    "rupees": null,
-    "date": "2026-11-23",
-    "quote": "जी मैडम, सोमवार सुबह नौ बजे आ जाऊँगा।",
-    "accepts_line": null,
-    "contradicts": null
-   }
-  ],
+  "जी मैडम, सोमवार सुबह नौ बजे आ जाऊँगा।": [],
   "ठीक है, सोमवार को मिलते हैं। बाय।": [
    {
-    "item": "dates",
-    "kind": "term",
-    "stance": "accept",
-    "text": "Sunita accepts the start date for Monday by saying \"ठीक है, सोमवार को मिलते हैं।\"",
+    "item": null,
+    "kind": "other",
+    "stance": "state",
+    "text": "The hirer says they will meet on Monday.",
     "value": "Monday",
     "rupees": null,
-    "date": "2026-11-23",
+    "date": null,
     "quote": "ठीक है, सोमवार को मिलते हैं। बाय।",
-    "accepts_line": 9,
+    "accepts_line": null,
     "contradicts": null
    }
   ],
@@ -214,7 +200,7 @@
     "item": "late_or_unfinished",
     "kind": "term",
     "stance": "state",
-    "text": "The worker says to deduct 500 rupees for each day if the job is late.",
+    "text": "The worker says that if the job is late, 500 rupees should be deducted for each day.",
     "value": "500 rupees per day",
     "rupees": 500,
     "date": null,
@@ -222,10 +208,7 @@
     "accepts_line": null,
     "contradicts": null
    }
-  ],
-  "ठीक है।": [],
-  "हाँ।": [],
-  "हाँ जी।": []
+  ]
  },
  "checks": {}
 }

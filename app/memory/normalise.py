@@ -242,6 +242,16 @@ def opens_with_yes(text: str, names: set[str] = frozenset()) -> bool:
     return bool(rest) and filler_kind(" ".join(first), names) == "yes" and any(t in _STRONG_YES for t in first)
 
 
+_ALL = normed({"sab", "sabhi", "saara", "sara", "everything", "सब", "सभी", "सारा"})
+_SETTLED = normed({"tay", "tey", "final", "pakka", "fix", "settle", "settled", "done", "तय", "फाइनल", "पक्का", "फिक्स", "डन"})
+
+
+def settles_all(text: str) -> bool:
+    """"Sab tay ho gaya", "sab final", "सब पक्का": everything said so far is agreed."""
+    toks = tokens(text)
+    return any(t in _ALL for t in toks) and any(t in _SETTLED for t in toks)
+
+
 # ---------- search words ----------
 
 _STOP = normed({

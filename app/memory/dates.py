@@ -145,9 +145,12 @@ def date_parts(text: str | None, today: date) -> dict[str, Day]:
 _MEET = normed({
     "milte", "milenge", "milna", "milo", "milta", "milti", "मिलते", "मिलेंगे", "मिलना", "मिलो", "मिलता", "मिलती",
     "phone", "फोन", "call", "कॉल", "bye", "बाय",
+    "aa", "aao", "aaunga", "aaungi", "aana", "आ", "आओ", "आऊंगा", "आऊंगी", "आना", "pahunch", "pahuch", "पहुंच", "पहुच",
 })
 
 
 def meets(text: str) -> bool:
-    """The words talk about meeting or speaking again ("Monday ko milte hain", "kal phone karna")."""
+    """The words are about meeting, coming over or speaking again ("Monday ko milte hain",
+    "Wednesday subah aa jao", "kal phone karna"). With no start or finish in them, that is a
+    visit, not the dates of the work."""
     return any(t in _MEET for t in tokens(text))

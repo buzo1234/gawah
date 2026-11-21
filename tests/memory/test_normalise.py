@@ -143,4 +143,5 @@ def test_a_weekday_is_the_same_day_on_a_later_call():
 
 def test_meeting_words():
     assert meets("Theek hai, Monday ko milte hain.") and meets("सोमवार को मिलते हैं। बाय।") and meets("kal phone karna")
+    assert meets("To Wednesday subah aa jao, 10 baje.") and meets("जी मैडम, सोमवार सुबह नौ बजे आ जाऊँगा।")
     assert not meets("Monday se kaam shuru")

@@ -147,3 +147,33 @@ async def test_a_different_start_on_a_later_call_contradicts_and_the_same_weekda
     [conflict] = world.conflicts
     assert (conflict.call_no, conflict.line_no) == (2, 2)
     assert conflict.explanation.startswith("Says a start on Wednesday; the start was agreed as Monday")
+
+
+async def test_saying_back_the_other_persons_figure_accepts_it(bus, tmp_path):
+    """"पाँच हज़ार एडवांस मैं कल जीपे कर दूँगी" after the worker asked for 5,000 agrees to it,
+    even when the model files it as a plain statement."""
+    lines = [(W, "मटेरियल के लिए पाँच हज़ार पहले चाहिए।"), (H, "पाँच हज़ार एडवांस मैं कल जीपे कर दूँगी।")]
+    world = World(bus, tmp_path, {
+        lines[0][1]: [claim("advance", "offer", 5000, "पाँच हज़ार पहले चाहिए")],
+        lines[1][1]: [claim("advance", "state", 5000, lines[1][1])],
+    })
+    await world.call(lines)
+    advance = (await world.memory.get_term(DEAL, ItemKey.ADVANCE)).current
+    assert (advance.value_rupees, advance.said_by, advance.agreed_by, advance.line_no) == (5000, W, [H], 1)
+
+
+async def test_sab_tay_ho_gaya_agrees_what_the_other_person_left_open(bus, tmp_path):
+    lines = [
+        (W, "Monday se shuru, Friday tak khatam."),
+        (H, "Baaki paisa kaam ke din dungi."),
+        (W, "Haan ji."),
+        (H, "Chalo theek hai phir. Sab tay ho gaya."),
+    ]
+    world = World(bus, tmp_path, {
+        lines[0][1]: [dates("state", lines[0][1], "start Monday, finish Friday")],
+        lines[1][1]: [claim("balance", "state", quote=lines[1][1], value="on the day of the work")],
+    })
+    await world.call(lines)
+    term = (await world.memory.get_term(DEAL, ItemKey.DATES)).current
+    assert (term.status, term.said_by, term.agreed_by) == (FactStatus.AGREED, W, [H])
+    assert (await world.memory.get_term(DEAL, ItemKey.BALANCE)).current.agreed_by == [W]  # her own term, his "haan ji"
