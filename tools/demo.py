@@ -203,6 +203,23 @@ def wait_for(url: str, seconds: float, process: subprocess.Popen | None = None) 
     return False
 
 
+def wait_for_tunnel(public: str, seconds: float = 90) -> bool:
+    """Wait until the tunnel answers, asking Cloudflare's DNS directly (DNS over HTTPS).
+    Asked through the laptop's own resolver before the new name exists, the "no such
+    name" answer is cached, and asking again every few seconds keeps it cached: the
+    laptop's browser then cannot open the call link while the phone can."""
+    deadline = time.monotonic() + seconds
+    while time.monotonic() < deadline:
+        code = subprocess.run(
+            ["curl", "-s", "-m", "5", "-o", "/dev/null", "-w", "%{http_code}", "--doh-url", "https://1.1.1.1/dns-query", f"{public}/health"],
+            capture_output=True, text=True,
+        ).stdout
+        if code == "200":
+            return True
+        time.sleep(3)
+    return False
+
+
 def stop(process: subprocess.Popen | None, seconds: float = 20) -> None:
     """Ctrl-C to the process, as a terminal would send it; harder only if it hangs."""
     if process is None or process.poll() is not None:
@@ -275,8 +292,11 @@ def main() -> None:
         server = start_server(args.port, env, server_log)
         if not wait_for(f"http://localhost:{args.port}/health", 60, server):
             raise SystemExit(f"The server did not start. Its log: {server_log}")
-        if not wait_for(f"{public}/health", 30):
-            print("WARN  the public address does not answer yet. A new tunnel can take a minute to be found.")
+        if not wait_for_tunnel(public):
+            print("WARN  the public address does not answer. Stop (Ctrl-C) and start again for a new tunnel.")
+        elif not wait_for(f"{public}/health", 5):
+            print("WARN  this laptop cannot find the public address yet (the phone can). Wait a minute before\n"
+                  "      opening a link on the laptop, or run: sudo killall -HUP mDNSResponder")
         print("Checking the outside services:")
         ok = asyncio.run(run_checks(settings))
         banner(public, args.port, db, server_log, ok)
