@@ -7,6 +7,7 @@ The brain talks to `Values`. `OpenAIValues` is the live model; `RecordedValues`
 replays saved replies.
 """
 
+import asyncio
 import json
 from pathlib import Path
 from typing import Literal, Protocol
@@ -108,6 +109,7 @@ class OpenAIValues:
             except (httpx.HTTPError, KeyError, IndexError, ValueError):
                 if attempt == 2:
                     raise  # the caller logs it with the deal id
+                await asyncio.sleep(tuning.VALUES_RETRY_AFTER_S)
         return None
 
     async def close(self) -> None:

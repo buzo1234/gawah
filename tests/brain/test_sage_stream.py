@@ -98,6 +98,8 @@ async def test_no_service_means_no_answers_not_a_crash(monkeypatch):
     monkeypatch.setattr(tuning, "SAGE_OPEN_TIMEOUT_S", 0.5)
     stream = sage.SageStream("k")
     assert await stream.open("P\n") is None
+    assert [await stream.append(n, "a\n") for n in (1, 2, 3, 4)] == [None] * 4
+    assert stream._reopens == tuning.SAGE_REOPENS, "it stops trying, so later lines are not held up"
     await stream.close()
 
 

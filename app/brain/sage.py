@@ -104,6 +104,7 @@ class SageStream:
         self._questions = questions or QUESTIONS
         self._ws: ClientConnection | None = None
         self._content = ""
+        self._reopens = 0
         self.updates = 0  # billed updates on this call: one per start and one per append
 
     async def open(self, preamble: str) -> Answers | None:
@@ -113,7 +114,11 @@ class SageStream:
     async def append(self, seq: int, text: str) -> Answers | None:
         self._content += text
         if self._ws is None:
-            # The stream dropped earlier. One retry: reopen with the whole call so far.
+            # The stream is down. Reopen with the whole call so far, a few times at most:
+            # each try can hold the next line up for SAGE_OPEN_TIMEOUT_S.
+            if self._reopens >= tuning.SAGE_REOPENS:
+                return None
+            self._reopens += 1
             return await self._start()
         try:
             await self._ws.send(json.dumps({"type": "append", "text": text, "seq": seq}))
@@ -125,6 +130,7 @@ class SageStream:
         except Exception as e:
             self._log.warning("sage2 stream failed on line %s (%s); reopening", seq, type(e).__name__)
             await self._drop()
+            self._reopens += 1
             return await self._start()
 
     async def close(self) -> None:

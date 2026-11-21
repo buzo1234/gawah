@@ -5,7 +5,6 @@ from app.brain import Brain, tuning
 from app.contracts import (
     CallKind,
     ChecklistUpdated,
-    ItemKey,
     ItemState,
     JudgeSpeak,
     JudgeSpoke,
