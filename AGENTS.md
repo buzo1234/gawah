@@ -41,18 +41,30 @@ LiveKit and Twilio are on free plans with monthly allowances. Using them up in t
 
 ## Commands
 
-These are what the scaffold provides. Until the scaffold is merged they do not exist yet.
-
 | Do this | Command |
 |---|---|
 | Install | `uv sync` |
 | Run the server | `uv run uvicorn app.main:app --reload --port 8000` |
 | Run the tests | `uv run pytest -q` |
-| Replay a practice call onto the bus | `uv run python -m fakes.replayer fixtures/<call>.json` |
-| Public address for webhooks | `cloudflared tunnel --url http://localhost:8000` |
+| Replay a practice call into the running server, at real speed | `uv run python -m fakes.replayer fixtures/<call>.json` |
+| Replay it faster (10 = ten times faster, 0 = no waiting) | `uv run python -m fakes.replayer fixtures/<call>.json --speed 10` |
 | Watch events live | open `http://localhost:8000/dashboard` |
+| Watch events live in a terminal, one JSON object per line | `uv run python -m fakes.tail` |
+| Public address for webhooks | `cloudflared tunnel --url http://localhost:8000` |
 
 Python is pinned to 3.12 through `uv`. Do not use the system Python.
+
+The practice calls are `fixtures/call_missing_balance.json` and `fixtures/call_two_amounts.json`. The replayer and the tail need the server running. In a test, replay straight onto a bus instead: `await replay(bus, "fixtures/<call>.json", speed=0)` from `fakes.replayer`.
+
+## How a stream plugs in
+
+- Each stream folder has `register(app, bus)` in its `__init__.py`. `app/main.py` calls it once when the app is built. `app/dashboard/__init__.py` is the worked example.
+- Inside `register`: add routes and websocket routes on `app`, subscribe with `bus.subscribe(EventClass, handler)` or `bus.subscribe_all(handler)`, and append async functions to `app.state.on_startup` and `app.state.on_shutdown` for startup and shutdown work.
+- Handlers are `async def handler(event)`. `bus.publish(event)` is a plain call, not awaited.
+- Settings are `app.state.settings`; get a key with `settings.require("openai_api_key")`, which fails only when the key is actually missing. The store is `app.state.store` and is filled from the events, so streams read from it and never write to it.
+- `fakes/` has a fake call, a fake WhatsApp, and one sample of every event. In a test, `await bus.drain()` waits until every handler has finished.
+- `POST /dev/publish` puts any event's JSON on the bus from outside the server process. It is for development only: `DEV_ROUTES=false` removes it, and it refuses requests that came through the tunnel.
+- Use `deal_log` and `mask_phone` from `app/log.py` for log lines.
 
 ## Code rules
 

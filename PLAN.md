@@ -31,6 +31,8 @@ app/
   contracts.py     # shared event and data types - frozen after scaffold
   bus.py           # in-process event bus
   config.py        # reads .env
+  log.py           # deal id on every log line, masked phone numbers
+  dev.py           # development-only route that puts an event on the bus
   store/           # SQLite + S3
   call/            # stream: bridge - rooms, join links, the call page
   ears/            # stream: bridge - per-person transcription
@@ -40,7 +42,7 @@ app/
   records/         # stream: whatsapp
   contract/        # stream: contract
   dashboard/       # stream: dashboard
-fakes/             # transcript replayer, fake call, fake WhatsApp
+fakes/             # transcript replayer, event tail, fake call, fake WhatsApp, sample events
 fixtures/          # practice-call transcripts, sample screenshots
 spikes/            # throwaway test scripts
 tests/
