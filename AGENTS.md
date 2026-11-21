@@ -65,7 +65,7 @@ The practice calls are `fixtures/call_missing_balance.json` and `fixtures/call_t
 - `fakes/` has a fake call, a fake WhatsApp, and one sample of every event. In a test, `await bus.drain()` waits until every handler has finished.
 - `POST /dev/publish` puts any event's JSON on the bus from outside the server process. It is for the replayer and tests only: `DEV_ROUTES=false` removes it, and it refuses requests that came through the tunnel.
 - The LiveKit agent runs inside the server process, as a background task started from the `call` stream's `register` (through `app.state.on_startup`). It publishes on the bus directly. It does not use `/dev/publish`.
-- The dashboard's "second phone" panel posts to the WhatsApp webhook path (`WHATSAPP_WEBHOOK_PATH` in `app/contracts.py`), in the same shape the real provider sends, so it goes through the real intake path. It does not publish `record.*` events itself.
+- The dashboard's "second phone" panel posts to the WhatsApp webhook path (`WHATSAPP_WEBHOOK_PATH` in `app/contracts.py`), in the same shape the real provider sends, so it goes through the real intake path. It does not publish `record.*` events itself. The whatsapp stream publishes every message in or out as `whatsapp.message`. A number that is not in `VERIFIED_NUMBERS` is a simulated second phone: a message to it is published as `whatsapp.message` with `simulated` true instead of being sent, and the dashboard panel shows it. A message that arrives before its deal exists carries `deal_id=NO_DEAL` (in `app/contracts.py`).
 - Use `deal_log` and `mask_phone` from `app/log.py` for log lines.
 
 ## Code rules

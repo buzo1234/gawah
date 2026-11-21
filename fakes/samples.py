@@ -2,9 +2,9 @@
 
 from app.contracts import (
     Audience, Backing, CallEnded, CallStarted, ChecklistItem, ChecklistUpdated, ContractReady,
-    DealRequested, Event, ItemKey, ItemState, JudgeSpeak, JudgeSpoke, Person, Record,
+    DealRequested, Direction, Event, ItemKey, ItemState, JudgeSpeak, JudgeSpoke, Person, Record,
     RecordConfirmed, RecordConfirmRequested, RecordKind, RecordReceived, ReplyTimeout, Role,
-    SpeakReason, TermsConfirmed, TermsDisputed, TranscriptLine, empty_checklist,
+    SpeakReason, TermsConfirmed, TermsDisputed, TranscriptLine, WhatsAppMessage, empty_checklist,
 )
 from fakes import RAMESH, SUNITA
 
@@ -54,4 +54,9 @@ def sample_events(deal_id: str = "sample") -> list[Event]:
         ),
         RecordConfirmed(deal_id=deal_id, record_id=cash.id, confirmed_by=Role.WORKER),
         ReplyTimeout(deal_id=deal_id, person=Role.WORKER, ask="Kya 2,000 cash mila?", record_id=cash.id, waited_seconds=120),
+        WhatsAppMessage(
+            deal_id=deal_id, direction=Direction.OUT, phone=RAMESH.phone, role=Role.WORKER,
+            text="Ramesh ji, yeh aapka contract hai.", media_url="https://example.invalid/contract.pdf",
+            media_type="application/pdf", simulated=True,
+        ),
     ]

@@ -7,6 +7,7 @@ PLAN_EVENTS = {
     "deal.requested", "call.started", "call.ended", "transcript.line", "checklist.updated",
     "judge.speak", "judge.spoke", "terms.confirmed", "terms.disputed", "contract.ready",
     "record.received", "record.confirm_requested", "record.confirmed", "reply.timeout",
+    "whatsapp.message",
 }
 
 
