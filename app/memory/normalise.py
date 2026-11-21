@@ -204,11 +204,11 @@ def format_rupees(rupees: int) -> str:
 
 # ---------- lines with nothing to extract ----------
 
-_STRONG_YES = normed({
+STRONG_YES = normed({
     "theek", "thik", "theekh", "ok", "okay", "done", "pakka", "bilkul", "sahi", "manzoor", "final", "deal",
     "ठीक", "ओके", "पक्का", "बिलकुल", "बिल्कुल", "सही", "डन", "मंजूर", "फाइनल", "डील",
 })
-_YES = _STRONG_YES | normed({
+_YES = STRONG_YES | normed({
     "haan", "han", "haa", "ha", "haanji", "hanji", "chalo", "achha", "accha", "acha", "achcha", "right",
     "yes", "sure", "हाँ", "हां", "चलो", "अच्छा",
 })
@@ -239,7 +239,7 @@ def opens_with_yes(text: str, names: set[str] = frozenset()) -> bool:
         return False
     cut = toks.index(BREAK)
     first, rest = toks[:cut], [t for t in toks[cut:] if t != BREAK]
-    return bool(rest) and filler_kind(" ".join(first), names) == "yes" and any(t in _STRONG_YES for t in first)
+    return bool(rest) and filler_kind(" ".join(first), names) == "yes" and any(t in STRONG_YES for t in first)
 
 
 _ALL = normed({"sab", "sabhi", "saara", "sara", "everything", "सब", "सभी", "सारा"})

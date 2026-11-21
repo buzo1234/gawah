@@ -1,0 +1,96 @@
+{
+ "id": "robust_geyser",
+ "description": "A plumber and a retired clerk: geyser not heating. The geyser's age and brand are not the work; the visit charge is bargained, complained about, and agreed at 650; a heating element is priced and put off; a one-month free redo is the late term.",
+ "people": [
+  {
+   "role": "hirer",
+   "name": "Ramakant",
+   "phone": "+910000000101"
+  },
+  {
+   "role": "worker",
+   "name": "Irfan",
+   "phone": "+910000000102"
+  }
+ ],
+ "call_date": "2026-11-23",
+ "lines": [
+  {
+   "line_no": 1,
+   "speaker": "worker",
+   "text": "Namaste uncle, Irfan bol raha hoon, plumber. Geyser ka bola tha aapne?",
+   "start": 0.5,
+   "end": 5.5
+  },
+  {
+   "line_no": 2,
+   "speaker": "hirer",
+   "text": "Haan Irfan. Bathroom wala geyser garam hi nahi kar raha. Racold ka hai, chhe saal purana.",
+   "start": 6.1,
+   "end": 12.5
+  },
+  {
+   "line_no": 3,
+   "speaker": "worker",
+   "text": "Thermostat ya element hoga. Aake dekhna padega. Visit aur thermostat badalne ka 800 lagega.",
+   "start": 13.1,
+   "end": 19.6
+  },
+  {
+   "line_no": 4,
+   "speaker": "hirer",
+   "text": "800 to bahut zyada hai bhai, pichhli baar 500 mein kiya tha kisi ne.",
+   "start": 20.2,
+   "end": 25.0
+  },
+  {
+   "line_no": 5,
+   "speaker": "worker",
+   "text": "Uncle naya thermostat hi 400 ka aata hai. Chaliye 650 kar dijiye.",
+   "start": 25.6,
+   "end": 30.3
+  },
+  {
+   "line_no": 6,
+   "speaker": "hirer",
+   "text": "Theek hai, 650. Kal subah aa jaoge?",
+   "start": 30.9,
+   "end": 33.4
+  },
+  {
+   "line_no": 7,
+   "speaker": "worker",
+   "text": "Haan kal subah das baje tak aa jaunga. Agar element bhi jala hua nikla to 1,200 alag lagega.",
+   "start": 34.0,
+   "end": 40.5
+  },
+  {
+   "line_no": 8,
+   "speaker": "hirer",
+   "text": "1,200 wala baad mein dekhenge, pehle thermostat lagao.",
+   "start": 41.1,
+   "end": 45.0
+  },
+  {
+   "line_no": 9,
+   "speaker": "worker",
+   "text": "Theek hai uncle. Aur ek mahine mein phir se band hua to free mein theek karunga.",
+   "start": 45.6,
+   "end": 51.3
+  },
+  {
+   "line_no": 10,
+   "speaker": "hirer",
+   "text": "Achha, ye sahi hai. Paise kaam ke baad cash dunga.",
+   "start": 51.9,
+   "end": 55.5
+  },
+  {
+   "line_no": 11,
+   "speaker": "worker",
+   "text": "Ji uncle, koi baat nahi. Kal milte hain.",
+   "start": 56.1,
+   "end": 58.9
+  }
+ ]
+}

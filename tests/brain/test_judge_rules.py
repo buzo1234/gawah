@@ -279,29 +279,87 @@ async def test_a_contradiction_settles_only_when_both_confirm(bus):
     assert [s for s in call.speaks if s.reason == "wrapping_up" and s.item == "amount"] == []
 
 
-async def test_a_change_to_an_agreed_figure_is_asked_about_an_added_detail_is_not(bus):
-    call = Call(bus, Scripted({"amount_agreed", "work_agreed"}, set(), set(), set()), mouth=True)
+def _change(value: str, rupees: int | None, line_no: int, quote: str, status=FactStatus.SAID, item=ItemKey.AMOUNT, by=Role.WORKER) -> Fact:
+    return Fact(
+        deal_id=DEAL, text=f"The {item.value} would be {value}.", item=item, kind=FactKind.CHANGE, value=value,
+        value_rupees=rupees, said_by=by, quote=quote, call_no=1, line_no=line_no, status=status,
+    )
+
+
+async def test_an_added_detail_or_an_addition_at_no_cost_is_no_change(bus):
+    call = Call(bus, Scripted({"amount_agreed", "work_agreed"}, set(), {"wrapping_up"}), mouth=True)
+    await call.say(takes=20.0)
+    call.record(_change("two more workers", None, 2, "do ladke aur", item=ItemKey.WORK))
+    call.record(_change("free", 0, 2, "naya board free mein"))
+    await call.say(takes=20.0)
+    await call.say(takes=20.0)
+    assert [s for s in call.speaks if s.item == "amount"] == [], "an added detail, and an addition at no cost, change no figure"
+
+
+async def test_a_change_being_bargained_is_held_and_raised_at_wrap_up_only_if_never_accepted(bus):
+    """Cause 4: "chhat ke 6,000 extra" / "4 doongi" / "5 kar lo" is bargaining over a change.
+    No offer is raised mid-call; one still unaccepted at the goodbye is asked about then."""
+    call = Call(bus, Scripted({"amount_agreed", "work_agreed"}, set(), set(), set(), {"wrapping_up"}), mouth=True)
     await call.say(takes=20.0)
     agreed = call.facts[ItemKey.AMOUNT]
-    call.record(Fact(
-        deal_id=DEAL, text="The worker adds two helpers.", item=ItemKey.WORK, kind=FactKind.CHANGE, value="two more workers",
-        said_by=Role.WORKER, quote="do ladke aur", call_no=1, line_no=2,
-    ))
-    call.record(Fact(
-        deal_id=DEAL, text="The new board is free.", item=ItemKey.AMOUNT, kind=FactKind.CHANGE, value="free",
-        value_rupees=0, said_by=Role.WORKER, quote="naya board free mein", call_no=1, line_no=2,
-    ))
+    call.record(_change("31,000 rupees", 31000, 2, "chhat ke 6,000 extra lagenge"))
     await call.say(takes=20.0)
-    assert call.spoken == [], "an added detail, and an addition at no cost, change no figure"
-    change = call.record(Fact(
-        deal_id=DEAL, text="Balcony costs 2,000 more.", item=ItemKey.AMOUNT, kind=FactKind.CHANGE, value="15,000 rupees",
-        value_rupees=15000, said_by=Role.WORKER, quote="balcony ke 2,000 extra", call_no=1, line_no=3,
-    ))
+    call.record(_change("29,000 rupees", 29000, 3, "4 doongi bas", by=Role.HIRER))
     await call.say(takes=20.0)
-    assert call.spoken == [(2, "contradicts_record", "amount")], "raised as soon as the change fact came"
+    last = call.record(_change("30,000 rupees", 30000, 4, "chaliye 5 kar lo"))
+    await call.say(takes=20.0)
+    assert call.spoken == [], "no question while they bargain"
+    await call.say(takes=20.0)
+    assert call.spoken == [(5, "change_proposed", "amount")], "its own turn, so Gawah can propose it and record each yes"
     speak = call.speaks[0]
-    assert speak.fact_ids == [agreed.id, change.id]
-    assert "That would change the total amount: agreed as the amount (call 1, line 1); now said as 15,000 rupees." in speak.instruction
+    assert speak.instruction.startswith("They are about to hang up.")
+    assert speak.fact_ids == [agreed.id, last.id], "the latest offer, not every one"
+    assert "now said as 30,000 rupees" in speak.instruction and "29,000" not in speak.instruction
+    assert "whether they both agree to this change" in speak.instruction
+
+
+async def test_a_change_no_longer_bargained_is_put_to_both_mid_call(bus):
+    """Offered, then two lines with no counter and no figure said back: the bargaining is over.
+    It is a change both should agree to (change_proposed), never a contradiction."""
+    call = Call(bus, Scripted({"amount_agreed", "work_agreed"}, set(), set(), set()), mouth=True)
+    await call.say(takes=20.0)
+    offer = call.record(_change("27,000 rupees", 27000, 2, "chhat ke 2,000 extra lagenge"))
+    await call.say(takes=20.0)
+    await call.say("Theek hai.", takes=20.0)
+    assert call.spoken == []
+    await call.say("Aur paint kab aayega?", takes=20.0)
+    assert call.spoken == [(4, "change_proposed", "amount")]
+    assert call.speaks[0].fact_ids[1] == offer.id and "whether they both agree to this change" in call.speaks[0].instruction
+
+
+async def test_a_change_both_accepted_is_not_raised_and_is_read_back(bus):
+    """Once the other person accepts the change, the memory makes it the term: nothing to ask,
+    and the read-back at the end carries the new figure."""
+    call = Call(bus, Scripted(set(ITEMS), set(ITEMS), set(ITEMS), {*ITEMS, "wrapping_up"}), mouth=True)
+    await call.say(takes=20.0)
+    old = call.facts[ItemKey.AMOUNT]
+    offer = call.record(_change("30,000 rupees", 30000, 2, "chhat ke 5,000 extra"))
+    await call.say(takes=20.0)
+    call.record(offer.model_copy(update={"status": FactStatus.AGREED, "agreed_by": [Role.HIRER]}))
+    call.record(fact(ItemKey.AMOUNT, 2, value="30,000 rupees", value_rupees=30000, replaces=old.id))
+    call.record(old.model_copy(update={"status": FactStatus.SUPERSEDED}))
+    await call.say(takes=20.0)
+    await call.say(takes=20.0)
+    assert call.spoken == [(4, "wrapping_up", None)]
+    assert "the total amount: 30,000 rupees" in call.speaks[0].instruction
+
+
+async def test_a_change_to_a_term_both_confirmed_is_raised_at_once(bus):
+    call = Call(bus, Scripted({"work_agreed"}, set(), set()), mouth=True)
+    await call.say(takes=20.0)
+    confirmed = call.record(fact(ItemKey.AMOUNT, 1, status=FactStatus.CONFIRMED, value="25,000 rupees", value_rupees=25000))
+    await call.say(takes=20.0)
+    change = call.record(_change("28,000 rupees", 28000, 2, "28 lagega ab"))
+    await call.say(takes=20.0)
+    assert call.spoken == [(2, "change_proposed", "amount")], "raised as soon as the change fact came"
+    speak = call.speaks[0]
+    assert speak.fact_ids == [confirmed.id, change.id]
+    assert "That would change the total amount: confirmed as 25,000 rupees (call 1, line 1); now said as 28,000 rupees." in speak.instruction
     assert "Ask Sunita and Ramesh whether they both agree to this change. Do not say whether they should." in speak.instruction
 
 
@@ -329,7 +387,7 @@ async def test_one_at_a_time_until_judge_spoke_or_timeout(bus):
     both = {"topic_left_unclear", "addressed_gawah"}
     call = Call(bus, Scripted(both, both, both, both, both), Values(unclear={"item": "dates"}))  # no mouth
     for _ in range(5):
-        await call.say("Gawah, suno", takes=4.0)
+        await call.say("Gawah, suno, advance kitna tha?", takes=4.0)
     assert tuning.SPEAK_TIMEOUT_S == 12.0
     # Answers at 4s; nothing more until 16s, then the next thing in line.
     assert call.spoken == [(1, "addressed_directly", None), (4, "addressed_directly", None)]
@@ -340,11 +398,11 @@ async def test_gawah_speaking_on_its_own_is_not_an_answer_to_the_judge(bus):
     """The voice agent publishes its own turns as judge.spoke too (no speak_id, or another one)."""
     both = {"topic_left_unclear", "addressed_gawah"}
     call = Call(bus, Scripted(both, both, both, both, both), Values(unclear={"item": "dates"}))
-    await call.say("Gawah, suno", takes=4.0)
+    await call.say("Gawah, suno, advance kitna tha?", takes=4.0)
     bus.publish(JudgeSpoke(deal_id=DEAL, text="Haan ji, ek second.", end=5.0))
     bus.publish(JudgeSpoke(deal_id=DEAL, text="...", speak_id="not-ours", end=5.0))
     for _ in range(4):
-        await call.say("Gawah, suno", takes=4.0)
+        await call.say("Gawah, suno, advance kitna tha?", takes=4.0)
     assert call.spoken == [(1, "addressed_directly", None), (4, "addressed_directly", None)], "still waiting on its own"
 
 
@@ -379,26 +437,28 @@ async def test_dodged_question_asks_about_the_term_the_model_names(bus):
     assert values.asked.count(("unclear", None, 2)) == 1 and len(values.asked) == 1, "looked up once, not on every line"
 
 
-async def test_wrapup_mode_only_speaks_at_wrap_up(bus):
+async def test_wrapup_mode_answers_questions_and_otherwise_speaks_only_at_wrap_up(bus):
+    """Cause 8: a question put to Gawah is answered in wrapup mode too."""
     script = Scripted(
         {"addressed_gawah", "advance_agreed", "balance_skipped", "topic_left_unclear"},
         {"advance_agreed", "balance_skipped"},
         {"balance_skipped", "wrapping_up"},
     )
-    call = Call(bus, script, mode="wrapup")
+    call = Call(bus, script, mode="wrapup", mouth=True)
     await call.say("Gawah?")
     call.conflict(ItemKey.ADVANCE, "Says 4,000; the advance was agreed at 3,000.")
     for _ in range(2):
         await call.say("Gawah?")
-    assert [s.reason for s in call.speaks] == [SpeakReason.WRAPPING_UP]
-    assert call.speaks[0].after_line == 3 and call.speaks[0].item == "advance", "the contradiction comes first"
+    assert [s.reason for s in call.speaks] == [SpeakReason.ADDRESSED_DIRECTLY, SpeakReason.WRAPPING_UP]
+    assert call.speaks[0].after_line == 1, "the question to Gawah, at once"
+    assert call.speaks[1].after_line == 3 and call.speaks[1].item == "advance", "the contradiction comes first"
     assert call.item("advance").note.startswith("contradicted"), "the checklist is kept in every mode"
 
 
 async def test_sage_going_quiet_keeps_the_checklist_and_says_nothing_new(bus):
     call = Call(bus, Scripted({"work_agreed", "addressed_gawah"}, None, None))
     for _ in range(3):
-        await call.say(takes=20.0)
+        await call.say("Gawah, kaam kya tay hua?", takes=20.0)
     assert call.spoken == [(1, "addressed_directly", None)], "a line with no answer is not taken as speaking to Gawah"
     assert call.item("work").state is ItemState.AGREED
 
@@ -408,8 +468,10 @@ async def test_a_silent_memory_asks_nothing_at_wrap_up(bus):
     or reading back nothing, would be wrong."""
     n = tuning.MEMORY_SILENT_LINES
     call = Call(bus, Scripted(*[set()] * (n - 1), {"wrapping_up", "addressed_gawah"}, {"wrapping_up"}))
-    for _ in range(n + 1):
+    for _ in range(n - 1):
         await call.say(takes=20.0)
+    await call.say("Gawah, sab note kiya na?", takes=20.0)
+    await call.say(takes=20.0)
     assert call.spoken == [(n, "addressed_directly", None)]
 
 
@@ -578,8 +640,9 @@ async def test_closing_soon_once_is_not_wrap_up(bus):
 
 async def test_closing_soon_twice_in_a_row_is_wrap_up_once_most_is_agreed(bus):
     call = Call(bus, Scripted(MOST, {*MOST, "closing_soon"}, {*MOST, "closing_soon"}))
-    for _ in range(3):
+    for _ in range(2):
         await call.say(takes=20.0)
+    await call.say("Chalo theek hai, Monday ko milte hain.", takes=20.0)
     assert call.spoken == [(3, "wrapping_up", "balance")]
     assert "(1) Ask Sunita when the balance will be paid." in call.speaks[0].instruction
     assert "(2) Ask Sunita and Ramesh what will happen if the work is late" in call.speaks[0].instruction
@@ -600,8 +663,9 @@ async def test_closing_soon_on_the_line_that_settles_a_term_waits_for_the_next_p
         MOST, {*MOST, "balance_when", "closing_soon"}, {*MOST, "balance_when", "closing_soon"},
         {*MOST, "balance_when", "closing_soon"},
     ))
-    for _ in range(4):
+    for _ in range(3):
         await call.say(takes=20.0)
+    await call.say("Theek hai, phir baat karte hain.", takes=20.0)
     assert call.spoken == [(4, "wrapping_up", "late_or_unfinished")]
 
 

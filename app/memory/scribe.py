@@ -10,10 +10,11 @@ import logging
 import time
 
 from app.contracts import CallKind, Fact, FactKind, FactStatus, ItemKey, TranscriptLine
-from app.memory import extract
+from app.memory import changes, echo, extract
 from app.memory.book import DealBook
-from app.memory.claims import Claim, say_day, compare, comparable, parse_claim, parts_of
+from app.memory.claims import Claim, say_day, compare, comparable, parse_claim, parts_of, schedule
 from app.memory.dates import date_candidates, date_parts
+from app.memory.echo import commits, doubts_figure, says_figure
 from app.memory.normalise import (
     bare_numbers, filler_kind, format_rupees, opens_with_yes, parse_rupees, settles_all, stated_total,
 )
@@ -90,6 +91,8 @@ class Scribe:
             log.warning("deal=%s line %s: the model gave no claims (%s)", line.deal_id, line.line_no, e)
             return []
         claims = [c for c in (parse_claim(r, line, today) for r in raw or []) if c]
+        for claim in claims:
+            echo.scale(deal, line, claim)
         # A question settles nothing unless it names a figure or a day ("15 mein karoge?").
         return [c for c in claims if not c.quote.rstrip().endswith("?") or c.rupees is not None or c.date or c.parts]
 
@@ -124,14 +127,40 @@ class Scribe:
         )
 
     def _compare(self, deal: DealBook, claim: Claim) -> tuple[str | None, Fact | None, str | None]:
-        return compare(deal, claim.item, claim.rupees, claim.date, claim.parts)
+        return compare(deal, claim.item, claim.rupees, claim.date, claim.parts, claim.figure == "part")
 
     def _apply(self, deal: DealBook, line: TranscriptLine, claim: Claim, received: float) -> None:
+        if claim.kind == FactKind.PAYMENT and echo.promises_to_pay(claim.quote):
+            # "पांच हज़ार एडवांस कल पे कर दूँगी" is the advance term, not money paid: counted as paid
+            # it would be taken off what is owed before it is handed over.
+            claim.kind = FactKind.TERM
+            claim.item = claim.item if claim.item in (ItemKey.ADVANCE, ItemKey.BALANCE) else ItemKey.BALANCE
+        # A recall with a question tag still says what was agreed ("32 tay hua tha na?").
+        asked = claim.stance != "recall"
+        if claim.item and echo.echoes(deal, line, claim.rupees) and doubts_figure(line.text, claim.rupees, asked):
+            # "9,000 thoda zyada hai", "9,000 mein to...", "9,000 wala baad mein": their figure said back
+            # with a complaint, a hedge, a question or a deferral accepts nothing and offers nothing,
+            # and turns down a change they offered with it.
+            self.m.note("scribe", f"line {line.line_no}: {claim.item.value} {format_rupees(claim.rupees)} said back, not accepted", line=line)
+            changes.turn_down(self.m, deal, line, claim, received)
+            return
+        changes.shape(deal, line, claim)
+        if claim.kind == FactKind.CHANGE and claim.stance == "recall":
+            claim.kind = FactKind.TERM  # says what was agreed: a different figure contradicts it, it proposes nothing
         if claim.kind == FactKind.CHANGE and claim.item:
             if deal.current(claim.item) is None:
                 claim.kind = FactKind.TERM  # nothing agreed yet to change: it is an offer
             elif self._compare(deal, claim)[0] == "same":
                 return  # the value that already stands
+        differs = claim.kind in (FactKind.TERM, FactKind.CHANGE) and claim.item and self._compare(deal, claim)[0] == "differs"
+        if differs and claim.item == ItemKey.BALANCE and claim.stance != "recall" and changes.carry(self.m, deal, line, claim, received):
+            return
+        if claim.kind == FactKind.TERM and differs:
+            if claim.stance == "offer" or (claim.stance != "recall" and changes.offered(deal, line, claim.item, claim.rupees)):
+                claim.kind = FactKind.CHANGE  # a new figure proposed for an agreed term: a change, bargained like any offer
+        if claim.kind == FactKind.CHANGE and claim.item and claim.item != ItemKey.DATES:
+            self._change(deal, line, claim, received)
+            return
         base = self._base(deal, line, claim)
         if claim.kind in (FactKind.PAYMENT, FactKind.WORK):
             target = self.m.target_for(deal, claim.kind, claim.item)
@@ -145,14 +174,20 @@ class Scribe:
                 self._conflict(deal, line, claim, against, part, received)  # the brain compares no dates itself
             self._model_conflict(deal, line, claim, fact, received)
             return
+        if verdict == "differs" and claim.stance == "recall" and echo.asks_which(claim.quote):
+            fact = self.m.record(Fact(**base), received)  # a question about the figure asserts nothing
+            self.m.note("scribe", f"line {line.line_no}: asked about {claim.item.value}, {fact.value or ''}", fact, line)
+            return
         if verdict == "differs":
             if claim.stance != "accept":
                 fact = self.m.record(Fact(**base), received)
                 self.m.note("scribe", f"line {line.line_no}: {claim.item.value} {fact.value or ''} said", fact, line)
             self._conflict(deal, line, claim, against, part, received)
             return
-        if claim.stance in ("state", "offer") and claim.rupees and self._accepted(deal, line, claim):
-            claim.stance = "accept"  # says back the figure the other person just offered for this term
+        if claim.stance in ("state", "offer") and claim.rupees and self._accepted(deal, line, claim) and (
+            commits(line.text, claim.rupees)
+        ):
+            claim.stance = "accept"  # says back the figure the other person just offered, with a yes or a promise
         target = self._accepted(deal, line, claim) if claim.stance == "accept" else None
         if claim.stance == "accept" and not target and verdict != "same" and not self._heard(deal, line, claim):
             claim.stance = "offer"  # nothing the other person said: it is this speaker's own proposal
@@ -174,6 +209,25 @@ class Scribe:
         verb = "offered" if claim.stance == "offer" else "said"
         self.m.note("scribe", f"line {line.line_no}: {claim.item.value} {fact.value or ''} {verb}", fact, line)
         self._model_conflict(deal, line, claim, fact, received)
+
+    def _change(self, deal: DealBook, line: TranscriptLine, claim: Claim, received: float) -> None:
+        offer = changes.offered(deal, line, claim.item, claim.rupees, claim.added)
+        # A change to a figure is agreed only by saying the figure (or the extra) back with a yes
+        # or a promise: a bare "haan theek hai" to a new total changes nothing.
+        figure = claim.added or claim.rupees
+        if figure is not None and not says_figure(line.text, figure):
+            return  # a new figure nobody said here or just before: no change was proposed
+        if figure is None:
+            accepting = claim.stance == "accept"
+        else:
+            accepting = says_figure(line.text, figure) and (claim.stance == "accept" or commits(line.text, figure))
+        # Only what the other person said can be accepted: their change, or their figure.
+        heard = echo.echoes(deal, line, figure) if figure is not None else self._heard(deal, line, claim)
+        if accepting and (offer is not None or heard):
+            changes.agree(self.m, deal, line, offer, claim, received)
+            return
+        fact = self.m.record(Fact(**self._base(deal, line, claim) | {"kind": FactKind.CHANGE}), received)
+        self.m.note("scribe", f"line {line.line_no}: change to {claim.item.value} said, {fact.value or fact.text}", fact, line)
 
     def _conflict(self, deal: DealBook, line: TranscriptLine, claim: Claim, against: Fact, part: str | None, received: float) -> None:
         if part is None:
@@ -263,12 +317,33 @@ class Scribe:
             f for f in deal.from_line(line.call_no, before.line_no)
             if f.kind == FactKind.TERM and f.item and f.status == FactStatus.SAID and f.said_by == before.speaker
             and (f.value_rupees is not None or f.value_date is not None or f.value)
-        ]
-        if len(offers) != 1 or any(c.item == offers[0].item for c in claims):
+        ]  # not a change: a change is agreed only with its figure said back (_change)
+        if len(offers) > 1 and all(self._said_back(deal, line, f) for f in offers):
+            for offer in offers:  # "Theek hai, das das aur chhe" to an advance and a balance in parts
+                self.upgrade(deal, offer, line, received, None)
+            return
+        if len(offers) != 1 or any(self._counters(c, offers[0]) for c in claims):
             return
         offer = offers[0]
         if compare(deal, offer.item, offer.value_rupees, offer.value_date, parts_of(deal, offer))[0] != "differs":
             self.upgrade(deal, offer, line, received, None)
+
+    @staticmethod
+    def _counters(claim: Claim, offer: Fact) -> bool:
+        """After the yes, the same term again with another figure or day, or as an offer, takes
+        the yes back; the same term said back in other words ("kaam dekh ke hi dena") does not."""
+        if claim.item != offer.item:
+            return False
+        if claim.stance == "offer":
+            return True
+        return (claim.rupees is not None and claim.rupees != offer.value_rupees) or (
+            claim.date is not None and claim.date != offer.value_date
+        )
+
+    @staticmethod
+    def _said_back(deal: DealBook, line: TranscriptLine, offer: Fact) -> bool:
+        figures = schedule(offer) or ([offer.value_rupees] if offer.value_rupees else [])
+        return bool(figures) and all(says_figure(line.text, r) for r in figures) and not doubts_figure(line.text, figures[0])
 
     def _settle_all(self, deal: DealBook, line: TranscriptLine, received: float) -> None:
         """"Sab tay ho gaya" agrees to each term the other person stated on this call that

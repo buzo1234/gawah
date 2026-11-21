@@ -1,0 +1,317 @@
+{
+ "model": "gpt-5.4-mini",
+ "effort": "none",
+ "replies": {
+  "Bablu ji, terrace ki waterproofing ka hisaab bataiye. Neeche wale flat mein seelan aa rahi hai.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Joshi says the terrace needs waterproofing because there is seepage in the flat below.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Bablu ji, terrace ki waterproofing ka hisaab bataiye. Neeche wale flat mein seelan aa rahi hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Sir chemical coating karenge, do coat. 28 rupaye square foot padta hai, aapki chhat hazaar square foot hai.": [
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "Bablu says the work will be chemical coating in two coats for the terrace.",
+    "value": "chemical coating, two coats",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Sir chemical coating karenge, do coat.",
+    "accepts_line": null,
+    "contradicts": "work@1.1"
+   },
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "state",
+    "text": "Bablu says the rate is 28 rupees per square foot.",
+    "value": "28 rupees per square foot",
+    "rupees": 28,
+    "figure": "rate",
+    "date": null,
+    "quote": "28 rupaye square foot padta hai, aapki chhat hazaar square foot hai.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Bablu says the terrace is one thousand square feet.",
+    "value": "1,000 square feet",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "28 rupaye square foot padta hai, aapki chhat hazaar square foot hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Matlab 28,000? Society ka budget 25 hai.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "recall",
+    "text": "Joshi recalls that the total is 28,000 rupees.",
+    "value": "28,000 rupees",
+    "rupees": 28000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Matlab 28,000? Society ka budget 25 hai.",
+    "accepts_line": null,
+    "contradicts": "work@1.1"
+   },
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "state",
+    "text": "Joshi states that the society budget is 25,000 rupees.",
+    "value": "25,000 rupees",
+    "rupees": 25000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Matlab 28,000? Society ka budget 25 hai.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Sir 26,000 mein kar deta hoon, material mera.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "Bablu says he will do it for 26,000 rupees.",
+    "value": "26,000 rupees",
+    "rupees": 26000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Sir 26,000 mein kar deta hoon, material mera.",
+    "accepts_line": null,
+    "contradicts": "amount@1.3"
+   },
+   {
+    "item": "work",
+    "kind": "term",
+    "stance": "state",
+    "text": "Bablu says the material will be his.",
+    "value": "his material",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Sir 26,000 mein kar deta hoon, material mera.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Chaliye 26,000 final. Paisa kaise loge?": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Joshi accepts Bablu's 26,000 rupees.",
+    "value": "26,000 rupees",
+    "rupees": 26000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Chaliye 26,000 final. Paisa kaise loge?",
+    "accepts_line": 4,
+    "contradicts": "amount@1.4"
+   }
+  ],
+  "10,000 pehle, 10,000 pehla coat lagne ke baad, aur 6,000 kaam poora hone par.": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "state",
+    "text": "Bablu says the advance is 10,000 rupees before work starts.",
+    "value": "10,000 rupees",
+    "rupees": 10000,
+    "figure": "whole",
+    "date": null,
+    "quote": "10,000 pehle, 10,000 pehla coat lagne ke baad, aur 6,000 kaam poora hone par.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "state",
+    "text": "Bablu says the rest is paid in two parts: 10,000 after the first coat and 6,000 when the work is complete.",
+    "value": "10,000 after the first coat; 6,000 on completion",
+    "rupees": 16000,
+    "figure": "part",
+    "date": null,
+    "quote": "10,000 pehle, 10,000 pehla coat lagne ke baad, aur 6,000 kaam poora hone par.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek hai, das das aur chhe, chalega.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Joshi accepts the 26,000 rupees total by saying das das aur chhe, chalega.",
+    "value": "26,000 rupees",
+    "rupees": 26000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Theek hai, das das aur chhe, chalega.",
+    "accepts_line": 4,
+    "contradicts": null
+   },
+   {
+    "item": "balance",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Joshi accepts the payment schedule of 10,000 before work, 10,000 after the first coat, and 6,000 on completion.",
+    "value": "10,000 before work; 10,000 after the first coat; 6,000 on completion",
+    "rupees": 26000,
+    "figure": "part",
+    "date": null,
+    "quote": "Theek hai, das das aur chhe, chalega.",
+    "accepts_line": 6,
+    "contradicts": null
+   }
+  ],
+  "Sir parapet ki deewar pe bhi crack hai. Woh bhi karna ho to 4,000 extra lagega.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says there is a crack in the parapet wall too.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Sir parapet ki deewar pe bhi crack hai.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The worker says doing that too would cost an extra 4,000 rupees.",
+    "value": "4,000 rupees extra",
+    "rupees": 4000,
+    "figure": "addition",
+    "date": null,
+    "quote": "Woh bhi karna ho to 4,000 extra lagega.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Teen hazaar mein karo parapet.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "Joshi offers 3,000 rupees extra for the parapet work.",
+    "value": "3,000 rupees",
+    "rupees": 3000,
+    "figure": "addition",
+    "date": null,
+    "quote": "Teen hazaar mein karo parapet.",
+    "accepts_line": null,
+    "contradicts": "amount@1.8"
+   }
+  ],
+  "Sir saadhe teen kar dijiye, material bhi lagega.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "The worker says the worker can do the parapet for 3,500 rupees extra.",
+    "value": "3,500 rupees",
+    "rupees": 3500,
+    "figure": "addition",
+    "date": null,
+    "quote": "Sir saadhe teen kar dijiye, material bhi lagega.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "The worker says material will also be needed.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Sir saadhe teen kar dijiye, material bhi lagega.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Theek hai saadhe teen, kar do. Aakhri payment ke saath de denge.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Joshi accepts the worker's 3,500 rupee extra for the parapet work.",
+    "value": "3,500 rupees",
+    "rupees": 3500,
+    "figure": "addition",
+    "date": null,
+    "quote": "Theek hai saadhe teen, kar do. Aakhri payment ke saath de denge.",
+    "accepts_line": 10,
+    "contradicts": "amount@1.9"
+   },
+   {
+    "item": "balance",
+    "kind": "term",
+    "stance": "state",
+    "text": "Joshi says the last payment will be given with the final payment.",
+    "value": "with the final payment",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Theek hai saadhe teen, kar do. Aakhri payment ke saath de denge.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Ji sir, to aakhri payment 9,500, pakka. Somvar se shuru.": [
+   {
+    "item": "balance",
+    "kind": "change",
+    "stance": "state",
+    "text": "Bablu says the final payment will be 9,500 rupees.",
+    "value": "9,500 rupees",
+    "rupees": 9500,
+    "figure": "whole",
+    "date": null,
+    "quote": "Ji sir, to aakhri payment 9,500, pakka. Somvar se shuru.",
+    "accepts_line": null,
+    "contradicts": "balance@1.11"
+   },
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "Bablu says the work will start on Monday.",
+    "value": "start Monday",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Ji sir, to aakhri payment 9,500, pakka. Somvar se shuru.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ]
+ },
+ "checks": {}
+}

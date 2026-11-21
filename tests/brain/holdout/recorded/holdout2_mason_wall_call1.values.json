@@ -1,6 +1,6 @@
 {
  "fixture": "holdout2_mason_wall_call1",
- "recorded_at": "2026-11-21T18:25:55+00:00",
+ "recorded_at": "2026-11-21T19:48:43+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "ambiguous:work@5": {
@@ -30,6 +30,18 @@
   "names:-@1": {
    "hirer": "Fauji",
    "worker": "Shakeel"
+  },
+  "ambiguous:amount@12": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:balance@14": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:late_or_unfinished@25": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }

@@ -5,25 +5,27 @@
   "Hello madam, Ramesh bol raha hoon. Kal se kaam shuru karna hai na?": [
    {
     "item": "dates",
-    "kind": "term",
+    "kind": "other",
     "stance": "state",
-    "text": "The worker asks whether the work should start tomorrow.",
-    "value": "start tomorrow",
+    "text": "Ramesh asks whether the work should start tomorrow.",
+    "value": null,
     "rupees": null,
-    "date": "2026-11-22",
-    "quote": "Kal se kaam shuru karna hai na?",
+    "figure": "whole",
+    "date": null,
+    "quote": "Hello madam, Ramesh bol raha hoon. Kal se kaam shuru karna hai na?",
     "accepts_line": null,
     "contradicts": null
    }
   ],
   "Haan Ramesh ji, namaste. Kamron se saamaan hata diya hai.": [
    {
-    "item": null,
+    "item": "work",
     "kind": "other",
     "stance": "state",
-    "text": "The hirer says the rooms have had the belongings removed.",
+    "text": "Sunita says the rooms have been cleared of belongings.",
     "value": null,
     "rupees": null,
+    "figure": "whole",
     "date": null,
     "quote": "Haan Ramesh ji, namaste. Kamron se saamaan hata diya hai.",
     "accepts_line": null,
@@ -35,9 +37,10 @@
     "item": "amount",
     "kind": "term",
     "stance": "recall",
-    "text": "The worker says the labour total was agreed at 14,000 rupees.",
+    "text": "Ramesh says the labour total was तय as 14,000 rupees, right?",
     "value": "14,000 rupees",
     "rupees": 14000,
+    "figure": "whole",
     "date": null,
     "quote": "Achha madam, ek baat. Labour ka total 14 hazaar tay hua tha na?",
     "accepts_line": null,
@@ -49,9 +52,10 @@
     "item": "amount",
     "kind": "term",
     "stance": "recall",
-    "text": "The hirer says the agreed total was 13,000 rupees.",
+    "text": "Sunita says 13,000 rupees was the agreed amount.",
     "value": "13,000 rupees",
     "rupees": 13000,
+    "figure": "whole",
     "date": null,
     "quote": "Nahi nahi, 13 hazaar tay hua tha.",
     "accepts_line": null,
@@ -63,25 +67,40 @@
     "item": "amount",
     "kind": "change",
     "stance": "accept",
-    "text": "The worker accepts the previously proposed total price of 13,000 rupees.",
+    "text": "Ramesh says yes, 13,000 rupees is right.",
     "value": "13,000 rupees",
     "rupees": 13000,
+    "figure": "whole",
     "date": null,
     "quote": "Haan haan madam, 13 hi.",
     "accepts_line": 4,
-    "contradicts": null
+    "contradicts": "amount@2.3"
    }
   ],
   "Theek hai. Aur paint aa gaya hai, bhai ki dukaan se.": [
    {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Sunita accepts the 14,000 rupees total by saying \"Theek hai.\"",
+    "value": "14,000 rupees",
+    "rupees": 14000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Theek hai.",
+    "accepts_line": 3,
+    "contradicts": null
+   },
+   {
     "item": "work",
     "kind": "other",
     "stance": "state",
-    "text": "The hirer says the paint has arrived from her brother's shop.",
-    "value": "paint has arrived from brother's shop",
+    "text": "Sunita says the paint has arrived from her brother's shop.",
+    "value": null,
     "rupees": null,
+    "figure": "whole",
     "date": null,
-    "quote": "Theek hai. Aur paint aa gaya hai, bhai ki dukaan se.",
+    "quote": "Aur paint aa gaya hai, bhai ki dukaan se.",
     "accepts_line": null,
     "contradicts": null
    }
@@ -89,25 +108,27 @@
   "Ji madam. Kal subah 10 baje pahunch jaunga.": [
    {
     "item": "dates",
-    "kind": "other",
+    "kind": "term",
     "stance": "state",
-    "text": "The worker says he will arrive tomorrow morning at 10.",
-    "value": "tomorrow morning at 10",
+    "text": "Ramesh says he will arrive tomorrow morning at 10 o'clock.",
+    "value": "start tomorrow morning at 10 o'clock",
     "rupees": null,
-    "date": "2026-11-22",
+    "figure": "whole",
+    "date": null,
     "quote": "Ji madam. Kal subah 10 baje pahunch jaunga.",
     "accepts_line": null,
-    "contradicts": null
+    "contradicts": "dates@2.1"
    }
   ],
   "Theek hai, kal milte hain. Bye.": [
    {
     "item": null,
     "kind": "other",
-    "stance": "state",
-    "text": "Sunita says they will meet tomorrow.",
-    "value": "tomorrow",
+    "stance": "accept",
+    "text": "Sunita says \"Theek hai, kal milte hain.\"",
+    "value": null,
     "rupees": null,
+    "figure": "whole",
     "date": null,
     "quote": "Theek hai, kal milte hain. Bye.",
     "accepts_line": null,
@@ -116,9 +137,9 @@
   ]
  },
  "checks": {
-  "Ji madam, Wednesday 10 baje. Paint tab tak mangwa lijiyega.|Monday tak pakka?": {
-   "contradicts": true,
-   "reason": "The fact says the finish is Monday evening, and the claim says the finish is Wednesday 10 baje."
+  "To total 14 hazaar mein se 3 advance, baaki finish hone pe.|Baaki kaam poora hone ke baad, jis din finish karoge usi din. Pehle main kaam dekhungi, phir payment.": {
+   "contradicts": false,
+   "reason": "The fact says the rest is paid after completion on the finish day, after inspection; the claim says the rest is paid when the work is finished."
   }
  }
 }

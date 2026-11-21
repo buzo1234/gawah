@@ -101,6 +101,9 @@ def moment(speak: JudgeSpeak, names: Names, facts: dict[str, Fact], question: st
     if reason == "addressed_directly":
         role = Role(speak.to.value) if speak.to in (Audience.HIRER, Audience.WORKER) else None
         return head + addressed(names.of(role), speak.after_line, question or speak.question or speak.instruction)
+    if reason == "change_proposed":
+        fact_id = speak.fact_ids[0] if speak.fact_ids else "(look it up with get_term)"
+        return head + tuning.MOMENT_CHANGE.format(instruction=clean(speak.instruction), facts=on_record, fact=fact_id, to=names.to(speak.to))
     if reason == "contradicts_record":
         return head + tuning.MOMENT_CONTRADICTION.format(instruction=clean(speak.instruction), facts=on_record, to=names.to(speak.to))
     body = tuning.MOMENT_ASK.format(instruction=clean(speak.instruction), to=names.to(speak.to))

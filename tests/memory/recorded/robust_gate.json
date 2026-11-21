@@ -1,0 +1,153 @@
+{
+ "model": "gpt-5.4-mini",
+ "effort": "none",
+ "replies": {
+  "Madam, main gate ka naap le liya. Dus foot chauda, chhe foot ooncha, design wala. 14,500 lagega paint samet.": [
+   {
+    "item": "work",
+    "kind": "other",
+    "stance": "state",
+    "text": "Raju says he has taken the measurement for the main gate and it is 10 feet wide, 6 feet high, with a design.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Madam, main gate ka naap le liya. Dus foot chauda, chhe foot ooncha, design wala.",
+    "accepts_line": null,
+    "contradicts": null
+   },
+   {
+    "item": "amount",
+    "kind": "term",
+    "stance": "state",
+    "text": "Raju says the job will cost 14,500 rupees including paint.",
+    "value": "14,500 rupees",
+    "rupees": 14500,
+    "figure": "whole",
+    "date": null,
+    "quote": "14,500 lagega paint samet.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "13 mein karo bhaiya.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "offer",
+    "text": "Nirmala offers to do the job for 13,000 rupees.",
+    "value": "13,000 rupees",
+    "rupees": 13000,
+    "figure": "whole",
+    "date": null,
+    "quote": "13 mein karo bhaiya.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "13 mein to patli pipe lagegi madam, mazboot nahi rahega.": [
+   {
+    "item": "amount",
+    "kind": "other",
+    "stance": "state",
+    "text": "Raju says that at 13,000 rupees only a thin pipe would be used and it would not be strong.",
+    "value": "13,000 rupees",
+    "rupees": 13000,
+    "figure": "whole",
+    "date": null,
+    "quote": "13 mein to patli pipe lagegi madam, mazboot nahi rahega.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Achha 14 final, isse upar nahi.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Nirmala accepts 14,000 rupees as final and not higher.",
+    "value": "14,000 rupees",
+    "rupees": 14000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Achha 14 final, isse upar nahi.",
+    "accepts_line": 2,
+    "contradicts": "amount@1.2"
+   }
+  ],
+  "Chalo 14, pakka. Das din mein laga dunga.": [
+   {
+    "item": "amount",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Raju says 14,000 rupees is accepted as final.",
+    "value": "14,000 rupees",
+    "rupees": 14000,
+    "figure": "whole",
+    "date": null,
+    "quote": "Chalo 14, pakka.",
+    "accepts_line": 4,
+    "contradicts": null
+   },
+   {
+    "item": "dates",
+    "kind": "term",
+    "stance": "state",
+    "text": "Raju says the work will be completed in ten days.",
+    "value": "finish in ten days",
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Das din mein laga dunga.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "Advance kitna?": [
+   {
+    "item": "advance",
+    "kind": "other",
+    "stance": "state",
+    "text": "Nirmala asks how much advance is needed.",
+    "value": null,
+    "rupees": null,
+    "figure": "whole",
+    "date": null,
+    "quote": "Advance kitna?",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "4,000 de dijiye, lohe ke liye.": [
+   {
+    "item": "advance",
+    "kind": "term",
+    "stance": "offer",
+    "text": "Raju says to give 4,000 rupees in advance for the iron.",
+    "value": "4,000 rupees",
+    "rupees": 4000,
+    "figure": "whole",
+    "date": null,
+    "quote": "4,000 de dijiye, lohe ke liye.",
+    "accepts_line": null,
+    "contradicts": null
+   }
+  ],
+  "4,000 kal bhej dungi.": [
+   {
+    "item": "advance",
+    "kind": "change",
+    "stance": "accept",
+    "text": "Nirmala says she will send 4,000 rupees tomorrow as advance.",
+    "value": "4,000 rupees",
+    "rupees": 4000,
+    "figure": "whole",
+    "date": "2026-11-23",
+    "quote": "4,000 kal bhej dungi.",
+    "accepts_line": 7,
+    "contradicts": null
+   }
+  ]
+ },
+ "checks": {}
+}

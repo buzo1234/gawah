@@ -1,6 +1,6 @@
 {
  "fixture": "holdout2_ac_repair",
- "recorded_at": "2026-11-21T18:25:46+00:00",
+ "recorded_at": "2026-11-21T19:48:28+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "ambiguous:advance@19": {
@@ -49,6 +49,33 @@
   "names:-@6": {
    "hirer": null,
    "worker": "Vikas"
+  },
+  "ambiguous:work@2": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@9": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:late_or_unfinished@24": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@10": {
+   "ambiguous": true,
+   "readings": [
+    "also service the bedroom AC",
+    "also check the bedroom AC"
+   ]
+  },
+  "ambiguous:work@11": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@15": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }

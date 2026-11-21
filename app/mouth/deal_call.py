@@ -166,7 +166,7 @@ class DealCall:
 
     def _agreed(self, job: _Job) -> bool:
         # A contradiction is about a term already agreed: that is the point of saying it.
-        asks_a_term = job.kind not in (ADDRESSED, SpeakReason.CONTRADICTS_RECORD.value)
+        asks_a_term = job.kind not in (ADDRESSED, SpeakReason.CONTRADICTS_RECORD.value, SpeakReason.CHANGE_PROPOSED.value)
         item = job.speak.item if job.speak and asks_a_term else None
         if item is None or self.checklist is None:
             return False

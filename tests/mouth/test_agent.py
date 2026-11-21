@@ -381,3 +381,39 @@ async def test_a_second_call_on_the_deal_gets_a_fresh_agent_that_follows_only_it
     world.bus.publish(line(1, Role.WORKER, "Doosri call ki pehli line.").model_copy(update={"call_no": 2}))
     await world.bus.drain()
     assert link2 is not link1 and link2.items("user") == ['Ramesh (worker), line 1: "Doosri call ki pehli line."']
+
+
+async def test_a_change_the_brain_puts_to_both_is_proposed_with_the_tools_not_replayed_as_a_clip(world):
+    """The live dry run: "balcony ke 2,000 extra" came as contradicts_record, so Gawah replayed the
+    old clip and never proposed it. As change_proposed it is a turn with tools: propose_change,
+    then the question, and the yeses that follow are recorded."""
+    seat, link = await world.call()
+    for fact in FACTS:
+        world.bus.publish(FactRecorded(deal_id="d1", fact=fact))
+    link.replies = [
+        {"calls": [("propose_change", {"fact_id": "f-amount", "new_value": "15,000 rupees", "proposed_by": "worker",
+                                       "said": "almari ke 2,000 extra"})]},
+        {"text": "Total 15,000 karna hai? Sunita ji, Ramesh ji, dono haan boliye.", "ms": 200},
+    ]
+    played = len(seat.played)
+    speak = JudgeSpeak(
+        deal_id="d1", instruction="Ramesh said: \"almari ke 2,000 extra\". That would change the total amount: agreed as "
+        "13,000 rupees; now said as 15,000 rupees. Ask Sunita and Ramesh whether they both agree to this change.",
+        to=Audience.BOTH, reason=SpeakReason.CHANGE_PROPOSED, item=ItemKey.AMOUNT, fact_ids=["f-amount", "f-new"], after_line=30,
+    )
+    world.bus.publish(speak)
+    [proposed] = await until(lambda: world.of(FactChanged))
+    [spoke] = await until(lambda: said(world))
+    situation = link.asked()[-2]
+    assert "both should agree to it" in situation and "call propose_change for fact f-amount" in situation
+    assert link.of("response.create")[-2]["response"]["tool_choice"] == "required", "a turn with tools, not the clip"
+    assert (proposed.status, proposed.fact_id, proposed.new_value) == (ChangeStatus.PROPOSED, "f-amount", "15,000 rupees")
+    assert spoke.speak_id == speak.event_id and spoke.clip_fact_id is None and spoke.text.endswith("haan boliye.")
+    await settle(world, link)
+
+    link.replies = [{"calls": [("confirm_change", {"change_id": proposed.change_id, "person": "hirer", "agrees": True, "said": "haan"})]},
+                    {"text": "Ramesh ji?", "ms": 200}]
+    world.bus.publish(line(31, Role.HIRER, "Haan, 15 theek hai."))
+    await until(lambda: len(world.of(FactChanged)) == 2)
+    assert world.of(FactChanged)[-1].status is ChangeStatus.CONFIRMED_ONE
+    assert len(seat.played) > played

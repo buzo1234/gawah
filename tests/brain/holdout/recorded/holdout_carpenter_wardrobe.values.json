@@ -1,6 +1,6 @@
 {
  "fixture": "holdout_carpenter_wardrobe",
- "recorded_at": "2026-11-21T18:22:48+00:00",
+ "recorded_at": "2026-11-21T19:48:46+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "value:work@3": {
@@ -94,6 +94,21 @@
     "work will be finished by the 15th",
     "work will continue until the 15th"
    ]
+  },
+  "ambiguous:late_or_unfinished@15": {
+   "ambiguous": true,
+   "readings": [
+    "₹1,000 per day only if the job finishes late",
+    "₹1,000 per day for each day it remains unfinished past the deadline"
+   ]
+  },
+  "ambiguous:dates@26": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@12": {
+   "ambiguous": false,
+   "readings": null
   }
  }
 }

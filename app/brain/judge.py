@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 
 from app.brain import tuning
 from app.brain.sage import Answers, yes
+from app.brain.words import asks_gawah
 from app.contracts import Audience, ChecklistItem, ItemKey, ItemState, Role, SpeakReason
 
 # Who has to answer a question about each item.
@@ -117,6 +118,8 @@ class View:
     names: dict[Role, str]
     proposals: dict[ItemKey, Proposal] = field(default_factory=dict)  # for pending items
     conflicts: list[Conflict] = field(default_factory=list)  # open, oldest first
+    held: list[Conflict] = field(default_factory=list)  # changes offered and not agreed: raised at wrap-up
+    due: list[Conflict] = field(default_factory=list)  # of those, the ones no longer bargained: raised mid-call
     ambiguities: list[Ambiguity] = field(default_factory=list)
     closing: bool = False  # this line (or the silence after it) says they are wrapping up
     follow_up: bool = False  # a second or later call on the deal
@@ -137,10 +140,19 @@ class Judge:
     wrapup_until: float | None = None
     reasked: dict[str | None, int] = field(default_factory=dict)
     dropped_at: float | None = None  # the moment a question was dropped: that was no pause
+    answered_at: float | None = None  # the line last answered: decide runs again on it when facts move
 
     def decide(self, view: View) -> Speak | None:
         if view.closing:
             self.wrapup_until = view.now + tuning.WRAPUP_HOLD_S
+        held_answer = self.waiting_since is not None and not self.waiting_on_question
+        if yes(view.answers, "addressed_gawah") and view.now != self.answered_at and asks_gawah(view.text) and not (
+            held_answer and view.now - self.waiting_since < tuning.SPEAK_TIMEOUT_S
+        ):
+            # Someone asked Gawah something: that comes first, in every mode, ahead of a
+            # question still waiting to be said. Naming Gawah in passing is not asking.
+            self.waiting_since, self.waiting_on_question, self.answered_at = view.now, False, view.now
+            return _answer(view)
         if self.waiting_since is not None:
             if view.now - self.waiting_since < tuning.SPEAK_TIMEOUT_S:
                 return None
@@ -153,12 +165,13 @@ class Judge:
             return None
         self.waiting_since = view.now
         self.waiting_on_question = speak.reason is not SpeakReason.ADDRESSED_DIRECTLY
+        at_wrapup = speak.instruction.startswith(WRAPPING_UP)
         for topic in speak.topics:
             self.asked[topic] = self.asked.get(topic, 0) + 1
-            (self.asked_at_wrapup if speak.reason is SpeakReason.WRAPPING_UP else self.asked_mid_call).add(topic)
+            (self.asked_at_wrapup if at_wrapup else self.asked_mid_call).add(topic)
         if not speak.topics and speak.reason is SpeakReason.WRAPPING_UP:
             self.read_back_done = True
-        if speak.reason is SpeakReason.WRAPPING_UP:
+        if at_wrapup:
             self.wrapup_until = view.now + tuning.WRAPUP_HOLD_S
         return speak
 
@@ -195,11 +208,8 @@ class Judge:
 
     def _choose(self, view: View) -> Speak | None:
         live = self.mode == "live"
-        if live and yes(view.answers, "addressed_gawah"):
-            return _answer(view)
-
         if live and self._gap_ok(view, tuning.MIN_GAP_S):
-            for conflict in view.conflicts:
+            for conflict in [*view.conflicts, *view.due]:
                 if conflict.topic not in self.asked_mid_call:
                     return _contradiction(conflict, view, SpeakReason.CONTRADICTS_RECORD)
             for ambiguity in view.ambiguities:
@@ -214,8 +224,13 @@ class Judge:
             # With no facts from the memory, every term would look open: asking about
             # each, or reading back nothing, would be wrong. Only answering stays on.
             return None
+        # A change gets a turn of its own, once: Gawah proposes it and records each yes as it comes.
+        asked = self.asked_at_wrapup | self.asked_mid_call
+        for change in [c for c in [*view.conflicts, *view.held] if c.change and c.topic not in asked]:
+            return _contradiction(change, view, SpeakReason.WRAPPING_UP)
         parts: list[Speak] = [
-            _contradiction(c, view, SpeakReason.WRAPPING_UP) for c in view.conflicts if c.topic not in self.asked_at_wrapup
+            _contradiction(c, view, SpeakReason.WRAPPING_UP) for c in view.conflicts
+            if not c.change and c.topic not in self.asked_at_wrapup
         ] + [
             _two_ways(a, view, SpeakReason.WRAPPING_UP) for a in view.ambiguities
             if a.topic not in self.asked_mid_call | self.asked_at_wrapup
@@ -228,8 +243,8 @@ class Judge:
                 parts.append(_ask(item, view, SpeakReason.WRAPPING_UP))
         if parts:
             return _together(parts, view)
-        if pending or view.conflicts or self.read_back_done:
-            return None
+        if self.read_back_done or pending or (view.conflicts and not view.closing):
+            return None  # with a dispute still standing, the read-back waits for the goodbye itself
         if view.follow_up and not view.changed:
             return None  # the deal was read back on the call that agreed it; nothing changed since
         return _read_back(view)
@@ -294,10 +309,10 @@ def _contradiction(conflict: Conflict, view: View, reason: SpeakReason) -> Speak
             f"Tell {both} that this differs from what was agreed, and ask them which is right. "
             "Do not say which one is right."
         )
-    return Speak(
-        (WRAPPING_UP if reason is SpeakReason.WRAPPING_UP else "") + text, Audience.BOTH, reason, conflict.item,
-        [conflict.topic], list(conflict.fact_ids),
-    )
+    wrap = WRAPPING_UP if reason is SpeakReason.WRAPPING_UP else ""
+    if conflict.change:
+        reason = SpeakReason.CHANGE_PROPOSED  # not a contradiction: both are asked to agree, and Gawah records it
+    return Speak(wrap + text, Audience.BOTH, reason, conflict.item, [conflict.topic], list(conflict.fact_ids))
 
 
 def _two_ways(ambiguity: Ambiguity, view: View, reason: SpeakReason) -> Speak:
@@ -323,10 +338,18 @@ def _answer(view: View) -> Speak:
 
 
 def _read_back(view: View) -> Speak:
+    """The agreed terms, and what is still in dispute: a read-back that left it out would
+    sound as if everything were settled."""
+    disputed = {c.item for c in view.conflicts if c.item}
     if view.follow_up:
-        terms = _terms(view, view.changed)
+        terms = _terms(view, view.changed - disputed)
         text = f"{WRAPPING_UP}Read back what changed on this call and ask {_who(Audience.BOTH, view.names)} to confirm it."
     else:
-        terms = _terms(view)
+        terms = _terms(view, set(ItemKey) - disputed)
         text = f"{WRAPPING_UP}Read back the agreed terms and ask {_who(Audience.BOTH, view.names)} to confirm them."
-    return Speak(text + (f" The terms: {terms}." if terms else ""), Audience.BOTH, SpeakReason.WRAPPING_UP)
+    text += f" The terms: {terms}." if terms else ""
+    if view.conflicts:
+        text += " Still in dispute, say so plainly and do not say which is right: " + "; ".join(
+            f"{LABEL[c.item] if c.item else 'a term'}: {_quoted(c.explanation)}" for c in view.conflicts
+        ) + "."
+    return Speak(text, Audience.BOTH, SpeakReason.WRAPPING_UP)

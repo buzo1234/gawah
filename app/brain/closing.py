@@ -6,21 +6,26 @@ from collections.abc import Callable, Hashable
 
 from app.brain import tuning
 from app.brain.sage import Answers, yes
+from app.brain.words import takes_leave
 
 
 class Closing:
     def __init__(self) -> None:
         self.soon_before = False  # closing_soon on the line before
+        self.leave_before = False  # the line before takes leave
         self.settled_on: set[int] = set()  # lines on which an item was first agreed
         self._timer: asyncio.Task | None = None
         self._waiting_on: Hashable | None = None
 
-    def on_line(self, answers: Answers, line_no: int, agreed: int) -> bool:
-        """True if this line says they are wrapping up."""
-        soon = yes(answers, "closing_soon")
+    def on_line(self, answers: Answers, line_no: int, agreed: int, text: str = "") -> bool:
+        """True if this line says they are wrapping up. closing_soon twice also says yes through
+        small talk once the terms are done (cricket, family), so one of the two lines must take
+        leave: a goodbye, thanks, "milte hain", "mujhe jaana hai"."""
+        soon, leave = yes(answers, "closing_soon"), takes_leave(text)
         quiet_pair = soon and self.soon_before and not {line_no, line_no - 1} & self.settled_on
-        self.soon_before = soon
-        return yes(answers, "wrapping_up") or (quiet_pair and agreed >= tuning.CLOSE_MIN_AGREED)
+        leaving = leave or self.leave_before
+        self.soon_before, self.leave_before = soon, leave
+        return yes(answers, "wrapping_up") or (quiet_pair and leaving and agreed >= tuning.CLOSE_MIN_AGREED)
 
     @staticmethod
     def silence_would_close(answers: Answers, discussed: int) -> bool:

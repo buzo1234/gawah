@@ -22,18 +22,14 @@ log = logging.getLogger("gawah.brain.sage")
 
 WS_URL = "wss://sage.levanto.ai/v1/stream"
 
-# The first ten are the v2 wording from spikes/5-sage2.md. Changing a word changes the answers: re-record
-# the practice calls (tests/brain/record.py) if you do.
+# Only the questions the brain reads: Sage2 bills every question on every line. The terms and
+# contradictions come from the memory's facts, so the six term questions and conflicting_figures
+# from the spike are no longer asked; saved recordings still hold their answers, which nothing reads.
+# The first three are the v2 wording from spikes/5-sage2.md. Changing a word changes the answers:
+# re-record the practice calls (tests/brain/record.py) if you do.
 QUESTIONS: dict[str, str] = {
-    "work_agreed": "Have both speakers agreed on what work is to be done (the scope of the job)? Answer yes only if one person has described the work and the other has accepted it.",
-    "amount_agreed": "Have both speakers agreed on the total price for the whole job? Answer yes only if one final total amount has been accepted by both. An offer or counter-offer that the other person has not accepted is not an agreement.",
-    "advance_agreed": "Have both speakers agreed on an advance payment amount (money paid before the work starts)? Answer yes only if both have accepted the same advance amount.",
-    "balance_when": "Have both speakers agreed on when the remaining balance (the total minus the advance) will be paid? Answer yes only if a specific time or condition for paying the balance was stated and accepted. If the question was asked but brushed aside or not answered, answer no.",
-    "dates_agreed": "Have both speakers agreed on both the start date and the finish date of the work?",
-    "late_terms": "Have the speakers agreed on what happens if the work is finished late or left unfinished, such as a penalty, a deduction or a refund? A promise to finish on time is not enough; answer yes only if a consequence was agreed.",
     "addressed_gawah": "In the last line of the transcript, is the speaker talking directly to Gawah, the AI witness, for example by calling it by name?",
     "topic_left_unclear": "Is there a contract term (price, advance, when the balance is paid, or dates) that one speaker asked about, where the other speaker has already replied without giving a clear answer and moved on to a different topic? A question in the last line that the other speaker has not yet had a chance to answer does not count. Answer yes only if that term is still unsettled.",
-    "conflicting_figures": "Has a figure that both speakers had already accepted (for example the total price or the advance) later been stated as a different number for that same term? Answer no for bargaining: an offer, a counter-offer, or a lower or higher number proposed before both speakers accepted is not a conflict.",
     "wrapping_up": "Is the call ending right now? Answer yes only if, in the last two lines, a speaker says goodbye, says they are hanging up, or thanks the other person to close the conversation. Agreeing to a term (for example 'theek hai', 'pakka', 'done') or promising to finish the work on time is not ending the call.",
     # Not in the spike. topic_left_unclear needs someone to have asked; in the usual case
     # nobody asks about the balance at all, and this catches that.
