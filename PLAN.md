@@ -53,7 +53,7 @@ tests/
 | Event | Sent by | Carries |
 |---|---|---|
 | `deal.requested` | whatsapp | who asked, the other person's number |
-| `call.started` / `call.ended` | bridge | deal, the two people in the room |
+| `call.started` / `call.ended` | bridge | deal, the two people in the room, the call number within the deal |
 | `transcript.line` | bridge | deal, speaker, text, start and end time |
 | `checklist.updated` | brain | each contract item: pending or agreed, value, confidence |
 | `judge.speak` | brain | what to ask, whom to ask, why |
@@ -64,6 +64,10 @@ tests/
 | `record.confirm_requested` / `record.confirmed` | whatsapp | deal, record, who must confirm |
 | `reply.timeout` | whatsapp | deal, person to follow up with, what to ask |
 | `whatsapp.message` | whatsapp | every WhatsApp message in or out: direction, phone, text or media, simulated or really sent. Deal is `NO_DEAL` before one exists |
+| `fact.recorded` | memory | a new fact, or a new version of one: the sentence, item, value (also as rupees or a date), who said, agreed and confirmed it, status, where it came from (call and line with start and end, or record and media), what it replaces or counts towards, its witness-chain hash |
+| `fact.conflict` | memory | what was just said, the agreed or confirmed facts it contradicts, one-sentence explanation, how sure |
+| `fact.changed` | mouth | an amendment step (proposed, confirmed by one, by both, withdrawn): change id, the fact it changes, the new value |
+| `agent.note` | any stream | one line of what a crew agent just did, for the dashboard's lanes; nothing depends on it |
 
 Changing `contracts.py` after the scaffold needs one named person to approve it on `main`. Everyone else then rebases.
 
