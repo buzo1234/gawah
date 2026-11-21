@@ -48,7 +48,7 @@ def test_judge_speak_carries_what_whom_which_item_and_why():
     assert (data["to"], data["reason"], data["item"]) == ("both", "conflicting_figures", "amount")
     assert {r.value for r in SpeakReason} == {
         "addressed_directly", "term_unclear", "conflicting_figures", "wrapping_up",
-        "ambiguous", "contradicts_record",
+        "ambiguous", "contradicts_record", "change_proposed",
     }
 
 

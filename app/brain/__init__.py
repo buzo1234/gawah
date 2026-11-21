@@ -13,9 +13,10 @@ the deal did not have.
 - judge.py    the rules for when to speak, and the instruction text
 - tuning.py   every gap and limit
 
-Sage2's yes/no answers about the terms (work_agreed and the rest) are still asked, so its
-saved answers stay valid, but nothing reads them: only the memory's facts make a term
-agreed. With no memory (app.state.memory missing, as in the brain's own rule tests) the
+Sage2 is asked only what the brain reads (sage.QUESTIONS): who spoke to Gawah, a term left
+unclear or a balance skipped, and whether they are closing. Only the memory's facts make a
+term agreed; recordings made when the term questions were also asked still replay, their
+extra answers unread. With no memory (app.state.memory missing, as in the brain's own rule tests) the
 brain takes facts only from fact.recorded events; with none of those either, every item
 stays pending and the Judge, seeing the memory silent, asks nothing at wrap-up and only
 answers people who speak to it. There is no fallback to Sage2's answers.
