@@ -1,3 +1,4 @@
+import asyncio
 import time
 
 import jwt
@@ -6,8 +7,9 @@ from bridge_world import LIVEKIT_SETTINGS, FakeLiveKit
 from fastapi.testclient import TestClient
 
 from app.call.livekit import LISTENER, deal_of, room_name
-from app.contracts import CallEnded, DealRequested, Person, Role, call_path
+from app.contracts import CallEnded, DealRequested, DealStatus, Person, Role, call_path
 from app.main import create_app
+from app.store import Store
 from fakes import RAMESH, SUNITA
 
 
@@ -145,3 +147,9 @@ def test_server_shutdown_ends_an_open_call_and_deletes_its_room(settings, tmp_pa
     [ended] = seen
     assert ended.reason == "shutdown" and sorted(uploaded) == ["recordings/d1/hirer.wav", "recordings/d1/worker.wav"]
     assert livekit.deleted == ["deal-d1"] and livekit.listeners[0].disconnected
+    # The call.ended sent during shutdown is in the event log, so the deal is not left "in call".
+    store = Store(settings.database_path)
+    asyncio.run(store.open())
+    assert [e.reason for e in asyncio.run(store.events("d1", "call.ended"))] == ["shutdown"]
+    assert asyncio.run(store.deal("d1")).status is DealStatus.CALL_ENDED
+    asyncio.run(store.close())
