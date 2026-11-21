@@ -8,12 +8,19 @@ import argparse
 import asyncio
 
 from websockets.asyncio.client import connect
+from websockets.exceptions import ConnectionClosed
 
 
 async def tail(url: str) -> None:
-    async with connect(url) as ws:
-        async for message in ws:
-            print(message, flush=True)
+    try:
+        async with connect(url) as ws:
+            async for message in ws:
+                print(message, flush=True)
+    except ConnectionClosed:
+        pass
+    except OSError:
+        raise SystemExit(f"No server at {url}. Start it: uv run uvicorn app.main:app --reload --port 8000")
+    raise SystemExit("The server closed the connection (it stopped or reloaded). Run the tail again.")
 
 
 if __name__ == "__main__":
