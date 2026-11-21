@@ -55,6 +55,9 @@ LiveKit and Twilio are on free plans with monthly allowances. Using them up in t
 | Public address for webhooks | `cloudflared tunnel --url http://localhost:8000` |
 | Prove the contract stream: one complete deal through the running server (real OpenAI and S3; saves the PDF and audio to `fixtures/contract-sample/`) | `uv run python -m tests.contract_proof` |
 | Prove the bridge on a real call (one LiveKit room for about a minute, about 8 transcription uploads, 2 S3 uploads) | `uv run python tests/bridge_live.py` |
+| Prove Gawah's voice on a deal call in a real room (about 9 LiveKit participant-minutes and a minute of generated speech) | `uv run python -m tests.mouth.prove_deal_call` |
+| Prove the call-back in a real room (about 7 LiveKit participant-minutes and a 2 to 3 minute realtime connection) | `uv run python -m tests.mouth.prove_callback` |
+| Measure the speech detector on noise and the recorded lines (no room, no cost) | `uv run python -m tests.mouth.measure_hearing` |
 
 Python is pinned to 3.12 through `uv`. Do not use the system Python.
 
@@ -64,6 +67,7 @@ The practice calls are `fixtures/call_missing_balance.json` and `fixtures/call_t
 
 The brain answers a replayed or fake call (room `replay-...` or `fake-...`) from the saved answers in `tests/brain/recorded/`, so it never reaches live Sage2 or OpenAI. It finds them by what is said: a saved call answers for as long as every line so far is the line it was recorded on. The deal id does not matter, so `--deal-id <id>` replays a practice call into a deal that was started on WhatsApp. That deal keeps its own people: a call fills in a name or phone the deal does not have, and never replaces one.
 A call that says anything else gets no saved answers and the brain stays quiet: the checklist stays all pending and no `judge.speak` is sent. So if you change a practice call, record it again (`tests/brain/record.py`).
+The mouth stays out of a replayed or fake call (room `replay-...` or `fake-...`): it joins no room, opens no voice connection, and sends no `judge.spoke`.
 To send a replay to the live services, start the server with `BRAIN_LIVE_REPLAYS=1` set in the shell (it is not read from `.env`). Each replayed line is then one billed Sage2 update, so count them.
 
 ## How a stream plugs in
