@@ -94,12 +94,16 @@ async def main(last: int, out: Path) -> None:
     seat = seats[0]
     turns = []
     await quiet(seat, 1.0, 2.0)
-    for line in lines:
+    for i, line in enumerate(lines):
         if line["speaker"] != "hirer":
             continue
         before = len(actor.said)
         pcm, rate = speech[line["line_no"]]
         await play(seat, to_24k(pcm, rate))
+        if i + 1 < len(lines) and lines[i + 1]["speaker"] == "worker" and not line.get("then"):
+            end = time.monotonic() + 15  # its line is next: give it time to begin, as a person would
+            while len(actor.said) == before and not seat.speaking() and time.monotonic() < end:
+                await quiet(seat, 0.2, 0.2)
         await quiet(seat, 2.5, 14.0)
         turns.append({"line": line["line_no"], "sunita": line["text"], "actor": actor.said[before:]})
         print(f"{line['line_no']:>2} SUNITA: {line['text']}\n   ACTOR : {actor.said[before:] or '(quiet)'}", flush=True)

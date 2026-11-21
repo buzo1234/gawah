@@ -373,7 +373,7 @@ async function watchActor() {
       $('status').textContent = s.state === 'on' ? '' : (s.state === 'waiting' ? `Waiting for ${other}...` : 'Connecting...');
       $('timer').textContent = s.state === 'on' && s.seconds != null ? clock(s.seconds * 1000) : '';
       $('rec').classList.toggle('live', s.state === 'on' || s.state === 'waiting');
-      $('gawah-line').textContent = `AI is playing ${cfg.name || ROLE[cfg.role]}`;
+      $('gawah-line').textContent = `AI is playing ${s.name || cfg.name || ROLE[cfg.role]}`;
     } else if (actorOn) {
       return location.reload();  // the actor is done: the call it was on is over, and the page's count with it
     }

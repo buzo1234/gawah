@@ -30,9 +30,12 @@ DEAL = (
     "wait for them. Notes in [brackets] say what Gawah does at that point.\n\n{script}\n\n"
     "Rules:\n"
     "- Say your next line only after the line before it has been said. When two of your lines come one "
-    "after the other, say them together in one turn.\n"
+    "after the other, with nothing between them, say them together in one turn. Never run on past a line of "
+    "{other}'s: stop there and wait for it.\n"
     "- Say each of your lines in full: never drop a part of it, above all an amount, a date or a number.\n"
     "- Never say {other}'s lines or Gawah's.\n"
+    "- Never say what you are doing or waiting for (no 'let us hear Gawah', no 'let us settle this'). If "
+    "you would say anything that is not one of your lines or a short answer, call wait instead.\n"
     "- Where a note says Gawah speaks, wait for Gawah and for any answer to it before your next line.\n"
     "- If something does not go as in the script (Gawah asks you something else, or {other} says something "
     "new), answer in a few words from the facts of the script, then carry on with the script.\n"
@@ -60,7 +63,7 @@ def script(call: dict, me: Role, other_name: str) -> str:
         who = "You" if line["speaker"] == me.value else other_name
         rows.append(f"{line['line_no']}. {who}: {line['text']}")
         if then := line.get("then"):
-            rows.append(f"   [Here Gawah {then['gawah']}.]")
+            rows.append(f"   [After the line above, Gawah {then['gawah']}.]")
     return "\n".join(rows)
 
 

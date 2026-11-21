@@ -120,7 +120,7 @@ def test_it_takes_the_workers_seat_through_the_pages_own_join(world):
     assert links[0].opened and config["audio"]["output"]["voice"] == "ash" and config["tools"] == [persona.WAIT_TOOL]
     said = config["instructions"]
     assert "You are Ramesh" in said and "You: Do coat aur putty ka touch-up" in said and "Sunita: Pachees hazaar bahut zyada" in said
-    assert "[Here Gawah asks Sunita when the balance will be paid.]" in said
+    assert "[After the line above, Gawah asks Sunita when the balance will be paid.]" in said
     # The hirer arrives: the call is on.
     seats[0].people = {"hirer", "gawah", "gawah-ears"}
     wait_until(lambda: client.get("/actor/status", params={"deal_id": "d1"}).json()["state"] == "on")
@@ -222,3 +222,12 @@ def test_call_two_has_the_wrong_total_and_the_balcony():
 
 def test_register_is_a_stream():
     assert callable(actor_stream.register)
+
+
+def test_the_status_learns_the_name_the_call_told(world):
+    client, app, livekit, seats, links, publish = world
+    client.post("/actor/start", json={"deal_id": "d1", "role": "worker", "kind": "deal"})
+    assert client.get("/actor/status", params={"deal_id": "d1"}).json()["name"] is None
+    from app.contracts import CallStarted
+    publish(CallStarted(deal_id="d1", people=[SUNITA, RAMESH], room="deal-d1-1", call_no=1))
+    assert client.get("/actor/status", params={"deal_id": "d1"}).json()["name"] == "Ramesh"

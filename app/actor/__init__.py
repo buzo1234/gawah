@@ -131,6 +131,10 @@ def register(app: FastAPI, bus: Bus) -> None:
     async def status(deal_id: str, request: Request) -> dict:
         local(request)
         actor: Actor | None = app.state.actor
+        if actor and actor.deal_id == deal_id and actor.name is None:
+            # The deal began on WhatsApp without this person's name; the call itself may have told it since.
+            deal = await app.state.store.deal(deal_id)
+            actor.name = deal.person(actor.role).name if deal and deal.person(actor.role) else None
         return view(actor if actor and actor.deal_id == deal_id else None)
 
     async def call_over(event: CallEnded) -> None:
