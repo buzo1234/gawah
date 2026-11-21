@@ -14,7 +14,7 @@ from app.contracts import (
     Backing, ChangeStatus, ChecklistUpdated, Fact, FactChanged, FactKind, FactSource, FactStatus, ItemKey,
     ItemState, Record, RecordConfirmed, RecordKind, RecordReceived, Role, TermsConfirmed, TermsDisputed,
 )
-from app.memory.normalise import format_rupees, normalise_rupees, parse_rupees, pin_date
+from app.memory.normalise import format_rupees, one_amount, pin_date
 
 log = logging.getLogger("gawah.memory")
 
@@ -41,7 +41,7 @@ class Status:
                 continue
             if deal.current(item.key):
                 continue  # agreed already; a different figure is the scribe's conflict to raise
-            rupees = (parse_rupees(item.value) or [None])[0]
+            rupees = one_amount(item.value)
             said = [
                 f for f in deal.standing()
                 if f.item == item.key and f.kind == FactKind.TERM and f.status == FactStatus.SAID and f.call_no == call_no
@@ -99,7 +99,7 @@ class Status:
         quote = event.said or event.value
         self.m.record(Fact(
             deal_id=event.deal_id, text=f"The {key.value.replace('_', ' ')} is {event.value}.", item=key,
-            kind=FactKind.TERM, value=event.value, value_rupees=normalise_rupees(None, event.value, event.value or ""),
+            kind=FactKind.TERM, value=event.value, value_rupees=one_amount(event.value),
             said_by=event.person, confirmed_by=[event.person], status=status, source=FactSource.CALLBACK,
             quote=quote, call_no=deal.last_call_no, valid_from=event.ts,
         ))
@@ -164,7 +164,7 @@ class Status:
             log.warning("deal=%s fact.changed for unknown fact %s", event.deal_id, event.fact_id)
             return
         item = event.item or old.item
-        rupees = normalise_rupees(None, event.new_value, event.new_value)
+        rupees = one_amount(event.new_value)
         new = self.m.record(Fact(
             deal_id=event.deal_id, text=f"The {item.value.replace('_', ' ') if item else 'term'} is now {event.new_value}.",
             item=item, kind=old.kind, value=event.new_value, value_rupees=rupees,

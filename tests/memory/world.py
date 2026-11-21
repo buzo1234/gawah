@@ -32,13 +32,16 @@ def claim(item, stance="state", rupees=None, quote="", text=None, kind="term", v
 class ScriptedExtractor:
     """Answers by the words of the line, like the recorded replies; unknown lines get none."""
 
-    def __init__(self, script: dict[str, list[dict]]) -> None:
-        self.script = script
+    def __init__(self, script: dict[str, list[dict]], checks: dict[str, dict] | None = None) -> None:
+        self.script, self.checks = script, checks or {}
         self.asked: list[str] = []
 
     async def claims(self, request) -> list[dict] | None:
         self.asked.append(request.line.text)
         return self.script.get(request.line.text, [])
+
+    async def check(self, check) -> dict | None:
+        return self.checks.get(check.quote)
 
 
 def write_tone(path: Path, seconds: float, hz: float) -> None:

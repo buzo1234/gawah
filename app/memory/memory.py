@@ -108,14 +108,14 @@ class Memory:
 
     def conflict(
         self, deal: DealBook, line: TranscriptLine, current: Fact, rupees: int | None, day, value: str | None,
-        received: float, confidence: float = 0.95,
+        received: float, confidence: float = 0.95, explanation: str | None = None,
     ) -> None:
         key = (deal.deal_id, line.call_no, current.id, rupees, day, None if rupees or day else value)
         if key in self._raised:
             return
         self._raised.add(key)
         event = FactConflict(
-            deal_id=deal.deal_id, fact_ids=[current.id], explanation=self.explain(deal, line, current, rupees, day, value),
+            deal_id=deal.deal_id, fact_ids=[current.id], explanation=explanation or self.explain(deal, line, current, rupees, day, value),
             said=line.text, speaker=line.speaker, call_no=line.call_no, line_no=line.line_no, confidence=confidence,
         )
         self.conflicts.append(event)

@@ -9,7 +9,8 @@
 - clips.py      a fact's seconds of audio from the call recordings
 - normalise.py  rupees, dates, and lines with nothing to extract
 
-Set on app.state.memory (MEMORY_STATE). The clip is served at clip_path(fact_id).
+Set on app.state.memory (MEMORY_STATE). The clip is served at clip_path(fact_id), the chain
+check at /memory/chain/<deal_id>, the deal's facts at /memory/state?deal=<deal_id>.
 A replayed or fake call (room replay-... or fake-...) gets the Scribe's saved replies in
 tests/memory/recorded/; MEMORY_LIVE_REPLAYS=1 in the shell sends it to the live model.
 """
@@ -22,6 +23,7 @@ from fastapi import FastAPI, HTTPException, Response
 from app.bus import Bus
 from app.config import ROOT
 from app.contracts import MEMORY_STATE, clip_path
+from app.memory import chain
 from app.memory.extract import LiveExtractor, RecordedExtractor, Routed
 from app.memory.memory import Memory
 from app.memory.openai_client import EMBED_MODEL, OpenAIClient
@@ -66,6 +68,11 @@ def register(app: FastAPI, bus: Bus) -> None:
         if wav is None:
             raise HTTPException(404, "no recording for this fact")
         return Response(wav, media_type="audio/wav")
+
+    @app.get("/memory/chain/{deal_id}")
+    async def chain_check(deal_id: str) -> dict:
+        """The witness chain checked end to end; the formula is in app/memory/chain.py."""
+        return chain.report(memory.book.deal(deal_id).versions)
 
     @app.get("/memory/state")
     async def state(deal: str) -> dict:

@@ -14,7 +14,7 @@ from datetime import date
 from app.contracts import CallKind, Fact, FactKind, FactStatus, ItemKey, TranscriptLine
 from app.memory import extract
 from app.memory.book import DealBook
-from app.memory.normalise import filler_kind, normalise_rupees, pin_date
+from app.memory.normalise import filler_kind, format_rupees, normalise_rupees, pin_date, stated_total
 
 log = logging.getLogger("gawah.memory")
 
@@ -60,17 +60,29 @@ def parse_claim(raw: dict, line: TranscriptLine, today: date) -> Claim | None:
     )
 
 
+def _day(current: Fact, day: date | None) -> date | None:
+    # The dates term holds a start and a finish, so one day cannot be compared with another.
+    return None if current.item == ItemKey.DATES else day
+
+
+def comparable(current: Fact, rupees: int | None, day: date | None) -> bool:
+    return (rupees is not None and current.value_rupees is not None) or (
+        _day(current, day) is not None and current.value_date is not None
+    )
+
+
 def differs(current: Fact | None, rupees: int | None, day: date | None) -> bool:
-    if current is None:
+    if current is None or not comparable(current, rupees, day):
         return False
     if rupees is not None and current.value_rupees is not None:
         return rupees != current.value_rupees
-    return day is not None and current.value_date is not None and day != current.value_date
+    return _day(current, day) != current.value_date
 
 
 def same(current: Fact | None, rupees: int | None, day: date | None) -> bool:
     if current is None:
         return False
+    day = _day(current, day)
     return (rupees is not None and rupees == current.value_rupees) or (day is not None and day == current.value_date)
 
 
@@ -92,9 +104,7 @@ class Scribe:
         key = (line.deal_id, line.call_no)
         previous, mine = self._tail.get(key), asyncio.get_running_loop().create_future()
         self._tail[key] = mine
-        task = asyncio.create_task(self._process(deal, line, previous, mine, time.monotonic()))
-        self._tasks.add(task)
-        task.add_done_callback(self._tasks.discard)
+        self._spawn(self._process(deal, line, previous, mine, time.monotonic()))
 
     async def settle(self) -> None:
         """Wait until every line received so far has been applied."""
@@ -115,7 +125,7 @@ class Scribe:
                     log.warning("deal=%s line %s applied before line %s finished", line.deal_id, line.line_no, line.line_no - 1)
             if kind == "yes":
                 self._plain_yes(deal, line, received)
-            for claim in claims:
+            for claim in self._with_total(deal, line, claims):
                 self._apply(deal, line, claim, received)
         except Exception:
             log.exception("deal=%s line %s: scribe failed", line.deal_id, line.line_no)
@@ -140,6 +150,24 @@ class Scribe:
             return []
         return [c for c in (parse_claim(r, line, today) for r in raw or []) if c]
 
+    def _with_total(self, deal: DealBook, line: TranscriptLine, claims: list[Claim]) -> list[Claim]:
+        """Once an amount is agreed, a total stated in the words is an amount claim, whatever the
+        model filed it under, so a restated different total is always caught in code."""
+        total = stated_total(line.text)
+        if total is None or deal.current(ItemKey.AMOUNT) is None:
+            return claims
+        for claim in claims:
+            if claim.item != ItemKey.AMOUNT and claim.rupees == total:
+                claim.rupees = None  # the total is not the balance or the advance
+        if any(c.item == ItemKey.AMOUNT and c.rupees == total for c in claims):
+            return claims
+        said = Claim(
+            item=ItemKey.AMOUNT, kind=FactKind.TERM, stance="recall",
+            text=f"{deal.name(line.speaker)} says the total is {format_rupees(total)}.", value=format_rupees(total),
+            rupees=total, date=None, quote=line.text, accepts_line=None, contradicts=None,
+        )
+        return [said, *claims]
+
     # ---------- applying ----------
 
     def _base(self, deal: DealBook, line: TranscriptLine, claim: Claim) -> dict:
@@ -151,6 +179,12 @@ class Scribe:
         )
 
     def _apply(self, deal: DealBook, line: TranscriptLine, claim: Claim, received: float) -> None:
+        if claim.kind == FactKind.CHANGE and claim.item:
+            current = deal.current(claim.item)
+            if current is None:
+                claim.kind = FactKind.TERM  # nothing agreed yet to change: it is an offer
+            elif same(current, claim.rupees, claim.date):
+                return  # the value that already stands
         base = self._base(deal, line, claim)
         if claim.kind in (FactKind.PAYMENT, FactKind.WORK):
             target = self.m.target_for(deal, claim.kind, claim.item)
@@ -189,13 +223,32 @@ class Scribe:
         self._model_conflict(deal, line, claim, fact, received)
 
     def _model_conflict(self, deal: DealBook, line: TranscriptLine, claim: Claim, fact: Fact, received: float) -> None:
-        """Code could not compare values; the model cited an agreed or confirmed fact."""
-        cited = deal.latest.get(claim.contradicts or "")
+        """Code could not compare values and the model cited an agreed or confirmed fact: one
+        short model call on just the two decides, off the line's path."""
         if claim.kind == FactKind.CHANGE:
             return  # a proposed change is not a contradiction; it goes through fact.changed
-        if cited and cited.status in (FactStatus.AGREED, FactStatus.CONFIRMED) and cited.id != fact.id:
-            if (claim.rupees is None and claim.date is None) or (cited.value_rupees is None and cited.value_date is None):
-                self.m.conflict(deal, line, cited, claim.rupees, claim.date, claim.value, received, confidence=0.6)
+        cited = extract.resolve(claim.contradicts, deal.standing())
+        if cited is None or cited.status not in (FactStatus.AGREED, FactStatus.CONFIRMED) or cited.id == fact.id:
+            return
+        if comparable(cited, claim.rupees, claim.date):
+            return  # code already compared them, and they agree
+        check = extract.Check(cited, claim.text, claim.quote, line.speaker, deal.call(line.call_no).room)
+        self._spawn(self._check(deal, line, claim, check, received))
+
+    async def _check(self, deal: DealBook, line: TranscriptLine, claim: Claim, check: extract.Check, received: float) -> None:
+        try:
+            verdict = await self.m.extractor.check(check)
+        except Exception as e:
+            log.warning("deal=%s line %s: the contradiction check failed (%s)", line.deal_id, line.line_no, e)
+            return
+        if verdict and verdict.get("contradicts"):
+            self.m.conflict(deal, line, check.fact, claim.rupees, claim.date, claim.value, received,
+                            confidence=0.7, explanation=verdict.get("reason"))
+
+    def _spawn(self, coro) -> None:
+        task = asyncio.create_task(coro)
+        self._tasks.add(task)
+        task.add_done_callback(self._tasks.discard)
 
     def _accepted(self, deal: DealBook, line: TranscriptLine, claim: Claim) -> Fact | None:
         offers = [

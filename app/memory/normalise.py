@@ -104,8 +104,9 @@ def _bare_numbers(text: str) -> set[float]:
 
 
 def normalise_rupees(model: int | None, value: str | None, quote: str) -> int | None:
-    """Whole rupees for a claim. The words win where they are explicit; the model's figure is
-    taken where the words leave the scale to the context ("14 kar dete hain" is 14,000)."""
+    """Whole rupees for a claim. The model says whether the claim has an amount; the words win
+    where they state it outright, and the model's figure is taken where the words leave the
+    scale to the context ("14 kar dete hain" is 14,000)."""
     said = parse_rupees(quote)
     if model is not None:
         if model in said or (model % 1000 == 0 and model // 1000 in _bare_numbers(quote)):
@@ -113,10 +114,27 @@ def normalise_rupees(model: int | None, value: str | None, quote: str) -> int | 
         if len(set(said)) == 1:
             return said[0]
         return model
-    if len(set(said)) == 1:
-        return said[0]
-    from_value = parse_rupees(value)
-    return from_value[0] if len(set(from_value)) == 1 else None
+    return None  # the model saw no amount in this claim: a figure nearby belongs to another term
+
+
+def one_amount(text: str | None) -> int | None:
+    """The amount a short value states, if it states exactly one ("24,000 rupees, with the balcony")."""
+    found = set(parse_rupees(text))
+    return found.pop() if len(found) == 1 else None
+
+
+_TOTAL = {"total", "kul", "कुल", "pura", "poora", "पूरा", "टोटल"}
+
+
+def stated_total(text: str) -> int | None:
+    """An amount the words call the total ("to total 14 hazaar", "kul 22 hazaar")."""
+    toks = _tokens(text)
+    for i, tok in enumerate(toks):
+        if tok in _TOTAL:
+            found = parse_rupees(" ".join(toks[i + 1:i + 5]))
+            if found:
+                return found[0]
+    return None
 
 
 def format_rupees(rupees: int) -> str:
