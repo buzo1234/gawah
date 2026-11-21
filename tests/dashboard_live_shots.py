@@ -190,7 +190,7 @@ async def main(port: int, out: Path) -> None:
             ))
             await matches_memory(deal)
             why = await chrome.js("document.querySelector('#decisions .decision').textContent")
-            check("Asked“Gawah, advance kitna tay hua?”Answer“Advance 8,000" in why, f"why Gawah spoke: {why[:120]!r}")
+            check("Asked“Gawah, advance kitna tay hua?”Answer“Advance 8,000" in why.replace("Sunita: ", ""), f"why Gawah spoke: {why[:120]!r}")
             await asyncio.sleep(0.5)
             await chrome.shot(out / "1-mid-call.png")
 

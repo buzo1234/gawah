@@ -130,11 +130,13 @@ function renderWhy(state, entering) {
     const after = d.afterLine == null ? null
       : line ? `${nameOf(state, line.speaker)} at ${clock(line.start)}, line ${d.afterLine}: “${line.text}”`
       : `line ${d.afterLine}`;
+    const asked = d.question || (d.reason === "addressed_directly" ? line?.text : null);
     return h("article", { class: `decision${i === 0 ? " latest" : ""}${d.id === entering ? " enter" : ""}` },
       h("div", { class: "reason" }, REASONS[d.reason] || d.reason, d.item && h("span", { class: "about" }, ITEM_LABEL[d.item])),
-      // A question put to Gawah reads as the question and the answer under it.
-      d.question ? h("dl", {},
-        h("dt", {}, "Asked"), h("dd", { class: "asked" }, `“${d.question}”`),
+      // A question put to Gawah reads as the question and the answer under it. The brain
+      // does not send the question yet; the line it spoke after is the one that asked.
+      asked ? h("dl", {},
+        h("dt", {}, "Asked"), h("dd", { class: "asked" }, `${line ? `${nameOf(state, line.speaker)}: ` : ""}“${asked}”`),
         h("dt", {}, "Answer"), h("dd", {}, d.spoken ? `“${d.spoken}”${d.interrupted ? " (cut off)" : ""}`
           : d.dropped ? "Nothing: the moment passed" : `${d.instruction} (not said yet)`))
       : h("dl", {},
