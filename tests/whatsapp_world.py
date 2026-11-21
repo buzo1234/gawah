@@ -13,6 +13,7 @@ from app.records.reader import Reading
 from app.store import Store
 from app.whatsapp import wire
 from app.whatsapp.bot import Inbound
+from app.whatsapp.outgoing import Outgoing
 
 REAL = "+919999900000"  # the one number in VERIFIED_NUMBERS
 SUNITA, RAMESH, GEETA, MOHAN = "+919811100001", "+919822200002", "+919833300003", "+919844400004"
@@ -55,16 +56,19 @@ class FakeClock:
 
 
 class FakeTwilio:
+    rich, spacing_seconds = False, 3.0
+
     def __init__(self, clock: FakeClock) -> None:
         self.clock = clock
         self.sent: list[tuple[float, str, str | None, str | None]] = []  # time, to, text, media
         self.fetched: list[str] = []
         self.fail = False
 
-    async def send(self, to: str, text: str | None = None, media_url: str | None = None) -> str:
+    async def send(self, out: Outgoing) -> str:
         if self.fail:
             raise RuntimeError("twilio said no")
-        self.sent.append((self.clock.now(), to, text, media_url))
+        assert not (out.buttons or out.react_to or out.link_label), "the sandbox gets text and media only"
+        self.sent.append((self.clock.now(), out.to, out.text, out.media_url))
         return f"SM{len(self.sent)}"
 
     async def fetch_media(self, url: str) -> tuple[bytes, str | None]:
@@ -102,6 +106,7 @@ class World:
         self.bus, self.store = bus, store
         self.clock = FakeClock()
         self.twilio = FakeTwilio(self.clock)
+        self.provider = self.twilio
         self.reader = FakeReader()
         self.events: list[Event] = []
         bus.subscribe_all(store.record_event)
@@ -112,7 +117,7 @@ class World:
     def wire(self):
         """The bot on this world's fakes; the wall clock moves with the fake clock."""
         return wire(
-            self.settings, self.bus, self.store, twilio=self.twilio, reader=self.reader, clock=self.clock,
+            self.settings, self.bus, self.store, provider=self.provider, reader=self.reader, clock=self.clock,
             memory=self.memory, wall=lambda: WALL + timedelta(seconds=self.clock.time),
         )
 

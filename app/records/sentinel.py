@@ -19,8 +19,21 @@ from datetime import UTC, datetime, time, timedelta, timezone
 
 from app.bus import Bus
 from app.contracts import (
-    AgentNote, CrewAgent, Fact, FactKind, FactRecorded, FactSource, FactStatus, ItemKey, MemoryQueries,
-    OwedRow, Record, RecordConfirmed, RecordKind, Role, clip_path,
+    AgentNote,
+    CrewAgent,
+    Fact,
+    FactKind,
+    FactRecorded,
+    FactSource,
+    FactStatus,
+    ItemKey,
+    MemoryQueries,
+    OwedRow,
+    Record,
+    RecordConfirmed,
+    RecordKind,
+    Role,
+    clip_path,
 )
 from app.log import deal_log
 from app.records import tuning, words
@@ -41,6 +54,7 @@ class Check:
     rows: dict[ItemKey, OwedRow]
     against: Fact | None = None  # the agreed term the claim is larger than
     line: str | None = None  # what was agreed and when, with the clip
+    clip: str | None = None  # the link to the clip, also inside the line
 
 
 class Sentinel:
@@ -74,9 +88,8 @@ class Sentinel:
             else:
                 return check
             check.against = (await self.memory.get_term(deal_id, row.item)).current
-            check.line = words.agreed(
-                row.item, row.agreed_rupees, _when(check.against), row.paid_rupees, await self._clip(check.against)
-            )
+            check.clip = await self._clip(check.against)
+            check.line = words.agreed(row.item, row.agreed_rupees, _when(check.against), row.paid_rupees, check.clip)
             return check
         except Exception:
             deal_log("gawah.records", deal_id).exception("could not check a record against memory")
@@ -85,7 +98,7 @@ class Sentinel:
     async def disagrees(self, deal_id: str, record: Record, check: Check, asked: Role | None) -> None:
         """Tell both what was agreed. The record flow then asks the other person, as always."""
         for person in await self._people(deal_id):
-            self.outbox.send(deal_id, person.phone, person.role, check.line)
+            self.outbox.send(deal_id, person.phone, person.role, check.line, link=check.clip, link_label=words.CLIP_BUTTON)
         term = check.against.item.value if check.against and check.against.item else "deal"
         whom = f", {asked.value} asked to confirm" if asked else ""
         self._note(deal_id, f"claim of {words.rupees(round(record.amount))} is more than the {term} owed: "

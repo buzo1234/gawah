@@ -11,6 +11,7 @@ from urllib.parse import urlsplit
 import httpx
 
 from app.config import Settings
+from app.whatsapp.outgoing import Outgoing
 
 API = "https://api.twilio.com"
 TIMEOUT = 15.0
@@ -38,6 +39,9 @@ def signature(auth_token: str, url: str, params: dict[str, str]) -> str:
 
 
 class Twilio:
+    rich = False  # plain text and media only: no buttons, no reactions
+    spacing_seconds = 3.0  # the sandbox allows one message every three seconds
+
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
 
@@ -47,8 +51,9 @@ class Twilio:
         token = self._settings.require("twilio_auth_token")
         return any(hmac.compare_digest(signature(token, url, params), given) for url in urls)
 
-    async def send(self, to: str, text: str | None = None, media_url: str | None = None) -> str:
+    async def send(self, out: Outgoing) -> str:
         """Send one WhatsApp message from the sandbox number. Returns Twilio's message id."""
+        to, text, media_url = out.to, out.text, out.media_url
         sender = self._settings.require("twilio_whatsapp_number").removeprefix("whatsapp:")
         data = {"From": f"whatsapp:{sender}", "To": f"whatsapp:{to}"}
         if text:

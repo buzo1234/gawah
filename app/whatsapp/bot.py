@@ -5,23 +5,40 @@ events call for them."""
 import asyncio
 import logging
 import mimetypes
+import re
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+from functools import partial
 from urllib.parse import urlsplit
 
 from app.bus import Bus
 from app.config import Settings
 from app.contracts import (
-    NO_DEAL, AgentNote, CallEnded, CallKind, CallOpened, ContractReady, CrewAgent, Deal, DealRequested,
-    Direction, Person, ReplyTimeout, Role, WhatsAppMessage, call_path, callback_path, new_id,
+    NO_DEAL,
+    AgentNote,
+    CallEnded,
+    CallKind,
+    CallOpened,
+    ContractReady,
+    CrewAgent,
+    Deal,
+    DealRequested,
+    Direction,
+    Person,
+    ReplyTimeout,
+    Role,
+    WhatsAppMessage,
+    call_path,
+    callback_path,
+    new_id,
 )
 from app.log import deal_log, mask_phone
-from app.records.intake import Intake
+from app.records import words as record_words
+from app.records.intake import Intake, read_button
 from app.records.sentinel import Sentinel
 from app.store import Store
 from app.whatsapp import phone, words
-from app.whatsapp.outbox import Outbox
-from app.whatsapp.twilio import Twilio
+from app.whatsapp.outbox import Outbox, Provider
 
 LOCAL_BASE_URL = "http://localhost:8000"  # used for links until PUBLIC_BASE_URL is set
 
@@ -38,7 +55,10 @@ class Inbound:
     media_url: str | None = None
     media_type: str | None = None
     name: str | None = None  # the person's WhatsApp profile name
-    sid: str | None = None
+    sid: str | None = None  # the provider's message id
+    kind: str = "text"  # text, image, document, audio, video, button, reaction, contacts, other
+    button: str | None = None  # the id of a tapped reply button; its title is the text
+    other_name: str | None = None  # the name on a shared contact card
 
 
 def parse_inbound(form: dict[str, str]) -> Inbound | None:
@@ -60,11 +80,11 @@ def parse_inbound(form: dict[str, str]) -> Inbound | None:
 
 class Bot:
     def __init__(
-        self, settings: Settings, bus: Bus, store: Store, twilio: Twilio, outbox: Outbox,
+        self, settings: Settings, bus: Bus, store: Store, provider: Provider, outbox: Outbox,
         intake: Intake, sign: Callable[[str], Awaitable[str]], sentinel: Sentinel | None = None,
     ) -> None:
         self.settings, self.bus, self.store = settings, bus, store
-        self.twilio, self.outbox, self.intake = twilio, outbox, intake
+        self.provider, self.outbox, self.intake = provider, outbox, intake
         self._sign = sign  # S3 key -> short-lived link
         self._inbox: asyncio.Queue[Inbound] = asyncio.Queue()
         self._worker: asyncio.Task | None = None
@@ -76,7 +96,7 @@ class Bot:
     # ---------- inbound ----------
 
     def receive(self, message: Inbound) -> None:
-        """Queue a message and return at once, so the webhook answers Twilio straight away.
+        """Queue a message and return at once, so the webhook answers the provider straight away.
         Messages are handled one at a time, in the order they arrived."""
         self._inbox.put_nowait(message)
 
@@ -126,7 +146,16 @@ class Bot:
         def reply(text: str) -> None:
             self.outbox.send(deal_id, message.phone, role, text)
 
-        if not message.media_url and self.intake.answer(message.phone, message.text, message.name):
+        if message.kind == "reaction":
+            return  # logged above; a reaction asks for no answer
+        self.outbox.typing(message.phone, message.sid)
+        if not message.media_url and self.intake.answer(message.phone, message.text, message.name, message.button):
+            return
+        if read_button(message.button):  # a yes or no tapped on a question already answered
+            reply(record_words.ALREADY_ANSWERED)
+            return
+        if message.kind == "other":
+            reply(words.HELP if deal else words.HELP_NO_DEAL)
             return
         numbers = [] if message.media_url else phone.find_numbers(message.text)
         if numbers == [message.phone]:
@@ -145,16 +174,17 @@ class Bot:
     def _start_deal(self, message: Inbound, other_phone: str) -> None:
         role = Role.WORKER if phone.says_worker(message.text) else Role.HIRER
         me = Person(role=role, name=message.name, phone=message.phone)
-        other = Person(role=role.other, phone=other_phone)
+        other = Person(role=role.other, phone=other_phone, name=message.other_name)
         deal_id = new_id()
         deal_log("gawah.whatsapp", deal_id).info(
             "deal asked by %s (%s) with %s", mask_phone(me.phone), role.value, mask_phone(other.phone)
         )
         self.bus.publish(DealRequested(deal_id=deal_id, requested_by=me, other=other, text=message.text))
-        self.outbox.send(deal_id, me.phone, me.role, words.call_link(self._link(call_path(deal_id, me.role))))
+        mine, theirs = self._link(call_path(deal_id, me.role)), self._link(call_path(deal_id, other.role))
+        self.outbox.send(deal_id, me.phone, me.role, words.call_link(mine), link=mine, link_label=words.CALL_BUTTON)
         self.outbox.send(
-            deal_id, other.phone, other.role,
-            words.call_link_for_other(me, self._link(call_path(deal_id, other.role))),
+            deal_id, other.phone, other.role, words.call_link_for_other(me, theirs),
+            link=theirs, link_label=words.CALL_BUTTON,
         )
 
     async def _take_record(self, deal: Deal, role: Role, message: Inbound) -> bool:
@@ -167,9 +197,10 @@ class Bot:
         try:
             image, image_type = None, None
             if message.media_url:
-                image, image_type = await self.twilio.fetch_media(message.media_url)
+                image, image_type = await self.provider.fetch_media(message.media_url)
             return await self.intake.take(
-                deal, sender, message.text, message.media_url, image, message.media_type or image_type
+                deal, sender, message.text, message.media_url, image, message.media_type or image_type,
+                message_id=message.sid,
             )
         except Exception as error:
             deal_log("gawah.whatsapp", deal.id).error("could not read a message: %s", error)
@@ -200,7 +231,10 @@ class Bot:
         if other is None or not other.phone:
             return
         url = self._link(call_path(event.deal_id, other.role))
-        self.outbox.send(event.deal_id, other.phone, other.role, words.call_opened(opener or Person(role=event.opened_by), url))
+        self.outbox.send(
+            event.deal_id, other.phone, other.role, words.call_opened(opener or Person(role=event.opened_by), url),
+            link=url, link_label=words.CALL_BUTTON,
+        )
         self.bus.publish(AgentNote(
             deal_id=event.deal_id, agent=CrewAgent.SENTINEL,
             text=f"call {event.call_no} opened by the {event.opened_by.value}: told the {other.role.value}, with their link",
@@ -218,7 +252,10 @@ class Bot:
             if person.role not in needed:
                 continue
             url = self._link(callback_path(event.deal_id, person.role))
-            self.outbox.send(event.deal_id, person.phone, person.role, words.callback_link(url))
+            self.outbox.send(
+                event.deal_id, person.phone, person.role, words.callback_link(url),
+                link=url, link_label=words.CALLBACK_BUTTON,
+            )
 
     async def on_contract_ready(self, event: ContractReady) -> None:
         log = deal_log("gawah.whatsapp", event.deal_id)
@@ -234,13 +271,21 @@ class Bot:
             files.append((url, kind or mimetypes.guess_type(urlsplit(url).path)[0]) if url else None)
         if not any(files):
             log.warning("contract.ready carried no file to send")
-        line = words.contract(pdf=files[0] is not None, voice=files[1] is not None)
-        files = [f for f in files if f]
+        pdf, voice = files
+        version = _version(event.pdf_key or (urlsplit(pdf[0]).path if pdf else ""))
         for person in await self._people(event.deal_id, []):
-            self.outbox.send(event.deal_id, person.phone, person.role, line)
-            # Sent as separate messages: WhatsApp gives a document or a voice note no caption.
-            for url, media_type in files:
-                self.outbox.send(event.deal_id, person.phone, person.role, media_url=url, media_type=media_type)
+            send = partial(self.outbox.send, event.deal_id, person.phone, person.role)
+            if self.outbox.rich and pdf:
+                # Meta shows a caption under a document, so the line goes there.
+                send(words.contract_caption(version, voice=voice is not None), *pdf,
+                     filename=f"Gawah-contract{f'-v{version}' if version else ''}.pdf")
+            else:
+                # Twilio's sandbox gives a document no caption: the line goes first, on its own.
+                send(words.contract(pdf=pdf is not None, voice=voice is not None))
+                if pdf:
+                    send(None, *pdf)
+            if voice:
+                send(None, *voice)
 
     async def on_reply_timeout(self, event: ReplyTimeout) -> None:
         once = (event.deal_id, event.record_id)
@@ -250,9 +295,18 @@ class Bot:
         for person in await self._people(event.deal_id, []):
             if person.role is event.person:
                 url = self._link(callback_path(event.deal_id, person.role))
-                self.outbox.send(event.deal_id, person.phone, person.role, words.follow_up(url))
+                self.outbox.send(
+                    event.deal_id, person.phone, person.role, words.follow_up(url),
+                    link=url, link_label=words.CALLBACK_BUTTON,
+                )
 
     async def _people(self, deal_id: str, fallback: list[Person]) -> list[Person]:
         deal = await self.store.deal(deal_id)
         people = [p for p in (deal.people if deal else []) if p.phone]
         return people or [p for p in fallback if p.phone]
+
+
+def _version(path: str) -> int | None:
+    """The contract's version, from its file name (contracts/<deal>-v2.pdf)."""
+    found = re.search(r"-v(\d+)\.pdf$", path)
+    return int(found.group(1)) if found else None

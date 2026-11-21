@@ -20,6 +20,16 @@ CONTRACT_PDF_ONLY = "Aapki deal ka contract taiyaar hai. Neeche PDF hai."
 CONTRACT_VOICE_ONLY = "Aapki deal ka contract taiyaar hai. Neeche awaaz mein summary hai. PDF abhi nahi bhej paaye."
 CONTRACT_NO_FILE = "Aapki deal ka contract taiyaar hai, par uski file abhi nahi bhej paaye."
 
+# Labels on Meta's link buttons: at most 20 characters.
+CALL_BUTTON = "Call kholiye"
+CALLBACK_BUTTON = "Gawah se baat kariye"
+
+
+def contract_caption(version: int | None, voice: bool) -> str:
+    """The caption under the contract PDF, where the provider shows one."""
+    line = "Aapki deal ka contract" + (f", version {version}" if version else "") + "."
+    return line + (" Awaaz mein summary neeche hai." if voice else "")
+
 
 def contract(pdf: bool, voice: bool) -> str:
     """The line before the files: it names only what is really attached."""
