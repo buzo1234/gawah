@@ -9,7 +9,7 @@ from app.contracts import (
     NO_DEAL, WHATSAPP_WEBHOOK_PATH, CallKind, ContractReady, Direction, Role, call_path, callback_path,
 )
 from app.main import create_app
-from app.whatsapp import bot, phone, words
+from app.whatsapp import inbound, phone, words
 from app.whatsapp.twilio import TwilioError, signature
 from fakes import call as fake_call
 
@@ -200,7 +200,7 @@ def test_a_twilio_error_keeps_its_reason_but_not_a_phone_number():
     ],
 )
 def test_a_request_to_delete_data_is_recognised_in_english_and_hinglish(text, asks):
-    assert bot.asks_to_delete(text) is asks
+    assert inbound.asks_to_delete(text) is asks
 
 
 async def test_delete_my_data_is_answered_logged_and_noted_and_nothing_is_deleted(world, caplog):

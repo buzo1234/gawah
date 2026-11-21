@@ -19,21 +19,8 @@ from datetime import UTC, datetime, time, timedelta, timezone
 
 from app.bus import Bus
 from app.contracts import (
-    AgentNote,
-    CrewAgent,
-    Fact,
-    FactKind,
-    FactRecorded,
-    FactSource,
-    FactStatus,
-    ItemKey,
-    MemoryQueries,
-    OwedRow,
-    Record,
-    RecordConfirmed,
-    RecordKind,
-    Role,
-    clip_path,
+    AgentNote, CrewAgent, Fact, FactKind, FactRecorded, FactSource, FactStatus, ItemKey, MemoryQueries,
+    OwedRow, Record, RecordConfirmed, RecordKind, Role, clip_path,
 )
 from app.log import deal_log
 from app.records import tuning, words

@@ -12,7 +12,7 @@ from app.contracts import Direction, Event, WhatsAppMessage
 from app.records.reader import Reading
 from app.store import Store
 from app.whatsapp import wire
-from app.whatsapp.bot import Inbound
+from app.whatsapp.inbound import Inbound
 from app.whatsapp.outgoing import Outgoing
 
 REAL = "+919999900000"  # the one number in VERIFIED_NUMBERS

@@ -11,16 +11,8 @@ from typing import TYPE_CHECKING
 
 from app.bus import Bus
 from app.contracts import (
-    Backing,
-    Deal,
-    Person,
-    Record,
-    RecordConfirmed,
-    RecordConfirmRequested,
-    RecordKind,
-    RecordReceived,
-    ReplyTimeout,
-    Role,
+    Backing, Deal, Person, Record, RecordConfirmed, RecordConfirmRequested, RecordKind,
+    RecordReceived, ReplyTimeout, Role,
 )
 from app.log import deal_log, mask_phone
 from app.records import words

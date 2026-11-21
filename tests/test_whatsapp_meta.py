@@ -13,15 +13,7 @@ from whatsapp_world import BASE, GEETA, RAMESH, SUNITA, world  # noqa: F401
 
 from app.config import Settings
 from app.contracts import (
-    NO_DEAL,
-    WHATSAPP_WEBHOOK_PATH,
-    CallKind,
-    ContractReady,
-    Direction,
-    RecordKind,
-    Role,
-    call_path,
-    callback_path,
+    NO_DEAL, WHATSAPP_WEBHOOK_PATH, CallKind, ContractReady, Direction, RecordKind, Role, call_path, callback_path,
     clip_path,
 )
 from app.main import create_app

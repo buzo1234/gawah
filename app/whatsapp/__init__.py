@@ -12,15 +12,8 @@ from fastapi.responses import PlainTextResponse
 from app.bus import Bus
 from app.config import Settings
 from app.contracts import (
-    MEMORY_STATE,
-    NO_DEAL,
-    WHATSAPP_WEBHOOK_PATH,
-    CallEnded,
-    CallOpened,
-    ContractReady,
-    MemoryQueries,
-    RecordConfirmed,
-    ReplyTimeout,
+    MEMORY_STATE, NO_DEAL, WHATSAPP_WEBHOOK_PATH, CallEnded, CallOpened, ContractReady, MemoryQueries,
+    RecordConfirmed, ReplyTimeout,
 )
 from app.log import deal_log
 from app.records.intake import Intake
@@ -28,8 +21,9 @@ from app.records.reader import Reader
 from app.records.reminders import Reminders
 from app.records.sentinel import Sentinel, wall_clock
 from app.store import S3, Store
-from app.whatsapp.bot import Bot, link_for, parse_inbound
+from app.whatsapp.bot import Bot, link_for
 from app.whatsapp.clock import Clock
+from app.whatsapp.inbound import parse_inbound
 from app.whatsapp.meta import Meta
 from app.whatsapp.meta_inbound import parse_meta, report_failures
 from app.whatsapp.outbox import Outbox, Provider

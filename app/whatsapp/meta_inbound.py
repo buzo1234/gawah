@@ -5,7 +5,7 @@ from collections.abc import Callable
 
 from app.contracts import NO_DEAL
 from app.log import deal_log, mask_phone
-from app.whatsapp.bot import Inbound
+from app.whatsapp.inbound import Inbound
 from app.whatsapp.meta import HINTS
 
 MEDIA = ("image", "document", "audio", "video")
