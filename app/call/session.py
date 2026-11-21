@@ -18,7 +18,7 @@ from app.bus import Bus
 from app.call.livekit import LiveKit, room_name
 from app.call.recording import Recording
 from app.config import ROOT, Settings
-from app.contracts import AgentNote, CallEnded, CallKind, CallStarted, CrewAgent, Deal, Role
+from app.contracts import AgentNote, CallEnded, CallKind, CallOpened, CallStarted, CrewAgent, Deal, Role
 from app.ears.lines import Ears
 from app.ears.transcribe import Transcriber, prompt_for
 from app.log import deal_log
@@ -287,6 +287,9 @@ class Calls:
                 await session.open()
                 self.sessions[deal.id] = session
                 if started:
+                    self.bus.publish(CallOpened(
+                        deal_id=deal.id, call_no=session.call_no, opened_by=role, room=session.room,
+                    ))
                     self.bus.publish(AgentNote(
                         deal_id=deal.id, agent=CrewAgent.EARS,
                         text=f"call {session.call_no}: room open, waiting for both",

@@ -75,6 +75,8 @@ async def test_a_second_call_has_its_own_room_recordings_and_line_numbers(world)
     assert loud(hirer_1, lines[0].start, lines[0].end)
     assert len(worker_2) / RATE == second.duration  # the file is the call's full length
 
+    [opened] = world.named("call.opened")  # only for call 2: the first call's links went with the deal
+    assert (opened.call_no, opened.room, opened.opened_by) == (2, "deal-d1-2", Role.HIRER)
     notes = [n for n in world.named("agent.note") if isinstance(n, AgentNote)]
     assert all(n.agent is CrewAgent.EARS for n in notes)
     assert any("call 2" in n.text and "room open" in n.text for n in notes)

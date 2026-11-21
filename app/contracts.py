@@ -301,6 +301,17 @@ class CallStarted(Event):
     call_no: int = 1  # the deal call within the deal: 1 for the first, 2 for a follow-up
 
 
+class CallOpened(Event):
+    """Sent by bridge when a person opens a deal call room and the other person is not there
+    yet, for call 2 and later only (the first call's links go out with deal.requested).
+    Listened to by whatsapp (tell the other person, with their call link) and dashboard."""
+
+    name: Literal["call.opened"] = "call.opened"
+    call_no: int  # as in call.started
+    opened_by: Role  # the person who opened the room
+    room: str | None = None
+
+
 class CallEnded(Event):
     """Sent by whoever sent call.started for this call.
     Listened to by brain, mouth, contract, whatsapp, dashboard."""
@@ -531,6 +542,7 @@ class AgentNote(Event):
 AnyEvent = Annotated[
     DealRequested
     | CallStarted
+    | CallOpened
     | CallEnded
     | TranscriptLine
     | ChecklistUpdated
