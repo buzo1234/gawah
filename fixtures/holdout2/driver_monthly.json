@@ -1,0 +1,317 @@
+{
+  "id": "holdout2_driver_monthly",
+  "description": "Speech-to-text output. A brisk young professional hires a monthly driver: 18,000 a month after bargaining, start tomorrow, 8:30 to 7, overtime 150 an hour, no advance, salary on the 1st, two leave days. Sunday pay is waved off with a filler 'theek hai', and nothing is said about notice or what happens if he leaves. Ends abruptly on her office call.",
+  "call_no": 1,
+  "deal": "driver_monthly",
+  "call_date": "2026-11-22",
+  "people": [
+    {
+      "role": "hirer",
+      "name": "Ananya Kulkarni",
+      "phone": "+910000022001"
+    },
+    {
+      "role": "worker",
+      "name": "Santosh Jadhav",
+      "phone": "+910000022002"
+    }
+  ],
+  "lines": [
+    {
+      "line_no": 1,
+      "speaker": "hirer",
+      "text": "hello हां संतोष जी मैं अनन्या बोल रही हूं वो आपका नंबर society के guard ने दिया था",
+      "start": 0.8,
+      "end": 6.92
+    },
+    {
+      "line_no": 2,
+      "speaker": "worker",
+      "text": "हां madam नमस्कार बोलो",
+      "start": 7.62,
+      "end": 8.98
+    },
+    {
+      "line_no": 3,
+      "speaker": "hirer",
+      "text": "मुझे full time driver चाहिए monday से saturday मेरी गाड़ी है creta automatic",
+      "start": 9.68,
+      "end": 14.1
+    },
+    {
+      "line_no": 4,
+      "speaker": "worker",
+      "text": "हां चलेगा madam automatic मैंने चलाया है पहले तीन साल एक डॉक्टर साहब के पास था",
+      "start": 14.8,
+      "end": 20.24
+    },
+    {
+      "line_no": 5,
+      "speaker": "hirer",
+      "text": "ok timing होगी सुबह साड़ी आठ से शाम सात तक कभी कभी late हो सकता है",
+      "start": 20.94,
+      "end": 26.38
+    },
+    {
+      "line_no": 6,
+      "speaker": "worker",
+      "text": "साढ़े आठ से सात ठीक है और सात के बाद रुकना पड़ा तो overtime लगेगा madam",
+      "start": 27.08,
+      "end": 32.52
+    },
+    {
+      "line_no": 7,
+      "speaker": "hirer",
+      "text": "हां वो ठीक है कितना लेते हो आप",
+      "start": 33.22,
+      "end": 35.94
+    },
+    {
+      "line_no": 8,
+      "speaker": "worker",
+      "text": "देखो madam salary बीस हज़ार और overtime डेढ़ सौ घंटा",
+      "start": 36.64,
+      "end": 40.04
+    },
+    {
+      "line_no": 9,
+      "speaker": "hirer",
+      "text": "बीस थोड़ा ज़्यादा है यार इस area में सब सोलह सत्रह में मिल जाते हैं",
+      "start": 40.74,
+      "end": 45.84
+    },
+    {
+      "line_no": 10,
+      "speaker": "worker",
+      "text": "सोलह में नहीं होगा madam घर से आने का petrol भी है अठारह कर दो",
+      "start": 46.54,
+      "end": 51.64
+    },
+    {
+      "line_no": 11,
+      "speaker": "hirer",
+      "text": "अठारह ok चलो ठीक है तो कल से आ जाओ साढ़े आठ बजे building के नीचे",
+      "start": 52.34,
+      "end": 57.78
+    },
+    {
+      "line_no": 12,
+      "speaker": "worker",
+      "text": "कल से ठीक है madam और overtime का",
+      "start": 58.48,
+      "end": 61.2
+    },
+    {
+      "line_no": 13,
+      "speaker": "hirer",
+      "text": "डेढ़ सौ ठीक है घंटे का but रोज़ रोज़ नहीं होगा",
+      "start": 61.9,
+      "end": 65.64
+    },
+    {
+      "line_no": 14,
+      "speaker": "worker",
+      "text": "हां हां",
+      "start": 66.34,
+      "end": 67.44
+    },
+    {
+      "line_no": 15,
+      "speaker": "hirer",
+      "text": "और देखो advance वगैरह मैं नहीं दूंगी पहले भी एक driver advance लेके",
+      "start": 68.14,
+      "end": 72.56
+    },
+    {
+      "line_no": 16,
+      "speaker": "hirer",
+      "text": "गायब हो गया था salary हर महीने की एक तारीख को GPay कर दूंगी",
+      "start": 72.91,
+      "end": 77.67
+    },
+    {
+      "line_no": 17,
+      "speaker": "worker",
+      "text": "ठीक है madam कोई बात नहीं advance नहीं चाहिए एक तारीख चलेगा",
+      "start": 78.37,
+      "end": 82.45
+    },
+    {
+      "line_no": 18,
+      "speaker": "hirer",
+      "text": "ok और sunday को कभी कभी चाहिए होगा मेरे parents आते हैं तो mall वगैरह",
+      "start": 83.15,
+      "end": 88.25
+    },
+    {
+      "line_no": 19,
+      "speaker": "worker",
+      "text": "sunday को आ जाऊंगा madam पर sunday का अलग देना पड़ेगा पूरे दिन का",
+      "start": 88.95,
+      "end": 93.71
+    },
+    {
+      "line_no": 20,
+      "speaker": "hirer",
+      "text": "हम्म ठीक है ठीक है वो देखते हैं जब होगा और हां गाड़ी में smoking बिल्कुल नहीं",
+      "start": 94.41,
+      "end": 100.19
+    },
+    {
+      "line_no": 21,
+      "speaker": "worker",
+      "text": "नहीं madam मैं smoke नहीं करता गुटखा भी नहीं",
+      "start": 100.89,
+      "end": 103.95
+    },
+    {
+      "line_no": 22,
+      "speaker": "hirer",
+      "text": "good और leave का क्या महीने में कितनी",
+      "start": 104.65,
+      "end": 107.37
+    },
+    {
+      "line_no": 23,
+      "speaker": "worker",
+      "text": "दो छुट्टी madam और बीमार हुआ तो पहले बता दूंगा",
+      "start": 108.07,
+      "end": 111.47
+    },
+    {
+      "line_no": 24,
+      "speaker": "hirer",
+      "text": "दो ठीक है बस बीच में छोड़ के मत जाना पिछले वाले ने यही किया था",
+      "start": 112.17,
+      "end": 117.61
+    },
+    {
+      "line_no": 25,
+      "speaker": "worker",
+      "text": "नहीं madam मैं ऐसा आदमी नहीं हूं डॉक्टर साहब के पास तीन साल रहा उनसे पूछ लो",
+      "start": 118.31,
+      "end": 124.09
+    },
+    {
+      "line_no": 26,
+      "speaker": "hirer",
+      "text": "हां ठीक है उनका number भेज देना whatsapp पे",
+      "start": 124.79,
+      "end": 127.85
+    },
+    {
+      "line_no": 27,
+      "speaker": "worker",
+      "text": "भेजता हूं madam और license की copy भी",
+      "start": 128.55,
+      "end": 131.27
+    },
+    {
+      "line_no": 28,
+      "speaker": "hirer",
+      "text": "हां aadhaar भी police verification के लिए",
+      "start": 131.97,
+      "end": 134.35
+    },
+    {
+      "line_no": 29,
+      "speaker": "worker",
+      "text": "हां ठीक है",
+      "start": 135.05,
+      "end": 136.15
+    },
+    {
+      "line_no": 30,
+      "speaker": "hirer",
+      "text": "ok संतोष एक minute मेरा दूसरा call आ रहा है office से",
+      "start": 136.85,
+      "end": 140.93
+    },
+    {
+      "line_no": 31,
+      "speaker": "hirer",
+      "text": "हां तो कल साढ़े आठ bye",
+      "start": 141.28,
+      "end": 143.32
+    },
+    {
+      "line_no": 32,
+      "speaker": "worker",
+      "text": "हां madam नम",
+      "start": 144.02,
+      "end": 145.12
+    }
+  ],
+  "noise": "stt",
+  "noise_notes": [
+    "Line 5: 'साढ़े आठ' (8:30) heard as 'साड़ी आठ'. Line 6 says साढ़े आठ correctly.",
+    "Lines 15-16: one sentence of the hirer split across two lines.",
+    "Line 32: cut off mid-word ('नम')."
+  ],
+  "wrap_up_starts_line": 30,
+  "pending_at_end": [
+    "late_or_unfinished",
+    "amount: Sunday pay"
+  ],
+  "expected_note": "Settled: work (full-time driver, her Creta automatic, Monday to Saturday, 8:30 to 7), amount 18,000 a month (agreed inside line 11, 'अठारह ok चलो ठीक है तो कल से'), overtime 150 an hour after 7, start tomorrow (Monday 23 Nov), no advance (a settled answer, lines 15-17), salary by GPay on the 1st of each month, two leave days. Open: the extra for a Sunday (he asks for a full day's pay at 19, she says 'ठीक है ठीक है वो देखते हैं' at 20 and changes the subject), and what happens if he leaves mid-way or does not turn up (she says 'बीच में छोड़ के मत जाना', he vouches for himself, no term).",
+  "expected": [
+    {
+      "after_line": 20,
+      "by_line": 22,
+      "item": "amount",
+      "reason": "term_unclear",
+      "to": "both",
+      "modes": [
+        "live"
+      ],
+      "required": true,
+      "note": "Sunday work is agreed in principle with 'अलग देना पड़ेगा', but no figure. Her 'ठीक है ठीक है वो देखते हैं' defers it, it does not settle it."
+    },
+    {
+      "after_line": 25,
+      "by_line": 27,
+      "item": "late_or_unfinished",
+      "reason": "term_unclear",
+      "to": "both",
+      "modes": [
+        "live"
+      ],
+      "required": false,
+      "note": "She raises leaving mid-way; he answers with a reference, not a term. Asking now is natural; waiting for wrap-up is also reasonable."
+    },
+    {
+      "after_line": 30,
+      "by_line": 32,
+      "item": "late_or_unfinished",
+      "reason": "wrapping_up",
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": true,
+      "also_pending": [
+        "amount: Sunday pay"
+      ],
+      "note": "Line 30 announces her other call and 31 says bye: the Judge has the pause after 30 or 31, and the call is gone after 32. It must not ask about the advance: 'no advance' is settled."
+    }
+  ],
+  "must_stay_silent": [
+    {
+      "after_line": 9,
+      "why": "Counter-offer (16-17 against 20), settled at 18 in line 11. Not a conflict."
+    },
+    {
+      "after_line": 11,
+      "why": "Acceptance is buried mid-line ('अठारह ok चलो ठीक है तो कल से'). Amount and start are agreed, not unclear."
+    },
+    {
+      "after_line": 17,
+      "why": "'Advance नहीं चाहिए' is a settled answer. Asking about the advance is wrong."
+    },
+    {
+      "after_line": 29,
+      "why": "'हां ठीक है' agrees to send documents, not to a term."
+    }
+  ]
+}

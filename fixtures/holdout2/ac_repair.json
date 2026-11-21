@@ -1,0 +1,331 @@
+{
+  "id": "holdout2_ac_repair",
+  "description": "Speech-to-text output. A polite retired teacher and a fast-talking young AC technician agree a service of two split ACs for 1,000, gas at 2,500 if needed, tomorrow by 10:30, no advance, cash after the work, a three-month gas warranty. Whether the 1,000 also covers the third, broken bedroom AC is said two ways ('वो भी देख लूंगा ... उसी में'). A compressor replacement is priced and put off on purpose. Ends with 'बाकी बाद में बात करते हैं' and small talk about the address.",
+  "call_no": 1,
+  "deal": "ac_repair",
+  "call_date": "2026-11-25",
+  "people": [
+    {
+      "role": "hirer",
+      "name": "Lakshmi Iyer",
+      "phone": "+910000024001"
+    },
+    {
+      "role": "worker",
+      "name": "Vikas Rawat",
+      "phone": "+910000024002"
+    }
+  ],
+  "lines": [
+    {
+      "line_no": 1,
+      "speaker": "worker",
+      "text": "हेलो madam मैं विकास बोल रहा हूं कूल केयर से आपने AC service के लिए call किया था",
+      "start": 0.8,
+      "end": 6.92
+    },
+    {
+      "line_no": 2,
+      "speaker": "hirer",
+      "text": "हां हां विकास जी नमस्ते drawing room और बच्चों वाले room का service करवाना है और मेरे bedroom वाला तो ठंडा ही नहीं कर रहा",
+      "start": 7.62,
+      "end": 16.12
+    },
+    {
+      "line_no": 3,
+      "speaker": "worker",
+      "text": "ठीक है madam bedroom वाले में gas कम होगी शायद या फिर compressor कितना पुराना है",
+      "start": 16.82,
+      "end": 22.26
+    },
+    {
+      "line_no": 4,
+      "speaker": "hirer",
+      "text": "सात आठ साल हो गए वॉल्टर्स का है",
+      "start": 22.96,
+      "end": 25.68
+    },
+    {
+      "line_no": 5,
+      "speaker": "worker",
+      "text": "अच्छा देखिए service का छह सौ एक AC का होता है gas full भरनी पड़ी तो दाई हज़ार और compressor गया तो साढ़े सात से आठ हज़ार लगेगा वो बाद की बात है",
+      "start": 26.38,
+      "end": 37.6
+    },
+    {
+      "line_no": 6,
+      "speaker": "hirer",
+      "text": "इतना सारा मैं तो सिर्फ service के लिए बोल रही थी",
+      "start": 38.3,
+      "end": 42.04
+    },
+    {
+      "line_no": 7,
+      "speaker": "worker",
+      "text": "नहीं madam gas तो देख के ही बताऊंगा पहले से नहीं बोल सकता",
+      "start": 42.74,
+      "end": 47.16
+    },
+    {
+      "line_no": 8,
+      "speaker": "hirer",
+      "text": "हां हां ठीक है देखिए ना पहले वो दोनों का service कितने में करोगे",
+      "start": 47.86,
+      "end": 52.62
+    },
+    {
+      "line_no": 9,
+      "speaker": "worker",
+      "text": "दोनों का बारह सौ बनता है पर हज़ार कर दूंगा आप regular customer बन जाओ बस",
+      "start": 53.32,
+      "end": 58.76
+    },
+    {
+      "line_no": 10,
+      "speaker": "hirer",
+      "text": "ठीक है हज़ार और bedroom वाला भी देख लेना साथ में",
+      "start": 59.46,
+      "end": 63.2
+    },
+    {
+      "line_no": 11,
+      "speaker": "worker",
+      "text": "हां हां वो भी देख लूंगा कोई बात नहीं उसी में",
+      "start": 63.9,
+      "end": 67.64
+    },
+    {
+      "line_no": 12,
+      "speaker": "hirer",
+      "text": "और gas भरी तो कितना बोला आपने दो हज़ार",
+      "start": 68.34,
+      "end": 71.4
+    },
+    {
+      "line_no": 13,
+      "speaker": "worker",
+      "text": "ढाई madam दो हज़ार पांच सौ पर gas भरी तो उस AC का service free",
+      "start": 72.1,
+      "end": 77.2
+    },
+    {
+      "line_no": 14,
+      "speaker": "hirer",
+      "text": "अच्छा ठीक है कब आओगे",
+      "start": 77.9,
+      "end": 79.6
+    },
+    {
+      "line_no": 15,
+      "speaker": "worker",
+      "text": "कल सुबह ग्यारह बजे तक पहुंच जाऊंगा दो घंटे का काम है",
+      "start": 80.3,
+      "end": 84.38
+    },
+    {
+      "line_no": 16,
+      "speaker": "hirer",
+      "text": "ग्यारह ठीक है पर बारह के बाद मुझे hospital जाना है checkup के लिए",
+      "start": 85.08,
+      "end": 89.84
+    },
+    {
+      "line_no": 17,
+      "speaker": "worker",
+      "text": "हां तो ग्यारह से पहले ही आ जाऊंगा madam साढ़े दस तक",
+      "start": 90.54,
+      "end": 94.62
+    },
+    {
+      "line_no": 18,
+      "speaker": "hirer",
+      "text": "और पैसे पहले देने हैं क्या कुछ",
+      "start": 95.32,
+      "end": 97.7
+    },
+    {
+      "line_no": 19,
+      "speaker": "worker",
+      "text": "नहीं नहीं madam advance कुछ नहीं काम होने के बाद cash या UPI जो आपको ठीक लगे",
+      "start": 98.4,
+      "end": 104.18
+    },
+    {
+      "line_no": 20,
+      "speaker": "hirer",
+      "text": "cash दे दूंगी मेरे पास UPI ठीक से चलता नहीं बेटा set करके गया था",
+      "start": 104.88,
+      "end": 109.98
+    },
+    {
+      "line_no": 21,
+      "speaker": "worker",
+      "text": "कोई बात नहीं cash चलेगा",
+      "start": 110.68,
+      "end": 112.38
+    },
+    {
+      "line_no": 22,
+      "speaker": "hirer",
+      "text": "और अगर फिर से ठंडा नहीं किया तो पिछली बार वाला लड़का पैसे लेके गया फिर दो दिन में वही हाल",
+      "start": 113.08,
+      "end": 120.22
+    },
+    {
+      "line_no": 23,
+      "speaker": "hirer",
+      "text": "फिर फोन भी नहीं उठाया",
+      "start": 120.57,
+      "end": 122.27
+    },
+    {
+      "line_no": 24,
+      "speaker": "worker",
+      "text": "madam gas की तीन महीने की warranty है लीक हुई तो free में दोबारा भरूंगा और service में कुछ हुआ तो पंद्रह दिन में free में आऊंगा",
+      "start": 122.97,
+      "end": 132.15
+    },
+    {
+      "line_no": 25,
+      "speaker": "hirer",
+      "text": "ठीक है ये अच्छा है",
+      "start": 132.85,
+      "end": 134.55
+    },
+    {
+      "line_no": 26,
+      "speaker": "hirer",
+      "text": "और compressor वाला अगर हुआ तो",
+      "start": 134.9,
+      "end": 136.94
+    },
+    {
+      "line_no": 27,
+      "speaker": "worker",
+      "text": "वो madam खोल के ही पता चलेगा company का लगाएंगे तो आठ हज़ार लोकल वाला आठ से कम में हो जाएगा",
+      "start": 137.64,
+      "end": 144.78
+    },
+    {
+      "line_no": 28,
+      "speaker": "hirer",
+      "text": "अरे बाप रे आठ हज़ार वो बाद में बात करते हैं पहले आप देख लो बेटे से भी पूछना पड़ेगा",
+      "start": 145.48,
+      "end": 152.28
+    },
+    {
+      "line_no": 29,
+      "speaker": "worker",
+      "text": "हां हां बिल्कुल पहले check करते हैं फिर बता दूंगा",
+      "start": 152.98,
+      "end": 156.38
+    },
+    {
+      "line_no": 30,
+      "speaker": "hirer",
+      "text": "ठीक है विकास जी तो कल साढ़े दस बाकी बाद में बात करते हैं",
+      "start": 157.08,
+      "end": 161.84
+    },
+    {
+      "line_no": 31,
+      "speaker": "worker",
+      "text": "जी madam address वही है ना मयूर विहार फेज़ वन पॉकेट फोर",
+      "start": 162.54,
+      "end": 166.62
+    },
+    {
+      "line_no": 32,
+      "speaker": "hirer",
+      "text": "हां वही तीसरी मंज़िल lift नहीं है",
+      "start": 167.32,
+      "end": 169.7
+    },
+    {
+      "line_no": 33,
+      "speaker": "worker",
+      "text": "कोई बात नहीं madam चढ़ जाएंगे ठीक है नमस्ते",
+      "start": 170.4,
+      "end": 173.46
+    },
+    {
+      "line_no": 34,
+      "speaker": "hirer",
+      "text": "नमस्ते",
+      "start": 174.16,
+      "end": 175.26
+    }
+  ],
+  "noise": "stt",
+  "noise_notes": [
+    "Line 5: 'ढाई हज़ार' (2,500) heard as 'दाई हज़ार'. Line 13 states 2,500 plainly.",
+    "Lines 22-23: one sentence of the hirer split across two lines.",
+    "Line 1: the shop name 'कूल केयर' (Cool Care) written in Devanagari.",
+    "Line 4: the brand Voltas heard as 'वॉल्टर्स'."
+  ],
+  "wrap_up_starts_line": 30,
+  "pending_at_end": [
+    "work/amount: whether the bedroom AC is inside the 1,000"
+  ],
+  "expected_note": "Settled: service of the drawing-room and children's-room ACs for 1,000 (asked 1,200), gas refill 2,500 if needed with that AC's service then free, tomorrow (26 Nov) by 10:30, no advance, cash after the work, three-month gas warranty and a free revisit within 15 days if the service fails. Two meanings: at 10-11 she asks him to look at the bedroom AC 'साथ में' and he says 'वो भी देख लूंगा ... उसी में'. That can mean a free look only, or a free service too (and line 13 makes the service free only if gas is filled). Deliberately deferred by both: the compressor (8,000 company part, less for local), which depends on what he finds.",
+  "expected": [
+    {
+      "after_line": 11,
+      "by_line": 14,
+      "item": "work",
+      "reason": "two_meanings",
+      "reason_also_ok": [
+        "term_unclear"
+      ],
+      "to": "both",
+      "modes": [
+        "live"
+      ],
+      "required": true,
+      "note": "'उसी में' after 'वो भी देख लूंगा' can mean the 1,000 covers a look at the bedroom AC, or a full service of it. The bill differs by up to 600. Asking at 13-14, after the gas line adds another condition, is also fine."
+    },
+    {
+      "after_line": 28,
+      "by_line": 30,
+      "item": "work",
+      "reason": "term_unclear",
+      "to": "both",
+      "modes": [
+        "live"
+      ],
+      "required": false,
+      "note": "The compressor is put off on purpose ('वो बाद में बात करते हैं पहले आप देख लो'). A listener could note it as open for later, or treat it as outside this deal. It must not be treated as a conflict with the 1,000."
+    },
+    {
+      "after_line": 30,
+      "by_line": 34,
+      "item": "work",
+      "reason": "wrapping_up",
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": true,
+      "note": "'बाकी बाद में बात करते हैं' starts the close. If the bedroom-AC question was not settled live, it must be asked now. Mentioning the compressor as open is fine. It must not ask about the advance (settled as none at 19)."
+    }
+  ],
+  "must_stay_silent": [
+    {
+      "after_line": 8,
+      "why": "'हां हां ठीक है' is a filler before her question; she agrees to nothing."
+    },
+    {
+      "after_line": 13,
+      "why": "'दाई हज़ार' at line 5 is a mis-hearing of ढाई; 'दो हज़ार' at 12 was a question, corrected at 13 to 2,500. Not a conflict."
+    },
+    {
+      "after_line": 19,
+      "why": "'Advance कुछ नहीं' is a settled answer."
+    },
+    {
+      "after_line": 25,
+      "why": "'ठीक है ये अच्छा है' accepts the warranty; late or unfinished is settled."
+    }
+  ]
+}

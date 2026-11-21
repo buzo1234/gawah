@@ -1,0 +1,343 @@
+{
+  "id": "holdout2_tailor_lehenga",
+  "description": "An anxious mother of the bride and a calm old tailor agree a wedding order: lehenga blouse and fitting plus four suits, 9,000 after bargaining, 2,000 advance, balance on pickup, ready by 5 December. Whether the 9,000 includes the lining is said two ways, and what happens if he is late is asked and dodged. She asks Gawah what advance she promised. Rambling ending.",
+  "call_no": 1,
+  "deal": "tailor_lehenga",
+  "call_date": "2026-11-21",
+  "people": [
+    {
+      "role": "hirer",
+      "name": "Sunita Bansal",
+      "phone": "+910000021001"
+    },
+    {
+      "role": "worker",
+      "name": "Iqbal Ansari",
+      "phone": "+910000021002"
+    }
+  ],
+  "lines": [
+    {
+      "line_no": 1,
+      "speaker": "hirer",
+      "text": "Hello, Master ji? Main Sunita bol rahi hoon, Bansal, Model Town wali. Pichhle saal aapne meri bahu ka suit banaya tha.",
+      "start": 0.8,
+      "end": 7.94
+    },
+    {
+      "line_no": 2,
+      "speaker": "worker",
+      "text": "Haan ji haan, Bansal ji, yaad hai. Namaste. Boliye.",
+      "start": 8.64,
+      "end": 11.7
+    },
+    {
+      "line_no": 3,
+      "speaker": "hirer",
+      "text": "Master ji, beti ki shaadi hai, baarah December ko. Uska kaam karwana hai aapse. Lehenga ka blouse aur kuch suits.",
+      "start": 12.4,
+      "end": 19.2
+    },
+    {
+      "line_no": 4,
+      "speaker": "worker",
+      "text": "Mubarak ho ji, bahut mubarak. Kitne suit?",
+      "start": 19.9,
+      "end": 22.28
+    },
+    {
+      "line_no": 5,
+      "speaker": "hirer",
+      "text": "Chaar suit. Aur lehenga ka blouse, aur lehenga ki fitting bhi. Kapda sab mera hai, main de jaungi.",
+      "start": 22.98,
+      "end": 29.1
+    },
+    {
+      "line_no": 6,
+      "speaker": "worker",
+      "text": "Theek. Dekhiye, blouse aur lehenga ki silai saade chaar hazaar, aur suit baarah sau ek, chaar ke hue adtaalis sau. Lining aap le aana, woh main nahi rakhta.",
+      "start": 29.8,
+      "end": 39.32
+    },
+    {
+      "line_no": 7,
+      "speaker": "hirer",
+      "text": "Arre baap re, nau hazaar teen sau? Master ji, itna to nahi. Pichhli baar to aapne...",
+      "start": 40.02,
+      "end": 45.46
+    },
+    {
+      "line_no": 8,
+      "speaker": "worker",
+      "text": "Pichhli baar ek suit tha, Bansal ji. Ye bridal kaam hai, blouse mein haath ka kaam lagega.",
+      "start": 46.16,
+      "end": 51.94
+    },
+    {
+      "line_no": 9,
+      "speaker": "hirer",
+      "text": "Achha suniye, aath hazaar kar lijiye sab. Main to purani customer hoon.",
+      "start": 52.64,
+      "end": 56.72
+    },
+    {
+      "line_no": 10,
+      "speaker": "worker",
+      "text": "Aath mein nahi hoga ji. Haan, nau hazaar kar deta hoon, round figure.",
+      "start": 57.42,
+      "end": 61.84
+    },
+    {
+      "line_no": 11,
+      "speaker": "hirer",
+      "text": "Nau hazaar... saara saaman milake na? Latkan, dori, sab?",
+      "start": 62.54,
+      "end": 65.6
+    },
+    {
+      "line_no": 12,
+      "speaker": "worker",
+      "text": "Haan ji, saaman milake. Latkan to main achhe wale lagata hoon, Chandni Chowk se laata hoon.",
+      "start": 66.3,
+      "end": 71.74
+    },
+    {
+      "line_no": 13,
+      "speaker": "hirer",
+      "text": "Theek hai, theek hai. Accha, trial kab hoga?",
+      "start": 72.44,
+      "end": 75.16
+    },
+    {
+      "line_no": 14,
+      "speaker": "worker",
+      "text": "Kapda kal parson de jaiye, to trial agle Sunday ko, aur poora maal paanch December tak ready.",
+      "start": 75.86,
+      "end": 81.64
+    },
+    {
+      "line_no": 15,
+      "speaker": "hirer",
+      "text": "Paanch tak? Shaadi baarah ko hai... haan, theek hai, ek hafta pehle mil jayega to alteration ka time rahega.",
+      "start": 82.34,
+      "end": 88.8
+    },
+    {
+      "line_no": 16,
+      "speaker": "worker",
+      "text": "Bilkul. Koi dheela tight hua to wahin theek kar denge.",
+      "start": 89.5,
+      "end": 92.9
+    },
+    {
+      "line_no": 17,
+      "speaker": "hirer",
+      "text": "Paise ka batayiye, advance kitna?",
+      "start": 93.6,
+      "end": 95.3
+    },
+    {
+      "line_no": 18,
+      "speaker": "worker",
+      "text": "Jo aap theek samjhein. Aadha de dijiye.",
+      "start": 96.0,
+      "end": 98.38
+    },
+    {
+      "line_no": 19,
+      "speaker": "hirer",
+      "text": "Aadha to abhi nahi ho payega, shaadi ke kharche hain. Do hazaar abhi PhonePe kar deti hoon, baaki jab maal uthaungi tab.",
+      "start": 99.08,
+      "end": 106.56
+    },
+    {
+      "line_no": 20,
+      "speaker": "worker",
+      "text": "Chaliye koi baat nahi. Do hazaar sahi hai.",
+      "start": 107.26,
+      "end": 109.98
+    },
+    {
+      "line_no": 21,
+      "speaker": "hirer",
+      "text": "Aur Master ji, ek baat. Agar paanch tak ready nahi hua to? Pichhli baar Diwali pe aapne teen din late kiya tha.",
+      "start": 110.68,
+      "end": 118.16
+    },
+    {
+      "line_no": 22,
+      "speaker": "worker",
+      "text": "Arre woh to bijli chali gayi thi poore hafte. Is baar nahi hoga, aap tension mat lo. Pachchees saal se kaam kar raha hoon.",
+      "start": 118.86,
+      "end": 127.02
+    },
+    {
+      "line_no": 23,
+      "speaker": "hirer",
+      "text": "Haan wo to hai. Accha, beti ka naap aap loge ya purane blouse se kaam chal jayega?",
+      "start": 127.72,
+      "end": 133.5
+    },
+    {
+      "line_no": 24,
+      "speaker": "worker",
+      "text": "Beti ko le aaiye ek baar, bridal mein purane naap se nahi chalta. Naap sahi lena padta hai.",
+      "start": 134.2,
+      "end": 140.32
+    },
+    {
+      "line_no": 25,
+      "speaker": "hirer",
+      "text": "Gawah ji, aap sun rahe ho na? Maine advance kitna bola, do hazaar hi na? Baad mein main bhool jaati hoon.",
+      "start": 141.02,
+      "end": 148.16
+    },
+    {
+      "line_no": 26,
+      "speaker": "worker",
+      "text": "Haan haan, likh lijiye, sab saaf rahe.",
+      "start": 148.86,
+      "end": 151.24
+    },
+    {
+      "line_no": 27,
+      "speaker": "hirer",
+      "text": "Chalo. Accha Master ji, Pinky ke lehenge ka rang dekhoge to khush ho jaoge. Mehroon hai.",
+      "start": 151.94,
+      "end": 157.38
+    },
+    {
+      "line_no": 28,
+      "speaker": "worker",
+      "text": "Achha ji. Mehroon pe golden latkan bahut jachega.",
+      "start": 158.08,
+      "end": 160.8
+    },
+    {
+      "line_no": 29,
+      "speaker": "hirer",
+      "text": "Haan haan. Aur suno, uski saas bhi ek tailor jaanti hain Lajpat Nagar mein, par maine kaha nahi ji, hamare Master ji hi karenge.",
+      "start": 161.5,
+      "end": 169.66
+    },
+    {
+      "line_no": 30,
+      "speaker": "worker",
+      "text": "Meherbani aapki. Bas kapda jaldi pahuncha dijiye.",
+      "start": 170.36,
+      "end": 172.74
+    },
+    {
+      "line_no": 31,
+      "speaker": "hirer",
+      "text": "Kal pakka. Kal shaam ko Pinky ke papa chhod jayenge. Chalo phir, rakhti hoon.",
+      "start": 173.44,
+      "end": 178.2
+    },
+    {
+      "line_no": 32,
+      "speaker": "worker",
+      "text": "Ji, namaste.",
+      "start": 178.9,
+      "end": 180.0
+    },
+    {
+      "line_no": 33,
+      "speaker": "hirer",
+      "text": "Haan, aur lining bhi bhijwa dungi saath mein... ya aap le aaoge? Chalo kal dekh lenge. Namaste.",
+      "start": 180.7,
+      "end": 186.48
+    },
+    {
+      "line_no": 34,
+      "speaker": "worker",
+      "text": "Ji ji. Khuda hafiz.",
+      "start": 187.18,
+      "end": 188.54
+    }
+  ],
+  "noise": "clean",
+  "wrap_up_starts_line": 31,
+  "pending_at_end": [
+    "late_or_unfinished",
+    "amount: whether the lining is inside the 9,000"
+  ],
+  "expected_note": "Settled: work (lehenga blouse and lehenga fitting, four suits, her fabric), amount 9,000 (line 10, accepted by moving on at 11-13), advance 2,000 now by PhonePe, balance 7,000 when she collects, trial next Sunday (29 Nov) and everything ready by 5 December (wedding 12 December). Open: what happens if it is not ready by the 5th (asked at 21, dodged at 22), and whether the lining is part of the 9,000 (he said at line 6 she brings the lining; she asked 'saara saaman milake' at 11 and he said yes while talking about latkan; she asks again at 33).",
+  "expected": [
+    {
+      "after_line": 12,
+      "by_line": 16,
+      "item": "amount",
+      "reason": "two_meanings",
+      "reason_also_ok": [
+        "term_unclear"
+      ],
+      "to": "both",
+      "modes": [
+        "live"
+      ],
+      "required": false,
+      "note": "'Saara saaman milake' can be heard as including the lining, which he said at line 6 she brings. He answers about latkan. A careful listener could ask now; another could read line 6 as settling it. It becomes required at wrap-up, when she asks again at 33."
+    },
+    {
+      "after_line": 22,
+      "by_line": 25,
+      "item": "late_or_unfinished",
+      "reason": "term_unclear",
+      "to": "both",
+      "modes": [
+        "live"
+      ],
+      "required": true,
+      "note": "She asks directly what happens if it is not ready by the 5th; he answers with a story about a power cut and 'tension mat lo'. No term."
+    },
+    {
+      "after_line": 25,
+      "by_line": 26,
+      "item": "advance",
+      "reason": "question_to_gawah",
+      "to": "hirer",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": true,
+      "answer": "2,000 now by PhonePe (lines 19-20); the other 7,000 when she collects the clothes.",
+      "note": "Asked by name. A wrong figure here (4,500, the 'aadha' he first asked for) is a failure."
+    },
+    {
+      "after_line": 31,
+      "by_line": 34,
+      "item": "late_or_unfinished",
+      "reason": "wrapping_up",
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": true,
+      "also_pending": [
+        "amount: lining inside the 9,000 or not"
+      ],
+      "note": "'Chalo phir, rakhti hoon' at 31 starts the close; at 33 she reopens the lining ('ya aap le aaoge?') and defers it to tomorrow. Speaking after 33 is best. The question should cover the late term and the lining. A wrap-up spoken after 31 that misses the lining is half right."
+    }
+  ],
+  "must_stay_silent": [
+    {
+      "after_line": 7,
+      "why": "'Nau hazaar teen sau' is the sum of 4,500 and 4,800 from line 6, not a conflict."
+    },
+    {
+      "after_line": 10,
+      "why": "Counter-offer (8,000) against 9,300, settled at 9,000 in the same line. Not a conflict."
+    },
+    {
+      "after_line": 15,
+      "why": "'Paanch tak? ... haan, theek hai' accepts the 5th after thinking aloud. Not unclear."
+    },
+    {
+      "after_line": 20,
+      "why": "The advance is settled at 2,000 after 'aadha' was asked. Not a conflict."
+    }
+  ]
+}

@@ -1,0 +1,314 @@
+{
+  "id": "holdout2_mason_wall_call2",
+  "description": "Second call of the pair, two days into the work. The mason reassures the hirer he wants nothing extra and in the same breath says 1,25,000 is due at shoulder height (75,000 was agreed); the hirer does not notice. They then agree a change: the 60-foot road-side stretch goes up to 7 feet for 15,000 more, added to the last payment. The hirer asks Gawah what finish date and penalty were agreed. The mason repeats the wrong figure at the close and the call ends when a truck arrives.",
+  "call_no": 2,
+  "deal": "mason_wall",
+  "previous_call": "mason_wall_call1.json",
+  "call_date": "2026-12-12",
+  "people": [
+    {
+      "role": "hirer",
+      "name": "Devendra Yadav",
+      "phone": "+910000023001"
+    },
+    {
+      "role": "worker",
+      "name": "Shakeel Ahmed",
+      "phone": "+910000023002"
+    }
+  ],
+  "record_before_call": {
+    "work": "Boundary wall 180 ft long, 6 ft high, 9-inch brick, plaster outside only, two gate pillars",
+    "amount": "1,75,000 on contract, including brick, cement, sand, steel and labour",
+    "advance": "50,000 at the start, 10 December, on site",
+    "balance": "75,000 when the wall reaches shoulder height; 50,000 after the plaster",
+    "dates": "10 December to 31 December",
+    "late_or_unfinished": "1,000 a day after 31 December, rain days not counted; if left unfinished, paid only for work done and the rest returned"
+  },
+  "lines": [
+    {
+      "line_no": 1,
+      "speaker": "worker",
+      "text": "Salaam Fauji sahab, Shakeel. Site se bol raha hoon.",
+      "start": 0.8,
+      "end": 3.86
+    },
+    {
+      "line_no": 2,
+      "speaker": "hirer",
+      "text": "Haan Shakeel, bolo. Kaam kaisa chal raha hai?",
+      "start": 4.56,
+      "end": 7.28
+    },
+    {
+      "line_no": 3,
+      "speaker": "worker",
+      "text": "Badhiya sahab. Neev bhar di, aaj teesra din hai, chaalis foot tak teen foot oonchi ho gayi.",
+      "start": 7.98,
+      "end": 13.76
+    },
+    {
+      "line_no": 4,
+      "speaker": "hirer",
+      "text": "Achha. Main parso aaunga dekhne.",
+      "start": 14.46,
+      "end": 16.16
+    },
+    {
+      "line_no": 5,
+      "speaker": "worker",
+      "text": "Zaroor aaiye. Sahab, ek baat thi. Eent wala rate badha raha hai, saadhe aath rupaye se nau rupaye eent kar di usne.",
+      "start": 16.86,
+      "end": 24.34
+    },
+    {
+      "line_no": 6,
+      "speaker": "hirer",
+      "text": "Woh tumhara mamla hai Shakeel. Theke pe baat hui thi.",
+      "start": 25.04,
+      "end": 28.44
+    },
+    {
+      "line_no": 7,
+      "speaker": "worker",
+      "text": "Haan sahab, haan, main kuch extra nahi maang raha, bas bata raha tha. Agle hafte tak deewar kandhe tak pahunch jayegi, tab sava lakh ka intezaam rakhna.",
+      "start": 29.14,
+      "end": 38.32
+    },
+    {
+      "line_no": 8,
+      "speaker": "hirer",
+      "text": "Haan haan, intezaam ho jayega. Tum kaam pe dhyaan do.",
+      "start": 39.02,
+      "end": 42.42
+    },
+    {
+      "line_no": 9,
+      "speaker": "worker",
+      "text": "Ji. Aur sahab, ek suggestion hai. Gate wali side pe sadak oonchi hai, wahan chhe foot ki deewar chhoti lagegi. Saat foot kar dein?",
+      "start": 43.12,
+      "end": 51.28
+    },
+    {
+      "line_no": 10,
+      "speaker": "hirer",
+      "text": "Saat foot... poori deewar?",
+      "start": 51.98,
+      "end": 53.34
+    },
+    {
+      "line_no": 11,
+      "speaker": "worker",
+      "text": "Nahi nahi, sirf saamne wali, sadak wali, saath foot lambi hai. Baaki chhe hi rahegi.",
+      "start": 54.04,
+      "end": 59.14
+    },
+    {
+      "line_no": 12,
+      "speaker": "hirer",
+      "text": "Kitna extra?",
+      "start": 59.84,
+      "end": 60.94
+    },
+    {
+      "line_no": 13,
+      "speaker": "worker",
+      "text": "Eent aur mazdoori milake, bees hazaar.",
+      "start": 61.64,
+      "end": 63.68
+    },
+    {
+      "line_no": 14,
+      "speaker": "hirer",
+      "text": "Bees zyada hai. Saath foot pe ek foot. Baarah kar lo.",
+      "start": 64.38,
+      "end": 68.12
+    },
+    {
+      "line_no": 15,
+      "speaker": "worker",
+      "text": "Sahab, ek foot oonchai matlab saath foot pe do raddhe extra, upar se pillar bhi ooncha karna padega. Pandrah se kam nahi hoga.",
+      "start": 68.82,
+      "end": 76.64
+    },
+    {
+      "line_no": 16,
+      "speaker": "hirer",
+      "text": "Pandrah. Theek hai, kar do. Pandrah plaster wale ke saath dena, alag nahi.",
+      "start": 77.34,
+      "end": 81.76
+    },
+    {
+      "line_no": 17,
+      "speaker": "worker",
+      "text": "Ji sahab, plaster ke baad pachaas plus pandrah, painsath. Pakka.",
+      "start": 82.46,
+      "end": 85.86
+    },
+    {
+      "line_no": 18,
+      "speaker": "hirer",
+      "text": "Aur date? Ek foot badhne se late to nahi hoga?",
+      "start": 86.56,
+      "end": 89.96
+    },
+    {
+      "line_no": 19,
+      "speaker": "worker",
+      "text": "Nahi sahab, ikattis hi. Do mazdoor aur laga dunga.",
+      "start": 90.66,
+      "end": 93.72
+    },
+    {
+      "line_no": 20,
+      "speaker": "hirer",
+      "text": "Dekho, ikattis ke baad wala hisaab yaad hai na.",
+      "start": 94.42,
+      "end": 97.48
+    },
+    {
+      "line_no": 21,
+      "speaker": "worker",
+      "text": "Yaad hai sahab, yaad hai.",
+      "start": 98.18,
+      "end": 99.88
+    },
+    {
+      "line_no": 22,
+      "speaker": "hirer",
+      "text": "Gawah, tum bhi sun rahe ho. Pichhli baar kya tay hua tha, khatam kab tak, aur uske baad kitna roz?",
+      "start": 100.58,
+      "end": 107.38
+    },
+    {
+      "line_no": 23,
+      "speaker": "worker",
+      "text": "Sahab aapne to machine laga rakhi hai, ab Shakeel ko darna padega.",
+      "start": 108.08,
+      "end": 112.16
+    },
+    {
+      "line_no": 24,
+      "speaker": "hirer",
+      "text": "Darne ki baat nahi, likha hua achha hota hai. Tumhare liye bhi.",
+      "start": 112.86,
+      "end": 116.94
+    },
+    {
+      "line_no": 25,
+      "speaker": "worker",
+      "text": "Sahi baat hai sahab. Achha, kal sariya aa raha hai pillar ka, ek baar aap photo dekh lena WhatsApp pe.",
+      "start": 117.64,
+      "end": 124.44
+    },
+    {
+      "line_no": 26,
+      "speaker": "hirer",
+      "text": "Bhej dena. Aur ret thodi moti lag rahi thi pichhli photo mein.",
+      "start": 125.14,
+      "end": 129.22
+    },
+    {
+      "line_no": 27,
+      "speaker": "worker",
+      "text": "Woh neev ke liye thi sahab, plaster mein baarik wali lagayenge.",
+      "start": 129.92,
+      "end": 133.66
+    },
+    {
+      "line_no": 28,
+      "speaker": "hirer",
+      "text": "Dhyaan rakhna. Chalo, mujhe bank jaana hai abhi.",
+      "start": 134.36,
+      "end": 137.08
+    },
+    {
+      "line_no": 29,
+      "speaker": "worker",
+      "text": "Ji sahab. To agle hafte sava lakh, aur parso aap aa rahe ho.",
+      "start": 137.78,
+      "end": 142.2
+    },
+    {
+      "line_no": 30,
+      "speaker": "hirer",
+      "text": "Haan parso aata hoon.",
+      "start": 142.9,
+      "end": 144.26
+    },
+    {
+      "line_no": 31,
+      "speaker": "worker",
+      "text": "Sahab truck aa gaya sariya ka, main baad mein karta hoon. Khuda hafiz.",
+      "start": 144.96,
+      "end": 149.38
+    }
+  ],
+  "noise": "clean",
+  "wrap_up_starts_line": 28,
+  "pending_at_end": [
+    "balance: 1,25,000 said at shoulder height against 75,000 agreed"
+  ],
+  "expected_note": "Replay this call into the same deal as mason_wall_call1.json (call_no 2), after call 1. The contradiction is at line 7: 'sava lakh' due at shoulder height, against 75,000 agreed in call 1. The hirer says 'haan haan, intezaam ho jayega' without noticing. The agreed change (lines 9-17): the 60-foot front stretch on the road side goes from 6 to 7 feet, for 15,000 more (asked 20,000, offered 12,000, settled 15,000), paid with the last instalment, which becomes 65,000; total becomes 1,90,000; finish stays 31 December. After line 17 the record should hold the change, not flag it.",
+  "expected": [
+    {
+      "after_line": 7,
+      "by_line": 9,
+      "item": "balance",
+      "reason": "contradicts_record",
+      "reason_also_ok": [
+        "conflicting_figures"
+      ],
+      "to": "both",
+      "modes": [
+        "live"
+      ],
+      "required": true,
+      "note": "Call 1 agreed 75,000 at shoulder height (call 1, lines 13-14). 'Sava lakh' is said inside a reassuring line and the hirer agrees to it at line 8. The Judge should ask which figure holds, citing what was agreed."
+    },
+    {
+      "after_line": 22,
+      "by_line": 23,
+      "item": "dates",
+      "reason": "question_to_gawah",
+      "to": "hirer",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": true,
+      "answer": "Finish by 31 December (unchanged in this call, line 19), and 1,000 a day after that, rain days not counted.",
+      "note": "Asked by name. Both parts must be right. Raising the open 1,25,000 / 75,000 conflict in the same answer is good, not required."
+    },
+    {
+      "after_line": 28,
+      "by_line": 31,
+      "item": "balance",
+      "reason": "wrapping_up",
+      "reason_also_ok": [
+        "contradicts_record"
+      ],
+      "to": "both",
+      "modes": [
+        "live",
+        "wrapup"
+      ],
+      "required": true,
+      "note": "Line 28 starts the close; at 29 the mason repeats 'agle hafte sava lakh' and the hirer says 'haan'. The question must name 1,25,000 against 75,000. Any read-back must use the changed terms: front stretch 7 ft, 15,000 more, last instalment 65,000, total 1,90,000. Reading back 1,75,000 or the old 50,000 last instalment as current is wrong."
+    }
+  ],
+  "must_stay_silent": [
+    {
+      "after_line": 5,
+      "why": "Brick price going up is the mason's cost on a fixed contract; the hirer says so at 6 and the mason asks for nothing. Not a change."
+    },
+    {
+      "after_line": 14,
+      "why": "Counter-offer (12,000 against 20,000) for the change, mid-negotiation. Not a contradiction of the record."
+    },
+    {
+      "after_line": 17,
+      "why": "A change both agree to (15,000 more, last instalment 65,000). It replaces the old terms; it does not contradict them."
+    }
+  ]
+}
