@@ -62,6 +62,7 @@ class Bot:
         self._worker = asyncio.create_task(self._work())
         if self.sentinel:
             self.sentinel.reminders.load()
+            await self.sentinel.terms.load()
 
     async def stop(self) -> None:
         if self._worker:
@@ -70,6 +71,7 @@ class Bot:
         await self.intake.close()
         if self.sentinel:
             await self.sentinel.reminders.close()
+            await self.sentinel.terms.reminders.close()
         await self.outbox.close()
 
     async def idle(self) -> None:
@@ -112,6 +114,9 @@ class Bot:
             return
         if not message.media_url and self.intake.answer(message.phone, message.text, message.name, message.button):
             return
+        if deal and self.sentinel and not message.media_url and await self.sentinel.terms.reply(
+                deal, sender_of(deal, role, message), message.text, message.button):
+            return  # a choice about a term in dispute, or their version of it
         if read_button(message.button):  # a yes or no tapped on a question already answered
             reply(record_words.ALREADY_ANSWERED)
             return

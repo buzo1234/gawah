@@ -13,6 +13,8 @@
   heard.py.
 - A payment or work claim the other person says no to: see dispute.py. Every owed message
   and reminder after it names what is still disputed.
+- A term disputed on a call-back: see term_disputes.py. Owed messages and reminders use the
+  figure on record and say the term is in dispute.
 """
 
 import logging
@@ -30,6 +32,7 @@ from app.log import deal_log
 from app.records import heard, tuning, words
 from app.records.dispute import Disputes, total_row
 from app.records.reminders import Reminders
+from app.records.term_disputes import TermDisputes
 from app.store import Store
 
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -53,6 +56,7 @@ class Sentinel:
     def __init__(
         self, bus: Bus, outbox, store: Store, memory: MemoryQueries, link: Callable[[str], str],
         reminders: Callable[["Sentinel"], Reminders], wall: Callable[[], datetime],
+        dispute_reminders: Callable[[TermDisputes], Reminders] | None = None,
     ) -> None:
         self.bus, self.outbox, self.store, self.memory, self.link, self.wall = bus, outbox, store, memory, link, wall
         self.reminders = reminders(self)
@@ -60,6 +64,7 @@ class Sentinel:
         self._work_done: set[str] = set()  # deals whose work both have confirmed
         self._asked: set[str] = set()  # voice-note change facts already put to the other person
         self.disputes = Disputes(self)
+        self.terms = TermDisputes(self, dispute_reminders or (lambda t: Reminders(None, self.reminders.clock, wall, t.remind)))
         # Set by the whatsapp stream: put a change to the other person (Intake.ask_change), put a
         # disputed record to them again with its proof (Intake.put), keep a proof screenshot and
         # give a short-lived link to it.
@@ -71,6 +76,7 @@ class Sentinel:
         self.bus.subscribe(RecordConfirmed, self.on_record_confirmed)
         self.bus.subscribe(FactRecorded, self.on_fact)
         self.bus.subscribe(FactConflict, self.on_conflict)
+        self.terms.subscribe()
 
     async def on_conflict(self, event: FactConflict) -> None:
         await heard.on_conflict(self, event)

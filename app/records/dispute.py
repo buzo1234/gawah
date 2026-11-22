@@ -216,7 +216,8 @@ class Disputes:
 
     async def still_disputed(self, deal_id: str, items: set[ItemKey] | None = None, skip: str | None = None) -> str:
         """What stays disputed, said under an owed message or a reminder: payments (towards
-        these terms, or any), and a work claim denied when no work claim was confirmed after it."""
+        these terms, or any), a work claim denied when no work claim was confirmed after it, and
+        terms disputed on a call-back."""
         facts = [f for f in await self._latest(deal_id) if f.record_id and f.record_id != skip]
         amounts = [
             f.value_rupees for f in facts if f.kind is FactKind.PAYMENT and f.value_rupees
@@ -224,7 +225,7 @@ class Disputes:
         ]
         work = [f.status for f in facts if f.kind is FactKind.WORK]
         denied = items is None and FactStatus.DISPUTED in work and FactStatus.CONFIRMED not in work[work.index(FactStatus.DISPUTED):]
-        return told.still_disputed(amounts, denied and deal_id not in self.s._work_done)
+        return told.still_disputed(amounts, denied and deal_id not in self.s._work_done) + self.s.terms.still_open(deal_id)
 
     def _how(self, fact: Fact) -> str:
         on = words.day(fact.valid_from.astimezone(IST).date()) if fact.valid_from else None
