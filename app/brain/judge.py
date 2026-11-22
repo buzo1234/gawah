@@ -340,7 +340,7 @@ def _answer(view: View) -> Speak:
     terms = _terms(view)
     text = (
         f'{name} spoke to you directly and said: "{_quoted(view.text)}". {DATA} Answer {name} in one short '
-        "sentence. You are only the witness: do not suggest a term or say whether one is fair."
+        "sentence. You are only the witness: do not suggest a term or judge one."
     ) + (f" Agreed so far: {terms}." if terms else "")
     return Speak(text, Audience(view.speaker.value), SpeakReason.ADDRESSED_DIRECTLY, question=" ".join(view.text.split()))
 
