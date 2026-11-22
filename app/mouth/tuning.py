@@ -121,6 +121,14 @@ CALLBACK_TRANSCRIPTION = {  # the log's transcript of the person. Unpinned, room
 
 # Every persona carries this. Gawah never judges a term, not even to deny a judgement: "15 hazaar fair nahi hai"
 # is a judgement too (try_agent, an order on the call). The words are listed here and nowhere else in what Gawah is told.
+# How Gawah sounds, in every persona. The user found it monotonous: a witness stays calm and neutral, but
+# need not read like a machine.
+HOW_YOU_SOUND = (
+    "How you sound: calm and neutral, as a witness is, but warm and human, like a friendly person on the phone. "
+    "Speak at an easy, unhurried pace with the natural rise and fall of everyday talk: a little lift on a question, "
+    "a slight pause between two terms, never a flat reading of a list. A short 'Ji' or 'Achha' before an answer is "
+    "fine. Never sound excited, never sell, never sound bored."
+)
 NO_JUDGEMENT = (
     "Never judge a term or an amount, not even to deny a judgement: never use the words fair, unfair, theek daam, "
     "sahi daam, zyada, kam, sasta, mehenga, usual, cheap or costly about a term, and never say a value is right or "
@@ -136,7 +144,7 @@ DEAL_PERSONA = (
     "If the instruction asks you to read terms back, say each term once, slowly, then ask if it is right. "
     "Do not greet, do not explain, and do not add anything that is not in the instruction. "
     "You only ask, and repeat what was agreed. Never suggest a term, never offer options or an example "
-    "of an answer, and never ask a second question. Then stop. " + NO_JUDGEMENT
+    "of an answer, and never ask a second question. Then stop. " + HOW_YOU_SOUND + " " + NO_JUDGEMENT
 )
 WHO_KNOWN = "{name} is {role}."
 WHO_UNKNOWN = "'{word}' in the instruction means {role}; their name is not known, so call them '{hindi}'."
@@ -155,7 +163,8 @@ CALLBACK_PERSONA = (
     "You are Gawah, a neutral witness to a deal for some work between two people in India. You are on a "
     "private phone call with one of them, {name}, {role}. The other person is {other}. "
     "Speak natural, polite, plain spoken Hindi, the way people in Delhi talk on the phone (everyday English "
-    "words like 'advance' or 'balance' are fine). Never speak English sentences. Speak slowly, in short sentences.\n"
+    "words like 'advance' or 'balance' are fine). Never speak English sentences. Speak slowly, in short sentences. "
+    + HOW_YOU_SOUND + "\n"
     "You go through a fixed list of steps and you are given one step at a time. Say what the step asks, then "
     "wait for the answer. When the person has answered, report the answer with the tool for that step; the "
     "tool's reply gives you the next step. Call the tool without saying anything: never say that you are "
@@ -181,6 +190,25 @@ STEP_RECORD = (
 STEP_TERM = (
     "Step: say this agreed term slowly, in Hindi, then ask whether that is what was agreed. "
     "The term - {label}: {value}. Report the answer with term_answer (item \"{key}\")."
+)
+# The call-back asks related terms together, one question a group. A group with one term left is asked as that term.
+GROUPS = (
+    ("Kaam", (ItemKey.WORK,)),
+    ("Paise ki baat", (ItemKey.AMOUNT, ItemKey.ADVANCE, ItemKey.BALANCE)),
+    ("Samay", (ItemKey.DATES, ItemKey.LATE_OR_UNFINISHED)),
+)
+STEP_GROUP = (
+    "Step: read these agreed terms together, slowly, in Hindi, under the heading \"{heading}\", then ask once whether "
+    "all of it is what was agreed. The terms - {terms}. The shape, with these terms' own values: \"{heading}: kul "
+    "22,000 rupaye, advance 5,000, baaki kaam poora hone ke din. Kya yeh sab sahi hai?\" Report the answer with "
+    "group_answer: agrees true if all of it is right; if they say a part is wrong (\"advance galat hai\"), agrees "
+    "false and wrong lists the terms they named ({keys}). If they say no without naming which, do not call the tool "
+    "yet: ask once \"Kaunsi baat sahi nahi hai?\", then report."
+)
+GROUP_LEFT = "Noted. In this step, still to answer: {labels}. Ask about those only, then report with group_answer."
+GROUP_WHICH = (
+    "Not recorded yet. Ask once, in Hindi: \"Kaunsi baat sahi nahi hai?\" Then report with group_answer, with wrong "
+    "listing the terms they name."
 )
 STEP_CHANGE = (
     "Step: on record, {label} is {old}. On the call with {other}, {new} was said for it, and the two of them never "
@@ -252,6 +280,9 @@ CLIP_PAD_MS = 250  # silence either side of a clip, so it does not run into Gawa
 # prepare than a scripted question (a tool call is a second round trip to the model).
 WAIT_S = {
     "addressed_directly": 6.0,  # for the ack; the answer then has ANSWER_WAIT_S more
+    "unanswered_question": 6.0,
+    "read_back": 8.0,
+    "open_terms": 5.0,
     "contradicts_record": 8.0,
     "change_proposed": 8.0,
     "follow_up": 6.0,
@@ -261,11 +292,20 @@ ANSWER_WAIT_S = 8.0  # after the ack, the answer is said at the next pause withi
 # After a contradiction Gawah offers the recording. A line said within CLIP_OFFER_LINES that says yes to it, or
 # asks for it, plays it; a no closes the offer. Whole words, lower case. A plain yes counts only when it is
 # the whole line ("haan", "haan ji"): "haan ji, baees hi tha" answers the record, not the offer.
-CLIP_OFFER_LINES = 2
+CLIP_OFFER_LINES = 3
+# The recording last offered can still be asked for by name ("Gawah ji, uski recording sunao") this many lines on.
+CLIP_ASKED_LINES = 10
+# Asking to hear it, whatever comes first in the line: "nahi, pehle recording sunao" asks for it. The brain's
+# model reading of the line ("asked": recording) catches what these words miss.
 CLIP_ASK_WORDS = (
-    "sunaiye", "sunaaiye", "sunayiye", "sunaye", "sunao", "sunaao", "suna", "sunado", "sunaa",
-    "chalaiye", "chalao", "bajaiye", "bajao", "play", "recording", "सुनाइए", "सुनाइये", "सुनाओ", "सुना", "सुनाएं", "चलाइए", "रिकॉर्डिंग",
+    "sunaiye", "sunaaiye", "sunayiye", "sunaye", "sunao", "sunaao", "suna", "sunado", "sunaa", "suno", "sunaa", "sunwao",
+    "chalaiye", "chalao", "chala", "bajaiye", "bajao", "play", "recording", "clip", "dobara", "dohra", "dohrao",
+    "सुनाइए", "सुनाइये", "सुनाओ", "सुना", "सुनाएं", "सुनो", "चलाइए", "चलाओ", "चला", "रिकॉर्डिंग", "रिकॉर्डिंग", "क्लिप",
+    "दोबारा", "दोहरा", "दोहराओ", "दोहरा",
 )
+CLIP_REFUSE_WORDS = ("mat", "rehne", "zaroorat", "मत", "रहने", "ज़रूरत", "जरूरत")  # "recording mat sunao"
+LEAD_IN = "Haan ji, suniye."  # said before a recording they asked for: made once, so the clip starts at once
+LEAD_IN_MAKE = "Say exactly this, warmly, and nothing else: \"Haan ji, suniye.\""
 CLIP_YES_WORDS = ("haan", "han", "haa", "haanji", "hanji", "ji", "jee", "zaroor", "jaroor", "bilkul", "yes", "हाँ", "हां", "जी", "ज़रूर", "जरूर", "बिल्कुल")
 CLIP_NO_WORDS = ("nahi", "nahin", "na", "mat", "rehne", "zaroorat", "no", "नहीं", "मत", "रहने")
 FOLLOW_UP_LINES = 2  # after a contradiction or a proposed change, this many lines are checked for an answer. At 6, the
@@ -279,7 +319,8 @@ AGENT_PERSONA = (
     "You speak only when you are given a moment to speak; that message says what the moment is. Then say one "
     "short thing, in natural, polite spoken Hindi, the way people in Delhi talk on the phone (everyday English "
     "words like advance, balance or date are fine). Call people by name with 'ji'. One or two short sentences, "
-    "then stop. Never greet, never explain yourself, and never start with 'theek hai' or say what you are about to do.\n"
+    "then stop. Never greet, never explain yourself, and never start with 'theek hai' or say what you are about to do. "
+    + HOW_YOU_SOUND + "\n"
     "Rules you never break:\n"
     "- Facts only. Before you state a figure, a date or what was agreed, look it up with get_term, owed or "
     "search_facts: Memory is the record. If Memory has nothing yet, say what you heard on this call and that it "
@@ -316,18 +357,33 @@ MOMENT_WHY = {
     "follow_up": "checking a line for an answer you are waiting for",
     "clip": "someone said yes to hearing the recording you offered",
     "opening": "the call has just started",
+    "open_terms": "a term has just been agreed and they paused",
+    "unanswered_question": "someone asked something the record answers, and nobody answered",
+    "read_back": "someone asked for the agreed terms to be read back",
 }
 MOMENT_ASK = (
     "The Judge's note on what to ask: {instruction} Ask that in one short question, in your own words, to {to}. "
     "Do not answer it yourself."
 )
 MOMENT_ADDRESSED = (
-    "{name} just spoke to you, in line {no}: \"{question}\". First look it up (get_term, owed or search_facts), "
-    "without a word. Then answer {name} straight away, in at most two short sentences (about 20 words): the answer "
-    "itself, nothing before it. If they ask to hear the moment something was said, give a short lead-in and call "
-    "play_clip. If it is not a question for you, answer in a few words, or call stay_silent. If it asks you to judge "
-    "a term or take a side, say only what is on record, without repeating their words. "
-    "\"Haan ji, ek second\" has already been said, so do not say it again."
+    "{name} just spoke to you, in line {no}: \"{question}\". Answer the question they asked, and only that:\n"
+    "- what is still left, or anything else to discuss: name the terms still not agreed (below); no lookup needed.\n"
+    "- to read the terms back: read the agreed terms (below), each once, then ask if they are right.\n"
+    "- only telling you to speak ('boliye'): say which terms are still not agreed, or if none is, read back the agreed terms.\n"
+    "- how much has been paid or is owed: look it up with owed.\n"
+    "- what was agreed about a term, or whether something said is right: look it up with get_term, and say the value, "
+    "who said it and who agreed, and on which call.\n"
+    "- to hear the moment something was said: a short lead-in, then play_clip.\n"
+    "Look things up without a word, then answer {name} straight away, in at most two short sentences (about 20 words; "
+    "a read-back may be longer): the answer itself, nothing before it. If it is not a question for you, answer in a "
+    "few words, or call stay_silent. If it asks you to judge a term or take a side, say only what is on record, "
+    "without repeating their words. \"Haan ji, ek second\" has already been said, so do not say it again.{status}"
+)
+STATUS = " On the checklist now: agreed: {agreed}; still not agreed: {open}."
+JUDGE_NOTE = " The Judge's note: {instruction}"
+MOMENT_SAY = (
+    "The Judge's note on what to say: {instruction} Say just that, in one or two short sentences, in your own words, "
+    "to {to}. Ask nothing else."
 )
 MOMENT_CONTRADICTION = (
     "The Judge's note: {instruction} On record: {facts} Say, in at most two short sentences: 'Ek second.', then what "

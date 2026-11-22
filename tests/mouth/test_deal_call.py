@@ -48,7 +48,7 @@ async def test_opening_line_is_the_only_thing_said_unasked(world):
     else:
         assert said["conversation"] == "auto" and said["tool_choice"] == "none"  # the agent remembers what it said
     await asyncio.sleep(0.2)
-    made = 2 if world.mode == "live" else 1  # the agent also makes its "Haan ji, ek second" once, out of the conversation
+    made = 3 if world.mode == "live" else 1  # the agent also makes "Haan ji, ek second" and "Haan ji, suniye" once, out of the conversation
     assert len(world.of(JudgeSpoke)) == 1 and len(link.of("response.create")) == made
 
 

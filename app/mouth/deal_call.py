@@ -42,6 +42,7 @@ class _Job:
     superseded: bool = False  # something more important came; drop it unless it is already being said
     playing: bool = False
     fact_id: str | None = None  # for a clip they asked to hear: the fact whose recording plays
+    line: TranscriptLine | None = None  # the line that spoke to Gawah, for an answer
 
     @property
     def what(self) -> str:
@@ -81,6 +82,7 @@ class DealCall:
         self._ack: bytes | None = None  # the acknowledgement's audio, if this call has one
         self._since: float | None = None  # call seconds when what Gawah is saying now began
         self._told_to_stop = False  # a line asked it to stop while it was speaking: no carrying on
+        self._current: _Job | None = None  # the job being said, or waiting for its pause
 
     def _connect(self, make_link: Callable):
         self.voice = Voice(self.log)
@@ -169,11 +171,12 @@ class DealCall:
     async def _work(self) -> None:
         """One thing at a time, in the order asked."""
         while True:
-            job = await self._jobs.get()
+            job = self._current = await self._jobs.get()
             try:
                 await self._say(job)
             except Exception:
                 self.log.exception("could not say: %s", job.what)
+            self._current = None
 
     def _on_frame(self, who: str, pcm: bytes) -> None:
         gawah_ms = self.player.heard_so_far() if self.player.active else None
@@ -205,6 +208,9 @@ class DealCall:
 
     def _wait_s(self, job: _Job) -> float:
         return tuning.PAUSE_WAIT_S
+
+    def _stale(self, job: _Job) -> bool:
+        return False
 
     async def _prepare(self, job: _Job):
         """Ask for the words. Returns something shaped like voice.Utterance, or None for nothing to say."""
@@ -240,6 +246,8 @@ class DealCall:
         while True:
             if job.superseded:
                 why = "superseded"
+            elif self._stale(job):
+                why = "the call moved on"
             elif self._agreed(job):
                 why = "agreed in the meantime"
             elif utterance.failed or utterance.stalled():

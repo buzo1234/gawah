@@ -126,7 +126,7 @@ async def test_all_terms_confirmed(desk):
     opening = link.of("conversation.item.create")[0]["item"]["content"][0]["text"]
     assert "the work: painting the 2BHK flat, two coats" in opening and "22,000" not in opening  # one term at a time
     assert link.config["audio"]["input"]["turn_detection"]  # here the model hears the person (callback.py asks for each reply)
-    assert {t["name"] for t in link.config["tools"]} == {"record_answer", "term_answer", "change_answer"}
+    assert {t["name"] for t in link.config["tools"]} == {"record_answer", "term_answer", "group_answer", "change_answer"}
 
     then = await link.calls("term_answer", item="work", agrees=True, said="haan theek hai")
     assert "the total amount: 22,000 rupees with material" in then
@@ -538,3 +538,81 @@ async def test_who_confirmed_the_change_on_the_call_has_nothing_left_to_confirm(
     await link.calls("change_answer", agrees=True, said="haan")
     await desk.bus.drain()
     assert (desk.of(FactChanged)[-1].status, desk.of(FactChanged)[-1].change_id) == (ChangeStatus.CONFIRMED_BOTH, "c-on-call")
+
+
+# ---- related terms asked together (the user: "group the questions related to each other together") ----
+
+ALL_SIX = {
+    ItemKey.WORK: "painting the 2BHK flat, two coats",
+    ItemKey.AMOUNT: "22,000 rupees with material",
+    ItemKey.ADVANCE: "5,000 rupees",
+    ItemKey.BALANCE: "on the day the work is finished",
+    ItemKey.DATES: "next Monday to Friday",
+    ItemKey.LATE_OR_UNFINISHED: "500 rupees a day if late",
+}
+
+
+def speech_s(text: str) -> float:
+    """A fake clock for one turn: Gawah reading the step's terms (2.5 words a second, the call-back's
+    0.95 speed), the model's first sound (1 s), and the person's answer (2 s)."""
+    terms = text.split("The terms - ")[-1].split("The term - ")[-1].split(". The shape")[0].split(". Report")[0]
+    return len(terms.split()) / 2.5 / tuning.CALLBACK_SPEED + 1.0 + 2.0
+
+
+async def test_a_full_call_back_is_three_questions_and_a_yes_to_each_confirms_all_six(desk):
+    await desk.deal(agreed=ALL_SIX)
+    seat, link = await desk.join()
+    opening = link.of("conversation.item.create")[0]["item"]["content"][0]["text"]
+    assert "the work: painting the 2BHK flat" in opening and "22,000" not in opening  # the work on its own
+    steps = [opening]
+    steps.append(await link.calls("term_answer", item="work", agrees=True, said="haan"))
+    assert 'under the heading "Paise ki baat"' in steps[-1] and "the advance: 5,000 rupees" in steps[-1] and "the balance:" in steps[-1]
+    assert "Kya yeh sab sahi hai?" in steps[-1]
+    steps.append(await link.calls("group_answer", agrees=True, wrong=[], said="haan, sab sahi hai"))
+    assert 'under the heading "Samay"' in steps[-1] and "next Monday to Friday" in steps[-1] and "500 rupees a day" in steps[-1]
+    steps.append(await link.calls("group_answer", agrees=True, wrong=[], said="haan ji"))
+    assert steps[-1].startswith("Noted. Last step") and "Every term is confirmed" in steps[-1]
+    await desk.bus.drain()
+    assert not desk.of(TermsDisputed) and [e.person for e in desk.of(TermsConfirmed)] == [Role.WORKER]
+    asked = steps[:-1]
+    print(f"\ncall-back: {len(asked)} questions, about {sum(speech_s(s) for s in asked):.0f} s (fake clock)")
+
+
+async def test_a_no_naming_the_advance_disputes_only_the_advance(desk):
+    await desk.deal(agreed=ALL_SIX)
+    seat, link = await desk.join()
+    await link.calls("term_answer", item="work", agrees=True, said="haan")
+    then = await link.calls("group_answer", agrees=False, wrong=["advance"], said="advance galat hai, teen hazaar tha")
+    assert "Gawah will raise this with Sunita" in then and 'heading "Samay"' in then
+    await desk.bus.drain()
+    assert [(e.item, e.value, e.said) for e in desk.of(TermsDisputed)] == [
+        (ItemKey.ADVANCE, "5,000 rupees", "advance galat hai, teen hazaar tha")]
+    then = await link.calls("group_answer", agrees=True, wrong=[], said="haan")
+    assert "the advance" in then and "nothing is final until both agree" in then
+
+
+async def test_a_no_naming_nothing_is_asked_about_once_and_the_named_term_is_disputed(desk):
+    await desk.deal(agreed=ALL_SIX)
+    seat, link = await desk.join()
+    await link.calls("term_answer", item="work", agrees=True, said="haan")
+    then = await link.calls("group_answer", agrees=False, wrong=[], said="nahi")
+    assert "Kaunsi baat sahi nahi hai?" in then and not desk.of(TermsDisputed)  # asking which: nothing recorded yet
+    then = await link.calls("group_answer", agrees=False, wrong=["balance"], said="baaki wala nahi, aadha beech mein tha")
+    await desk.bus.drain()
+    assert [e.item for e in desk.of(TermsDisputed)] == [ItemKey.BALANCE] and 'heading "Samay"' in then
+
+
+async def test_only_the_amount_changed_is_one_question_and_the_summary_line(desk):
+    await call_2_changed_the_amount(desk)
+    seat, link = await desk.join(role=Role.WORKER)
+    opening = link.of("conversation.item.create")[0]["item"]["content"][0]["text"]
+    assert "Record mein 22,000 rupees with material tha; call par 24,000" in opening and "heading" not in opening
+    then = await link.calls("change_answer", agrees=True, said="haan")
+    assert then.startswith("Noted. Last step") and "Baaki sab pehle jaisa hai" in then
+
+
+async def test_before_grouping_the_same_call_back_was_six_questions(desk):
+    """The fake clock on the old shape: one term a step (STEP_TERM), for the comparison in the report."""
+    steps = [tuning.STEP_TERM.format(label=tuning.LABEL[k], value=v, key=k.value) for k, v in ALL_SIX.items()]
+    print(f"\nbefore: {len(steps)} questions, about {sum(speech_s(s) for s in steps):.0f} s (fake clock)")
+    assert len(steps) == 6
