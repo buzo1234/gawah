@@ -1,6 +1,6 @@
 {
  "fixture": "holdout2_mason_wall_call2",
- "recorded_at": "2026-11-21T19:48:43+00:00",
+ "recorded_at": "2026-11-22T06:22:53+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "ambiguous:amount@15": {
@@ -13,6 +13,20 @@
     "work starts day after tomorrow",
     "work finishes day after tomorrow"
    ]
+  },
+  "asked:-@22": {
+   "asks": "agreed",
+   "waits": true,
+   "to": "gawah",
+   "item": "dates",
+   "named": null
+  },
+  "asked:-@24": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
   }
  }
 }

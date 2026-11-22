@@ -1,5 +1,6 @@
 """The small OpenAI model, for what Sage2's yes/no cannot say: the names said on the
-call, which term was left unclear, and whether a newly agreed term can be heard two ways.
+call, which term was left unclear, whether a newly agreed term can be heard two ways, and what
+the latest line asks of the record, if anything.
 What a term is comes from the memory's facts, not from here.
 
 The brain talks to `Values`. `OpenAIValues` is the live model; `RecordedValues`
@@ -16,7 +17,7 @@ import httpx
 from app.brain import tuning
 from app.contracts import ItemKey
 
-Kind = Literal["unclear", "names", "ambiguous"]
+Kind = Literal["unclear", "names", "ambiguous", "asked"]
 
 URL = "https://api.openai.com/v1/chat/completions"
 
@@ -58,6 +59,36 @@ def prompt(kind: Kind, item: ItemKey | None) -> str:
             '- "ambiguous": true or false.\n'
             '- "readings": if true, the two ways it can be heard, each a short English phrase; otherwise null. '
             "Never say which reading is right or more likely."
+        )
+    if kind == "asked":
+        return _RULES + (
+            "Lines marked 'Gawah:' are the witness speaking. Its name is often misheard in the transcript "
+            "(Gawa ji, Gova ji, Gaba ji, Daba ji, गवाजी, गवां जी, गोवा जी, गबा जी): a name like that, said to "
+            "someone who is not one of the two speakers, is Gawah. "
+            "Decide what the LAST line asks for, if anything: only a question or a request asks; a line that states, "
+            "offers or agrees a value asks nothing. Only the record can answer some questions: what was "
+            "agreed or said before, what is still not agreed, what has been paid. Other questions are one speaker "
+            "asking the other to decide a term now (\"advance kitna loge?\", \"kaam kab shuru karoge?\"): those "
+            "are for the other speaker, not the record.\n"
+            "Keys:\n"
+            '- "asks": one of "open" (which terms are still left, not agreed, or what else there is to discuss: '
+            '"kuch aur bacha hai?", "ab kya kya baaki hai?", or only telling Gawah to speak up: "Gawah ji, boliye"), '
+            '"paid" (how much money has already been paid, or is still owed; not a term brought up), "agreed" (what was agreed or said before about a '
+            'term, or whether something said about it is right), "read_back" (to repeat or read back the agreed '
+            'terms), "recording" (to play or repeat a recording or clip of what was said, including a yes to '
+            "Gawah's offer to play one, and \"nahi, pehle recording sunao\"), or \"none\" (anything else: a "
+            "question for the other speaker to decide now, an offer, an answer, small talk, a statement). A yes, a "
+            "no, a thanks or a 'haan' alone asks nothing, and nor does an answer to Gawah's own question (\"haan ji, sab "
+            "sahi hai\" after Gawah asked them to confirm): \"none\".\n"
+            '- "waits": true if the last line asks the other speaker something they have not answered yet (a question, '
+            'or a value asked for); otherwise false.\n'
+            '- "to": "gawah" if the last line speaks to Gawah (by name, even misheard, or answering what Gawah just '
+            'said), "other" if it speaks to the other speaker, "nobody" if neither is clear.\n'
+            f'- "item": for "agreed", the term it is about: one of {_ITEM_NAMES}, or null.\n'
+            '- "named": a term the last line brings up and leaves hanging, without its value and without asking '
+            'the other speaker for it, as in "aur baaki ka balance." or "aur advance...": one of '
+            f'{_ITEM_NAMES}; null if it gives the value, asks the other speaker a question about it ("advance kitna '
+            'loge?"), or brings up none.'
         )
     if kind == "names":
         return _RULES + (

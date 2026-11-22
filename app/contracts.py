@@ -96,6 +96,9 @@ class SpeakReason(StrEnum):
     AMBIGUOUS = "ambiguous"  # an agreement that can mean two things, e.g. "Monday tak"
     CONTRADICTS_RECORD = "contradicts_record"  # contradicts a fact already agreed or confirmed
     CHANGE_PROPOSED = "change_proposed"  # a change to an agreed term, no longer bargained: both should agree to it
+    OPEN_TERMS = "open_terms"  # a term just settled and a pause came: Gawah names the terms still open
+    UNANSWERED_QUESTION = "unanswered_question"  # a question about the record, to no one by name, that nobody answered
+    READ_BACK = "read_back"  # someone asked for the agreed terms to be read back
 
 
 class CallKind(StrEnum):

@@ -1,6 +1,6 @@
 {
  "fixture": "demo_call_1",
- "recorded_at": "2026-11-22T02:32:12+00:00",
+ "recorded_at": "2026-11-22T06:22:55+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "names:-@1": {
@@ -61,6 +61,34 @@
   "ambiguous:balance@26": {
    "ambiguous": false,
    "readings": null
+  },
+  "asked:-@12": {
+   "asks": "none",
+   "waits": true,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@22": {
+   "asks": "agreed",
+   "waits": true,
+   "to": "gawah",
+   "item": "advance",
+   "named": null
+  },
+  "asked:-@24": {
+   "asks": "none",
+   "waits": false,
+   "to": "nobody",
+   "item": null,
+   "named": null
+  },
+  "asked:-@26": {
+   "asks": "none",
+   "waits": false,
+   "to": "nobody",
+   "item": null,
+   "named": null
   }
  }
 }

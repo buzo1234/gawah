@@ -1,6 +1,6 @@
 {
  "fixture": "holdout2_tailor_lehenga",
- "recorded_at": "2026-11-21T19:48:44+00:00",
+ "recorded_at": "2026-11-22T06:22:51+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "ambiguous:work@12": {
@@ -53,6 +53,13 @@
   "ambiguous:balance@19": {
    "ambiguous": false,
    "readings": null
+  },
+  "asked:-@25": {
+   "asks": "agreed",
+   "waits": true,
+   "to": "gawah",
+   "item": "advance",
+   "named": null
   }
  }
 }

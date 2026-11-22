@@ -1,6 +1,6 @@
 {
  "fixture": "holdout_carpenter_call",
- "recorded_at": "2026-11-21T14:48:49+00:00",
+ "recorded_at": "2026-11-22T06:22:51+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "names:-@1": {
@@ -55,6 +55,13 @@
    "value": "20,000 rupees, this evening today",
    "source_text": "20 theek hai, aaj shaam ko bhej dungi.",
    "line_no": 11
+  },
+  "asked:-@5": {
+   "asks": "none",
+   "waits": true,
+   "to": "gawah",
+   "item": null,
+   "named": null
   }
  }
 }

@@ -1,0 +1,184 @@
+{
+ "fixture": "6aae99c104d1-1",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "names:-@1": {
+   "hirer": "Karan",
+   "worker": "Samat"
+  },
+  "ambiguous:advance@11": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@16": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:late_or_unfinished@20": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@7": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@3": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "asked:-@2": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@3": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@4": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@5": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@7": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": "amount",
+   "named": null
+  },
+  "asked:-@8": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": "amount",
+   "named": null
+  },
+  "asked:-@9": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@12": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@13": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@14": {
+   "asks": "none",
+   "waits": true,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@15": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": "balance",
+   "named": null
+  },
+  "asked:-@16": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@18": {
+   "asks": "none",
+   "waits": false,
+   "to": "nobody",
+   "item": null,
+   "named": null
+  },
+  "asked:-@19": {
+   "asks": "agreed",
+   "waits": true,
+   "to": "gawah",
+   "item": "advance",
+   "named": null
+  },
+  "asked:-@20": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": "late_or_unfinished",
+   "named": null
+  },
+  "asked:-@22": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@23": {
+   "asks": "none",
+   "waits": false,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@24": {
+   "asks": "none",
+   "waits": false,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@25": {
+   "asks": "open",
+   "waits": true,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@26": {
+   "asks": "open",
+   "waits": true,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@27": {
+   "asks": "none",
+   "waits": false,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@28": {
+   "asks": "read_back",
+   "waits": true,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  }
+ }
+}

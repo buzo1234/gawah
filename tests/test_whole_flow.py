@@ -17,7 +17,7 @@ import pytest
 from app.call.session import Limits
 from app.contracts import (
     MEMORY_STATE, WHATSAPP_WEBHOOK_PATH, AgentNote, Backing, CallEnded, CallKind, CallOpened, CallStarted, ChecklistUpdated,
-    ContractReady, DealRequested, DealStatus, Direction, Event, FactConflict, FactRecorded, FactStatus, ItemKey, ItemState, JudgeSpeak,
+    ContractReady, DealRequested, DealStatus, Direction, Event, FactConflict, FactRecorded, FactStatus, ItemKey, ItemState, JudgeSpeak, SpeakReason,
     JudgeSpoke, RecordConfirmed,
     RecordConfirmRequested, RecordReceived, ReplyTimeout, Role, TermsConfirmed, TranscriptLine, VoiceNote, WhatsAppMessage,
     call_path, callback_path,
@@ -150,6 +150,11 @@ async def test_a_deal_from_the_first_message_to_a_confirmed_record(flow, caplog)
     # brain: the checklist fills in, and the Judge asks about the balance nobody brought up.
     expected = [e for e in load(CALL)["expected"] if "live" in e["modes"]]
     speaks = flow.of(JudgeSpeak)
+    # With Gawah's turns spoken, the goodbye (line 31) gets the read-back, the balance still open in it:
+    # no call ends without one. The brain's own replay leaves Gawah's last question unanswered, so it stops short.
+    *speaks, read_back = speaks
+    assert (read_back.reason, read_back.item, read_back.after_line) == (SpeakReason.WRAPPING_UP, None, 31)
+    assert read_back.instruction.endswith("Still not agreed, say so too: the balance.")
     assert [(s.item, s.reason, s.to) for s in speaks] == [(e["item"], e["reason"], e["to"]) for e in expected]
     assert all(e["after_line"] <= s.after_line <= e["by_line"] for s, e in zip(speaks, expected))
     final = {item.key: item for item in flow.of(ChecklistUpdated)[-1].items}

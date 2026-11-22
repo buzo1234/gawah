@@ -29,12 +29,22 @@ _ASKING = _set(
 )
 
 
+def _gawah(word: str) -> bool:
+    """A word that is Gawah's name, with "ji" run on ("गवाजी") or a nasal mark the transcript added ("गवां")."""
+    bare = word.replace("ं", "")
+    return any(w in GAWAH for w in (word, bare, bare.removesuffix("जी"), bare.removesuffix("ji")))
+
+
+def names_gawah(text: str) -> bool:
+    return any(_gawah(w) for w in _words(text))
+
+
 def asks_gawah(text: str) -> bool:
     """The line asks Gawah something: a question or a request from where it names Gawah on
     ("Gawah ji, advance kitna tay hua?"), or anywhere in a line that does not name it. Naming
     Gawah in passing ("Gawah sun raha hai") asks nothing."""
     sentences = [s for s in _SENTENCE.split(text) if s.strip()]
-    named = next((i for i, s in enumerate(sentences) if GAWAH & set(_words(s))), None)
+    named = next((i for i, s in enumerate(sentences) if names_gawah(s)), None)
     asked = sentences if named is None else sentences[named:]
     return any("?" in s or _ASKING & set(_words(s)) for s in asked)
 

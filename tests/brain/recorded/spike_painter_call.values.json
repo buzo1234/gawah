@@ -1,6 +1,6 @@
 {
  "fixture": "spike_painter_call",
- "recorded_at": "2026-11-21T19:41:39+00:00",
+ "recorded_at": "2026-11-22T06:22:51+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "value:work@5": {
@@ -91,6 +91,13 @@
   "ambiguous:work@25": {
    "ambiguous": false,
    "readings": null
+  },
+  "asked:-@23": {
+   "asks": "none",
+   "waits": true,
+   "to": "gawah",
+   "item": null,
+   "named": null
   }
  }
 }

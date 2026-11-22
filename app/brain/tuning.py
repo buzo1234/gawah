@@ -10,6 +10,18 @@ WRAPUP_GAP_S = 3.0  # the same, once they are wrapping up: they are about to han
 SPEAK_TIMEOUT_S = 12.0  # no judge.spoke by then: assume it was said and move on
 WRAPUP_HOLD_S = 30.0  # how long "they are wrapping up" stays true after Sage2 last said so
 
+# --- A pause in the talk ---
+# Nobody has spoken for this long after a line (call seconds, from its end to the next line's start):
+# a question about the record that nobody answered is Gawah's; a term brought up and left there is
+# asked about; just after a term settles, the terms still open are named. Phone talk runs lines
+# 0.5 to 2 s apart; the user's own calls left 3 to 10 s where they waited for Gawah.
+PAUSE_S = 2.5
+# On a live call a line reaches the brain about a second after it ends, so its timer runs this long
+# (wall clock) from when the line arrives.
+PAUSE_AFTER_LINE_S = 1.5
+# The terms still open are named only at a pause within this many lines of a term settling.
+SETTLED_LINES = 1
+
 # --- When they are wrapping up ---
 # Sage2's wrapping_up (a goodbye) is enough on its own. Its closing_soon comes earlier but
 # has said yes alone mid-call, on talk about when the work starts, so it counts only

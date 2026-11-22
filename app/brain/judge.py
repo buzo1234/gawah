@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 
 from app.brain import tuning
 from app.brain.sage import Answers, yes
-from app.brain.words import asks_gawah
+from app.brain.words import asks_gawah, names_gawah, takes_leave
 from app.contracts import Audience, ChecklistItem, ItemKey, ItemState, Role, SpeakReason
 
 # Who has to answer a question about each item.
@@ -125,6 +125,13 @@ class View:
     follow_up: bool = False  # a second or later call on the deal
     changed: set[ItemKey] = field(default_factory=set)  # items whose term changed on this call
     memory_silent: bool = False  # no fact at all from the memory on this call
+    line_no: int = 0  # the latest line's number
+    paused: bool = False  # nobody has spoken for PAUSE_S since the latest line
+    asked: dict | None = None  # the model's reading of what the latest line asks of the record (values.py "asked")
+    settled_at: int | None = None  # the latest line on which a term was first agreed
+    bargaining: bool = False  # a term still open was offered in the last two lines: they are mid-bargain
+    valued: set[ItemKey] = field(default_factory=set)  # terms the latest line gave a figure or a date for (memory's facts)
+    gawah_since: bool = False  # Gawah has spoken since the latest line
 
 
 @dataclass
@@ -142,18 +149,23 @@ class Judge:
     dropped_at: float | None = None  # the moment a question was dropped: that was no pause
     answered_at: float | None = None  # the line last answered: decide runs again on it when facts move
     raised: set[tuple] = field(default_factory=set)  # (item, change?) put to them mid-call: the first goes at the next pause
+    answered_lines: set[int] = field(default_factory=set)  # lines whose question Gawah has taken
+    juncture_at: int | None = None  # the settled line whose pause Gawah has named the open terms at
+    read_back_terms: str | None = None  # the agreed terms when they were last read back on request
 
     def decide(self, view: View) -> Speak | None:
         if view.closing:
             self.wrapup_until = view.now + tuning.WRAPUP_HOLD_S
         held_answer = self.waiting_since is not None and not self.waiting_on_question
-        if yes(view.answers, "addressed_gawah") and view.now != self.answered_at and asks_gawah(view.text) and not (
-            held_answer and view.now - self.waiting_since < tuning.SPEAK_TIMEOUT_S
-        ):
-            # Someone asked Gawah something: that comes first, in every mode, ahead of a
-            # question still waiting to be said. Naming Gawah in passing is not asking.
+        request = self._request(view)
+        if request and not (held_answer and view.now - self.waiting_since < tuning.SPEAK_TIMEOUT_S):
+            # Someone asked Gawah something, or asked the record a question nobody answered: that
+            # comes first, in every mode, ahead of a question still waiting to be said.
             self.waiting_since, self.waiting_on_question, self.answered_at = view.now, False, view.now
-            return _answer(view)
+            self.answered_lines.add(view.line_no)
+            if request.reason is SpeakReason.READ_BACK:
+                self.read_back_terms = _terms(view)
+            return request
         if self.waiting_since is not None:
             if view.now - self.waiting_since < tuning.SPEAK_TIMEOUT_S:
                 return None
@@ -165,7 +177,7 @@ class Judge:
         if speak is None:
             return None
         self.waiting_since = view.now
-        self.waiting_on_question = speak.reason is not SpeakReason.ADDRESSED_DIRECTLY
+        self.waiting_on_question = speak.reason not in ANSWERS
         at_wrapup = speak.instruction.startswith(WRAPPING_UP)
         for topic in speak.topics:
             self.asked[topic] = self.asked.get(topic, 0) + 1
@@ -203,11 +215,52 @@ class Judge:
             self.asked[topic] = max(0, self.asked.get(topic, 0) - 1)
             (self.asked_at_wrapup if reason is SpeakReason.WRAPPING_UP else self.asked_mid_call).discard(topic)
 
+    def _request(self, view: View) -> Speak | None:
+        """A question or request the record answers, for Gawah to take now: one said to Gawah, or one
+        nobody has answered by the pause after it. Sage2 hears a line
+        to Gawah first; the model's reading of the line (view.asked) says what it asks, and catches a
+        name Sage2 missed and a question to nobody."""
+        if view.line_no in self.answered_lines or view.now == self.answered_at:
+            return None
+        asks = (view.asked or {}).get("asks")
+        asks = asks if asks in ROUTE or asks == "read_back" else None
+        to = (view.asked or {}).get("to")
+        if yes(view.answers, "addressed_gawah") and asks_gawah(view.text) and (view.asked is None or asks or to == "gawah"):
+            return _answer(view, asks)  # naming Gawah in passing ("Gawah sun raha hai") asks nothing
+        if asks is None:
+            return None
+        if to == "gawah" or (names_gawah(view.text) and to != "other"):
+            return _answer(view, asks)
+        if view.paused and not view.gawah_since and self.waiting_since is None:
+            # Asked to nobody by name, or to the other person, and nobody has answered by the pause.
+            return _answer(view, asks, SpeakReason.UNANSWERED_QUESTION)
+        return None
+
     def _gap_ok(self, view: View, gap: float) -> bool:
         return self.last_question_end is None or view.now - self.last_question_end >= gap
 
     def _may_ask(self, item: ItemKey, view: View) -> bool:
         return view.items[item].state is ItemState.PENDING and self.asked.get(item.value, 0) < tuning.MAX_ASKS_PER_ITEM
+
+    def _at_pause(self, view: View) -> Speak | None:
+        """A pause, mid-call: a term the latest line brought up and nobody answered (a dodged term),
+        or, once a term has just settled, the terms still open, at most once per settled term."""
+        if not view.paused or view.memory_silent or view.closing or yes(view.answers, "closing_soon"):
+            return None  # a pause while they close is the wrap-up's
+        named = _item((view.asked or {}).get("named"))
+        if named is ItemKey.WORK or named in view.valued:
+            named = None  # the work is described, not dodged; and a figure or date said is no dodge
+        if named and named.value not in self.asked_mid_call and self._may_ask(named, view):
+            return _ask(named, view, SpeakReason.TERM_UNCLEAR)
+        open_now = [key for key, item in view.items.items() if item.state is ItemState.PENDING]
+        just_settled = view.settled_at is not None and view.settled_at >= view.line_no - tuning.SETTLED_LINES
+        quiet = not (view.conflicts or view.held or view.bargaining or view.ambiguities)
+        if not (just_settled and open_now and quiet and self.juncture_at != view.settled_at):
+            return None
+        if view.asked is None or view.asked.get("asks") not in (None, "none") or view.asked.get("waits"):
+            return None  # read first: a pause after a question is the other person thinking
+        self.juncture_at = view.settled_at
+        return _open_terms(view, SpeakReason.OPEN_TERMS, Audience.BOTH)
 
     def _choose(self, view: View) -> Speak | None:
         live = self.mode == "live"
@@ -225,6 +278,9 @@ class Judge:
             skipped = ItemKey.BALANCE if yes(view.answers, "balance_skipped") else view.unclear
             if skipped and skipped.value not in self.asked_mid_call and self._may_ask(skipped, view):
                 return _ask(skipped, view, SpeakReason.TERM_UNCLEAR)
+            pause = self._at_pause(view)
+            if pause:
+                return pause
 
         wrapping_up = self.wrapup_until is not None and view.now <= self.wrapup_until
         if not (wrapping_up and self._gap_ok(view, tuning.WRAPUP_GAP_S)) or view.memory_silent:
@@ -250,8 +306,13 @@ class Judge:
                 parts.append(_ask(item, view, SpeakReason.WRAPPING_UP))
         if parts:
             return _together(parts, view)
-        if self.read_back_done or pending or (view.conflicts and not view.closing):
-            return None  # with a dispute still standing, the read-back waits for the goodbye itself
+        if self.read_back_done or (view.conflicts and not view.closing) or (pending and not (view.closing and takes_leave(view.text) and not view.bargaining)):
+            # With a dispute still standing, or a term still open, the read-back waits for the goodbye
+            # itself (a line that takes leave: "bye bye", "chalo phir baat karte hain"); then it comes,
+            # with what is still open, so no call ends without one.
+            return None
+        if self.read_back_terms is not None and self.read_back_terms == _terms(view):
+            return None  # read back on request, and nothing agreed since
         if view.follow_up and not view.changed:
             return None  # the deal was read back on the call that agreed it; nothing changed since
         return _read_back(view)
@@ -335,29 +396,86 @@ def _two_ways(ambiguity: Ambiguity, view: View, reason: SpeakReason) -> Speak:
     )
 
 
-def _answer(view: View) -> Speak:
+ANSWERS = (SpeakReason.ADDRESSED_DIRECTLY, SpeakReason.UNANSWERED_QUESTION, SpeakReason.READ_BACK)
+
+# What each kind of question is answered with (values.py "asked"). {item}: the term asked about.
+ROUTE = {
+    "open": "They ask what is still left: tell {name} which terms are still not agreed (below), in one short sentence.",
+    "paid": "They ask about money paid: look it up with owed, and say what has been paid and what is still owed.",
+    "agreed": "They ask what was agreed about {item}: say what the record holds for it, who said it and who agreed, and on which call.",
+    "recording": "They ask to hear a recording: give a short lead-in and play the recording of the moment they mean.",
+}
+ROUTE_ANY = (
+    "Answer what they asked: what is still left, with the terms still not agreed (below); money paid, from owed; "
+    "what was agreed about a term, with its value, who said it and who agreed, and on which call; a read-back, "
+    "with the agreed terms (below); a recording, by playing it. If they only tell you to speak, say which terms "
+    "are still not agreed, or, if none is, read back the agreed terms."
+)
+
+
+def _item(value: object) -> ItemKey | None:
+    try:
+        return ItemKey(value)
+    except ValueError:
+        return None
+
+
+def _open(view: View) -> str:
+    return ", ".join(LABEL[key] for key, item in view.items.items() if item.state is ItemState.PENDING)
+
+
+def _status(view: View) -> str:
+    terms, still = _terms(view), _open(view)
+    return (f" Agreed so far: {terms}." if terms else " Nothing is agreed yet.") + (
+        f" Still not agreed: {still}." if still else " Every term is agreed."
+    )
+
+
+def _answer(view: View, asks: str | None = None, reason: SpeakReason = SpeakReason.ADDRESSED_DIRECTLY) -> Speak:
+    """An answer to the question asked: the kind of question picks what it is answered with."""
     name = view.names[view.speaker]
-    terms = _terms(view)
+    question = " ".join(view.text.split())
+    if asks == "read_back":
+        speak = _read_back(view, request=True)
+        speak.question = question
+        return speak
+    item = _item((view.asked or {}).get("item"))
+    route = ROUTE[asks].format(name=name, item=LABEL[item] if item else "that term") if asks in ROUTE else ROUTE_ANY
+    said = "spoke to you directly and said" if reason is SpeakReason.ADDRESSED_DIRECTLY else "asked, and nobody answered"
     text = (
-        f'{name} spoke to you directly and said: "{_quoted(view.text)}". {DATA} Answer {name} in one short '
-        "sentence. You are only the witness: do not suggest a term or judge one."
-    ) + (f" Agreed so far: {terms}." if terms else "")
-    return Speak(text, Audience(view.speaker.value), SpeakReason.ADDRESSED_DIRECTLY, question=" ".join(view.text.split()))
+        f'{name} {said}: "{_quoted(view.text)}". {DATA} {route} At most two short sentences. '
+        "You are only the witness: do not suggest a term or judge one."
+    ) + _status(view)
+    return Speak(text, Audience(view.speaker.value), reason, item if asks == "agreed" else None, question=question)
 
 
-def _read_back(view: View) -> Speak:
-    """The agreed terms, and what is still in dispute: a read-back that left it out would
-    sound as if everything were settled."""
+def _open_terms(view: View, reason: SpeakReason, to: Audience) -> Speak:
+    text = (
+        f"A term has just been agreed and they have paused. Tell {_who(to, view.names)}, in one short sentence, which "
+        f"terms are still not agreed: {_open(view)}. Name them only: do not ask about each, and do not suggest anything."
+    )
+    return Speak(text, to, reason)
+
+
+def _read_back(view: View, request: bool = False) -> Speak:
+    """The agreed terms, what is still in dispute, and what is still open: a read-back that left
+    them out would sound as if everything were settled. request: someone asked for it mid-call."""
     disputed = {c.item for c in view.conflicts if c.item}
-    if view.follow_up:
+    both = _who(Audience.BOTH, view.names)
+    if view.follow_up and not request:
         terms = _terms(view, view.changed - disputed)
-        text = f"{WRAPPING_UP}Read back what changed on this call and ask {_who(Audience.BOTH, view.names)} to confirm it."
+        text = f"{WRAPPING_UP}Read back what changed on this call and ask {both} to confirm it."
     else:
         terms = _terms(view, set(ItemKey) - disputed)
-        text = f"{WRAPPING_UP}Read back the agreed terms and ask {_who(Audience.BOTH, view.names)} to confirm them."
-    text += f" The terms: {terms}." if terms else ""
+        head = f'{view.names[view.speaker]} asked: "{_quoted(view.text)}". {DATA} ' if request else WRAPPING_UP
+        text = f"{head}Read back the agreed terms and ask {both} to confirm them."
+    text += f" The terms: {terms}." if terms else " Nothing is agreed yet: say so."
     if view.conflicts:
         text += " Still in dispute, say so plainly and do not say which is right: " + "; ".join(
             f"{LABEL[c.item] if c.item else 'a term'}: {_quoted(c.explanation)}" for c in view.conflicts
         ) + "."
-    return Speak(text, Audience.BOTH, SpeakReason.WRAPPING_UP)
+    still = _open(view)
+    if still:
+        text += f" Still not agreed, say so too: {still}."
+    reason = SpeakReason.READ_BACK if request else SpeakReason.WRAPPING_UP
+    return Speak(text, Audience.BOTH, reason)

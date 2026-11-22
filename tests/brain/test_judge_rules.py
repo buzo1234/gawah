@@ -167,12 +167,18 @@ async def test_read_back_once_when_nothing_is_pending(bus):
         assert f": {value}" in speak.instruction
 
 
-async def test_no_read_back_while_an_item_is_pending(bus):
+async def test_a_term_still_open_is_asked_and_the_goodbye_still_gets_a_read_back_naming_it(bus):
+    """The user's call (6aae99c104d1): the balance stayed open after its wrap-up question and
+    the call ended on "bye bye" with nothing read back. Now the goodbye gets the read-back, with
+    the open term said as open; and only once."""
     most = set(ITEMS) - {"late_terms"}
-    call = Call(bus, Scripted(most, {*most, "wrapping_up"}, {*most, "wrapping_up"}))
-    for _ in range(3):
-        await call.say(takes=20.0)
-    assert call.spoken == [(2, "wrapping_up", "late_or_unfinished")]
+    call = Call(bus, Scripted(most, {*most, "wrapping_up"}, {*most, "wrapping_up"}, {*most, "wrapping_up"}))
+    for text in ("haan theek hai", "haan theek hai", "theek hai, bye bye", "haan"):
+        await call.say(text, takes=20.0)
+    assert call.spoken == [(2, "wrapping_up", "late_or_unfinished"), (3, "wrapping_up", None)]
+    read_back = call.speaks[1].instruction
+    assert read_back.startswith("They are about to hang up. Read back the agreed terms")
+    assert read_back.endswith("Still not agreed, say so too: what happens if the work is late or unfinished.")
 
 
 async def test_sage2_saying_agreed_decides_nothing(bus):

@@ -1,6 +1,6 @@
 {
  "fixture": "demo_script_call",
- "recorded_at": "2026-11-21T19:41:39+00:00",
+ "recorded_at": "2026-11-22T06:22:54+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "names:-@1": {
@@ -107,6 +107,34 @@
   "ambiguous:work@12": {
    "ambiguous": false,
    "readings": null
+  },
+  "asked:-@9": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": "dates",
+   "named": null
+  },
+  "asked:-@14": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@16": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@18": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
   }
  }
 }
