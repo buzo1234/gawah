@@ -239,6 +239,21 @@ def test_call_two_has_the_wrong_total_and_the_balcony():
     assert persona.instructions(Role.WORKER, "deal", 3, {}) == persona.instructions(Role.WORKER, "deal", 2, {})
 
 
+def test_the_script_uses_the_deals_names_and_no_gendered_address():
+    for call_no in (1, 2):
+        said = persona.instructions(Role.WORKER, "deal", call_no, {Role.HIRER: "Karan", Role.WORKER: "Namesh"})
+        assert "Main Namesh" in said and "Karan ji" in said and "de dunga" in said
+        assert not any(w in said for w in ("Ramesh", "Sunita", "madam", "Madam", "sir", "her flat"))
+    as_hirer = persona.instructions(Role.HIRER, "deal", 1, {Role.HIRER: "Karan", Role.WORKER: "Namesh"})
+    assert "Main Karan hoon" in as_hirer and "Dhanyavaad Namesh ji" in as_hirer and "Sunita" not in as_hirer
+
+
+def test_with_no_names_the_story_names_are_kept():
+    said = persona.instructions(Role.WORKER, "deal", 1, {})
+    assert "Main Ramesh, painter" in said and "Dhanyavaad Ramesh ji" in said and "Sunita ji" in said
+    assert "madam" not in said.lower()
+
+
 def test_register_is_a_stream():
     assert callable(actor_stream.register)
 

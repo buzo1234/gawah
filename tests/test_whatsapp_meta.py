@@ -196,10 +196,11 @@ async def test_a_deal_starts_with_a_link_button_for_each_and_gawah_shows_it_is_t
 
 
 async def test_a_shared_contact_card_starts_a_deal_with_the_other_persons_name(meta_world):
-    card = [{"name": {"formatted_name": "Ramesh"}, "phones": [{"phone": "+91 98222 00002", "wa_id": "919822200002"}]}]
+    card = [{"name": {"formatted_name": "Ramesh Painter"}, "phones": [{"phone": "+91 98222 00002", "wa_id": "919822200002"}]}]
     await meta_world.post(webhook(message(SUNITA, "contacts", None, contacts=card), names={SUNITA: "Sunita"}))
     [deal] = meta_world.named("deal.requested")
-    assert (deal.other.phone, deal.other.name, deal.requested_by.name) == (RAMESH, "Ramesh", "Sunita")
+    # The card's name wins over the name read from the words ("Ramesh").
+    assert (deal.other.phone, deal.other.name, deal.requested_by.name) == (RAMESH, "Ramesh Painter", "Sunita")
     assert len(meta_world.graph.messages) == 2
 
 
