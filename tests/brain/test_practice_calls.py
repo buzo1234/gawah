@@ -266,7 +266,7 @@ async def test_a_second_call_replayed_keeps_the_checklist_and_catches_the_contra
     )
     assert contradiction.fact_ids == conflict.fact_ids
     assert 'Ramesh said: "Achha madam, ek baat. Labour ka total 14 hazaar tay hua tha na?"' in contradiction.instruction
-    assert "the amount was agreed at 13,000 rupees by both" in contradiction.instruction
+    assert "the amount was agreed at 13,000 rupees, said by Ramesh and agreed by Sunita" in contradiction.instruction
     # Nothing agreed on call 1 is asked again. What wrap-up raises: the contradiction, still
     # unconfirmed, and nothing else. No read-back of the whole deal.
     assert all(s.reason != "term_unclear" for s in second.speaks)

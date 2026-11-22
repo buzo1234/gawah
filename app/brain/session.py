@@ -159,46 +159,58 @@ class Session:
         ))
 
     def _said_change(self, fact: Fact) -> None:
-        """A change to an agreed term's figure, said on this call. People bargain over a change
-        ("bees", "baarah", "pandrah"): an offer is held, and once the other accepts it the
-        memory makes it the term and it is read back at the end. Only a change still unaccepted
-        at wrap-up is asked about, or at once one that goes against a term both confirmed.
+        """A change to a term on record, said on this call. A value on record changes only when both
+        confirm the change through Gawah, so every change is put to both, at the next pause once it
+        is settled. People bargain over a change ("bees", "baarah", "pandrah"): an offer is held while
+        they do (CHANGE_SETTLE_LINES with no counter settles it, and wrap-up raises it), an offer the
+        other accepts (an agreed change) is raised at once, and so is one against a term both confirmed.
+        A change memory has closed (confirmed through Gawah, withdrawn, bargained past) is dropped.
         Added details ("do ladke aur lagaunga") are not worth stopping a call for."""
-        current = self.terms.current(fact.item) if fact.item else None
         cid = f"change:{fact.id}"
-        if fact.item and fact.status is not FactStatus.SAID:
-            self.held.pop(fact.item, None)  # accepted: the memory makes it the term, read back at the end
+        if fact.status not in (FactStatus.SAID, FactStatus.AGREED):
+            if fact.item and self.held.get(fact.item) and self.held[fact.item].id == cid:
+                self.held.pop(fact.item)
+            if any(c.id == cid for c in self.conflicts):
+                self.conflicts = [c for c in self.conflicts if c.id != cid]
+                self._refresh(fact.item) if fact.item else None
             return
-        if current is None or fact.call_no != self.call_no or any(c.id == cid for c in self.conflicts):
+        record = self.terms.record(fact.item) if fact.item else None
+        if record is None or fact.call_no != self.call_no or any(c.id == cid for c in self.conflicts):
             return
-        rupees = fact.value_rupees is not None and fact.value_rupees != current.value_rupees
+        rupees = fact.value_rupees is not None and fact.value_rupees != record.value_rupees
         if fact.item is ItemKey.AMOUNT and fact.value_rupees == 0:
             return  # a job's total is never nothing: "free mein" is an addition at no cost
         # The dates term holds a start and a finish, so one day is not compared with another
         # (memory does not either); a date change comes as a fact.conflict from its model.
-        day = fact.item is not ItemKey.DATES and fact.value_date is not None and current.value_date is not None
-        if not (rupees or (day and fact.value_date != current.value_date)):
+        day = fact.item is not ItemKey.DATES and fact.value_date is not None and record.value_date is not None
+        if not (rupees or (day and fact.value_date != record.value_date)):
             return
-        if cid in self.conflict_against:
-            return
-        was = current.value or current.text
-        where = f" (call {current.call_no}, line {current.line_no})" if current.line_no else ""
+        if any(c.change and c.item == fact.item and self._value_of(c) == fact.value_rupees for c in self.conflicts):
+            return  # the same change, agreed again: it is already open
+        was = record.value or record.text
+        where = f" (call {record.call_no}, line {record.line_no})" if record.line_no else ""
+        now = "agreed on this call by both" if fact.status is FactStatus.AGREED else "now said"
         change = Conflict(
-            id=cid, item=fact.item, fact_ids=[current.id, fact.id],
-            explanation=f"{current.status.value} as {was}{where}; now said as {fact.value or fact.text}.",
+            id=cid, item=fact.item, fact_ids=[record.id, fact.id],
+            explanation=f"{record.status.value} as {was}{where}; {now} as {fact.value or fact.text}.",
             said=fact.quote, speaker=fact.said_by, line_no=fact.line_no, change=True,
         )
-        if fact.status is FactStatus.SAID and current.status is not FactStatus.CONFIRMED:
+        if fact.status is FactStatus.SAID and record.status is not FactStatus.CONFIRMED:
             self.held[fact.item] = change  # the latest offer while it is bargained
             self.log.info("change offered at line %s about %s: held while they bargain", fact.line_no, fact.item.value)
             return
+        self.held.pop(fact.item, None)
         self._open(change)
+
+    def _value_of(self, conflict: Conflict) -> int | None:
+        offer = self.terms.latest.get(conflict.fact_ids[-1]) if conflict.change else None
+        return offer.value_rupees if offer else None
 
     def _held(self) -> list[Conflict]:
         """Changes offered and never accepted, still differing from the term as it stands."""
         still = []
         for item, change in self.held.items():
-            offer, current = self.terms.latest.get(change.fact_ids[1]), self.terms.current(item)
+            offer, current = self.terms.latest.get(change.fact_ids[1]), self.terms.record(item)
             if offer and current and offer.status is FactStatus.SAID and offer.value_rupees != current.value_rupees:
                 still.append(change)
         return still
