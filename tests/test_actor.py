@@ -136,7 +136,7 @@ def test_it_takes_the_workers_seat_through_the_pages_own_join(world):
     assert url == LIVEKIT_SETTINGS.livekit_url and claims["sub"] == "worker" and claims["video"]["room"] == "deal-d1-1"
     # It plays Ramesh from the demo story, with a man's voice and the wait tool.
     config = links[0].config
-    assert links[0].opened and config["audio"]["output"]["voice"] == "ash" and config["tools"] == [persona.WAIT_TOOL]
+    assert links[0].opened and config["audio"]["output"]["voice"] == "cedar" and config["tools"] == [persona.WAIT_TOOL]
     said = config["instructions"]
     assert "You are Ramesh" in said and "You: Do coat aur putty ka touch-up" in said and "Sunita: Pachees hazaar bahut zyada" in said
     assert "[After the line above, Gawah asks Sunita when the balance will be paid.]" in said
@@ -183,6 +183,38 @@ async def _call(f):
     f()
 
 
+def test_an_actor_leaving_its_call_does_not_hold_the_seat(world):
+    """The room closes and the next call's link reaches the phone while the actor is still leaving
+    (about 2 s on the server). It is not busy: the new start replaces it, and it finishes leaving."""
+    import asyncio
+
+    client, app, livekit, seats, links, _ = world
+    held = asyncio.Event()
+
+    class SlowSeat(FakeSeat):
+        async def leave(self):
+            await held.wait()
+            await super().leave()
+
+    app.state.actor_seat = lambda log: seats.append(SlowSeat(log) if not seats else FakeSeat(log)) or seats[-1]
+    assert client.post("/actor/start", json={"deal_id": "d1", "role": "worker", "kind": "deal"}).status_code == 200
+    first = app.state.actor
+    client.portal.call(lambda: _call(seats[0].on_closed))
+    assert first.state == "ending" and not first.running
+    assert client.get("/actor/status", params={"deal_id": "d1"}).json()["active"] is False
+    # Another seat on the same deal (the other kind or call is the same path): taken at once.
+    again = client.post("/actor/start", json={"deal_id": "d1", "role": "hirer", "kind": "deal"})
+    assert again.status_code == 200, again.text
+    assert app.state.actor is not first and app.state.actor.running and again.json()["role"] == "hirer"
+    assert not seats[0].left and first.state == "ending"
+    client.portal.call(lambda: _call(held.set))
+    wait_until(lambda: seats[0].left and first.state == "ended")
+    assert app.state.actor.running and first.reason == "the room closed"
+    # The call's end reaching the old actor twice changes nothing, and the new one is still busy for others.
+    busy = client.post("/actor/start", json={"deal_id": "d1", "role": "worker", "kind": "deal"})
+    assert busy.status_code == 409 and busy.json()["detail"]["error"] == "busy" and busy.json()["detail"]["deal_id"] == "d1"
+
+
 @pytest.mark.parametrize("limit, reason, people", [("ALONE_S", "nobody else came", set()), ("MAX_S", "time limit", {"hirer"})])
 def test_it_never_sits_in_a_room(world, monkeypatch, limit, reason, people):
     client, app, livekit, seats, links, _ = world
@@ -194,9 +226,12 @@ def test_it_never_sits_in_a_room(world, monkeypatch, limit, reason, people):
 
 
 def test_a_call_back_with_nothing_to_confirm_is_refused(world):
+    """The page's join said no (404, nothing left to ask; 410, the call is over): the phone reads
+    `join` and says the call has ended, never the status code."""
     client, *_ = world
     refused = client.post("/actor/start", json={"deal_id": "d1", "role": "worker", "kind": "callback"})
     assert refused.status_code == 409
+    assert refused.json()["detail"]["join"] == 404 and "error" not in refused.json()["detail"]
 
 
 def test_it_finishes_its_line_when_talked_over_and_answers_wait_with_silence(world):
@@ -238,7 +273,7 @@ def test_what_it_hears_goes_to_the_model_in_100_ms_pieces(world):
 
 def test_the_callback_persona_says_yes_to_each_term():
     said = persona.instructions(Role.HIRER, "callback", 1, {Role.HIRER: "Sunita", Role.WORKER: None})
-    assert "You are Sunita" in said and "Haan, sahi hai" in said and "Ramesh" in said
+    assert "You are Sunita" in said and "Haan ji, sahi hai" in said and "Ramesh" in said
 
 
 def test_call_two_has_the_wrong_total_and_the_balcony():
@@ -273,3 +308,55 @@ def test_the_status_learns_the_name_the_call_told(world):
     from app.contracts import CallStarted
     publish(CallStarted(deal_id="d1", people=[SUNITA, RAMESH], room="deal-d1-1", call_no=1))
     assert client.get("/actor/status", params={"deal_id": "d1"}).json()["name"] == "Ramesh"
+
+
+@pytest.mark.parametrize("me, kind, call_no", [(r, k, n) for r in Role for k, n in (("deal", 1), ("deal", 2), ("callback", 1))])
+def test_the_persona_is_a_person_not_a_reader_of_lines(me, kind, call_no):
+    """The story is a guide: nothing in what it is told calls it a script or a rehearsal, or tells it to
+    hold the other person to it; it is told to follow changed details, react, and stay in character."""
+    said = persona.instructions(me, kind, call_no, {Role.HIRER: "Karan", Role.WORKER: "Namesh"})
+    lower = said.lower()
+    assert not any(w in lower for w in ("script", "rehearsal", "demo", "your part", "your lines"))
+    own = "\n".join(line for line in lower.splitlines() if not line.strip().startswith("[after the line above, gawah"))
+    assert "record mein" not in own and "exactly as written" not in lower  # Gawah's own words may say "record mein"
+    assert "# how you sound" in lower and "haan haan" in lower and "laugh" in lower
+    assert "kya? phir se boliye?" in lower and "kaam ki baat karein" in lower and "do not lecture" in lower
+    assert "never say what you are doing or waiting for" in lower
+    if kind == "deal":
+        assert "if they say three bedrooms, it is three bedrooms" in lower and "bargain from there" in lower
+        assert "not words to repeat" in lower
+
+
+def test_the_beats_and_numbers_are_still_there():
+    worker1 = persona.instructions(Role.WORKER, "deal", 1, {Role.HIRER: "Karan", Role.WORKER: "Namesh"})
+    for beat in ("pachees hazaar", "baees hazaar", "paanch hazaar", "agle somvaar", "paanch sau a day", "Gawah ji, advance kitna tay hua tha?"):
+        assert beat in worker1, beat
+    worker2 = persona.instructions(Role.WORKER, "deal", 2, {Role.HIRER: "Karan", Role.WORKER: "Namesh"})
+    assert "you remember pachees hazaar" in worker2 and "do hazaar extra" in worker2 and "balcony" in worker2
+    hirer2 = persona.instructions(Role.HIRER, "deal", 2, {Role.HIRER: "Karan", Role.WORKER: "Namesh"})
+    assert "chaubees hazaar" in hirer2 and "Namesh" in hirer2 and "Ramesh" not in hirer2
+
+
+def test_every_reply_is_in_the_log_on_a_call_back_too(world, caplog):
+    """Gawah's transcription of the actor can be a bare 'na'; the log shows what the actor itself said,
+    from the model's own transcript, with the deal id, once per reply even if both events carry it."""
+    client, app, livekit, seats, links, _ = world
+    client.post("/actor/start", json={"deal_id": "d1", "role": "worker", "kind": "deal"})
+    app.state.actor.kind = "callback"
+    on = lambda event: client.portal.call(links[0].on_event, event)  # noqa: E731
+    reply = {"type": "message", "id": "i1", "content": [{"type": "output_audio", "transcript": "Haan ji, sahi hai."}]}
+    with caplog.at_level("INFO", logger="gawah.actor"):
+        on({"type": "response.done", "response": {"output": [reply]}})  # no transcript event came
+        on({"type": "response.output_audio_transcript.done", "item_id": "i2", "transcript": "Ji haan, theek hai."})
+        on({"type": "response.done", "response": {"output": [{**reply, "id": "i2"}]}})
+        on({"type": "response.done", "response": {"output": [{"type": "function_call", "status": "completed", "call_id": "c1"}]}})
+    said = [r.getMessage() for r in caplog.records if r.name == "gawah.actor"]
+    assert app.state.actor.said == ["Haan ji, sahi hai.", "Ji haan, theek hai."]
+    assert said.count("deal=d1 actor (worker) said: Haan ji, sahi hai.") == 1
+    assert said.count("deal=d1 actor (worker) said: Ji haan, theek hai.") == 1
+    assert "deal=d1 actor (worker) waited" in said
+
+
+def test_the_call_back_persona_never_answers_with_a_bare_sound():
+    said = persona.instructions(Role.WORKER, "callback", 1, {Role.HIRER: "Karan", Role.WORKER: "Namesh"})
+    assert "Haan ji, sahi hai" in said and "Never answer with a bare one-syllable sound" in said

@@ -83,8 +83,29 @@ function render() {
 
 async function post(path, body) {
   const r = await fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
-  if (!r.ok) throw new Error(`${path} answered ${r.status}`);
+  if (!r.ok) {
+    const error = new Error(`${path} answered ${r.status}`);
+    error.status = r.status;
+    error.detail = (await r.json().catch(() => ({}))).detail;
+    throw error;
+  }
   return r.json().catch(() => ({}));
+}
+
+const busy = (error) => error.status === 409 && error.detail?.error === "busy";
+const pause = (ms) => new Promise((done) => setTimeout(done, ms));
+
+// What a refused /actor/start means, in plain words.
+function whyNot(error, link) {
+  const d = error.detail || {};
+  if (busy(error)) {
+    return d.deal_id === link.deal_id ? "The AI is still leaving the last call. Try again in a moment."
+      : "The AI is on another deal's call. Stop it there first.";
+  }
+  if (d.join === 410) return "That call has ended.";
+  // A call-back with nothing left to ask is over too: its terms were all confirmed.
+  if (d.join === 404) return link.kind === "callback" ? "That call has ended: nothing is left to confirm." : "That call link is not valid.";
+  return "The AI could not start. Try again in a moment.";
 }
 
 async function probeActor() {
@@ -108,11 +129,17 @@ async function startActor(link) {
   actor = { ...link, active: false, error: null };
   call = null;
   showCall();
+  const body = { deal_id: link.deal_id, role: link.role, kind: link.kind };
   try {
-    await post("/actor/start", { deal_id: link.deal_id, role: link.role, kind: link.kind });
+    // The call-back's link can come while the AI is still leaving the deal call: ask once more.
+    await post("/actor/start", body).catch(async (error) => {
+      if (!busy(error)) throw error;
+      await pause(2500);
+      return post("/actor/start", body);
+    });
     actor.active = true;
   } catch (error) {
-    actor.error = error.message;
+    actor.error = whyNot(error, link);
   }
   showCall();
 }
@@ -130,13 +157,14 @@ function showCall() {
   box.hidden = !actor;
   if (!actor) return box.replaceChildren();
   const what = actor.kind === "callback" ? "call-back" : "deal call";
-  const text = actor.error ? `The AI could not join: ${actor.error}`
+  const text = actor.error ? actor.error
     : !actor.active ? `Starting the AI for the ${what}`
     : call === "ended" ? `The ${what} is over`
     : call === "on" ? `The AI is on the ${what}`
     : `The AI is joining the ${what}`;
   box.className = `call-state${call === "on" ? " on" : ""}${actor.error ? " failed" : ""}`;
-  box.replaceChildren(h("span", {}, text), actor.active && call !== "ended" && h("button", { type: "button", class: "quiet", onclick: stopActor }, "Stop"));
+  const stop = actor.active && call !== "ended" ? [h("button", { type: "button", class: "quiet", onclick: stopActor }, "Stop")] : [];
+  box.replaceChildren(h("span", {}, text), ...stop);
 }
 
 function openCall(ev, link) {

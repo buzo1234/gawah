@@ -9,7 +9,9 @@ from collections.abc import Awaitable, Callable
 import websockets
 
 MODEL = "gpt-realtime-2.1"
-VOICES = {"hirer": "coral", "worker": "ash"}  # Gawah is "marin"
+# Gawah is "marin". Ash sounded flat; cedar (OpenAI's recommended male voice, and the proofs' stand-in
+# Ramesh) moved more in pitch on the same lines. Samples to compare: fixtures/actor-samples/.
+VOICES = {"hirer": "coral", "worker": "cedar"}
 RATE = 24000
 TIMEOUT_S = 10.0
 URL = f"wss://api.openai.com/v1/realtime?model={MODEL}"

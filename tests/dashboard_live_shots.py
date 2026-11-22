@@ -42,7 +42,8 @@ checklist against the brain's, and a reload must rebuild exactly the same page.
    the webhook and comes back in the chat. The actor's endpoints are stood in for here
    (they belong to another stream): answering 404, the "AI plays this person" toggle is
    hidden; answering, with the toggle on, a call link that arrives starts the actor with
-   the link's deal, role and kind. On the board, a call link tapped in the frame opens the
+   the link's deal, role and kind; refused once as busy (the last actor still leaving), it asks
+   again and joins; refused twice, or because the call ended, it says so in plain words. On the board, a call link tapped in the frame opens the
    call page in the frame (nothing is joined: the join button is not pressed).
 7. The second phone on Meta's message shapes, as WhatsApp draws them: a call link as a
    button in its bubble, yes or no questions as reply buttons; one tapped on the page goes
@@ -211,7 +212,7 @@ def errors(browser) -> list[str]:
 
 def stand_in_actor(app) -> dict:
     """The actor's three endpoints, as another stream will serve them: 404 until switched on."""
-    actor = {"on": False, "started": [], "stopped": [], "active": None}
+    actor = {"on": False, "started": [], "stopped": [], "active": None, "refuse": [], "asked": 0}
 
     async def status(request: Request):
         if not actor["on"]:
@@ -222,6 +223,9 @@ def stand_in_actor(app) -> dict:
     async def start(request: Request):
         if not actor["on"]:
             return JSONResponse({"detail": "Not Found"}, 404)
+        actor["asked"] += 1
+        if actor["refuse"]:
+            return JSONResponse({"detail": actor["refuse"].pop(0)}, 409)
         actor["active"] = await request.json()
         actor["started"].append(actor["active"])
         return {"ok": True}
@@ -937,7 +941,23 @@ async def main(port: int, out: Path) -> None:
                 await phone.js("document.querySelector('#call-state button').click()")
                 await asyncio.sleep(0.3)
                 check(actor["stopped"] == [{"deal_id": deal, "role": "worker"}], f"Stop stopped the actor: {actor['stopped']}")
-                check(not errors(phone), f"no errors in the phone page: {errors(phone)}")
+
+                state = "document.getElementById('call-state').textContent"
+                leaving = {"error": "busy", "deal_id": deal, "active": True, "role": "worker", "kind": "deal", "state": "on"}
+                link = f"Ramesh ji, terms sun ke haan boliye: {url}/callback/{deal}/worker"
+                for refuse, then in (
+                    ([leaving], "The AI is joining the call-backStop"),
+                    ([leaving, leaving], "The AI is still leaving the last call. Try again in a moment."),
+                    ([{"error": "over", "join": 410}], "That call has ended."),
+                ):
+                    actor["refuse"], actor["asked"], actor["active"] = list(refuse), 0, None
+                    await publish(WhatsAppMessage(deal_id=deal, direction=Direction.OUT, phone=ramesh["phone"], role=Role.WORKER, simulated=True, text=link))
+                    await phone.wait_for(f"{state}.startsWith({json.dumps(then)})", timeout=8)
+                    shown = await phone.js(state)
+                    check(shown == then and actor["asked"] == (2 if refuse[0].get("error") == "busy" else 1),
+                          f"refused {len(refuse)} time(s) ({refuse[0].get('error')}): asked {actor['asked']} time(s), it says {shown!r}")
+                refused = [e for e in errors(phone) if "409 (Conflict)" in e and "/actor/start" in e]  # the browser logs the refusals above
+                check(not set(errors(phone)) - set(refused), f"no errors in the phone page: {errors(phone)}")
 
             # ---------- 6. a call link tapped in the board's frame opens there ----------
             print("6. the board's phone frame: a call link opens inside it")

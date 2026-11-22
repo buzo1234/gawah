@@ -1,0 +1,41 @@
+{
+ "voice": "cedar",
+ "improvised": false,
+ "turns": [
+  {
+   "line": 1,
+   "sunita": "Main Sunita hoon. Main sehmat hoon.",
+   "actor": [
+    "Main Ramesh hoon, painter hoon, ji. Main bhi sehmat hoon."
+   ]
+  },
+  {
+   "line": 3,
+   "sunita": "Mujhe apna flat paint karwana hai. Two BHK hai, Indirapuram mein, third floor pe.",
+   "actor": [
+    "Do coat, aur putty ka thoda touch-up, material mera hoga, koi extra charge nahi upar se. Is hisaab se pachees hazaar lagega, Sunita ji."
+   ]
+  },
+  {
+   "line": 5,
+   "sunita": "Pachees hazaar bahut zyada hai. Mera budget twenty thousand ka hai.",
+   "actor": [
+    "Arre Sunita ji, bees mein bilkul nahi ho payega, labour hi teen aadmi ka hai ji. Dekhiye, ek baar main beech pe aa raha hoon, baees hazaar final kar lo. Isse neeche to meri taraf se mushkil hai."
+   ]
+  },
+  {
+   "line": 7,
+   "sunita": "Theek hai, twenty two thousand done. Lekin material aapka hoga, upar se koi extra charge nahi.",
+   "actor": [
+    "Haan ji, bilkul. Material mera hoga, koi extra charge nahi upar se. Ye baat pakki."
+   ]
+  }
+ ],
+ "heard": [
+  "मैं सुनीता हूँ। मैं सहमत हूँ।",
+  "मुझे अपना फ्लैट पेंट करवाना है, टू बीएचके, एक तला पुरा, थर्ड फ्लोर।",
+  "पच्चीस हज़ार बहुत ज़्यादा है, मेरा बजट बीस थाउजंड का है।",
+  "ठीक है, 22,000। लेकिन मटेरियल आपका होगा, ऊपर से कोई एक्स्ट्रा चार्ज नहीं।"
+ ],
+ "realtime_minutes": 0.95
+}
