@@ -26,13 +26,18 @@ recordings go.
 3. The first call finished, an advance paid on WhatsApp, and the amount changed by both:
    payments, what they count towards, and a replaced version, then the shot; then the
    timeline scrolled down while a new fact arrives: what the viewer reads stays put and a
-   pill says one entry is newer (3b).
+   pill says one entry is newer (3b). Then the call-backs: both confirm every term, as the
+   mouth tells memory (terms.confirmed), so the timeline has entries with both people and
+   their status, each with its clip (3c).
 
 After each shot: the board is checked against memory's own answers (/memory/state, terms,
 owed, /memory/chain; every fact in the timeline, at memory's status; the chip marked as
 standing memory's current term; a payment in the lane of the term it counts towards), the
 checklist against the brain's, and a reload must rebuild exactly the same page.
 4. One past fact is altered inside memory, and the chain must name the link that broke.
+4b. Two, then three claims contradicting the same confirmed amount, which was then changed
+   (the facts and conflicts published as memory would send them): one bracket with one
+   label and a tick per claim, every figure whole, at 1920 by 1080 and 1280 by 720.
 5. The second phone on its own page, at phone size: a message typed and sent goes through
    the webhook and comes back in the chat. The actor's endpoints are stood in for here
    (they belong to another stream): answering 404, the "AI plays this person" toggle is
@@ -65,8 +70,9 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from app.contracts import (
-    WHATSAPP_WEBHOOK_PATH, CallEnded, CallKind, CallStarted, ChangeStatus, Direction, FactChanged, ItemKey, Person, Record,
-    RecordKind, RecordReceived, Role, TranscriptLine, WhatsAppMessage, new_id,
+    WHATSAPP_WEBHOOK_PATH, CallEnded, CallKind, CallStarted, ChangeStatus, Direction, Fact, FactChanged, FactConflict, FactKind,
+    FactRecorded, FactStatus, ItemKey, Person, Record,
+    RecordKind, RecordReceived, Role, TermsConfirmed, TranscriptLine, WhatsAppMessage, new_id,
 )
 from fakes.replayer import load
 from tests.offline import offline_app
@@ -112,10 +118,27 @@ OVERLAPS = """(() => {
     const lr = box(lane.closest('.lane'));
     chips.forEach((c) => { if (c.right > lr.right + 0.5) out.push('chip past its lane in ' + lane.closest('.term').dataset.item); });
   }
-  const scale = document.getElementById('stage').getBoundingClientRect().width / 1920;
+  for (const lane of document.querySelectorAll('.lane')) {
+    const item = lane.closest('.term').dataset.item, lb = box(lane);
+    const chips = [...lane.querySelectorAll('.chip')].filter((c) => !c.hidden).map(box);
+    const labels = [...lane.querySelectorAll('.arc rect.tag-bg')].map(box);
+    labels.forEach((a, i) => {
+      labels.slice(i + 1).forEach((b) => { if (hit(a, b)) out.push('bracket labels on each other in ' + item); });
+      chips.forEach((c) => { if (hit(a, c)) out.push('a bracket label on a chip in ' + item); });
+      if (a.top < lb.top - 0.5 || a.left < lb.left - 0.5 || a.right > lb.right + 0.5) out.push('a bracket label out of its lane in ' + item);
+    });
+    for (const c of lane.querySelectorAll('.chip:not(.stub)')) {
+      const v = c.querySelector('.v');
+      if (c.hidden || !v) continue;
+      if (/^₹[\\d,\u202f ]+$/.test(c.dataset.value) && v.textContent.replace(/\\n/g, ' ') !== c.dataset.value) out.push('a figure not whole in ' + item + ': ' + v.textContent);
+      if (v.scrollWidth > v.clientWidth + 1) out.push('chip text cut in ' + item + ': ' + v.textContent.slice(0, 30));
+    }
+  }
+  const stage = document.getElementById('stage');
+  const scale = stage.getBoundingClientRect().width / stage.offsetWidth;
   for (const node of document.querySelectorAll('.node')) {
     const edge = box(node).right - 24 * scale;
-    for (const el of node.querySelectorAll('.l1 > *, .value, .l3 > *')) if (box(el).right > edge + 0.5) out.push('into the padding of ' + node.closest('.term').dataset.item + ': ' + el.textContent.slice(0, 30));
+    for (const el of node.querySelectorAll('.l1 > *, .pills > *, .l2 > *')) if (box(el).right > edge + 0.5) out.push('into the padding of ' + node.closest('.term').dataset.item + ': ' + el.textContent.slice(0, 30));
   }
   for (const el of document.querySelectorAll('.node .value, .node .l1, .entry .text, #detail .hero, #detail .value')) {
     if (el.scrollWidth > el.clientWidth + 1) out.push('cut by its box: ' + el.className + ' ' + el.textContent.slice(0, 30));
@@ -127,6 +150,52 @@ ARRIVING = """new Promise((done) => {
   });
   seen.observe(document.getElementById('timeline'), { subtree: true, childList: true, attributes: true });
 })"""
+# What the review crops are judged on, in the stage's own px (the board at 1920 wide):
+# paddings of the page, the header's logo, a timeline entry, each term row and each chip.
+MEASURE = """(() => {
+  const stage = document.getElementById('stage');
+  const k = stage.getBoundingClientRect().width / stage.offsetWidth;
+  const box = (el) => el.getBoundingClientRect();
+  const r = (n) => Math.round(n / k * 10) / 10;
+  const textBox = (el) => { const range = document.createRange(); range.selectNodeContents(el); return range.getBoundingClientRect(); };
+  const kids = (el) => [...el.children].filter((c) => !c.hidden && getComputedStyle(c).display !== 'none');
+  const out = {};
+  const top = box(document.querySelector('.top')), deal = box(document.querySelector('.deal')), phone = box(document.querySelector('#phone'));
+  out.page = { window: [innerWidth, innerHeight], stage: [stage.offsetWidth, stage.offsetHeight], left: r(top.left), top: r(top.top),
+    right: r(innerWidth - phone.right), bottom: r(innerHeight - deal.bottom) };
+  const logo = document.querySelector('.top .logo'), h1 = document.getElementById('deal-title'), pill = document.getElementById('call-pill');
+  const mid = (b) => r(b.top + b.height / 2);
+  out.header = { logo: [r(box(logo).width), r(box(logo).height)], radius: getComputedStyle(logo).borderRadius, alt: logo.alt,
+    logoMid: mid(box(logo)), titleMid: mid(box(h1)), pillMid: mid(box(pill)), logoRight: r(innerWidth - box(logo).right) };
+  const entries = [...document.querySelectorAll('#timeline .entry')];
+  const e = entries.find((x) => x.querySelectorAll('.people > *').length >= 3 && x.querySelector('.play')) || entries.find((x) => x.querySelector('.play'));
+  if (e) {
+    const eb = box(e), list = document.getElementById('timeline'), lb = box(list);
+    const play = box(e.querySelector('.play .mark')), people = [...e.querySelectorAll('.people > *')].map(box);
+    const main = box(e.querySelector('.main')), time = box(e.querySelector('.time'));
+    out.entry = { fact: e.dataset.fact, pills: people.length, pillRows: new Set(people.map((b) => Math.round(b.top))).size,
+      padLeft: r(time.left - eb.left), padRight: r(eb.right - play.right), pillsPastMain: r(Math.max(...people.map((b) => b.right)) - main.right),
+      playToMain: r(play.left - main.right), playMidVsEntryMid: r((play.top + play.height / 2) - (eb.top + eb.height / 2)),
+      scrollbarGutter: r(lb.right - eb.right), entryWidth: r(eb.width) };
+  }
+  out.rows = [...document.querySelectorAll('#rows .term')].map((t) => {
+    const tb = box(t), node = t.querySelector('.node'), parts = kids(node).map(box);
+    const lane = t.querySelector('.lane'), chips = kids(lane.querySelector('.chips')).map(box);
+    return { item: t.dataset.item, height: r(tb.height), nodeTop: r(parts[0].top - tb.top), nodeBottom: r(tb.bottom - 1 - parts.at(-1).bottom),
+      laneHeight: r(box(lane).height), chipTop: chips.length ? r(Math.min(...chips.map((c) => c.top)) - tb.top) : null,
+      chipBottom: chips.length ? r(tb.bottom - 1 - Math.max(...chips.map((c) => c.bottom))) : null };
+  });
+  out.chips = [...document.querySelectorAll('#rows .chip')].filter((c) => !c.hidden).map((c) => {
+    const cb = box(c), parts = kids(c), b = parseFloat(getComputedStyle(c).borderLeftWidth);
+    const tb = (x) => (x.classList.contains('v') ? textBox(x) : box(x));
+    const first = parts.length ? tb(parts[0]) : textBox(c), last = parts.length ? tb(parts.at(-1)) : textBox(c);
+    const cy = cb.top + cb.height / 2;
+    const off = (pb) => Math.abs(r(pb.top + pb.height / 2 - cy));
+    return { kind: [...c.classList].filter((x) => !['chip', 'lit', 'enter', 'landed'].includes(x)).join(' '), text: c.textContent.slice(0, 24),
+      left: r(first.left - cb.left - b), right: r(cb.right - b - last.right),
+      offCentre: parts.length ? Math.max(...parts.map((x) => off(tb(x)))) : off(textBox(c)) };
+  });
+  return JSON.stringify(out); })()"""
 AUDIO = Path("fixtures/audio")
 FRAME = "document.getElementById('phone-frame').contentWindow"
 PHONE_TITLE = "document.getElementById('phone-title')"
@@ -243,13 +312,51 @@ async def point_at(chrome, selector: str | None) -> None:
     await asyncio.sleep(0.15)
 
 
-async def sized(chrome, width: int, height: int, path: Path) -> None:
-    """The same page in a smaller window: the board scales to it, whole."""
+async def sized(chrome, width: int, height: int, path: Path) -> dict:
+    """The same page in a smaller window: the board scales to it, whole, with the same
+    margin on all four sides. Returns the page's margins, in the stage's px."""
     await chrome.send("Emulation.setDeviceMetricsOverride", width=width, height=height, deviceScaleFactor=1, mobile=False)
     await asyncio.sleep(0.4)
     await chrome.shot(path)
+    page = json.loads(await chrome.js(MEASURE))["page"]
     await chrome.send("Emulation.setDeviceMetricsOverride", width=1920, height=1080, deviceScaleFactor=1, mobile=False)
     await asyncio.sleep(0.3)
+    return page
+
+
+async def review(chrome, folder: Path, tag: str) -> dict:
+    """2x crops of a timeline entry, the six term rows, the busiest lane, the header and the
+    four page corners, with what they are judged on (MEASURE), printed and returned."""
+    folder.mkdir(parents=True, exist_ok=True)
+    found = json.loads(await chrome.js(MEASURE))
+    await chrome.send("Emulation.setDeviceMetricsOverride", width=1920, height=1080, deviceScaleFactor=2, mobile=False)
+    await asyncio.sleep(0.4)
+
+    async def crop(name: str, selector: str | None = None, rect: list | None = None, pad: int = 8) -> None:
+        if selector:
+            rect = json.loads(await chrome.js(f"""(() => {{ const b = document.querySelector({json.dumps(selector)}).getBoundingClientRect();
+              return JSON.stringify([b.x, b.y, b.width, b.height]); }})()"""))
+        x, y, w, h = rect
+        clip = {"x": max(0, x - pad), "y": max(0, y - pad), "width": w + 2 * pad, "height": h + 2 * pad, "scale": 1}
+        data = (await chrome.send("Page.captureScreenshot", format="png", clip=clip))["data"]
+        (folder / f"{tag}-{name}.png").write_bytes(base64.b64decode(data))
+
+    if "entry" in found:
+        entry = f"#timeline .entry[data-fact='{found['entry']['fact']}']"
+        await chrome.js(f"document.querySelector({json.dumps(entry)}).scrollIntoView({{block: 'nearest'}})")
+        await crop("timeline-entry", entry, pad=24)
+    await crop("term-rows", "#rows")
+    busiest = await chrome.js("[...document.querySelectorAll('#rows .term')].sort((a, b) => b.querySelectorAll('.chip:not([hidden])').length - a.querySelectorAll('.chip:not([hidden])').length)[0].dataset.item")
+    await crop("lane-chips", f"#rows .term[data-item='{busiest}'] .lane")
+    await crop("header", ".top", pad=16)
+    for name, rect in {"corner-top-left": [0, 0, 240, 240], "corner-top-right": [1680, 0, 240, 240],
+                       "corner-bottom-left": [0, 840, 240, 240], "corner-bottom-right": [1680, 840, 240, 240]}.items():
+        await crop(name, rect=rect, pad=0)
+    await chrome.js("document.getElementById('timeline').scrollTop = 0")
+    await chrome.send("Emulation.setDeviceMetricsOverride", width=1920, height=1080, deviceScaleFactor=1, mobile=False)
+    await asyncio.sleep(0.3)
+    print(f"  review {tag}: {json.dumps(found)}")
+    return found
 
 
 async def whatsapp_look(port: int, out: Path, check) -> int:
@@ -616,8 +723,13 @@ async def main(port: int, out: Path) -> None:
             check(rows["amount"]["contradicted"].startswith("Contradicted · Call 1 · "), f"the amount's node is marked: {rows['amount']}")
             await asyncio.sleep(1.2)
             await chrome.shot(out / "2-contradiction.png")
-            await sized(chrome, 1440, 900, out / "2-contradiction-1440x900.png")
-            await sized(chrome, 1280, 720, out / "2-contradiction-1280x720.png")
+            margins = [json.loads(await chrome.js(MEASURE))["page"],
+                       await sized(chrome, 1440, 900, out / "2-contradiction-1440x900.png"),
+                       await sized(chrome, 1280, 720, out / "2-contradiction-1280x720.png")]
+            for m in margins:
+                sides = [m["left"], m["top"], m["right"], m["bottom"]]
+                check(max(sides) - min(sides) < 1, f"the page margin is the same on all four sides at {m['window']}: {sides} (stage {m['stage']})")
+            await review(chrome, out / "review", "contradiction")
             await reload_check("contradiction")
             await press(chrome, "#detail .conflict-card .play")
             await chrome.wait_for("document.querySelector('#detail .conflict-card .play').classList.contains('playing') || document.querySelector('#detail .conflict-card .play').classList.contains('missing')", timeout=3)
@@ -678,6 +790,7 @@ async def main(port: int, out: Path) -> None:
             check(rows["amount"]["state"] == "Changed" and money(rows["amount"]["value"]) == money(board("26,000 rupees, with the balcony")), f"the checklist shows the change: {rows['amount']}")
             await asyncio.sleep(0.5)
             await chrome.shot(out / "3-payments-and-change.png")
+            await review(chrome, out / "review", "payments")
             await reload_check("payments and change")
 
             # The timeline scrolled away from the newest: a new fact goes in above, what is read stays put.
@@ -698,6 +811,22 @@ async def main(port: int, out: Path) -> None:
             await chrome.wait_for("document.getElementById('timeline').scrollTop === 0 && document.getElementById('newer').hidden", timeout=3)
             check(True, "the pill scrolls back to the newest and goes away")
 
+            # The call-backs: both confirm every term; the timeline's Call-backs moment shows both people on each.
+            people = [Person(**p) for p in mb["people"]]
+            await publish(CallStarted(deal_id=deal, people=people, room=f"replay-{deal}-callback", kind=CallKind.CALLBACK))
+            for role in (Role.WORKER, Role.HIRER):
+                await publish(TermsConfirmed(deal_id=deal, person=role))
+            await publish(CallEnded(deal_id=deal, people=people, room=f"replay-{deal}-callback", kind=CallKind.CALLBACK, duration=60))
+            await settle(deal)
+            await matches_memory(deal)
+            both = await chrome.js("[...document.querySelectorAll('#timeline .entry')].filter((e) => e.querySelectorAll('.people .tag').length === 2 && e.querySelector('.word')?.textContent === 'Confirmed by both' && e.querySelector('.play')).length")
+            moments = await chrome.js("JSON.stringify([...document.querySelectorAll('#timeline .moment .label:first-child')].map((m) => m.textContent))")
+            check("Call-backs" in moments and both >= 1, f"the call-backs: {both} entries with both people, Confirmed by both and a clip, under {moments}")
+            await asyncio.sleep(0.5)
+            await chrome.shot(out / "3c-call-backs.png")
+            await review(chrome, out / "review", "call-backs")
+            await reload_check("call-backs")
+
             # ---------- 4. a past fact altered inside memory: the chain must say where ----------
             print("4. the chain, with link 5 altered after it was written")
             versions = app.state.memory.book.deal(deal).versions
@@ -711,6 +840,63 @@ async def main(port: int, out: Path) -> None:
             links = (await http.get(f"/memory/chain/{deal}")).json()["links"]
             check(broken[0] == broken[1] - max(0, 4 - (links - broken[1])) and broken[2] >= 1, f"the ticks from link 5 on are red, and the chip of link 5 is marked: {broken}")
             await chrome.shot(out / "4-chain-broken.png")
+
+            # ---------- 4b. two, then three claims against one version ----------
+            print("4b. two and three claims contradicting the same confirmed amount")
+            claimed = f"live-claims-{new_id()[:4]}"
+            names = [Person(role=Role.HIRER, name="Sunita"), Person(role=Role.WORKER, name="Ramesh")]
+            both_roles = [Role.HIRER, Role.WORKER]
+
+            def amount_said(value: int, by: Role, call_no: int, line_no: int, **more) -> Fact:
+                words = f"{value:,} rupees"
+                return Fact(deal_id=claimed, text=f"{by.value.title()} says the amount is {words}.", item=ItemKey.AMOUNT, kind=FactKind.TERM,
+                            value=words, value_rupees=value, said_by=by, call_no=call_no, line_no=line_no, start=line_no * 5.0, quote=words, **more)
+
+            agreed = amount_said(22000, Role.WORKER, 1, 5, agreed_by=[Role.HIRER], confirmed_by=both_roles, status=FactStatus.CONFIRMED)
+            against = [amount_said(25000, Role.WORKER, 2, 3), amount_said(24000, Role.HIRER, 2, 6), amount_said(26000, Role.WORKER, 2, 9)]
+            conflict = lambda f: FactConflict(deal_id=claimed, fact_ids=[agreed.id], explanation=f"Says {f.value}; both confirmed 22,000.",
+                                              said=f.value, speaker=f.said_by, call_no=2, line_no=f.line_no)
+            changed = amount_said(24000, Role.HIRER, 2, 8, confirmed_by=both_roles, status=FactStatus.CONFIRMED, replaces=agreed.id)
+            await publish(CallStarted(deal_id=claimed, people=names, room=f"replay-{claimed}", call_no=1),
+                          FactRecorded(deal_id=claimed, fact=amount_said(20000, Role.WORKER, 1, 2)),
+                          FactRecorded(deal_id=claimed, fact=amount_said(21000, Role.HIRER, 1, 3)),
+                          FactRecorded(deal_id=claimed, fact=agreed),
+                          CallStarted(deal_id=claimed, people=names, room=f"replay-{claimed}-2", call_no=2),
+                          FactRecorded(deal_id=claimed, fact=against[0]), conflict(against[0]),
+                          FactRecorded(deal_id=claimed, fact=against[1]), conflict(against[1]),
+                          FactRecorded(deal_id=claimed, fact=changed),
+                          FactRecorded(deal_id=claimed, fact=agreed.model_copy(update={"status": FactStatus.SUPERSEDED})))
+            await chrome.goto(f"{url}/dashboard?deal={claimed}")
+            await chrome.wait_for(LOADED)
+            lane_of = "#rows .term[data-item='amount']"
+            for n in (2, 3):
+                if n == 3:
+                    await publish(FactRecorded(deal_id=claimed, fact=against[2]), conflict(against[2]))
+                await asyncio.sleep(1.5)
+                brackets = json.loads(await chrome.js(f"""JSON.stringify([...document.querySelectorAll("{lane_of} .arc")].map((g) => [+g.dataset.claims, g.textContent]))"""))
+                tip = await chrome.js(f"""Number(document.querySelector("{lane_of} .arc path.head").getAttribute('d').match(/-?[\\d.]+/g)[2])""")
+                # The replaced 22,000's chip (memory also writes the brain's "agreed" amount into it: the same value, one chip).
+                target = await chrome.js(f"""(() => {{ const c = document.querySelector({json.dumps(f'{lane_of} .chip[data-facts~="{agreed.id}"]')}); return c ? c.parentElement.offsetLeft + c.offsetLeft + c.offsetWidth / 2 : null; }})()""")
+                shown = json.loads(await chrome.js(f"""JSON.stringify([...document.querySelectorAll("{lane_of} .chip")].filter((c) => !c.hidden).map((c) => c.textContent.replace(/\\n/g, ' ')))"""))
+                home = [b for b in brackets if b[1] == "contradicts"]
+                check(sum(b[0] for b in brackets) == n and len(home) == 1 and all(b[1] == "contradicts ₹\u202f22,000" for b in brackets if b not in home)
+                      and target is not None and abs(tip - target) < 1,
+                      f"{n} claims: one bracket with one label on the 22,000's line, a tick per claim, the arrow on the 22,000; a claim on a second line labelled with it ({brackets}; chips {shown})")
+                for width, height in ((1920, 1080), (1280, 720)):
+                    await chrome.send("Emulation.setDeviceMetricsOverride", width=width, height=height, deviceScaleFactor=1, mobile=False)
+                    await asyncio.sleep(0.5)
+                    overlaps = json.loads(await chrome.js(OVERLAPS))
+                    check(not overlaps, f"{n} claims at {width}x{height}: nothing overlaps or is cut, bracket labels and figures included: {overlaps}")
+                    await chrome.shot(out / f"4b-{n}-claims{'' if width == 1920 else f'-{width}x{height}'}.png")
+                    await chrome.send("Emulation.setDeviceMetricsOverride", width=width, height=height, deviceScaleFactor=2, mobile=False)
+                    await asyncio.sleep(0.4)
+                    rect = json.loads(await chrome.js(f"""(() => {{ const b = document.querySelector("{lane_of}").getBoundingClientRect(); return JSON.stringify([b.x, b.y, b.width, b.height]); }})()"""))
+                    data = (await chrome.send("Page.captureScreenshot", format="png", clip={"x": rect[0] - 8, "y": rect[1] - 8, "width": rect[2] + 16, "height": rect[3] + 16, "scale": 1}))["data"]
+                    (out / "review").mkdir(parents=True, exist_ok=True)
+                    (out / "review" / f"claims-{n}-amount-row-{width}.png").write_bytes(base64.b64decode(data))
+                await chrome.send("Emulation.setDeviceMetricsOverride", width=1920, height=1080, deviceScaleFactor=1, mobile=False)
+                await asyncio.sleep(0.3)
+                print(f"  review claims-{n}: {json.dumps(json.loads(await chrome.js(MEASURE))['chips'])}")
 
             # ---------- 5. the second phone on its own page ----------
             print("5. /dashboard/phone at phone size")

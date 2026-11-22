@@ -141,12 +141,16 @@ function connect() {
   };
 }
 
-// The board is laid out for 1920 by 1080 and scaled to whatever window shows it, centred,
-// so a 1440 by 900 laptop or a 1280 by 720 projector shows the same board.
+// The board is laid out for 1920 by 1080 and scaled to whatever window shows it. A window
+// of another shape gets a stage of its shape, at least 1920 by 1080 (a 1440 by 900 laptop:
+// 1920 by 1200), so it fills the window and its margin is the same on all four sides.
 function fit() {
-  const scale = Math.min(innerWidth / 1920, innerHeight / 1080);
-  const x = (innerWidth - 1920 * scale) / 2, y = (innerHeight - 1080 * scale) / 2;
-  $("stage").style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+  const stage = $("stage");
+  const width = Math.max(1920, Math.round((1080 * innerWidth) / innerHeight));
+  const height = Math.max(1080, Math.round((1920 * innerHeight) / innerWidth));
+  stage.style.width = `${width}px`;
+  stage.style.height = `${height}px`;
+  stage.style.transform = `scale(${innerWidth / width})`;
 }
 addEventListener("resize", fit);
 fit();
