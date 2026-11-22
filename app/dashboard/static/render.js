@@ -69,6 +69,14 @@ function phoneTitle(state) {
   const label = phoneLabel(state.people, phoneNumber, state.dealId);
   document.getElementById("phone-title").textContent = label;
   document.getElementById("phone-frame").title = label;
+  document.getElementById("phone-tab-label").textContent = label;
+  document.getElementById("phone-hide").setAttribute("aria-label", `Hide ${label} (P)`);
+  document.getElementById("phone-tab").setAttribute("aria-label", `Show ${label} (P)`);
+}
+
+// Lays the graph out again at its column's width (the phone drawer changed it).
+export function refit() {
+  if (current) renderGraph(current, {});
 }
 
 function draw(state, change = {}, live = false) {

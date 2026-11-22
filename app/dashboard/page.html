@@ -38,10 +38,19 @@
   </section>
 
   <aside id="phone" aria-labelledby="phone-title">
-    <div class="head"><h2 class="label" id="phone-title">Second phone</h2><button type="button" id="phone-back" class="quiet" hidden>Back to chat</button></div>
-    <div class="device">
-      <iframe id="phone-frame" title="Second phone" allow="microphone *; autoplay *"></iframe>
+    <div id="phone-drawer" class="drawer">
+      <div class="head">
+        <h2 class="label" id="phone-title">Second phone</h2>
+        <span class="tools">
+          <button type="button" id="phone-back" class="quiet" hidden>Back to chat</button>
+          <button type="button" id="phone-hide" class="icon-button" aria-controls="phone-drawer" aria-expanded="true" aria-label="Hide the second phone (P)" title="Hide (P)"><span data-icon="chevronRight"></span></button>
+        </span>
+      </div>
+      <div class="device">
+        <iframe id="phone-frame" title="Second phone" allow="microphone *; autoplay *"></iframe>
+      </div>
     </div>
+    <button type="button" id="phone-tab" class="phone-tab" aria-controls="phone-drawer" aria-expanded="false" aria-label="Show the second phone (P)" title="Show (P)"><span data-icon="chevronLeft"></span><span id="phone-tab-label" class="label">Second phone</span></button>
   </aside>
 </div>
 

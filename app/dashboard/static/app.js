@@ -6,6 +6,7 @@ import { NO_DEAL, apply, emptyState } from "./state.js";
 import { h, renderAll, renderChange, renderChecked, showPhone } from "./render.js";
 import { checkChain } from "./chain.js";
 import { watchTimeline } from "./timeline.js";
+import { initDrawer, setPhone } from "./drawer.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -122,6 +123,7 @@ frame.addEventListener("load", () => {
   let path = null;
   try { path = frame.contentWindow.location.pathname; } catch {}
   $("phone-back").hidden = path === "/dashboard/phone";
+  if (path && path !== "/dashboard/phone") setPhone(true); // a call link opened: slide the drawer out
 });
 $("phone-back").addEventListener("click", () => { frame.src = phonePage; });
 addEventListener("message", (e) => {
@@ -156,5 +158,6 @@ addEventListener("resize", fit);
 fit();
 
 watchTimeline();
+initDrawer();
 renderAll(state);
 connect();
