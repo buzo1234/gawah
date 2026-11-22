@@ -23,6 +23,7 @@ from typing import TYPE_CHECKING
 from app.contracts import (
     Backing, Deal, Fact, FactKind, FactStatus, ItemKey, OwedRow, Person, Record, RecordConfirmed, RecordKind, Role,
 )
+from app.records import dispute_words as told
 from app.records import words
 from app.records.reader import Reading
 
@@ -67,22 +68,22 @@ class Disputes:
         rows = _without(await self.s._rows(event.deal_id), mine)
         total = total_row(rows)
         advance = rows.get(ItemKey.ADVANCE) if record.kind is RecordKind.ADVANCE else None
-        owed = words.owed_now(advance.owed_rupees if advance else None, total.owed_rupees if total else None)
+        owed = told.owed_now(advance.owed_rupees if advance else None, total.owed_rupees if total else None)
         others = await self.still_disputed(event.deal_id, skip=record.id)
         dispute = self.open.get(record.id)
         if dispute and dispute.proof:  # the second no, after proof: nothing more is asked
-            self._both(event.deal_id, people, words.denied_again(answerer, record, dispute.proof, owed, others))
+            self._both(event.deal_id, people, told.denied_again(answerer, record, dispute.proof, owed, others))
             self.s._note(event.deal_id, f"the {event.confirmed_by.value} said no again to the {_claim(record)}, "
                          f"after the {dispute.proof.lower()}: still disputed, not counted", mine)
             return
         dispute = self.open[record.id] = Dispute(event.deal_id, record)
         paid = [(f.value_rupees, self._how(f)) for f in payments if f.status in COUNTED]
-        self._both(event.deal_id, people, words.denied(answerer, record, paid, owed, others))
+        self._both(event.deal_id, people, told.denied(answerer, record, paid, owed, others))
         self.s._note(event.deal_id, f"the {event.confirmed_by.value} said no to the {_claim(record)}: not counted"
                      + (f", {words.rupees(total.owed_rupees)} owed" if total and total.owed_rupees is not None else ""), mine)
         await self._quote(event.deal_id, record, people)
         if record.kind in MONEY and claimer.phone:
-            self.s.outbox.send(event.deal_id, claimer.phone, claimer.role, words.proof_ask(record, answerer))
+            self.s.outbox.send(event.deal_id, claimer.phone, claimer.role, told.proof_ask(record, answerer))
             dispute.proof_asked = True
             self.s._note(event.deal_id, f"asked the {claimer.role.value} once for proof of the {_claim(record)}", mine)
 
@@ -100,7 +101,7 @@ class Disputes:
             f for f in await self.s.memory.search(deal_id, query, k=8)
             if f.id not in used and f.record_id != record.id and f.kind not in (FactKind.TERM, FactKind.PAYMENT, FactKind.WORK)
             and f.status is not FactStatus.SUPERSEDED and f.quote and f.said_by
-            and (_mentions(f.quote, record.amount) or (words.is_promise(f.quote) and f.item in (item, ItemKey.AMOUNT, None)))
+            and (_mentions(f.quote, record.amount) or (told.is_promise(f.quote) and f.item in (item, ItemKey.AMOUNT, None)))
         ]
         chosen = sorted(terms + said, key=lambda f: f.valid_from.timestamp() if f.valid_from else 0, reverse=True)[:QUOTED]
         if not chosen:
@@ -113,15 +114,15 @@ class Disputes:
             if fact.id in used:
                 yes = next((r for r in [*fact.agreed_by, *fact.confirmed_by] if r != fact.said_by), None)
                 shown = words.rupees(fact.value_rupees) if fact.value_rupees is not None else None
-                lines.append(words.quote_term(fact.item, shown, self.s.when(fact), name(fact.said_by), name(yes), fact.quote, clip))
+                lines.append(told.quote_term(fact.item, shown, self.s.when(fact), name(fact.said_by), name(yes), fact.quote, clip))
             else:
-                lines.append(words.quote_said(name(fact.said_by), fact.quote, self.s.when(fact), clip))
-        about = "Kaam" if record.kind is RecordKind.WORK_DONE else f"Is {words.payment_kind(record.kind)}"
-        text = words.quoted(about, lines)
+                lines.append(told.quote_said(name(fact.said_by), fact.quote, self.s.when(fact), clip))
+        about = "Kaam" if record.kind is RecordKind.WORK_DONE else f"Is {told.payment_kind(record.kind)}"
+        text = told.quoted(about, lines)
         for person in people.values():
             self.s.outbox.send(deal_id, person.phone, person.role, text, link=first_clip, link_label=words.CLIP_BUTTON)
         kinds = ", ".join(("the agreed " + f.item.value) if f.id in used else
-                          ("a promise" if words.is_promise(f.quote) else "a line said") for f in chosen)
+                          ("a promise" if told.is_promise(f.quote) else "a line said") for f in chosen)
         self.s._note(deal_id, f"quoted the record to both: {kinds}", facts=chosen)
 
     async def _terms(self, deal_id: str, record: Record) -> list[Fact]:
@@ -153,7 +154,7 @@ class Disputes:
             reading.amount is not None and record.amount is not None and round(reading.amount) == round(record.amount))
         if image and not (reading.payment_screenshot and reading.transaction_id and same):
             self.s.outbox.send(deal.id, sender.phone, sender.role,
-                               words.proof_mismatch(record, reading.amount, bool(reading.transaction_id)))
+                               told.proof_mismatch(record, reading.amount, bool(reading.transaction_id)))
             self.s._note(deal.id, f"a screenshot came for the disputed {_claim(record)} and does not match it: "
                          "still disputed")
             # The same amount with no transaction id is this proof, failed; another amount is its own payment.
@@ -175,12 +176,12 @@ class Disputes:
                                                "media_url": media_url}},
         })
         if link and self.s.outbox.rich:
-            self.s.outbox.send(deal.id, other.phone, other.role, words.proof_caption(sender), link, image_type or "image/png")
+            self.s.outbox.send(deal.id, other.phone, other.role, told.proof_caption(sender), link, image_type or "image/png")
         elif link:
-            self.s.outbox.send(deal.id, other.phone, other.role, words.proof_link(sender, link),
-                               link=link, link_label=words.PROOF_BUTTON)
-        self.s.ask_again(deal.id, record, sender, other, words.proof_question(sender, record, image is not None))
-        self.s.outbox.send(deal.id, sender.phone, sender.role, words.proof_taken(other))
+            self.s.outbox.send(deal.id, other.phone, other.role, told.proof_link(sender, link),
+                               link=link, link_label=told.PROOF_BUTTON)
+        self.s.ask_again(deal.id, record, sender, other, told.proof_question(sender, record, image is not None))
+        self.s.outbox.send(deal.id, sender.phone, sender.role, told.proof_taken(other))
         self.s._note(deal.id, f"{dispute.proof.lower()} {reading.transaction_id} sent for the disputed {_claim(record)}: "
                      f"it matches, the {other.role.value} is asked again")
         return record
@@ -215,7 +216,7 @@ class Disputes:
         ]
         work = [f.status for f in facts if f.kind is FactKind.WORK]
         denied = items is None and FactStatus.DISPUTED in work and FactStatus.CONFIRMED not in work[work.index(FactStatus.DISPUTED):]
-        return words.still_disputed(amounts, denied and deal_id not in self.s._work_done)
+        return told.still_disputed(amounts, denied and deal_id not in self.s._work_done)
 
     def _how(self, fact: Fact) -> str:
         on = words.day(fact.valid_from.astimezone(IST).date()) if fact.valid_from else None
