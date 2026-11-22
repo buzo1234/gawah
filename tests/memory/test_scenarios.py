@@ -80,7 +80,7 @@ async def test_scenario_2_aapne_25_bola_tha_on_a_second_call(bus, tmp_path):
     assert conflict.fact_ids == [agreed.id]
     assert (conflict.speaker, conflict.call_no, conflict.line_no, conflict.said) == (W, 2, 1, later)
     assert conflict.explanation == (
-        "Says 25,000 rupees; the amount was agreed at 22,000 rupees by both on 21 November (call 1, line 3). "
+        "Says 25,000 rupees; the amount was agreed at 22,000 rupees, said by Ramesh and agreed by Sunita on 21 November (call 1, line 3). "
         "25,000 rupees was Ramesh's offer on call 1."
     )
 
@@ -118,7 +118,8 @@ async def test_scenario_3_an_amendment_replaces_the_term_and_keeps_its_history(b
     assert (new.value_rupees, new.status, new.replaces, new.confirmed_by) == (24000, FactStatus.CONFIRMED, old.id, [H, W])
     replaced = world.memory.book.fact(old.id)
     assert replaced.status == FactStatus.SUPERSEDED and replaced.superseded_at is not None
-    assert [f.kind for f in term.history].count(FactKind.CHANGE) == 1
+    changes = {f.id: f for f in term.history if f.kind == FactKind.CHANGE}
+    assert [f.status for f in changes.values()] == [FactStatus.SUPERSEDED], "the change said on the call is settled with it"
     assert [f.status for f in term.history if f.id == old.id][-2:] == [FactStatus.CONFIRMED, FactStatus.SUPERSEDED]
 
     versions = world.memory.book.deal(DEAL).versions

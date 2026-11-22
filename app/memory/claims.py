@@ -100,7 +100,7 @@ def compare(
     deal: DealBook, item: ItemKey | None, rupees: int | None, day: date | None, parts: dict[str, Day],
     part: bool = False,
 ) -> tuple[str | None, Fact | None, str | None]:
-    """A value against the term as it stands: ("same" | "differs" | None when there is nothing
+    """A value against the term on record (deal.record): ("same" | "differs" | None when there is nothing
     to compare, the fact it was compared with, and for dates the part that differs). Dates
     compare a start with the start and a finish with the finish. With `part`, the rupees are
     one payment of several: they match a payment in the term's schedule, not its sum."""
@@ -112,7 +112,7 @@ def compare(
                     return "differs", fact, part
                 verdict, against = "same", fact
         return verdict, against, None
-    current = deal.current(item)
+    current = deal.record(item)  # a disputed term still holds its value: a different one is no agreement
     if current is None:
         return None, None, None
     if rupees is not None and current.value_rupees is not None:

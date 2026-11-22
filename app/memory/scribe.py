@@ -100,7 +100,7 @@ class Scribe:
         """Once an amount is agreed, a total stated in the words is an amount claim, whatever the
         model filed it under, so a restated different total is always caught in code."""
         total = stated_total(line.text)
-        if total is None or deal.current(ItemKey.AMOUNT) is None:
+        if total is None or deal.record(ItemKey.AMOUNT) is None:
             return claims
         for claim in claims:
             if claim.item != ItemKey.AMOUNT and claim.rupees == total:
@@ -148,8 +148,8 @@ class Scribe:
         if claim.kind == FactKind.CHANGE and claim.stance == "recall":
             claim.kind = FactKind.TERM  # says what was agreed: a different figure contradicts it, it proposes nothing
         if claim.kind == FactKind.CHANGE and claim.item:
-            if deal.current(claim.item) is None:
-                claim.kind = FactKind.TERM  # nothing agreed yet to change: it is an offer
+            if deal.record(claim.item) is None:
+                claim.kind = FactKind.TERM  # nothing on record yet to change: it is an offer
             elif self._compare(deal, claim)[0] == "same":
                 return  # the value that already stands
         differs = claim.kind in (FactKind.TERM, FactKind.CHANGE) and claim.item and self._compare(deal, claim)[0] == "differs"
@@ -197,6 +197,8 @@ class Scribe:
             elif verdict == "same":
                 if line.speaker != against.said_by and line.speaker not in against.agreed_by:
                     self.upgrade(deal, against, line, received, None)
+            elif deal.record(claim.item) is not None and not (claim.rupees or claim.date or claim.parts or claim.value):
+                return  # a yes that names no value ("theek hai advance") keeps the term as it stands
             else:
                 fact = self.m.record(Fact(
                     **base | {"said_by": line.speaker.other, "agreed_by": [line.speaker], "status": FactStatus.AGREED}
@@ -211,6 +213,9 @@ class Scribe:
         self._model_conflict(deal, line, claim, fact, received)
 
     def _change(self, deal: DealBook, line: TranscriptLine, claim: Claim, received: float) -> None:
+        if any(f.status == FactStatus.AGREED and f.call_no == line.call_no and f.value_rupees == claim.rupees
+               for f in deal.open_changes(claim.item)) and claim.rupees is not None:
+            return  # the change both agreed a moment ago, said again ("do hazaar extra. Total chaubees hazaar")
         offer = changes.offered(deal, line, claim.item, claim.rupees, claim.added)
         # A change to a figure is agreed only by saying the figure (or the extra) back with a yes
         # or a promise: a bare "haan theek hai" to a new total changes nothing.
@@ -349,7 +354,7 @@ class Scribe:
         """"Sab tay ho gaya" agrees to each term the other person stated on this call that
         nothing agreed yet covers: the last thing they said about it."""
         for item in ItemKey:
-            if deal.current(item) is not None:
+            if deal.record(item) is not None:
                 continue
             said = [
                 f for f in deal.standing()

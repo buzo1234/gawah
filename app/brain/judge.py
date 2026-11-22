@@ -141,6 +141,7 @@ class Judge:
     reasked: dict[str | None, int] = field(default_factory=dict)
     dropped_at: float | None = None  # the moment a question was dropped: that was no pause
     answered_at: float | None = None  # the line last answered: decide runs again on it when facts move
+    raised: set[tuple] = field(default_factory=set)  # (item, change?) put to them mid-call: the first goes at the next pause
 
     def decide(self, view: View) -> Speak | None:
         if view.closing:
@@ -173,6 +174,8 @@ class Judge:
             self.read_back_done = True
         if at_wrapup:
             self.wrapup_until = view.now + tuning.WRAPUP_HOLD_S
+        elif speak.reason in (SpeakReason.CONTRADICTS_RECORD, SpeakReason.CHANGE_PROPOSED):
+            self.raised.add((speak.item, speak.reason is SpeakReason.CHANGE_PROPOSED))
         return speak
 
     def spoke(self, end: float, was_question: bool) -> None:
@@ -208,10 +211,14 @@ class Judge:
 
     def _choose(self, view: View) -> Speak | None:
         live = self.mode == "live"
-        if live and self._gap_ok(view, tuning.MIN_GAP_S):
+        gap = self._gap_ok(view, tuning.MIN_GAP_S)
+        if live:
+            # The record comes first: the first contradiction of a term, and the first change to it,
+            # go at the next pause whatever was asked a moment ago. Another about the same term waits.
             for conflict in [*view.conflicts, *view.due]:
-                if conflict.topic not in self.asked_mid_call:
+                if conflict.topic not in self.asked_mid_call and (gap or (conflict.item, conflict.change) not in self.raised):
                     return _contradiction(conflict, view, SpeakReason.CONTRADICTS_RECORD)
+        if live and gap:
             for ambiguity in view.ambiguities:
                 if ambiguity.topic not in self.asked_mid_call:
                     return _two_ways(ambiguity, view, SpeakReason.AMBIGUOUS)
@@ -301,12 +308,13 @@ def _contradiction(conflict: Conflict, view: View, reason: SpeakReason) -> Speak
     if conflict.change:
         text = (
             f"{who}{said} That would change {what}: {_quoted(conflict.explanation)} "
-            f"Ask {both} whether they both agree to this change. Do not say whether they should."
+            f"Tell {both} what the record holds and what was said now, and ask whether they both agree to this change: "
+            "it changes only if both say haan. Do not say whether they should."
         )
     else:
         text = (
             f"{who}{said} It does not match the record of {what}: {_quoted(conflict.explanation)} "
-            f"Tell {both} that this differs from what was agreed, and ask them which is right. "
+            f"Tell {both} what the record holds for {what}: the value, who said it and who agreed, and on which call. "
             "Do not say which one is right."
         )
     wrap = WRAPPING_UP if reason is SpeakReason.WRAPPING_UP else ""
@@ -332,7 +340,7 @@ def _answer(view: View) -> Speak:
     terms = _terms(view)
     text = (
         f'{name} spoke to you directly and said: "{_quoted(view.text)}". {DATA} Answer {name} in one short '
-        "sentence. You are only the witness: do not suggest a term or say whether one is fair."
+        "sentence. You are only the witness: do not suggest a term or judge one."
     ) + (f" Agreed so far: {terms}." if terms else "")
     return Speak(text, Audience(view.speaker.value), SpeakReason.ADDRESSED_DIRECTLY, question=" ".join(view.text.split()))
 

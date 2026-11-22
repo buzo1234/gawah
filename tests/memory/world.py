@@ -8,7 +8,8 @@ from pathlib import Path
 
 from app.bus import Bus
 from app.contracts import (
-    CallEnded, CallStarted, Event, Fact, FactConflict, FactRecorded, Person, Role, TranscriptLine,
+    CallEnded, CallStarted, ChangeStatus, Event, Fact, FactChanged, FactConflict, FactKind, FactRecorded, FactStatus, ItemKey,
+    Person, Role, TranscriptLine,
 )
 from app.memory import Memory
 from app.memory.vectors import WordHashEmbedder
@@ -116,3 +117,20 @@ class World:
 
     def fact_from_line(self, call_no: int, line_no: int) -> Fact:
         return next(f for f in reversed(self.versions) if (f.call_no, f.line_no) == (call_no, line_no))
+
+    def open_changes(self, item: ItemKey) -> list[Fact]:
+        """Changes said or agreed on a call and not yet confirmed through Gawah, as memory holds them."""
+        return [f for f in self.memory.book.deal(DEAL).open_changes(item) if f.kind == FactKind.CHANGE]
+
+    async def confirm_through_gawah(self, change: Fact, by: Role) -> None:
+        """Gawah puts the change to both and each says yes (fact.changed, as the mouth sends it)."""
+        record = self.memory.book.deal(DEAL).record(change.item)
+        for status, confirmed in ((ChangeStatus.PROPOSED, []), (ChangeStatus.CONFIRMED_ONE, [by]),
+                                  (ChangeStatus.CONFIRMED_BOTH, [Role.HIRER, Role.WORKER])):
+            await self.send(FactChanged(
+                deal_id=DEAL, change_id=f"c-{change.id}", fact_id=record.id, new_value=change.value or "",
+                status=status, item=change.item, proposed_by=change.said_by, confirmed_by=confirmed, said="haan",
+            ))
+
+
+AGREED_CHANGE = (FactKind.CHANGE, FactStatus.AGREED)

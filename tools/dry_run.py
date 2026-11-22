@@ -58,11 +58,12 @@ async def wait_quiet(run: Run, players, cap: float = 40.0) -> None:
         await asyncio.sleep(0.25)
 
 
-async def gawah_moment(run: Run, players, call_no: int, line: dict) -> dict:
+async def gawah_moment(run: Run, players, call_no: int, line: dict, t0: float) -> dict:
     """Wait for Gawah to speak where the script says it should, and to finish: as a person following
     the run sheet does, keep quiet while Gawah talks, while it picks up again within a few seconds
-    (a clip, then a question), and while a question the brain has sent it is still unsaid."""
-    then, t0 = line["then"], time.monotonic()
+    (a clip, then a question), and while a question the brain has sent it is still unsaid.
+    t0: when the line was said. Offline, Gawah can be done before this starts watching."""
+    then = line["then"]
     heard = lambda: run.gawah_said(after=t0)  # noqa: E731
     started = None
     while time.monotonic() - t0 < then["within_s"]:
@@ -115,11 +116,12 @@ async def deal_call(run: Run, players, call_no: int) -> None:
     await asyncio.sleep(2 if not players.offline else 0)
     for line in fixture["lines"]:
         await wait_quiet(run, players)
+        said_at = time.monotonic()
         await players.say(call_no, line)
         await players.after_line(call_no, line, run.deal_id)
         await asyncio.sleep(GAP_S if not players.offline else 0.2)
         if line.get("then"):
-            moment = await gawah_moment(run, players, call_no, line)
+            moment = await gawah_moment(run, players, call_no, line, said_at)
             if call_no == 1 and "advance" in line["then"]["gawah"]:
                 await run.shot("1-gawah-answers-the-question")
             if call_no == 2 and "plays" in line["then"]["gawah"]:

@@ -19,7 +19,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.bus import Bus
-from app.contracts import CallEnded, CallKind, CallStarted, Person, Role, new_id
+from app.contracts import CallEnded, CallKind, CallStarted, FactChanged, Person, Role, new_id
 from app.log import deal_log
 from app.mouth import script, tuning
 from app.mouth.player import Player
@@ -275,6 +275,7 @@ class Callback:
 
 def register(app: FastAPI, bus: Bus, rooms: Callable, make_seat: Callable, make_link: Callable) -> None:
     live: dict[tuple[str, Role], Callback] = {}
+    answers: dict[str, FactChanged] = {}  # a change put to both on their call-backs: its latest step, by change id
     joining = asyncio.Lock()
     page = (HERE / "page.html").read_text()
     app.mount("/mouth/static", StaticFiles(directory=HERE / "static"), name="mouth-static")
@@ -291,7 +292,7 @@ def register(app: FastAPI, bus: Bus, rooms: Callable, make_seat: Callable, make_
             call = live.get((deal_id, role))
             try:
                 if call is None or call.over:
-                    plan = await script.build(app.state.store, deal_id, role, bus.publish)
+                    plan = await script.build(app.state.store, deal_id, role, bus.publish, answers)
                     if plan is None:
                         return JSONResponse({"message": tuning.PAGE_NOTHING}, 404)
                     deal = await app.state.store.deal(deal_id)

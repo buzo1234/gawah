@@ -1,6 +1,6 @@
 {
  "id": "demo_call_2",
- "description": "Day 5 of the demo: the second call on the same deal. Ramesh says the total was 25,000 (his offer on call 1; both agreed 22,000), then both agree a change by voice: the balcony wall, 2,000 extra, 24,000 in all. Fields as in demo_call_1.json.",
+ "description": "Day 5 of the demo: the second call on the same deal. Ramesh says the total was 25,000 (his offer on call 1; both agreed 22,000): Gawah says what the record holds and offers the recording, Sunita asks to hear it, and Ramesh takes it back. Then both agree a change by voice: the balcony wall, 2,000 extra, 24,000 in all, which holds only once both say haan to Gawah. Fields as in demo_call_1.json.",
  "call_no": 2,
  "follows": "demo/demo_call_1",
  "people": [
@@ -15,7 +15,7 @@
    "phone": "+919000000002"
   }
  ],
- "ended_at": 127.8,
+ "ended_at": 128.9,
  "lines": [
   {
    "line_no": 1,
@@ -41,27 +41,31 @@
    "end": 17.36,
    "audio": "voice",
    "then": {
-    "gawah": "says both agreed 22,000 on call 1, plays that moment, and asks which they mean",
+    "gawah": "says the record holds 22,000, not 25,000: Ramesh said it on call 1 and Sunita agreed; and asks if they want to hear that recording",
     "within_s": 45
    }
   },
   {
    "line_no": 4,
    "speaker": "hirer",
-   "text": "Nahi, baees hazaar hi tay hua tha.",
+   "text": "Haan, sunaiye.",
    "start": 38.56,
-   "end": 41.67,
-   "audio": "voice"
+   "end": 40.2,
+   "audio": "voice",
+   "then": {
+    "gawah": "plays the recording of call 1 where 22,000 was agreed",
+    "within_s": 30
+   }
   },
   {
    "line_no": 5,
    "speaker": "worker",
    "text": "Haan ji, baees hi. Galti ho gayi.",
-   "start": 42.87,
-   "end": 45.91,
+   "start": 54.0,
+   "end": 57.04,
    "audio": "voice",
    "then": {
-    "gawah": "may note it stays 22,000",
+    "gawah": "may stay quiet: the record stands at 22,000",
     "within_s": 10,
     "optional": true
    }
@@ -70,27 +74,27 @@
    "line_no": 6,
    "speaker": "hirer",
    "text": "Ek kaam aur hai. Balcony ki deewar bhi paint kar dijiye.",
-   "start": 57.11,
-   "end": 61.65,
+   "start": 58.21,
+   "end": 62.75,
    "audio": "voice"
   },
   {
    "line_no": 7,
    "speaker": "worker",
    "text": "Ho jayega madam. Uske do hazaar extra lagenge.",
-   "start": 62.85,
-   "end": 66.74,
+   "start": 63.95,
+   "end": 67.84,
    "audio": "voice"
   },
   {
    "line_no": 8,
    "speaker": "hirer",
    "text": "Theek hai, do hazaar extra. Total chaubees hazaar.",
-   "start": 67.94,
-   "end": 72.09,
+   "start": 69.04,
+   "end": 73.19,
    "audio": "voice",
    "then": {
-    "gawah": "says the change, 22,000 to 24,000, and asks both to say haan",
+    "gawah": "says the change, 22,000 to 24,000 (record mein 22,000; call par 24,000), and asks both to say haan",
     "within_s": 45
    }
   },
@@ -98,16 +102,16 @@
    "line_no": 9,
    "speaker": "hirer",
    "text": "Haan, mujhe manzoor hai.",
-   "start": 93.29,
-   "end": 95.75,
+   "start": 94.39,
+   "end": 96.85,
    "audio": "voice"
   },
   {
    "line_no": 10,
    "speaker": "worker",
    "text": "Haan ji, mujhe bhi manzoor hai.",
-   "start": 96.95,
-   "end": 99.87,
+   "start": 98.05,
+   "end": 100.97,
    "audio": "voice",
    "then": {
     "gawah": "says the change holds: the total is now 24,000",
@@ -118,16 +122,16 @@
    "line_no": 11,
    "speaker": "hirer",
    "text": "Theek hai Ramesh ji, bye.",
-   "start": 121.07,
-   "end": 123.59,
+   "start": 122.17,
+   "end": 124.69,
    "audio": "voice"
   },
   {
    "line_no": 12,
    "speaker": "worker",
    "text": "Namaste madam.",
-   "start": 124.79,
-   "end": 126.6,
+   "start": 125.89,
+   "end": 127.7,
    "audio": "voice"
   }
  ]

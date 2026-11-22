@@ -191,12 +191,20 @@ class Sentinel:
             await settle()
         roles, changed = set(), []
         for item in ItemKey:
-            term = (await self.memory.get_term(deal_id, item)).current
+            view = await self.memory.get_term(deal_id, item)
+            term = view.current
             if term and term.call_no == call_no and term.source is FactSource.CALL:
                 missing = set(Role) - set(term.confirmed_by)
                 if missing:
                     roles |= missing
                     changed.append(item.value)
+            latest = {f.id: f for f in view.history}
+            if any(  # a change said or agreed on the call that Gawah never put to both: the call-back asks it
+                f.kind is FactKind.CHANGE and f.status in (FactStatus.SAID, FactStatus.AGREED) and f.call_no == call_no
+                and f.source is FactSource.CALL and f.value_rupees is not None for f in latest.values()
+            ):
+                roles |= set(Role)
+                changed.append(f"{item.value} (a change still open)")
         if changed:
             self._note(deal_id, f"call {call_no} changed {', '.join(changed)}: call-back links sent")
         else:

@@ -34,13 +34,14 @@ class _Job:
     instruction: str  # the brain's instruction; for the agent, the situation
     must_say: bool  # said even if no pause comes: the opening line, and anything at wrap-up
     speak: JudgeSpeak | None = None  # the judge.speak it answers; None for the opening line
-    kind: str = "opening"  # "opening", a SpeakReason value, or "follow_up"
+    kind: str = "opening"  # "opening", a SpeakReason value, "follow_up", or "clip"
     to: Audience | None = None
     arrived: float = field(default_factory=time.monotonic)
     spoke: JudgeSpoke | None = None  # once said or dropped
     ack: bool = False  # the acknowledgement may come first (the agent, when spoken to)
     superseded: bool = False  # something more important came; drop it unless it is already being said
     playing: bool = False
+    fact_id: str | None = None  # for a clip they asked to hear: the fact whose recording plays
 
     @property
     def what(self) -> str:

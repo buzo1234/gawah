@@ -219,6 +219,24 @@ async def test_after_a_second_call_the_call_back_only_for_a_term_it_changed(watc
     assert notes(watched)[-1] == "call 3 changed balance: call-back links sent"
 
 
+async def test_a_change_the_call_left_open_sends_both_the_call_back(watched):
+    """The user's call 3: the 2,000 extra was agreed on the call and the call ended before Gawah put
+    it to both. No term changed, and both still get the call-back, which asks it as a change."""
+    deal_id = await deal(watched)
+    before = {p: len(watched.texts_to(p)) for p in (SUNITA, RAMESH)}
+    watched.memory.facts.append(Fact(
+        deal_id=deal_id, text="Balcony 2,000 extra.", item=ItemKey.AMOUNT, kind=FactKind.CHANGE, value="15,000 rupees",
+        value_rupees=15000, said_by=Role.WORKER, agreed_by=[Role.HIRER], status=FactStatus.AGREED, source=FactSource.CALL,
+        call_no=2, line_no=9,
+    ))
+    watched.bus.publish(CallEnded(deal_id=deal_id, call_no=2))
+    await watched.settle()
+    assert callback_path(deal_id, Role.HIRER) in watched.texts_to(SUNITA)[-1]
+    assert callback_path(deal_id, Role.WORKER) in watched.texts_to(RAMESH)[-1]
+    assert {p: len(watched.texts_to(p)) for p in (SUNITA, RAMESH)} == {p: n + 1 for p, n in before.items()}
+    assert notes(watched)[-1] == "call 2 changed amount (a change still open): call-back links sent"
+
+
 def paid(world: World, rupees: int, towards: str) -> Fact:
     deal_id = world.named("deal.requested")[-1].deal_id
     return Fact(

@@ -199,13 +199,14 @@ Phone: tap **Call kholiye** and press **Call again**. Gawah greets you both by n
 | 1 | Laptop (Ramesh) | Main Ramesh. Main sehmat hoon. |
 | 2 | Phone (Sunita) | Main Sunita. Main bhi sehmat hoon. |
 | 3 | Laptop | Madam, aadha kaam ho gaya. Total pachees hazaar tay hua tha na? |
-| | | **Wait for Gawah, up to 45 seconds.** It says the amount was agreed at 22,000 by both on day 1, plays that moment of call 1 in your own voices, and asks which you mean. |
-| 4 | Phone | Nahi, baees hazaar hi tay hua tha. |
+| | | **Wait for Gawah, up to 45 seconds.** It says the record holds 22,000, not 25,000 (Ramesh said it on day 1 and Sunita agreed), and asks if you want to hear that recording. |
+| 4 | Phone | Haan, sunaiye. |
+| | | **Wait for Gawah, up to 30 seconds.** A short lead-in, then that moment of call 1 in your own voices. |
 | 5 | Laptop | Haan ji, baees hi. Galti ho gayi. |
 | 6 | Phone | Ek kaam aur hai. Balcony ki deewar bhi paint kar dijiye. |
 | 7 | Laptop | Ho jayega madam. Uske do hazaar extra lagenge. |
 | 8 | Phone | Theek hai, do hazaar extra. Total chaubees hazaar. |
-| | | **Wait for Gawah, up to 45 seconds.** It may first play the 22,000 moment again (see below), then it says the change, 22,000 to 24,000, and asks you both to say haan. Answer only after it has asked. |
+| | | **Wait for Gawah, up to 45 seconds.** Both of you said 24,000, and it is still only a change: Gawah says the record holds 22,000 and 24,000 was said, and asks if you both want to change it, "Dono haan kahiye". Answer only after it has asked. |
 | 9 | Phone | Haan, mujhe manzoor hai. |
 | 10 | Laptop | Haan ji, mujhe bhi manzoor hai. |
 | | | **Wait for Gawah, up to 30 seconds.** It says the change holds: the total is now 24,000. |
@@ -214,9 +215,9 @@ Phone: tap **Call kholiye** and press **Call again**. Gawah greets you both by n
 
 Then the red **End** button on both.
 
-**On the dashboard:** at line 3 a red contradiction link in the fact graph, from Ramesh's "25,000" to the 22,000 both agreed, with "Hear what was agreed", and the checklist's amount says "Contradicted". At line 8 the change appears; when both have said haan, the checklist's amount reads "Changed" 24,000, and in the graph the old 22,000 is marked replaced.
+**On the dashboard:** at line 3 a red contradiction link in the fact graph, from Ramesh's "25,000" to the 22,000 both agreed, with "Hear what was agreed", and the checklist's amount says "Contradicted". At line 8 the change appears; the amount stays 22,000 until both have said haan to Gawah, then the checklist's amount reads "Changed" 24,000, and in the graph the old 22,000 is marked replaced.
 
-**At line 8, Gawah may first replay the 22,000 moment.** The brain takes the new total as a contradiction of the old one before Gawah has proposed the change. Wait it out: Gawah then proposes the change. Answer haan only after it has asked.
+**If nobody says "haan, sunaiye" at line 4,** Gawah does not play the recording: it plays it only on a yes, or when someone asks for it.
 
 **If Gawah says it heard you both but "record mein final update nahi hai",** the yes was not recorded (it happened in the dry run, see the report). Each say once more, after Gawah is quiet: "Gawah ji, mujhe chaubees hazaar manzoor hai." A line with Gawah's name gets a turn that can record a yes.
 

@@ -18,6 +18,30 @@ def addresses_gawah(text: str) -> bool:
     return False
 
 
+def _words(text: str) -> list[str]:
+    return [w for w in _SPLIT.split(text.lower()) if w]
+
+
+def wants_clip(text: str) -> bool:
+    """A yes to the offer to play the recording, or asking for it: "Haan, sunaiye", "haan ji",
+    "recording chalaiye". A yes that goes on about the term ("haan ji, baees hi tha") is not one."""
+    words = _words(text)
+    if any(w in tuning.CLIP_NO_WORDS for w in words):
+        return False
+    if any(w in tuning.CLIP_ASK_WORDS for w in words):
+        return True
+    return bool(words) and len(words) <= 3 and all(w in tuning.CLIP_YES_WORDS for w in words)
+
+
+def declines_clip(text: str) -> bool:
+    return any(w in tuning.CLIP_NO_WORDS for w in _words(text)) and not any(w in tuning.CLIP_ASK_WORDS for w in _words(text))
+
+
+def clip_moment(name: str, fact_id: str) -> str:
+    head = tuning.MOMENT.format(why=tuning.MOMENT_WHY["clip"], to=name)
+    return head + tuning.MOMENT_CLIP.format(name=name, fact=fact_id)
+
+
 def clean(text: str | None) -> str:
     return " ".join(str(text or "").split())[: tuning.NOTE_MAX].replace('"', "'")
 
@@ -108,10 +132,6 @@ def moment(speak: JudgeSpeak, names: Names, facts: dict[str, Fact], question: st
         return head + tuning.MOMENT_CONTRADICTION.format(instruction=clean(speak.instruction), facts=on_record, to=names.to(speak.to))
     body = tuning.MOMENT_ASK.format(instruction=clean(speak.instruction), to=names.to(speak.to))
     return head + body + (f" On record: {on_record}" if known else "")
-
-
-def contradiction_ask(speak: JudgeSpeak, names: Names) -> str:
-    return tuning.MOMENT_CONTRADICTION_ASK.format(to=names.to(speak.to))
 
 
 def addressed(name: str, line_no: int | None, question: str) -> str:

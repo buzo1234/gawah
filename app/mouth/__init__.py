@@ -19,6 +19,7 @@ callback), record.confirmed, terms.confirmed and terms.disputed.
 - deal_call.py  one deal call: pick the moment, speak, stop if talked over (the plain voice)
 - agent_call.py the same, with Gawah as the agent: follows the call, answers when spoken to
 - script.py     the call-back's steps and what came of them
+- left_open.py  changes a deal call left open, which the call-back puts to each person as a change
 - callback.py   one call-back: a real conversation, with tools to report the outcome
 
 A replayed or fake call (room "replay-..." or "fake-...") has no room to join, so the

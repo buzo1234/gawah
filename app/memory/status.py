@@ -41,8 +41,8 @@ class Status:
         for item in event.items:
             if item.state != ItemState.AGREED or (event.changed and item.key not in event.changed):
                 continue
-            if deal.current(item.key):
-                continue  # agreed already; a different figure is the scribe's conflict to raise
+            if deal.record(item.key):
+                continue  # on record already (agreed, or in dispute); a different figure is the scribe's to raise
             rupees = one_amount(item.value)
             said = [
                 f for f in deal.standing()
@@ -164,14 +164,19 @@ class Status:
         await self.m.settle()
         deal = self.m.book.deal(event.deal_id)
         voice = voice_notes.settle_change(self.m, deal, event)  # a change asked by voice note: its source and clip
-        if event.status != ChangeStatus.CONFIRMED_BOTH:
-            return
         old = deal.latest.get(event.fact_id)
+        if event.status != ChangeStatus.CONFIRMED_BOTH:
+            self._close_changes(deal, event, event.item or (old.item if old else None))
+            return
         if old is None:
             log.warning("deal=%s fact.changed for unknown fact %s", event.deal_id, event.fact_id)
             return
         item = event.item or old.item
         rupees = one_amount(event.new_value)
+        said = [f for f in deal.open_changes(item) if f.call_no is not None and (
+            f.value == event.new_value or (rupees is not None and f.value_rupees == rupees))]
+        if rupees is None and said:
+            rupees = said[-1].value_rupees  # "20,000 at the walls; 10,000 at the end": the change said on the call has the sum
         new = self.m.record(Fact(**{
             "deal_id": event.deal_id, "text": f"The {item.value.replace('_', ' ') if item else 'term'} is now {event.new_value}.",
             "item": item, "kind": old.kind, "value": event.new_value, "value_rupees": rupees,
@@ -181,4 +186,17 @@ class Status:
             "quote": event.said or event.new_value, "call_no": deal.last_call_no, "valid_from": event.ts, "replaces": old.id,
         } | voice))
         self.m.record(old.model_copy(update={"status": FactStatus.SUPERSEDED, "superseded_at": event.ts}))
+        self._close_changes(deal, event, item)
         self.m.note("memory", f"{item.value if item else 'term'} changed to {event.new_value}, confirmed by both", new)
+
+    def _close_changes(self, deal, event: FactChanged, item: ItemKey | None) -> None:
+        """A change put to both through Gawah settles every change said or agreed on a call for that
+        term: confirmed, the new term carries it (superseded); withdrawn, it is turned down (disputed)."""
+        for change in deal.open_changes(item):
+            if voice_notes.is_voice(change):
+                continue  # asked by voice note: settle_change answers for it
+            if event.status == ChangeStatus.CONFIRMED_BOTH:
+                update = {"status": FactStatus.SUPERSEDED, "superseded_at": event.ts}
+            else:
+                update = {"status": FactStatus.DISPUTED}
+            self.m.record(change.model_copy(update=update))

@@ -44,7 +44,18 @@ class Terms:
                 self.add(version)
 
     def _standing(self, key: ItemKey, statuses=HOLDS) -> list[Fact]:
-        return [f for f in self.latest.values() if f.item == key and f.kind == FactKind.TERM and f.status in statuses]
+        """A fact with no value ("he agrees with the advance terms") never stands in for one with a value."""
+        facts = [f for f in self.latest.values() if f.item == key and f.kind == FactKind.TERM and f.status in statuses]
+        return [f for f in facts if _valued(f)] or facts
+
+    def record(self, key: ItemKey) -> Fact | None:
+        """The value on record, as memory's DealBook.record has it: the current fact, or failing
+        that the latest one in dispute. A new value for it is a change, never agreed by itself."""
+        current = self.current(key)
+        if current is not None:
+            return current
+        disputed = [f for f in self._standing(key, (FactStatus.DISPUTED,)) if _valued(f)]
+        return max(disputed, key=lambda f: self._seen[f.id]) if disputed else None
 
     def _described_work(self) -> list[Fact]:
         """The work said before the price was agreed, if a price is agreed."""
@@ -117,3 +128,7 @@ class Terms:
         current = self.current(key)
         figure = (current.value_rupees, current.value_date) if current else ()
         return (self.agreed(key), figure, self.value(key))
+
+
+def _valued(fact: Fact) -> bool:
+    return fact.value_rupees is not None or fact.value_date is not None or bool((fact.value or "").strip())
