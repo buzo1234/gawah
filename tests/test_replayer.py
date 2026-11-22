@@ -1,10 +1,11 @@
 import time
 from pathlib import Path
 
+import httpx
 import pytest
 
 from app.contracts import ItemKey, SpeakReason
-from fakes.replayer import load, replay
+from fakes.replayer import _replay_to_server, load, replay
 
 FIXTURES = sorted(Path("fixtures").glob("call_*.json"))
 
@@ -57,3 +58,19 @@ async def test_speed_scales_the_wait(bus):
     await replay(bus, fixture, speed=100)
     took = time.monotonic() - started
     assert (fixture["lines"][-1]["end"] + 1.0) / 100 <= took < 1.0
+
+
+@pytest.mark.parametrize("key", ["k-123", None])
+async def test_replay_to_server_sends_the_access_key_on_every_request(key):
+    seen = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        return httpx.Response(200, json={"published": "x"})
+
+    await _replay_to_server(str(FIXTURES[0]), "http://server", 0, "d1", key, httpx.MockTransport(handler))
+
+    assert len(seen) == len(load(FIXTURES[0])["lines"]) + 2
+    assert {r.url.path for r in seen} == {"/dev/publish"}
+    assert {r.headers.get("x-access-key") for r in seen} == {key}
+    assert {r.headers["content-type"] for r in seen} == {"application/json"}

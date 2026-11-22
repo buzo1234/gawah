@@ -3,11 +3,13 @@ moment its speaker finishes, then call.ended.
 
 In a test:    await replay(bus, "fixtures/call_missing_balance.json", speed=0)
 From a shell: uv run python -m fakes.replayer fixtures/call_missing_balance.json --speed 10
+To a public server add --url https://... --key <access key> (or set GAWAH_ACCESS_KEY).
 """
 
 import argparse
 import asyncio
 import json
+import os
 import time
 from collections.abc import Awaitable, Callable
 from pathlib import Path
@@ -55,13 +57,21 @@ async def replay(bus: Bus, fixture: str | Path | dict, speed: float = 1.0, deal_
     return await play(fixture if isinstance(fixture, dict) else load(fixture), emit, speed, deal_id)
 
 
-async def _replay_to_server(path: str, url: str, speed: float, deal_id: str | None) -> None:
-    async with httpx.AsyncClient(base_url=url, timeout=5.0) as client:
+async def _replay_to_server(
+    path: str,
+    url: str,
+    speed: float,
+    deal_id: str | None,
+    key: str | None = None,
+    transport: httpx.AsyncBaseTransport | None = None,
+) -> None:
+    headers = {"content-type": "application/json"}
+    if key:
+        headers["X-Access-Key"] = key  # a public server (ACCESS_KEY set) guards /dev with it
+    async with httpx.AsyncClient(base_url=url, timeout=5.0, headers=headers, transport=transport) as client:
 
         async def emit(event: Event) -> None:
-            response = await client.post(
-                "/dev/publish", content=event.model_dump_json(), headers={"content-type": "application/json"}
-            )
+            response = await client.post("/dev/publish", content=event.model_dump_json())
             response.raise_for_status()
             text = f"{event.speaker}: {event.text}" if isinstance(event, TranscriptLine) else ""
             print(f"deal={event.deal_id} {event.name} {text}".rstrip(), flush=True)
@@ -78,8 +88,13 @@ def main() -> None:
     parser.add_argument("--speed", type=float, default=1.0, help="1 = real time, 10 = ten times faster, 0 = no waiting")
     parser.add_argument("--url", default="http://localhost:8000")
     parser.add_argument("--deal-id", default=None)
+    parser.add_argument(
+        "--key",
+        default=os.environ.get("GAWAH_ACCESS_KEY"),
+        help="the server's access key, sent as X-Access-Key (default: $GAWAH_ACCESS_KEY)",
+    )
     args = parser.parse_args()
-    asyncio.run(_replay_to_server(args.fixture, args.url, args.speed, args.deal_id))
+    asyncio.run(_replay_to_server(args.fixture, args.url, args.speed, args.deal_id, args.key))
 
 
 if __name__ == "__main__":
