@@ -174,6 +174,12 @@ STEP_TERM = (
     "Step: say this agreed term slowly, in Hindi, then ask whether that is what was agreed. "
     "The term - {label}: {value}. Report the answer with term_answer (item \"{key}\")."
 )
+STEP_CHANGE = (
+    "Step: on record, {label} is {old}. On the call with {other}, {new} was said for it, and the two of them never "
+    "confirmed the change to Gawah. Say this slowly, in Hindi, as a change, not as the term: \"Record mein {old} tha; "
+    "call par {new} kaha gaya. Kya aap ise {new} karna chahte hain?\" Do not say which is right. Report the answer "
+    "with change_answer."
+)
 NEXT = "Noted. {step}"
 NOT_NOW = "That was not recorded: it does not belong to the current step. {step}"
 TERM_DISPUTED = (

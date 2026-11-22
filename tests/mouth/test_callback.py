@@ -7,7 +7,8 @@ import pytest
 from fastapi import FastAPI
 
 from app.contracts import (
-    Backing, CallEnded, CallKind, CallStarted, ChecklistItem, ChecklistUpdated, DealRequested, ItemKey,
+    Backing, CallEnded, CallKind, CallStarted, ChangeStatus, ChecklistItem, ChecklistUpdated, DealRequested, Fact, FactChanged,
+    FactKind, FactRecorded, FactStatus, ItemKey,
     ItemState, Record, RecordConfirmed, RecordConfirmRequested, RecordKind, RecordReceived, Role, TermsConfirmed,
     TermsDisputed, callback_path,
 )
@@ -123,7 +124,7 @@ async def test_all_terms_confirmed(desk):
     opening = link.of("conversation.item.create")[0]["item"]["content"][0]["text"]
     assert "the work: painting the 2BHK flat, two coats" in opening and "22,000" not in opening  # one term at a time
     assert link.config["audio"]["input"]["turn_detection"]  # here the model hears the person (callback.py asks for each reply)
-    assert {t["name"] for t in link.config["tools"]} == {"record_answer", "term_answer"}
+    assert {t["name"] for t in link.config["tools"]} == {"record_answer", "term_answer", "change_answer"}
 
     then = await link.calls("term_answer", item="work", agrees=True, said="haan theek hai")
     assert "the total amount: 22,000 rupees with material" in then
@@ -331,3 +332,79 @@ async def test_no_room_and_a_plain_message_when_the_room_cannot_be_made(desk):
     assert response.status_code == 503 and response.json() == {"message": tuning.PAGE_FAILED}
     await asyncio.sleep(0)
     assert not desk.seats
+
+
+async def amount_left_open(desk, change_status=FactStatus.AGREED) -> tuple[Fact, Fact]:
+    """Call 2 ended before Gawah could put the change to both: 22,000 on record, 24,000 agreed on the call."""
+    await desk.deal()
+    record = Fact(deal_id="d1", text="The amount is 22,000 rupees.", item=ItemKey.AMOUNT, kind=FactKind.TERM,
+                  value="22,000 rupees with material", value_rupees=22000, said_by=Role.WORKER, agreed_by=[Role.HIRER],
+                  confirmed_by=[Role.HIRER, Role.WORKER], status=FactStatus.CONFIRMED, call_no=1, line_no=6)
+    change = Fact(deal_id="d1", text="Balcony 2,000 extra.", item=ItemKey.AMOUNT, kind=FactKind.CHANGE,
+                  value="24,000 rupees (22,000 agreed + 2,000 extra)", value_rupees=24000, said_by=Role.WORKER,
+                  agreed_by=[Role.HIRER], status=change_status, call_no=2, line_no=9)
+    for fact in (record, change):
+        desk.bus.publish(FactRecorded(deal_id="d1", fact=fact))
+    await desk.bus.drain()
+    return record, change
+
+
+async def test_a_change_left_open_when_the_call_ended_is_put_to_each_person_as_a_change(desk):
+    """The user's call 3: the 2,000 extra was never put to both on the call, and the call-back read
+    "24,000, of which 22,000 agreed and 2,000 extra" as the amount. It is asked as a change."""
+    record, change = await amount_left_open(desk)
+    seat, link = await desk.join(role=Role.WORKER)
+    then = await link.calls("term_answer", item="work", agrees=True, said="haan")
+    assert "Record mein 22,000 rupees with material tha; call par 24,000 rupees (22,000 agreed + 2,000 extra) kaha gaya. " \
+           "Kya aap ise 24,000 rupees (22,000 agreed + 2,000 extra) karna chahte hain?" in then
+    assert "change_answer" in then and "the total amount: 24,000" not in then and "term_answer (item \"amount\")" not in then
+    then = await link.calls("change_answer", agrees=True, said="haan ji, karna hai")
+    await desk.bus.drain()
+    assert "the dates: Monday to Friday" in then
+    proposed, one = desk.of(FactChanged)
+    assert (proposed.status, proposed.fact_id, proposed.item, proposed.proposed_by) == (
+        ChangeStatus.PROPOSED, record.id, ItemKey.AMOUNT, Role.WORKER)
+    assert (one.status, one.confirmed_by, one.change_id) == (ChangeStatus.CONFIRMED_ONE, [Role.WORKER], proposed.change_id)
+    await link.calls("term_answer", item="dates", agrees=True, said="haan")
+    assert [c.person for c in await until(lambda: desk.of(TermsConfirmed))] == [Role.WORKER]
+
+    seat, link = await desk.join(role=Role.HIRER)
+    opening = link.of("conversation.item.create")[0]["item"]["content"][0]["text"]
+    assert "the work: painting" in opening
+    await link.calls("term_answer", item="work", agrees=True, said="haan")
+    await link.calls("change_answer", agrees=True, said="haan")
+    await desk.bus.drain()
+    both = desk.of(FactChanged)[-1]
+    assert (both.status, both.confirmed_by, both.change_id, both.new_value) == (
+        ChangeStatus.CONFIRMED_BOTH, [Role.HIRER, Role.WORKER], proposed.change_id, "24,000 rupees (22,000 agreed + 2,000 extra)")
+    assert len(desk.of(FactChanged)) == 3, "proposed once, then one step per person"
+
+
+async def test_a_no_on_the_call_back_withdraws_the_change_and_the_record_stands(desk):
+    record, change = await amount_left_open(desk, FactStatus.SAID)
+    seat, link = await desk.join(role=Role.HIRER)
+    await link.calls("term_answer", item="work", agrees=True, said="haan")
+    then = await link.calls("change_answer", agrees=False, said="nahi, 22 hi rahega")
+    await desk.bus.drain()
+    assert "the dates" in then
+    withdrawn = desk.of(FactChanged)[-1]
+    assert (withdrawn.status, withdrawn.fact_id) == (ChangeStatus.WITHDRAWN, record.id)
+    assert not desk.of(TermsDisputed), "saying no to a change disputes nothing: the record stands"
+
+
+async def test_a_change_one_person_already_confirmed_on_the_call_is_asked_only_of_the_other(desk):
+    record, change = await amount_left_open(desk)
+    common = dict(deal_id="d1", change_id="c-call", fact_id=record.id, new_value="24,000 rupees", item=ItemKey.AMOUNT,
+                  proposed_by=Role.WORKER)
+    desk.bus.publish(FactChanged(**common))
+    desk.bus.publish(FactChanged(**common, status=ChangeStatus.CONFIRMED_ONE, confirmed_by=[Role.HIRER]))
+    await desk.bus.drain()
+    seat, link = await desk.join(role=Role.WORKER)
+    await link.calls("term_answer", item="work", agrees=True, said="haan")
+    await link.calls("change_answer", agrees=True, said="haan")
+    await desk.bus.drain()
+    both = desk.of(FactChanged)[-1]
+    assert (both.status, both.change_id, both.confirmed_by) == (ChangeStatus.CONFIRMED_BOTH, "c-call", [Role.HIRER, Role.WORKER])
+    seat, link = await desk.join(role=Role.HIRER)
+    then = await link.calls("term_answer", item="work", agrees=True, said="haan")
+    assert "change_answer" not in then and "the total amount" not in then, "both said yes: the old figure is not read to her"
