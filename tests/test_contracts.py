@@ -15,6 +15,7 @@ PLAN_EVENTS = {
     "judge.speak", "judge.spoke", "terms.confirmed", "terms.disputed", "contract.ready",
     "record.received", "record.confirm_requested", "record.confirmed", "reply.timeout",
     "whatsapp.message", "whatsapp.voice_note", "fact.recorded", "fact.conflict", "fact.changed", "agent.note",
+    "term.dispute",
 }
 CREW_EVENTS = {"fact.recorded", "fact.conflict", "fact.changed", "agent.note"}
 
