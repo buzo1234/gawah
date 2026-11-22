@@ -13,7 +13,7 @@ import { h, measure, pointable, sync } from "./dom.js";
 const $ = (id) => document.getElementById(id);
 const CHIP_TEXT = 268; // where a chip's words are cut, a little short of where its box wraps them (280)
 const GAP = 16; // between chips, where the connector runs
-const NODE_TEXT = 288; // the node's 340px less its padding
+const NODE_TEXT = 288; // the node's 340px less its padding, and a little
 const NODE_AFTER = 780; // ms: after the timeline entry (240), the chip (240) and its connector (300)
 const WORD = { said: "Said", agreed: "Agreed", confirmed: "Confirmed by both", superseded: "Replaced", disputed: "Disputed", claim: "Contradicted" };
 
@@ -68,11 +68,13 @@ function node(state, row) {
   const pill = v.state !== "pending" ? { word: TERM_WORD[v.state], tone: TERM_TONE[v.state] } : f ? statusWord(state, f, new Set()) : null;
   const changed = v.state === "changed" && (row.chips.find((c) => c.stands)?.voice ? "Changed by voice note, both said yes" : "Changed by voice, both said yes");
   return h("div", { class: "node", "data-value": pending ? "" : parts.main, title: [f ? valueOf(f) : v.value, changed, v.note, v.when && `Settled: ${v.when}`].filter(Boolean).join("\n") },
-    h("div", { class: "l1" }, h("span", { class: "name label" }, row.label), owedLine(row.owed)),
-    h("div", { class: `value${parts.bare ? " money" : ""}${pending ? " none" : ""}` }, shown),
-    h("div", { class: "l3" },
-      pill && h("span", { class: `state pill ${pill.tone || ""}` }, pill.word),
-      v.contradicted && h("span", { class: "contradicted pill bad", title: `Contradicted · ${v.contradicted}` }, "Contradicted")));
+    h("div", { class: "l1" }, h("span", { class: "name label" }, row.label),
+      h("span", { class: "pills" },
+        pill && h("span", { class: `state pill ${pill.tone || ""}` }, pill.word),
+        v.contradicted && h("span", { class: "contradicted pill bad", title: `Contradicted · ${v.contradicted}` }, "Contradicted"))),
+    h("div", { class: "l2" },
+      h("div", { class: `value${parts.bare ? " money" : ""}${pending ? " none" : ""}` }, shown),
+      owedLine(row.owed)));
 }
 
 function check() {
@@ -94,7 +96,7 @@ function chip(state, c, fresh, before) {
     h("span", { class: "who", "aria-hidden": "true" }, ...(c.people.length ? c.people : ["none"]).map((r) => h("i", { class: r }))),
     c.voice && voiceMark(),
     c.status === "confirmed" && check(),
-    h("span", { class: "v" }, lines.replace("\n", " ")));
+    h("span", { class: "v" }, lines));
   if (latency || (fresh.fact && c.ids.includes(fresh.fact))) setTimeout(() => el.classList.remove("enter", "landed"), 2700);
   return pointable(el, c.ids);
 }

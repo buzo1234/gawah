@@ -1,7 +1,9 @@
 /* The board, for a projector at 1920 by 1080, in the pitch deck's look, scaled to any
-   window. One grid: a 48px page margin, three columns (the deal 960, the timeline 440, the
-   second phone 360) with 32px gutters; the header on top; every section's label on one
-   baseline 24px under it; every card 12px under its label and ending 48px from the bottom.
+   window. One grid: a 48px page margin on all four sides, three columns (the deal, 960 at
+   16:9 and wider in a wider window; the timeline 440; the second phone 360) with 32px
+   gutters; the header on top; every section's label on one baseline 24px under it; every
+   card 12px under its label and ending 48px from the bottom. A window of another shape
+   gets a stage of its shape (app.js), so the margin stays 48 on every side.
    Inside a card the content starts 24px in (the deal, the detail) or 16px in (the
    timeline's dense list).
    Sizes, spaces, radii and colours come from the tokens in base.css only.
@@ -13,7 +15,11 @@
 
 body.board { overflow: hidden; background: var(--bg); }
 
-#stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+#stage {
+  position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0;
+  display: grid; grid-template-columns: minmax(0, 1fr) 440px 360px; grid-template-rows: auto minmax(0, 1fr);
+  column-gap: var(--s6); row-gap: var(--s5); padding: var(--s7);
+}
 
 .card { margin: 0; padding: 0; list-style: none; background: var(--surface); border: var(--hair); border-radius: var(--r-card); }
 .contradictions { color: var(--bad); }
@@ -21,7 +27,7 @@ ol { margin: 0; padding: 0; list-style: none; }
 
 /* ---------- the header ---------- */
 
-.top { position: absolute; left: 48px; top: 48px; width: 1824px; height: 48px; display: flex; align-items: center; gap: var(--s4); border-bottom: var(--hair); padding-bottom: var(--s3); }
+.top { grid-column: 1 / -1; display: flex; align-items: center; gap: var(--s4); border-bottom: var(--hair); padding-bottom: var(--s3); }
 .top h1 { display: flex; align-items: center; gap: var(--s2); font: 600 var(--t-value) / var(--lh-value) var(--font); letter-spacing: -0.01em; white-space: nowrap; }
 .top h1 .who { display: inline-flex; align-items: center; gap: var(--s2); }
 .top h1 .dot { width: 12px; height: 12px; border-radius: var(--r-pill); background: var(--none); }
@@ -30,33 +36,36 @@ ol { margin: 0; padding: 0; list-style: none; }
 .top h1 .role { margin-right: var(--s1); }
 .top h1 .sep { margin: 0 var(--s1); color: var(--rule-strong); font-weight: 400; }
 .top .pill.live { background: var(--ink); color: var(--surface); }
-.top .mark { margin-left: auto; font: 500 var(--t-value) / var(--lh-value) "Noto Sans Devanagari", var(--font); color: var(--ink-3); }
+.top .logo { display: block; flex: none; width: 48px; height: 48px; margin-left: auto; border-radius: var(--r-card); }
 
 /* ---------- the three columns ---------- */
 
-.deal, .moments, #phone { position: absolute; top: 120px; height: 912px; display: flex; flex-direction: column; gap: var(--s3); }
-.deal { left: 48px; width: 960px; }
-.moments { left: 1040px; width: 440px; }
-#phone { left: 1512px; width: 360px; }
+.deal, .moments, #phone { min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: var(--s3); }
 .head { display: flex; align-items: center; justify-content: space-between; gap: var(--s4); height: 24px; flex: none; }
 
 /* ---------- the fact graph: a node and a lane per term ---------- */
 
-#terms { flex: none; height: 662px; overflow: hidden; }
-.term { display: grid; grid-template-columns: 340px 1fr; height: 102px; border-bottom: var(--hair); }
+/* A row is as tall as its content, 16px above and below it: the term's name and its
+   state on one line (the state drops under the name when both do not fit), its value (and
+   what is paid and left) under it. Its lane takes the row's height. */
+#terms { flex: none; }
+.term { display: grid; grid-template-columns: 340px minmax(0, 1fr); border-bottom: var(--hair); }
 .node-slot { border-right: var(--hair); cursor: pointer; }
-.node { display: grid; grid-template-rows: 20px auto 24px; row-gap: var(--s1); align-content: center; height: 100%; padding: 0 var(--s5); }
-.node .l1 { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); white-space: nowrap; }
-.node .owed { font: 500 var(--t-meta) / var(--lh-meta) var(--font); color: var(--ink-2); }
+.node { display: flex; flex-direction: column; justify-content: center; gap: var(--s1); height: 100%; padding: var(--s4) var(--s5); }
+.node .l1 { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s1) var(--s2); min-height: 24px; }
+.node .name { white-space: nowrap; }
+.node .pills { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--s1) var(--s2); margin-left: auto; }
+.node .l2 { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: var(--s3); }
+.node .owed { font: 500 var(--t-meta) / var(--lh-meta) var(--font); color: var(--ink-2); white-space: nowrap; }
 .node .value { min-width: 0; max-height: 48px; font: 500 var(--t-body) / var(--lh-body) var(--font); overflow: hidden; }
 .node .value.money { font: 600 var(--t-value) / var(--lh-value) var(--font); letter-spacing: -0.01em; }
 .node .value.none { color: var(--ink-3); font-weight: 400; }
-.node .l3 { display: flex; align-items: center; gap: var(--s2); }
 .term.moved .node { animation: wash 900ms var(--ease); }
 .term.pulse .node { animation: redwash 900ms var(--ease); }
 
-.lane { position: relative; min-width: 0; }
-.chips { position: absolute; left: var(--s4); right: var(--s5); top: 32px; height: 56px; display: flex; align-items: center; gap: var(--s4); }
+/* 24px above the chips for the red edge's label and a new chip's "took" badge. */
+.lane { position: relative; min-width: 0; display: flex; align-items: center; padding: var(--s5) var(--s5) var(--s4) var(--s4); }
+.chips { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--s4); }
 .lane.empty .chips::before { content: ""; width: 100%; border-top: 1px dashed var(--rule); }
 svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 
@@ -79,7 +88,7 @@ svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overf
   outline: 2px solid transparent;
   outline-offset: 2px;
 }
-.chip .v { min-width: 0; max-width: 280px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.chip .v { min-width: 0; max-width: 280px; white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .chip[hidden] { display: none; }
 .chips.measuring .chip { flex-shrink: 0; }
 .chip.claim .v, .chip.kind-payment .v, .chip .v:first-letter { font-variant-numeric: tabular-nums; }
@@ -127,7 +136,7 @@ svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overf
 
 /* ---------- the card under the graph: one fact (slide 9) or the contradiction (slide 7) ---------- */
 
-#detail { flex: none; height: 202px; padding: var(--s4) var(--s5); overflow: hidden; }
+#detail { flex: 1; min-height: 186px; padding: var(--s4) var(--s5); overflow: hidden; }
 #detail > * { display: flex; flex-direction: column; height: 100%; }
 #detail .body { flex: 1; align-content: center; align-items: center; min-height: 0; }
 .fact-card .head, .conflict-card .head { display: flex; align-items: center; gap: var(--s3); height: 24px; }
@@ -169,18 +178,20 @@ svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overf
 /* ---------- the timeline ---------- */
 
 .timeline-card { position: relative; flex: 1; min-height: 0; overflow: hidden; }
-#timeline { position: relative; height: 100%; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--rule-strong) transparent; }
+#timeline { position: relative; height: 100%; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--rule-strong) transparent; scrollbar-gutter: stable; }
 .moment { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; height: 40px; padding: 0 var(--s4); background: var(--surface); border-bottom: var(--hair); }
 .moment .count { text-transform: none; letter-spacing: 0; }
-.entry { display: grid; grid-template-columns: 80px 1fr 32px; column-gap: var(--s3); padding: var(--s3) var(--s4); border-bottom: var(--hair); cursor: pointer; }
+/* An entry: the time, then who and the status (wrapping when they need two lines), the
+   fact and its term; its clip centred on the right. 16px in on both sides, the scrollbar's
+   width kept apart. */
+.entry { display: grid; grid-template-columns: 80px minmax(0, 1fr) 32px; column-gap: var(--s3); align-items: start; padding: var(--s3) var(--s4); border-bottom: var(--hair); cursor: pointer; }
 .entry .time { display: flex; align-items: center; height: 24px; font: 400 var(--t-meta) / var(--lh-meta) var(--mono); color: var(--ink-3); white-space: nowrap; }
 .entry .main { min-width: 0; }
-.entry .people { display: flex; align-items: center; gap: var(--s2); height: 24px; }
-.entry .people .word { margin-left: auto; }
+.entry .people { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1) var(--s2); min-height: 24px; }
 .entry .text { margin: var(--s1) 0 0; font: 400 var(--t-body) / var(--lh-body) var(--font); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .entry .meta { margin-top: var(--s1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .entry .meta .took { margin: 0; }
-.entry .play { align-self: center; }
+.entry .play, .entry .no-clip { align-self: center; }
 .entry .no-clip { width: 32px; }
 .entry.claim { background: var(--bad-faint); }
 .entry.replaced .text { color: var(--ink-3); }

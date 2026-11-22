@@ -13,7 +13,6 @@ import { clipButton } from "./clips.js";
 import { h, measure, pointable, sync } from "./dom.js";
 
 const $ = (id) => document.getElementById(id);
-const TEXT_W = 272;
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 let unseen = 0;
 
@@ -24,8 +23,11 @@ function voiceMark() {
     "Voice note");
 }
 
+// The text column: the list's width (less its scrollbar) less the padding, time, clip and gaps.
+const textWidth = () => $("timeline").clientWidth - 2 * 16 - 80 - 32 - 2 * 12;
+
 function entry(e, fresh, before) {
-  const text = fit(e.text, TEXT_W, 2, measure, "400 18px");
+  const text = fit(e.text, textWidth(), 2, measure, "400 18px");
   const el = h("li", {
     class: ["entry", e.claim && "claim", e.replaced && "replaced", e.follow && "follow", fresh && (before ? "landed" : "enter")].filter(Boolean).join(" "),
     "data-fact": e.factId, "data-item": e.item, "data-status": e.status, tabindex: 0, title: e.text,
