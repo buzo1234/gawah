@@ -19,10 +19,11 @@ from app.contract import check
 from app.contract.terms import AlsoAgreed, Bi, Change, Said, Term
 from app.contract.trigger import Call
 from app.contract.wording import (
-    ALL_AGREED, ALSO_AGREED, AS_STATED, CLAUSES, LEAD, NOT_AGREED, OPEN_CLAUSE, OPEN_POINTS, PARTIES,
+    ALL_AGREED, ALSO_AGREED, AS_STATED, CLAUSES, CONFIRMED, LEAD, NOT_AGREED, ON_THE_CALL, OPEN_CLAUSE, OPEN_POINTS, PARTIES,
     PAYMENT_CLAUSE, PAYMENTS, ROLES, SUBTITLE, THE_REST, VOICES, WITNESS,
 )
 from app.contracts import Fact, FactKind, FactSource, FactStatus, ItemKey, Person, Role
+from app.records.no_callbacks import SAID as NO_CALLBACK
 
 __all__ = ["Bi", "Document", "build", "both"]
 
@@ -95,6 +96,7 @@ class Acceptance:
     party: Party
     when: Bi
     said: str | None
+    how: Bi = CONFIRMED
 
 
 @dataclass
@@ -213,7 +215,7 @@ def build(
         parties=list(parties.values()),
         clauses=clauses,
         changes=rows,
-        acceptances=[Acceptance(parties[role], _moment(confirmed_at[role]), confirmed_said.get(role)) for role in Role],
+        acceptances=[_accepted(parties[role], confirmed_at[role], confirmed_said.get(role)) for role in Role],
         witness=say(WITNESS),
         calls=[line for n in sorted(calls) if (line := _call(n, calls[n]))],
         fingerprints=[
@@ -326,3 +328,10 @@ def _moment(when: datetime) -> Bi:
     clock = f"{d.hour % 12 or 12}:{d.minute:02d}"
     day = _day(when)
     return Bi(f"{day.hi} को {part} {clock} बजे", f"{day.en} at {clock} {'am' if d.hour < 12 else 'pm'} IST")
+
+
+def _accepted(party: Party, at: datetime, said: str | None) -> Acceptance:
+    """With call-backs off (app/records/no_callbacks.py) what both agreed on the call is their acceptance."""
+    if said == NO_CALLBACK:
+        return Acceptance(party, _moment(at), None, ON_THE_CALL)
+    return Acceptance(party, _moment(at), said)

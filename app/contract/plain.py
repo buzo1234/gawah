@@ -2,7 +2,7 @@
 
 from app.contract.document import Document, both
 from app.contract.wording import (
-    BEFORE, BOTH_CONFIRMED, CHAIN, CHAIN_MEANS, CHANGED, CHANGES, CHANGES_LEAD, CONFIRMED, FINGERPRINT,
+    BEFORE, BOTH_CONFIRMED, CHAIN, CHAIN_MEANS, CHANGED, CHANGES, CHANGES_LEAD, FINGERPRINT,
     IF_YOU_DISAGREE, IS, IS_NOT, NOW, TITLE,
 )
 
@@ -39,7 +39,7 @@ def text(doc: Document) -> str:
                 lines.append(f"  कहा / Said: “{c.said}”")
     lines += ["", "स्वीकृति / ACCEPTANCE"]
     for a in doc.acceptances:
-        lines += [a.party.line(), f"{CONFIRMED.hi} / {CONFIRMED.en}", f"{a.when.hi} / {a.when.en}"]
+        lines += [a.party.line(), f"{a.how.hi} / {a.how.en}", f"{a.when.hi} / {a.when.en}"]
         if a.said:
             lines.append(f"कहा / Said: “{a.said}”")
     lines += ["", "गवाह / WITNESS", doc.witness.hi, doc.witness.en]

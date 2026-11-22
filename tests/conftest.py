@@ -10,6 +10,7 @@ def _twilio_unless_a_test_says_meta(monkeypatch):
     .env even when a test's settings read no .env. Pin them, so the .env never decides."""
     monkeypatch.setenv("WHATSAPP_PROVIDER", "twilio")
     monkeypatch.setenv("META_APP_SECRET", "test-app-secret")
+    monkeypatch.setenv("CALLBACKS_ENABLED", "true")  # app/records/no_callbacks.py: a test that wants them off says so
     # The server's settings: no shell decides whether a test runs as a public server.
     monkeypatch.delenv("ACCESS_KEY", raising=False)
     monkeypatch.delenv("GAWAH_SECRET_ID", raising=False)

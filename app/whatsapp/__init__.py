@@ -18,6 +18,7 @@ from app.contracts import (
 )
 from app.log import deal_log
 from app.records.intake import Intake
+from app.records.no_callbacks import NoCallbacks, callbacks_enabled
 from app.records.reader import Reader
 from app.records.reminders import Reminders
 from app.records.sentinel import Sentinel, wall_clock
@@ -55,7 +56,9 @@ def wire(
     """Build the bot and subscribe it. Tests pass a fake provider, reader, clock, memory,
     transcriber and upload, and their own root for voice notes.
     With no memory there is no Sentinel: records are logged and confirmed as before.
-    The provider is Twilio unless WHATSAPP_PROVIDER=meta."""
+    The provider is Twilio unless WHATSAPP_PROVIDER=meta. With CALLBACKS_ENABLED=false no
+    call-back link is sent (app/records/no_callbacks.py)."""
+    callbacks = callbacks_enabled(settings)
     settings = whatsapp_settings(settings)
     if provider is None:
         provider = Meta(settings) if settings.whatsapp_provider == "meta" else Twilio(settings)
@@ -69,6 +72,8 @@ def wire(
             reminders=lambda s: Reminders(saved, clock, wall, s.remind), wall=wall,
         )
         sentinel.subscribe()
+        if not callbacks:
+            NoCallbacks(bus, memory).subscribe()
     intake = Intake(bus, outbox, reader or Reader(settings), clock, settings.reply_timeout_seconds, sentinel)
     s3 = S3(settings)
     if sentinel:
@@ -78,9 +83,10 @@ def wire(
     voice = VoiceNotes(bus, outbox, intake, provider, transcriber or Transcriber(settings), upload or s3.upload, root)
     bot = Bot(settings, bus, store, provider, outbox, intake, sign=s3.signed_url, sentinel=sentinel, voice=voice)
     bus.subscribe(CallOpened, bot.on_call_opened)
-    bus.subscribe(CallEnded, bot.on_call_ended)
+    if callbacks:  # both send call-back links
+        bus.subscribe(CallEnded, bot.on_call_ended)
+        bus.subscribe(ReplyTimeout, bot.on_reply_timeout)
     bus.subscribe(ContractReady, bot.on_contract_ready)
-    bus.subscribe(ReplyTimeout, bot.on_reply_timeout)
     bus.subscribe(RecordConfirmed, intake.on_confirmed)
     return bot
 
