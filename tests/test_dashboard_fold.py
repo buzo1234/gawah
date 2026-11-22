@@ -10,7 +10,8 @@ import pytest
 
 from app.contracts import (
     AgentNote, CallEnded, CallKind, CallStarted, ChangeStatus, ChecklistItem, ChecklistUpdated, CrewAgent, Fact, FactChanged,
-    FactConflict, FactKind, FactRecorded, FactStatus, ItemKey, ItemState, Role, TermsConfirmed, TermsDisputed, TranscriptLine,
+    DisputeStep, FactConflict, FactKind, FactRecorded, FactStatus, ItemKey, ItemState, Role, TermDispute, TermsConfirmed,
+    TermsDisputed, TranscriptLine,
     empty_checklist,
 )
 from fakes import RAMESH, SUNITA
@@ -141,6 +142,17 @@ def test_each_checklist_state_reads_as_the_room_should_see_it(tmp_path):
     assert got["amount"] == {"state": "changed", "value": "26,000 rupees", "when": "Call 1", "note": "Was 13,000 rupees", "contradicted": None}
     assert got["dates"]["state"] == "disputed" and got["dates"]["note"] == "Hirer disputes this: “Saturday tak”"
     assert got["balance"]["state"] == "pending"
+
+    # The dates in dispute: the hirer's version beside the one on record; a change both confirm ends it.
+    opened = after[-3]
+    version = TermDispute(deal_id=deal, dispute_id=opened.event_id, item=ItemKey.DATES, person=Role.HIRER,
+                          step=DisputeStep.VERSION, version="Monday se Saturday", version_fact_id="v1")
+    got = fold([*after, version], tmp_path)["terms"]
+    assert got["dates"]["state"] == "disputed"
+    assert got["dates"]["note"] == "Hirer disputes this: “Saturday tak” · Hirer's version: “Monday se Saturday”"
+    assert got["dates"]["versus"] == {"by": "hirer", "value": "Monday se Saturday", "factId": "v1"}
+    settled = version.model_copy(update={"step": DisputeStep.SETTLED, "how": "changed", "version": None})
+    assert fold([*after, version, settled], tmp_path)["terms"]["dates"]["state"] != "disputed"
 
 
 STANDING = """

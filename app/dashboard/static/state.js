@@ -51,6 +51,7 @@ export function emptyState(dealId) {
     earlier: {}, // item -> its last agreed value on an earlier call, with callNo
     items: ITEMS.map(([key]) => ({ key, state: "pending" })),
     terms: { hirer: {}, worker: {} }, // role -> item or "all" -> { ok, said }
+    disputes: {}, // item -> the open term.dispute: { person, step, version, versionFactId }
   };
 }
 
@@ -132,6 +133,19 @@ function applyDeal(state, e, change) {
       state.terms[e.person][e.item || "all"] = { ok: false, said: e.said };
       change.panels = ["checklist"];
       break;
+
+    case "term.dispute": {
+      const held = state.disputes[e.item] || {};
+      if (e.step === "settled") {
+        delete state.disputes[e.item];
+        if (state.terms[e.person]?.[e.item]?.ok === false) delete state.terms[e.person][e.item]; // a change both confirmed
+      } else {
+        state.disputes[e.item] = { person: e.person, step: e.step, version: e.version || held.version || null,
+          versionFactId: e.version_fact_id || held.versionFactId || null };
+      }
+      change.panels = ["checklist"];
+      break;
+    }
   }
 }
 
@@ -162,7 +176,12 @@ export function termView(state, key) {
 
   if (disputing.length) {
     const quote = said(disputing[0]).said;
-    return { ...view, state: "disputed", note: `${disputing.map((r) => nameOf(state, r)).join(" and ")} disputes this${quote ? `: “${quote}”` : ""}` };
+    const open = state.disputes[key];
+    // Both versions: the one on record is the value; theirs, once given, beside it.
+    const versus = open?.version ? { by: open.person, value: open.version, factId: open.versionFactId } : null;
+    const note = `${disputing.map((r) => nameOf(state, r)).join(" and ")} disputes this${quote ? `: “${quote}”` : ""}`
+      + (versus ? ` · ${nameOf(state, versus.by)}'s version: “${versus.value}”` : "");
+    return { ...view, state: "disputed", note, versus };
   }
   if (held) {
     const fact = settledBy(state, held);

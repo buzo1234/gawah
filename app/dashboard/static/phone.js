@@ -23,7 +23,7 @@ const store = {
 };
 
 let messages = [];
-let asked = []; // record.confirm_requested, fact.changed and record.confirmed: what each reply button answers
+let asked = []; // record.confirm_requested, fact.changed, record.confirmed and term.dispute: what each reply button answers
 const tapping = new Map(); // message event id -> the button tapped here, until the answer comes back
 let people = {}; // role -> { name, phone }, from the deal the board shows
 let dealId = null;
@@ -187,7 +187,7 @@ function onEvent(e, live) {
     return;
   }
   if (e.deal_id === NO_DEAL || (dealId && e.deal_id !== dealId)) return;
-  if (["record.confirm_requested", "record.confirmed", "fact.changed"].includes(e.name)) {
+  if (["record.confirm_requested", "record.confirmed", "fact.changed", "term.dispute"].includes(e.name)) {
     asked.push(e);
     if (live) render();
     return;

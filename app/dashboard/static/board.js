@@ -112,7 +112,7 @@ export function statusWord(state, f, claimed = claims(state)) {
 }
 
 // A term's state in the same words.
-export const TERM_WORD = { pending: "Waiting", agreed: "Agreed", confirmed: "Confirmed by both", disputed: "Disputed", changed: "Changed" };
+export const TERM_WORD = { pending: "Waiting", agreed: "Agreed", confirmed: "Confirmed by both", disputed: "In dispute", changed: "Changed" };
 export const TERM_TONE = { pending: "", agreed: "ok", confirmed: "ok", changed: "ok", disputed: "bad" };
 
 // Who said it, and who agreed or confirmed: the roles, the speaker first.
