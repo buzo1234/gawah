@@ -111,6 +111,22 @@ async def test_spoken_to_by_name_it_acknowledges_at_once_then_answers_from_memor
     assert "heard its name: Ramesh asked something" in notes(world)
 
 
+async def test_a_question_with_nothing_to_look_up_is_answered_not_left_in_silence(world):
+    # try_agent: "kya bacha hai?", "boliye" and "terms wapas bolo" need no lookup, and in the forced lookup
+    # round the model reached for stay_silent, the one tool that fitted; Gawah said the ack and nothing more.
+    seat, link = await world.call()
+    link.replies = [
+        {"calls": [("stay_silent", {"reason": "no tool lookup needed"})]},
+        {"text": "Abhi balance aur dates baaki hain.", "ms": 500},
+    ]
+    world.bus.publish(line(20, Role.HIRER, "Gawah ji, kuch aur bacha hai?"))
+    call = world.mouth.calls["d1"]
+    await until(lambda: call.outcomes and call.outcomes[-1]["what"] == "addressed_directly")
+    assert call.outcomes[-1]["said"], call.outcomes[-1]
+    assert tuning.NOTHING_TO_LOOK_UP in link.outputs()
+    await until(lambda: any(n.startswith("said: Haan ji, ek second. Abhi balance aur dates baaki hain.") for n in notes(world)))
+
+
 async def test_the_brains_own_addressed_moment_joins_the_turn_already_under_way(world):
     seat, link = await world.call()
     link.replies = [{"calls": [("get_term", {"item": "amount"})]}, {"text": "13,000 tay hua tha.", "ms": 300}]

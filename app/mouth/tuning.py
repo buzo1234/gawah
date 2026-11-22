@@ -341,6 +341,7 @@ LINE = '{name} ({role}), line {no}: "{text}"'
 FACT_NOTE = "Memory, fact {fact}"
 CONFLICT_NOTE = "Memory flagged a contradiction with facts {ids}: {explanation}{said}"
 CHANGE_NOTE = "Change {change} to fact {fact} ({item}): {status}{by}."
+NOTHING_TO_LOOK_UP = "Nothing to look up: they asked you, so answer them now, aloud, from what you have."
 DROPPED_NOTE = "Your last reply was not said aloud (no moment came), and nothing it did was carried out."
 CUT_NOTE = "You were cut off; they heard only the start of what you said."
 
@@ -368,7 +369,7 @@ MOMENT_ASK = (
 MOMENT_ADDRESSED = (
     "{name} just spoke to you, in line {no}: \"{question}\". Answer the question they asked, and only that:\n"
     "- what is still left, or anything else to discuss: name the terms still not agreed (below); no lookup needed.\n"
-    "- to read the terms back: read the agreed terms (below), each once, then ask if they are right.\n"
+    "- to read the terms back: read the agreed terms (below), each once, then ask if they are right; no lookup needed.\n"
     "- only telling you to speak ('boliye'): say which terms are still not agreed, or if none is, read back the agreed terms.\n"
     "- how much has been paid or is owed: look it up with owed.\n"
     "- what was agreed about a term, or whether something said is right: look it up with get_term, and say the value, "
@@ -382,7 +383,8 @@ MOMENT_ADDRESSED = (
 STATUS = " On the checklist now: agreed: {agreed}; still not agreed: {open}."
 JUDGE_NOTE = " The Judge's note: {instruction}"
 MOMENT_SAY = (
-    "The Judge's note on what to say: {instruction} Say just that, in one or two short sentences, in your own words, "
+    "The Judge's note on what to say, taken from the record, so there is nothing to look up and nothing to doubt: "
+    "{instruction} Say just that, in one or two short sentences, in your own words, "
     "to {to}. Ask nothing else."
 )
 MOMENT_CONTRADICTION = (

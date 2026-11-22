@@ -237,7 +237,7 @@ class AgentCall(DealCall):
                     moments.moment(job.speak, self.names, self.facts, job.line.text, self.checklist) if job.speak
                     else moments.addressed_moment(job.line, self.names, self.checklist)
                 )
-            return await self.agent.turn(job.instruction, first_choice="required")  # look it up first, then speak
+            return await self.agent.turn(job.instruction, first_choice="required", answers=True)  # look it up first, then speak
         # The opening, and a question the brain wants asked: nothing to look up, only the words to choose.
         return await self.agent.turn(job.instruction, use_tools=False)
 

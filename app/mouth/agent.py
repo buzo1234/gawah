@@ -48,6 +48,7 @@ class Turn:
     first_choice: str = "auto"  # tool_choice for the first request: "required" makes it look up before it speaks
     then: list[tuple] = field(default_factory=list)  # fixed steps after the model's reply: ("clip", fact_id), ("say", situation)
     speak_after: set[str] | None = None  # it may speak only after one of these tools; None: after any
+    answers: bool = False  # a question put to Gawah: it is answered, never left in silence
 
     @property
     def audio_ms(self) -> float:
@@ -95,9 +96,10 @@ class Agent:
 
     async def turn(
         self, situation: str, use_tools: bool = True, first_choice: str = "auto", then: list[tuple] = (),
-        speak_after: set[str] | None = None,
+        speak_after: set[str] | None = None, answers: bool = False,
     ) -> Turn:
-        turn = Turn(situation, use_tools=use_tools, first_choice=first_choice, then=list(then), speak_after=speak_after)
+        turn = Turn(situation, use_tools=use_tools, first_choice=first_choice, then=list(then), speak_after=speak_after,
+                    answers=answers)
         await self._respond(turn)
         return turn
 
@@ -218,6 +220,13 @@ class Agent:
             except ValueError:
                 args = {}
             name = str(call.get("name"))
+            if name == "stay_silent" and turn.answers and turn.rounds == 1 and turn.first_choice != "auto":
+                # The silent lookup round of a question to Gawah: with nothing to look up the model reaches
+                # for stay_silent, the one tool left ("kya bacha hai?" is answered from the note). Speak.
+                await self.link.send({"type": "conversation.item.create", "item": {
+                    "type": "function_call_output", "call_id": call.get("call_id"), "output": tuning.NOTHING_TO_LOOK_UP,
+                }})
+                continue
             result = await self.tools.run(name, args if isinstance(args, dict) else {})
             self.log.info("tool %s %s -> %s", name, json.dumps(args, ensure_ascii=False)[:200], result.output[:160])
             turn.tools.append(name)
