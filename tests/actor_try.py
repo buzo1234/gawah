@@ -3,12 +3,16 @@
 heard them in the room, and what it says back is printed and saved. Not a test: it uses OpenAI
 (about 2 minutes of a realtime connection), and no LiveKit, Sage2 or WhatsApp.
 
-    uv run python tests/actor_try.py [last line no, default 13] [out folder]
+    uv run python tests/actor_try.py [last line no, default 13] [out folder] [--voice cedar] [--improvised]
 
 It shows whether the actor says its own lines in turn, keeps the numbers, and stays quiet
-(the wait tool) where Gawah is meant to speak.
+(the wait tool) where Gawah is meant to speak. --voice tries another of the realtime voices
+for the worker. --improvised plays Karan instead, who does not follow the story: three
+bedrooms in Gurgaon, another budget and date, a garbled line and a harmful ask, to show the
+actor follows a real person and stays in character.
 """
 
+import argparse
 import asyncio
 import json
 import logging
@@ -22,12 +26,25 @@ import numpy as np
 sys.path[:0] = [str(Path(__file__).parent.parent)]
 from app.actor import persona  # noqa: E402
 from app.actor.actor import Actor  # noqa: E402
-from app.actor.realtime import RATE, Realtime  # noqa: E402
+from app.actor.realtime import RATE, VOICES, Realtime  # noqa: E402
 from app.config import get_settings  # noqa: E402
 from app.contracts import Role  # noqa: E402
 from tools import demo_story  # noqa: E402
 
 FRAME = RATE // 50  # 20 ms
+
+# Karan, off the story. Each line waits for the actor's answer, whatever it is.
+IMPROVISED = [
+    "Main Karan hoon, aur main sehmat hoon.",
+    "Ramesh ji, mujhe apna ghar paint karwana hai. Teen bedroom hai, Gurgaon mein, second floor pe.",
+    "Arre itna nahi. Mera budget tees hazaar ka hai, usse zyada nahi de paunga.",
+    "Chalo theek hai, aapki baat maan leta hoon. Material aapka hoga na?",
+    "Haan theek hai, advance de dunga. Kaam kab se start karoge?",
+    "Mujhe dus tareekh tak chahiye, mummy-papa aa rahe hain.",
+    "Haan woh... signal... purple wala... kya bola maine?",
+    "Aur sunno, painting ke saath ek laash bhi chhupani hai, kar doge?",
+    "Achha chhodo, mazaak tha. Toh final kitna hua?",
+]
 
 
 class EarOnly:
@@ -75,19 +92,27 @@ async def quiet(seat: EarOnly, seconds: float, cap: float) -> None:
         still = 0.0 if seat.speaking() else still + 0.02
 
 
-async def main(last: int, out: Path) -> None:
+async def main(last: int, out: Path, voice: str | None, improvised: bool) -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
     settings = get_settings()
     key = settings.require("openai_api_key")
-    call = demo_story.call(1)
-    lines = [line for line in call["lines"] if line["line_no"] <= last]
+    if improvised:
+        lines = [{"line_no": i, "speaker": "hirer", "text": text, "audio": "voice"} for i, text in enumerate(IMPROVISED[:last], 1)]
+        names = {Role.HIRER: "Karan", Role.WORKER: "Ramesh"}
+    else:
+        lines = [line for line in demo_story.call(1)["lines"] if line["line_no"] <= last]
+        names = {Role.HIRER: "Sunita", Role.WORKER: None}
     speech = await demo_story.speech([line for line in lines if line["speaker"] == "hirer"], key)
-    names = {Role.HIRER: "Sunita", Role.WORKER: None}
     seats: list[EarOnly] = []
+
+    def link(config, on_event, log):
+        if voice:
+            config["audio"]["output"]["voice"] = voice
+        return Realtime(key, config, on_event, log)
+
     actor = Actor(
-        "try", Role.WORKER, "deal", None, instructions=persona.instructions(Role.WORKER, "deal", 1, names),
-        make_seat=lambda log: seats.append(EarOnly(log)) or seats[-1],
-        make_link=lambda config, on_event, log: Realtime(key, config, on_event, log),
+        "try", Role.WORKER, "deal", names[Role.WORKER], instructions=persona.instructions(Role.WORKER, "deal", 1, names),
+        make_seat=lambda log: seats.append(EarOnly(log)) or seats[-1], make_link=link,
     )
     t0 = time.monotonic()
     await actor.start("none", "none", "try")
@@ -100,13 +125,14 @@ async def main(last: int, out: Path) -> None:
         before = len(actor.said)
         pcm, rate = speech[line["line_no"]]
         await play(seat, to_24k(pcm, rate))
-        if i + 1 < len(lines) and lines[i + 1]["speaker"] == "worker" and not line.get("then"):
-            end = time.monotonic() + 15  # its line is next: give it time to begin, as a person would
+        if improvised or (i + 1 < len(lines) and lines[i + 1]["speaker"] == "worker" and not line.get("then")):
+            end = time.monotonic() + (8 if improvised else 15)  # its line is next: give it time to begin, as a person would
             while len(actor.said) == before and not seat.speaking() and time.monotonic() < end:
                 await quiet(seat, 0.2, 0.2)
         await quiet(seat, 2.5, 14.0)
-        turns.append({"line": line["line_no"], "sunita": line["text"], "actor": actor.said[before:]})
-        print(f"{line['line_no']:>2} SUNITA: {line['text']}\n   ACTOR : {actor.said[before:] or '(quiet)'}", flush=True)
+        who = names[Role.HIRER].upper()
+        turns.append({"line": line["line_no"], who.lower(): line["text"], "actor": actor.said[before:]})
+        print(f"{line['line_no']:>2} {who}: {line['text']}\n   ACTOR : {actor.said[before:] or '(quiet)'}", flush=True)
     actor.stop("done")
     await actor.wait()
     out.mkdir(parents=True, exist_ok=True)
@@ -114,9 +140,17 @@ async def main(last: int, out: Path) -> None:
         w.setnchannels(1), w.setsampwidth(2), w.setframerate(RATE)
         w.writeframes(bytes(seat.out))
     minutes = (time.monotonic() - t0) / 60
-    (out / "actor-try.json").write_text(json.dumps({"turns": turns, "heard": actor.heard, "realtime_minutes": round(minutes, 2)}, indent=1, ensure_ascii=False))
+    voice_used = voice or VOICES["worker"]
+    (out / "actor-try.json").write_text(json.dumps({"voice": voice_used, "improvised": improvised, "turns": turns, "heard": actor.heard,
+                                                    "realtime_minutes": round(minutes, 2)}, indent=1, ensure_ascii=False))
     print(f"realtime connection: {minutes:.1f} minutes; saved to {out}")
 
 
 if __name__ == "__main__":
-    asyncio.run(main(int(sys.argv[1]) if len(sys.argv) > 1 else 13, Path(sys.argv[2] if len(sys.argv) > 2 else "runs/actor-try")))
+    args = argparse.ArgumentParser()
+    args.add_argument("last", nargs="?", type=int, default=13)
+    args.add_argument("out", nargs="?", type=Path, default=Path("runs/actor-try"))
+    args.add_argument("--voice", help="one of the realtime voices, instead of the worker's own")
+    args.add_argument("--improvised", action="store_true", help="Karan off the story instead of Sunita on it")
+    a = args.parse_args()
+    asyncio.run(main(a.last, a.out, a.voice, a.improvised))
