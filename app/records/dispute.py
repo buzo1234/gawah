@@ -156,7 +156,8 @@ class Disputes:
                                words.proof_mismatch(record, reading.amount, bool(reading.transaction_id)))
             self.s._note(deal.id, f"a screenshot came for the disputed {_claim(record)} and does not match it: "
                          "still disputed")
-            return None
+            # The same amount with no transaction id is this proof, failed; another amount is its own payment.
+            return record if same else None
         if not same:
             return None
         other = deal.person(sender.role.other)
@@ -186,14 +187,17 @@ class Disputes:
 
     # ---------- what the record holds ----------
 
-    async def payments(self, deal_id: str, denied: str | None = None) -> list[Fact]:
-        """Every payment fact as it stands, oldest first; the one just denied as disputed,
-        whether or not memory has marked it yet."""
+    async def _latest(self, deal_id: str) -> list[Fact]:
         latest: dict[str, Fact] = {}
         for event in await self.s.store.events(deal_id, "fact.recorded"):
             latest[event.fact.id] = event.fact
+        return list(latest.values())
+
+    async def payments(self, deal_id: str, denied: str | None = None) -> list[Fact]:
+        """Every payment fact as it stands, oldest first; the one just denied as disputed,
+        whether or not memory has marked it yet."""
         found = []
-        for fact in latest.values():
+        for fact in await self._latest(deal_id):
             if fact.kind is not FactKind.PAYMENT or not fact.value_rupees or fact.status is FactStatus.SUPERSEDED:
                 continue
             if denied and fact.record_id == denied:
@@ -203,16 +207,15 @@ class Disputes:
 
     async def still_disputed(self, deal_id: str, items: set[ItemKey] | None = None, skip: str | None = None) -> str:
         """What stays disputed, said under an owed message or a reminder: payments (towards
-        these terms, or any) and a work claim nobody has confirmed since."""
+        these terms, or any), and a work claim denied when no work claim was confirmed after it."""
+        facts = [f for f in await self._latest(deal_id) if f.record_id and f.record_id != skip]
         amounts = [
-            f.value_rupees for f in await self.payments(deal_id)
-            if f.status is FactStatus.DISPUTED and f.record_id != skip and (items is None or f.item in items)
+            f.value_rupees for f in facts if f.kind is FactKind.PAYMENT and f.value_rupees
+            and f.status is FactStatus.DISPUTED and (items is None or f.item in items)
         ]
-        work = False
-        if items is None and deal_id not in self.s._work_done:
-            work = any(d.deal_id == deal_id and d.record.kind is RecordKind.WORK_DONE and d.record.id != skip
-                       for d in self.open.values())
-        return words.still_disputed(amounts, work)
+        work = [f.status for f in facts if f.kind is FactKind.WORK]
+        denied = items is None and FactStatus.DISPUTED in work and FactStatus.CONFIRMED not in work[work.index(FactStatus.DISPUTED):]
+        return words.still_disputed(amounts, denied and deal_id not in self.s._work_done)
 
     def _how(self, fact: Fact) -> str:
         on = words.day(fact.valid_from.astimezone(IST).date()) if fact.valid_from else None
