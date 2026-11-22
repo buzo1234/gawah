@@ -6,6 +6,7 @@ import pytest
 
 from app.mouth import tuning
 from app.mouth.hearing import Hearing, frame_db
+from tests.mouth import measure_interference as mi
 from tests.mouth import sounds
 from tests.mouth.measure_hearing import BROWSER_GAIN_DB, NOISES, cut_off_ms, noisy, on_noise, talking_ms
 
@@ -36,14 +37,16 @@ def test_noise_and_clicks_never_cut_gawah_off_and_never_count_as_talking(name):
 
 
 def test_recorded_speech_over_noise_cuts_gawah_off():
-    # At the level a browser's gain control gives: within about a third of a second.
+    # At the level a browser's gain control gives, in a loud room (-40 dB and clicks): about half a second.
     times = [cut_off_ms(name, BROWSER_GAIN_DB) for name in sounds.LINES]
     assert all(ms is not None and not early for ms, early in times)
-    assert np.median([ms for ms, _ in times]) <= tuning.BARGE_MS + 40 and max(ms for ms, _ in times) <= 600
-    # As recorded, only about 7 dB above the noise: slower, and still every time.
-    quiet = [cut_off_ms(name) for name in sounds.LINES]
+    assert np.median([ms for ms, _ in times]) <= tuning.BARGE_MS + 100 and max(ms for ms, _ in times) <= 2000
+    # As recorded, 10 dB quieter, in a quiet room: slower, and still every time. (In the loud room, only
+    # 7 dB above the noise, it is under BARGE_OVER_NOISE_DB and half the lines no longer cut in: the price
+    # of not being cut off by a TV or passing traffic.)
+    quiet = [cut_off_ms(name, noise_db=-50.0) for name in sounds.LINES]
     assert all(ms is not None and not early for ms, early in quiet)
-    assert np.median([ms for ms, _ in quiet]) <= 1500
+    assert np.median([ms for ms, _ in quiet]) <= 800
 
 
 def test_a_pause_is_found_after_speech_in_a_noisy_room():
@@ -107,10 +110,10 @@ def test_a_microphone_that_is_digitally_silent_between_lines_works_too():
         hear(h, "hirer", sounds.silence((tuning.PAUSE_MS + 20) / 1000))
         assert h.in_pause()
     h.gawah_starts()
-    # With no room noise to go by, the floor is the recording's own hiss, 8 dB under the voice,
-    # so this is the slow case: about a second, where 17 dB of headroom takes 0.3 s.
+    # With no room noise to go by, the floor is the recording's own hiss, 8 dB under the voice and so
+    # under BARGE_OVER_NOISE_DB: this is the slow case, nearly three seconds, where 17 dB of headroom takes 0.4 s.
     cut = next(i for i, f in enumerate(sounds.frames(SPEECH)) if h.hear("hirer", f, gawah_ms=1000))
-    assert (cut + 1) * tuning.FRAME_MS <= 1500
+    assert (cut + 1) * tuning.FRAME_MS <= 3000
 
 
 def test_each_person_has_their_own_noise_floor():
@@ -157,3 +160,24 @@ def test_room_noise_getting_louder_is_learned_within_seconds():
     hear(h, "worker", noisy(8.0, -40))
     assert h.in_pause() and abs(h.people["worker"].floor + 41) < 3
     assert not hear(h, "worker", noisy(20.0, -40, seed=5), gawah_ms=1000)
+
+
+def test_echo_traffic_and_a_tv_across_the_room_never_cut_gawah_off():
+    """measure_interference.py's cases, at the levels that cut Gawah off before."""
+    gawah = mi.gawah_level()
+    n = len(gawah)
+    assert mi.steady(mi.echo(gawah, 15.0)[:n]).cuts == 0  # a phone on loudspeaker
+    assert mi.steady(mi.echo(gawah, 20.0)[:n]).cuts == 0
+    assert mi.steady(sounds.traffic(mi.LEAD_S + mi.SECONDS, -35)).cuts == 0
+    assert mi.steady(sounds.tv(mi.LEAD_S + mi.SECONDS, -40)).cuts == 0
+
+
+def test_a_short_haan_never_stops_gawah_for_good():
+    haan = mi.bursts(lambda k: mi.short_word(k, 400))
+    assert haan.final == 0 and haan.cuts < haan.events / 2
+
+
+def test_a_line_over_gawahs_echo_still_stops_it_for_good_in_about_half_a_second():
+    stops = mi.real(BROWSER_GAIN_DB, echo_loss_db=20.0)
+    assert len(stops) == len(sounds.LINES) and all(final for _, final in stops)
+    assert np.median([ms for ms, _ in stops]) <= 500 and max(ms for ms, _ in stops) <= 1000

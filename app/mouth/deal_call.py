@@ -23,7 +23,7 @@ from app.contracts import (
 from app.log import deal_log
 from app.mouth import moments, tuning, voice
 from app.mouth.hearing import Hearing
-from app.mouth.player import Player
+from app.mouth.player import Player, phrase_start
 from app.mouth.voice import Voice
 
 ADDRESSED = SpeakReason.ADDRESSED_DIRECTLY.value
@@ -78,6 +78,8 @@ class DealCall:
         self._tasks: list[asyncio.Task] = []
         self._ended = False
         self._ack: bytes | None = None  # the acknowledgement's audio, if this call has one
+        self._since: float | None = None  # call seconds when what Gawah is saying now began
+        self._told_to_stop = False  # a line asked it to stop while it was speaking: no carrying on
 
     def _connect(self, make_link: Callable):
         self.voice = Voice(self.log)
@@ -109,7 +111,21 @@ class DealCall:
         self._jobs.put_nowait(_Job(event.instruction, event.reason is SpeakReason.WRAPPING_UP, event, event.reason.value, event.to))
 
     async def on_line(self, event: TranscriptLine) -> None:
-        """The plain voice does not follow the conversation."""
+        """The plain voice does not follow the conversation; it only stops when told to."""
+        if event.call_no == self.call_no:
+            self._stop_if_told(event)
+
+    def _stop_if_told(self, line: TranscriptLine) -> None:
+        """A line that names Gawah or tells it to stop, said while it was speaking: stop, and stay stopped.
+        Lines come a second or two after they are said, so this catches a "ruko" too short to cut Gawah off."""
+        if self._since is None or line.end < self._since:
+            return
+        words = set(line.text.lower().replace(",", " ").replace(".", " ").replace("?", " ").replace("!", " ").split())
+        if moments.addresses_gawah(line.text) or words & set(tuning.STOP_WORDS):
+            self._told_to_stop = True
+            if self.player.active:
+                self.log.info("%s told Gawah to stop", line.speaker.value)
+                self.player.stop()
 
     async def on_fact(self, event: FactRecorded | FactConflict) -> None:
         """Nor the facts."""
@@ -160,7 +176,8 @@ class DealCall:
 
     def _on_frame(self, who: str, pcm: bytes) -> None:
         gawah_ms = self.player.heard_so_far() if self.player.active else None
-        if self.hearing.hear(who, pcm, gawah_ms):
+        gawah_db = self.player.loudness() if self.player.active else None
+        if self.hearing.hear(who, pcm, gawah_ms, gawah_db):
             self.log.info("%s talked over Gawah", who)
             self.player.stop()
 
@@ -272,14 +289,24 @@ class DealCall:
         over = self.hearing.talking()
         self.hearing.gawah_starts()
         self.player.begin()
-        fed = 0
-        while not self.player.done.is_set():
-            if len(utterance.audio) > fed:
-                self.player.feed(bytes(utterance.audio[fed:]))
-                fed = len(utterance.audio)
-            if utterance.complete or utterance.stalled():
-                self.player.finish()
-            await asyncio.sleep(tuning.TICK_S)
+        self._since, self._told_to_stop = time.monotonic() - self._zero, False
+        fed, resumed = 0, 0
+        while True:
+            while not self.player.done.is_set():
+                if len(utterance.audio) > fed:
+                    self.player.feed(bytes(utterance.audio[fed:]))
+                    fed = len(utterance.audio)
+                if utterance.complete or utterance.stalled():
+                    self.player.finish()
+                await asyncio.sleep(tuning.TICK_S)
+            if not self.player.cut or resumed >= tuning.RESUME_MAX or not await self._false_stop(job):
+                break
+            resumed += 1
+            at = phrase_start(self.player.audio(), self.player.heard_ms)
+            self.log.info("carrying on after a short sound: cut %d ms in, again from %d ms", self.player.heard_ms, at)
+            self.hearing.gawah_starts()
+            self.player.resume(at)
+        self._since = None
         player, cut = self.player, self.player.cut
         if cut:
             await self._cancel(utterance, player.heard_ms)
@@ -298,12 +325,24 @@ class DealCall:
             "after_voice_ms": _ms(started - voice_end) if voice_end else None,  # someone's last voice to Gawah's first sound
             "ack_ms": _ms(ack - job.arrived) if ack else None, "tools": getattr(utterance, "tools", []), "clip": clip,
             "speech_ms": round(utterance.audio_ms), "heard_ms": round(player.heard_ms), "dry_ms": round(player.dry_ms),
+            "resumed": resumed,
         })
         self.log.info(
             "said (%s) after %s ms%s%s: %s", job.what, self.outcomes[-1]["wait_ms"],
             f", over {', '.join(over)}" if over else "", ", cut off" if cut else "", job.spoke.text,
         )
         self._said(job)
+
+    async def _false_stop(self, job: _Job) -> bool:
+        """Just cut off. True if the sound that did it was over quickly: then it was not someone talking."""
+        cut_at = time.monotonic()
+        while (time.monotonic() - cut_at) * 1000 < tuning.RESUME_WITHIN_MS:
+            if self._told_to_stop or job.superseded or self._ended:
+                return False
+            if self.hearing.quiet_ms() >= tuning.RESUME_QUIET_MS:
+                return True
+            await asyncio.sleep(tuning.TICK_S)
+        return False
 
     def _said(self, job: _Job) -> None:
         self.bus.publish(job.spoke.model_copy(update={"speak_id": job.speak.event_id if job.speak else None}))

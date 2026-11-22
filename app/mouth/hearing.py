@@ -35,6 +35,7 @@ class _Person:
     talking: bool = False
     has_talked: bool = False
     over_ms: float = 0.0  # the same count, by the stricter rule used while Gawah speaks
+    unvoiced_ms: float = 0.0  # since this person's last frame of voice
     may_cut_in: bool = True
 
 
@@ -53,6 +54,10 @@ class Hearing:
         quiet = [p.quiet_ms for p in self.people.values() if p.has_talked]
         return min(quiet) if quiet else None
 
+    def quiet_ms(self) -> float:
+        """How long since anyone's last frame of voice, in ms of their audio."""
+        return min((p.unvoiced_ms for p in self.people.values()), default=float("inf"))
+
     def forget(self, who: str) -> None:
         """They left, or their track was muted or ended: no frames may follow, so stop counting them."""
         self.people.pop(who, None)
@@ -64,9 +69,10 @@ class Hearing:
             p.may_cut_in = not p.talking
             p.over_ms = 0.0
 
-    def hear(self, who: str, pcm: bytes, gawah_ms: float | None = None) -> bool:
+    def hear(self, who: str, pcm: bytes, gawah_ms: float | None = None, gawah_db: float | None = None) -> bool:
         """One frame from one person. gawah_ms is how long Gawah has been speaking, or None
-        if it is silent. True when this frame is the one that cuts Gawah off."""
+        if it is silent; gawah_db how loud Gawah has played lately, for telling its echo
+        from a person. True when this frame is the one that cuts Gawah off."""
         p = self.people.setdefault(who, _Person())
         db = frame_db(pcm)
         # A muted track is digital silence. It is quiet, and it says nothing about the room, so
@@ -75,7 +81,8 @@ class Hearing:
         muted = db < tuning.MUTED_DB or len(pcm) != tuning.FRAME_BYTES
         speech = not muted and p.detector.is_speech(_at_48k(pcm), 48000)
         voiced = speech and db > p.floor + tuning.SPEECH_OVER_NOISE_DB
-        over = speech and db > max(p.floor + tuning.BARGE_OVER_NOISE_DB, tuning.BARGE_MIN_DB)
+        echo = -90.0 if gawah_db is None else gawah_db - tuning.ECHO_LOSS_DB
+        over = speech and db > max(p.floor + tuning.BARGE_OVER_NOISE_DB, tuning.BARGE_MIN_DB, echo)
         # The floor drops to a quieter frame quickly and rises slowly, so the gaps between
         # words hold it down while someone talks, and steady noise is still learned in seconds.
         if muted:
@@ -86,6 +93,7 @@ class Hearing:
             p.floor += tuning.FLOOR_CREEP_DB if speech else tuning.FLOOR_RISE_DB
         p.floor = min(max(p.floor, tuning.FLOOR_MIN_DB), tuning.FLOOR_MAX_DB)
 
+        p.unvoiced_ms = 0.0 if voiced else p.unvoiced_ms + tuning.FRAME_MS
         p.voice_ms = _count(p.voice_ms, voiced, tuning.START_MS)
         if p.voice_ms >= tuning.START_MS:
             p.talking, p.has_talked, p.quiet_ms = True, True, 0.0

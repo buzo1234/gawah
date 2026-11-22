@@ -9,7 +9,7 @@ from datetime import UTC, datetime, timedelta
 
 from app.contracts import (
     Audience, CallEnded, CallStarted, ChecklistItem, ChecklistUpdated, ItemKey, ItemState, JudgeSpeak,
-    JudgeSpoke, SpeakReason, empty_checklist,
+    JudgeSpoke, Role, SpeakReason, TranscriptLine, empty_checklist,
 )
 from app.mouth import tuning
 from fakes import RAMESH, SUNITA
@@ -174,6 +174,71 @@ async def test_stops_when_talked_over_and_says_so(world):
     played = len(seat.played)
     await asyncio.sleep(0.1)
     assert len(seat.played) == played  # and it stays silent
+
+
+async def paced(seat, who: str, samples) -> None:
+    """Into the room at the speed it is spoken, as a real microphone delivers it."""
+    for frame in sounds.frames(samples):
+        seat.on_frame(who, frame)
+        await asyncio.sleep(tuning.FRAME_MS / 1000)
+
+
+async def long_question(world, link):
+    link.pieces, link.text = [4000], "Sunita ji, kya aap bata sakti hain ki balance ka paisa kab diya jayega?"
+    world.bus.publish(speak())
+    call = world.mouth.calls["d1"]
+    await until(lambda: call.player.active and call.player.given_ms >= 400)
+    return call
+
+
+async def test_a_cough_or_a_door_does_not_stop_gawah(world):
+    seat, link = await world.call()
+    call = await long_question(world, link)
+    seat.hears("worker", sounds.cough() + sounds.room_noise(len(sounds.cough()) / tuning.RATE, -50))
+    seat.hears("hirer", sounds.door() + sounds.room_noise(len(sounds.door()) / tuning.RATE, -50))
+    assert call.player.active and not seat.cleared
+    spoke = (await until(lambda: answers(world), timeout=6.0))[0]
+    assert not spoke.interrupted and call.outcomes[-1]["resumed"] == 0
+
+
+async def test_gawah_carries_on_after_a_short_sound_cuts_it_off(world):
+    seat, link = await world.call()
+    call = await long_question(world, link)
+    await paced(seat, "worker", world_speech()[: tuning.RATE * 500 // 1000])  # a "haan ji", long enough to cut it off
+    assert seat.cleared and not call.player.active
+    await paced(seat, "worker", sounds.room_noise(0.4, -50))  # and over
+    spoke = (await until(lambda: answers(world), timeout=8.0))[0]
+    assert not spoke.interrupted and spoke.text == link.text  # it said all of it
+    assert call.outcomes[-1]["resumed"] == 1 and call.outcomes[-1]["heard_ms"] == 4000
+
+
+async def test_someone_really_talking_over_gawah_stops_it_for_good(world):
+    seat, link = await world.call()
+    call = await long_question(world, link)
+    await paced(seat, "worker", world_speech()[: tuning.RATE * 1500 // 1000])
+    await paced(seat, "worker", sounds.room_noise(0.4, -50))
+    spoke = (await until(lambda: answers(world)))[0]
+    assert spoke.interrupted and spoke.text.endswith("...") and call.outcomes[-1]["resumed"] == 0
+
+
+async def test_gawah_ruko_stops_it_even_when_too_short_to_cut_it_off(world):
+    seat, link = await world.call()
+    call = await long_question(world, link)
+    world.bus.publish(TranscriptLine(deal_id="d1", speaker=Role.HIRER, text="Gawah, ruko.", start=999.0, end=1000.0))
+    spoke = (await until(lambda: answers(world)))[0]
+    assert spoke.interrupted and call.outcomes[-1]["resumed"] == 0  # (the agent then answers, having been named)
+
+
+async def test_a_stop_word_said_before_gawah_began_does_not_stop_it(world):
+    seat, link = await world.call(ts=datetime.now(UTC) - timedelta(seconds=100))
+    await long_question(world, link)
+    world.bus.publish(TranscriptLine(deal_id="d1", speaker=Role.HIRER, text="bas theek hai", start=50.0, end=51.0))
+    assert not (await until(lambda: answers(world), timeout=6.0))[0].interrupted
+
+
+def world_speech():
+    from tests.mouth.world import SPEECH
+    return SPEECH
 
 
 async def test_one_question_at_a_time(world):

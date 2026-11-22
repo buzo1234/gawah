@@ -64,3 +64,81 @@ def frames(samples: np.ndarray) -> list[bytes]:
 
 def db_of(samples: np.ndarray) -> float:
     return 20 * np.log10(max(np.sqrt(np.mean(samples * samples)), 1.0) / 32768)
+
+
+# --- What else a phone's microphone picks up while Gawah speaks (measure_hearing.py) ---
+
+SAMPLES = AUDIO.parent
+
+
+@cache
+def recording(path: str) -> np.ndarray:
+    """Any mono 16-bit WAV under fixtures/, at the room's 24 kHz."""
+    with wave.open(str(SAMPLES / path), "rb") as w:
+        rate = w.getframerate()
+        samples = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).astype(np.float64)
+    return np.interp(np.arange(0, len(samples) - 1, rate / tuning.RATE), np.arange(len(samples)), samples)
+
+
+def at_db(samples: np.ndarray, db: float) -> np.ndarray:
+    """Scaled so that its loud half sits at this level: speech is measured while it is speech."""
+    frame_db = [db_of(samples[i:i + N]) for i in range(0, len(samples) - N, N)]
+    loud = np.median([d for d in frame_db if d > np.percentile(frame_db, 50)])
+    return samples * 10 ** ((db - loud) / 20)
+
+
+def gawah(seconds: float) -> np.ndarray:
+    """Gawah's own recorded voice, looped: what it plays into the room."""
+    voice = np.concatenate([recording("mouth-samples/opening-line.wav"), recording("mouth-samples/term-read-back.wav")])
+    return np.resize(voice, int(tuning.RATE * seconds))
+
+
+def tv(seconds: float, db: float) -> np.ndarray:
+    """Someone talking in the background without pause: a TV, or a voice in the next room."""
+    voice = np.concatenate([line(n) for n in LINES[::-1]])
+    return np.resize(at_db(voice, db), int(tuning.RATE * seconds))
+
+
+def traffic(seconds: float, db: float, seed: int = 3) -> np.ndarray:
+    """Road noise through a window: a low rumble that swells by 10 dB as each vehicle passes."""
+    rng = np.random.default_rng(seed)
+    n = int(tuning.RATE * seconds)
+    white = rng.standard_normal(n)
+    rumble = np.convolve(white, np.ones(80) / 80, mode="same")  # mostly below 300 Hz
+    t = np.arange(n) / tuning.RATE
+    swell = np.ones(n)
+    for at in np.arange(1.0, seconds, 4.0) + rng.uniform(-1, 1, len(np.arange(1.0, seconds, 4.0))):
+        swell += 2.2 * np.exp(-(((t - at) / 0.8) ** 2))  # a passing vehicle, about 10 dB over the rest
+    out = rumble / rumble.std() * swell
+    return out / np.sqrt(np.mean(out * out)) * level(db)
+
+
+def door(db: float = -12.0, seed: int = 4) -> np.ndarray:
+    """A door shutting: a low thump and a crack, gone in a third of a second."""
+    rng = np.random.default_rng(seed)
+    n = int(0.35 * tuning.RATE)
+    t = np.arange(n) / tuning.RATE
+    thump = np.sin(2 * np.pi * 90 * t) * np.exp(-t / 0.06)
+    crack = rng.standard_normal(n) * np.exp(-t / 0.02)
+    out = thump + 0.6 * crack
+    return out / np.abs(out).max() * level(db + 3)
+
+
+def cough(db: float = -18.0, seed: int = 5) -> np.ndarray:
+    """A cough: two voiced bursts of breath, 180 and 120 ms, about as loud as speech close to the phone."""
+    rng = np.random.default_rng(seed)
+    parts = []
+    for ms in (180, 120):
+        n = int(ms / 1000 * tuning.RATE)
+        t = np.arange(n) / tuning.RATE
+        breath = np.convolve(rng.standard_normal(n), np.ones(6) / 6, mode="same")
+        voiced = np.sign(np.sin(2 * np.pi * 140 * t)) * 0.4  # the vocal folds slapping shut
+        envelope = (1 - np.exp(-t / 0.01)) * np.exp(-t / (ms / 3000))
+        parts += [(breath / breath.std() + voiced) * envelope, np.zeros(int(0.08 * tuning.RATE))]
+    out = np.concatenate(parts)
+    return out / np.sqrt(np.mean(out[out != 0] ** 2)) * level(db)
+
+
+def delayed(samples: np.ndarray, ms: float) -> np.ndarray:
+    pad = np.zeros(int(tuning.RATE * ms / 1000))
+    return np.concatenate([pad, samples])[: len(samples)]

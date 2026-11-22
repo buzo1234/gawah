@@ -21,8 +21,10 @@ def session(instructions: str, turns: dict | None = None, tools: list[dict] | No
     """The settings for one connection. turns=None switches automatic replies off: the
     model then speaks only when it is sent response.create."""
     audio_in: dict = {"format": {"type": "audio/pcm", "rate": tuning.RATE}, "turn_detection": turns}
-    if turns and tuning.CALLBACK_TRANSCRIBE:
-        audio_in["transcription"] = {"model": tuning.CALLBACK_TRANSCRIBE}
+    if turns:
+        audio_in["transcription"] = tuning.CALLBACK_TRANSCRIPTION
+        if tuning.CALLBACK_NOISE:
+            audio_in["noise_reduction"] = tuning.CALLBACK_NOISE
     config: dict = {
         "type": "realtime",
         "output_modalities": ["audio"],

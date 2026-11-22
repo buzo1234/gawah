@@ -15,11 +15,29 @@ TIMEOUT_S = 10.0
 URL = f"wss://api.openai.com/v1/realtime?model={MODEL}"
 CLOSED = {"type": "closed"}
 
-# The model's own speech detection decides when the others have finished. Gawah pauses inside a
-# sentence, so this waits a little longer than the call-back does before it replies.
+# The model's own speech detection decides when the others have finished. It hears the whole
+# room mixed: both other people, Gawah included, and whatever noise their phones let through.
+# Measured with tests/mouth/measure_turns.py (noise into a real session, replies off).
 TURNS = {
-    "type": "server_vad", "threshold": 0.5, "prefix_padding_ms": 300, "silence_duration_ms": 900,
-    "create_response": True, "interrupt_response": True,
+    "type": "server_vad",
+    # A TV, a short "haan" and Gawah's echo counted as speech at 0.5, 0.7 and 0.8 alike (fan, traffic, doors and
+    # coughs at none): the threshold does little, interrupt_response below does the work. As the call-back.
+    "threshold": 0.8,
+    "prefix_padding_ms": 500,  # so a soft first word is not lost at 0.8
+    "silence_duration_ms": 900,  # Gawah pauses inside a sentence: wait a little longer than the call-back does
+    "create_response": True,
+    # Off: a person reading their part finishes the line. With it on, any sound in the room (and Gawah's
+    # voice, which is in the mix) cut the actor off mid-sentence. When it is not its turn it calls wait.
+    "interrupt_response": False,
+}
+STOPS_WHEN_TALKED_OVER = TURNS["interrupt_response"]  # actor.py goes quiet on "speech started" only if this is on
+# OpenAI's input noise reduction. Off: on the call-back's measurements it made up "haan" and "theek hai"
+# before real lines, and the phones' browsers already suppress their own noise.
+NOISE: dict | None = None
+TRANSCRIPTION = {  # the log's record of what it heard. Unpinned, room noise came out as Chinese or Russian.
+    "model": "gpt-transcribe",
+    "languages": ["hi", "en"],
+    "prompt": "Phone call in Hinglish (Hindi and English mixed) about a painting job and its payment.",
 }
 
 
@@ -32,7 +50,7 @@ def session(instructions: str, voice: str, tools: list[dict]) -> dict:
         "tool_choice": "auto",
         "audio": {
             "input": {"format": {"type": "audio/pcm", "rate": RATE}, "turn_detection": TURNS,
-                      "transcription": {"model": "gpt-transcribe"}},
+                      "transcription": TRANSCRIPTION, **({"noise_reduction": NOISE} if NOISE else {})},
             "output": {"format": {"type": "audio/pcm", "rate": RATE}, "voice": voice},
         },
     }

@@ -53,11 +53,29 @@ TICK_S = 0.01  # how often the wait for a pause looks again
 
 # --- Being talked over, on the deal call ---
 # Stricter than "is talking", because Gawah's own voice can come back through someone's loudspeaker.
-BARGE_OVER_NOISE_DB = 6.0  # voice must be this far above the person's noise floor ...
-BARGE_MIN_DB = -45.0  # ... and at least this loud
-BARGE_MS = 300  # and sustained this long before Gawah stops. At 240 a cough-like burst of 250 ms cut it off; at 300 it does not.
+# Measured with tests/mouth/measure_interference.py: a minute of each sound while Gawah speaks.
+BARGE_OVER_NOISE_DB = 10.0  # voice must be this far above the person's noise floor ... (at 6, passing traffic and a TV cut Gawah off; at 12 a line in a -40 dB room took 0.6 s)
+BARGE_MIN_DB = -38.0  # ... and at least this loud. Real speech through a phone's browser is -25 dB or more; a TV across the room -40.
+BARGE_MS = 400  # and sustained this long before Gawah stops. At 300 every short "haan" stopped it; at 400 a real line still does in about 0.45 s.
 BARGE_HOLDOFF_MS = 300  # nobody can cut Gawah off this early: echo cancelling is at its worst as Gawah starts
 BARGE_REARM_MS = 200  # someone who was already talking when Gawah started must first be quiet this long
+# Gawah's own voice coming back: a frame must also be louder than the loudest Gawah played in the last
+# ECHO_WINDOW_MS, less ECHO_LOSS_DB. Without this its echo 20 dB down cut it off 35 times a minute.
+ECHO_LOSS_DB = 15.0  # a phone on loudspeaker returns at least this much less than it was sent (the browser's echo cancelling more)
+ECHO_WINDOW_MS = 600  # the echo arrives this late at most: the room's queue, the network both ways, the phone
+# --- Carrying on after a false stop, on the deal call ---
+# Cut off, Gawah keeps what it was saying. If the sound is over within RESUME_WITHIN_MS (everyone quiet for
+# RESUME_QUIET_MS), it was a cough, a door, a "haan": Gawah says the phrase it was in again and carries on.
+# Someone still talking by then really is talking over it, and it stays quiet.
+RESUME_QUIET_MS = 300
+RESUME_WITHIN_MS = 800  # from the stop; a sound may run on about half a second past it
+RESUME_MAX = 2  # resumed this often in one utterance, the next stop is final: something keeps cutting in
+PHRASE_QUIET_DB = -50.0  # in Gawah's own speech, quieter than this is a pause between phrases ...
+PHRASE_GAP_MS = 200  # ... when it lasts this long (they come every 1 to 2.5 s in its recorded lines)
+RESUME_LEAD_MS = 100  # resume this much before the phrase, inside the pause
+# Words that stop Gawah for good when a line with them arrives while it is still speaking (a "Gawah, ruko"
+# short enough to have been taken for a cough). Matched as whole words, lower case.
+STOP_WORDS = ("ruko", "ruk", "rukiye", "stop", "bas", "wait", "रुको", "रुकिए", "बस")
 HEARD_MIN_MS = 250  # cut off before this much was heard: report that nothing was said
 
 # --- The call-back ---
@@ -69,16 +87,35 @@ CALLBACK_MAX_S = 300.0  # our own limit on a call-back
 CALLBACK_LINGER_S = 30.0  # every step is done and the closing words never finished (the person kept talking over them)
 CALLBACK_LEFT_GRACE_S = 5.0  # a page reload looks like leaving and coming back
 CALLBACK_HANGUP_S = 0.6  # after the last word, before the room closes
-# The model's own speech detection decides when the person has finished answering.
+# The model's own speech detection hears the person start and stop; our code decides what that means
+# (callback.py). Measured with tests/mouth/measure_turns.py: noise into a real session, replies off.
+# Fan, traffic, a door and a cough never counted as speech, even at 0.5. A TV, a short "haan" and
+# Gawah's own echo did, at every threshold tried (0.5, 0.7, 0.8) and with semantic_vad at "low"
+# eagerness (which was worse on "haan", doors and coughs). So the threshold is not what keeps Gawah
+# talking: CALLBACK_TALKED_OVER_MS is.
 CALLBACK_TURNS = {
     "type": "server_vad",
-    "threshold": 0.5,  # 0 to 1. Raise it if room noise or Gawah's own echo keeps cutting Gawah off.
-    "prefix_padding_ms": 300,
+    "threshold": 0.8,  # 0 to 1. As high as real lines allow: at 0.7 and 0.8 one of six lines split in two, as at 0.5 none did.
+    "prefix_padding_ms": 500,  # audio kept from before the detected start, so a soft first word is not lost at 0.8
     "silence_duration_ms": 700,
-    "create_response": True,
-    "interrupt_response": True,
+    # Both off: on, every "speech started" cut Gawah off and every "speech stopped" got a reply, so a
+    # TV or a cough stopped Gawah mid-sentence and it started its sentence over in answer to the noise.
+    "create_response": False,
+    "interrupt_response": False,
 }
-CALLBACK_TRANSCRIBE: str | None = "gpt-transcribe"  # what the person said, for the log only. None turns it off.
+# Someone still speaking this long after the model heard them start: they are talking over Gawah, and it
+# stops. Anything shorter ends (speech stopped comes 700 ms after the sound does) before this, and Gawah
+# carries on as if nothing was said; the sound is taken out of the conversation so the model does not answer it.
+CALLBACK_TALKED_OVER_MS = 1000
+# OpenAI's input noise reduction ("near_field" or "far_field"). Off: with "near_field" the transcription
+# put "haan" and "theek hai" before real lines and split them into more turns, and the page's own
+# browser noise suppression already runs on the phone.
+CALLBACK_NOISE: dict | None = None
+CALLBACK_TRANSCRIPTION = {  # the log's transcript of the person. Unpinned, room noise came out as Chinese or Russian.
+    "model": "gpt-transcribe",
+    "languages": ["hi", "en"],
+    "prompt": "Phone call in Hinglish (Hindi and English mixed) about a job and its payment. Short answers: haan, nahi, theek hai, sahi hai.",
+}
 
 # --- What Gawah is told. Spoken words are Hindi; these instructions are English. ---
 
