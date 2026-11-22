@@ -59,7 +59,7 @@ export function settledBy(state, change) {
     .find((f) => f.replaces === change.fact_id && f.seq > change.seq) || null;
 }
 
-// The stretch of the deal a link was sealed in, for the timeline under the graph. A fact
+// The stretch of the deal a link was sealed in, for the timeline's moments. A fact
 // from a call takes the call going on when it is sealed (a call-1 term confirmed on call 2
 // is sealed on call 2), or its own call if it lands just after the call ends; anything
 // from WhatsApp goes by the day.
@@ -79,7 +79,7 @@ export function applyCrew(state, e, change) {
       const known = state.facts[e.fact.id];
       if (!known) state.factOrder.push(e.fact.id);
       state.facts[e.fact.id] = { ...e.fact, seq: known ? known.seq : ++state.seq, ts: known ? known.ts : e.ts, last: ++state.chain.links };
-      state.chain.list.push({ factId: e.fact.id, status: e.fact.status, where: sealedIn(e.fact, state.live, e.ts) });
+      state.chain.list.push({ factId: e.fact.id, status: e.fact.status, where: sealedIn(e.fact, state.live, e.ts), ts: e.ts, source: e.fact.source, since: state.live?.since ?? null });
       // Memory sends a replacement first and the old version again as superseded after
       // it: the highlight stays on the replacement.
       change.fact = e.fact.status === "superseded"

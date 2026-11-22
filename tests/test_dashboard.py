@@ -1,4 +1,5 @@
 import asyncio
+import json
 from urllib.parse import parse_qsl, urlsplit
 
 import pytest
@@ -59,7 +60,7 @@ def test_the_page_and_its_files_are_served(settings):
         assert 'id="phone-frame"' in page.text and 'allow="microphone *; autoplay *"' in page.text
         phone_page = client.get("/dashboard/phone")
         assert phone_page.status_code == 200 and "/dashboard/static/phone.js" in phone_page.text
-        for name in ("base.css", "style.css", "phone.css", "app.js", "state.js", "render.js", "checklist.js", "phone.js", "crew-state.js", "board.js", "feed.js", "tracks.js", "layer.js", "wave.js", "chain.js", "clips.js", "fonts/public-sans-latin-600-normal.woff2", "fonts/ibm-plex-mono-latin-400-normal.woff2"):
+        for name in ("base.css", "style.css", "phone.css", "app.js", "state.js", "render.js", "dom.js", "phone.js", "crew-state.js", "board.js", "lanes.js", "moments.js", "graph.js", "timeline.js", "detail.js", "wave.js", "chain.js", "clips.js", "fonts/public-sans-latin-600-normal.woff2", "fonts/ibm-plex-mono-latin-400-normal.woff2"):
             assert client.get(f"/dashboard/static/{name}").status_code == 200, name
         for text in (page.text, phone_page.text):
             assert "http://" not in text and "https://" not in text  # nothing from outside
@@ -208,3 +209,35 @@ def test_the_second_phone_signs_as_the_provider_does_when_it_has_the_token(tmp_p
         client.post("/dashboard/phone/send", json={"phone": RAMESH.phone, "text": "hello"})
     headers, form = got[0]
     assert headers["x-twilio-signature"] == phone.signature("https://gawah.example" + WHATSAPP_WEBHOOK_PATH, form, "token")
+
+
+def test_a_reply_button_tapped_on_the_second_phone_reaches_the_webhook_as_meta_sends_a_tap(tmp_path):
+    """Only Meta shows reply buttons, so a tap is posted in Meta's shape, with the button's
+    id (which names the question it answers), and signed as Meta signs when the app secret is set."""
+    settings = phone.PhoneSettings(_env_file=None, database_path=str(tmp_path / "test.db"), meta_app_secret="secret")
+    app = create_app(settings)
+    got: list[tuple[dict, bytes]] = []
+
+    async def webhook(request: Request) -> Response:
+        got.append((dict(request.headers), await request.body()))
+        return Response(status_code=200)
+
+    app.router.routes.insert(0, Route(WHATSAPP_WEBHOOK_PATH, webhook, methods=["POST"]))
+    with TestClient(app) as client:
+        tap = {"id": "yes:9d50609bb11b", "title": "Haan, sahi hai"}
+        sent = client.post("/dashboard/phone/send", json={"phone": SUNITA.phone, "text": tap["title"], "button": tap, "profile_name": "Sunita"})
+        assert sent.status_code == 200 and sent.json()["status"] == 200
+    headers, body = got[0]
+    assert headers["content-type"] == "application/json"
+    assert headers["x-hub-signature-256"] == phone.meta_signature("secret", body)
+    payload = json.loads(body)
+    value = payload["entry"][0]["changes"][0]["value"]
+    message = value["messages"][0]
+    digits = SUNITA.phone.lstrip("+")
+    assert payload["object"] == "whatsapp_business_account" and value["contacts"] == [{"wa_id": digits, "profile": {"name": "Sunita"}}]
+    assert message["from"] == digits and message["type"] == "interactive"
+    assert message["interactive"] == {"type": "button_reply", "button_reply": tap}
+    # Read the way the whatsapp stream reads Meta's posts: a button, carrying its id.
+    from app.whatsapp.meta_inbound import parse_meta
+    (read,), _, _ = parse_meta(payload, lambda media_id: media_id)
+    assert (read.kind, read.button, read.text, read.phone) == ("button", tap["id"], tap["title"], SUNITA.phone)

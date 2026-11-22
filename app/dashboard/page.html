@@ -11,44 +11,34 @@
 <body class="board">
 <div id="stage">
   <header class="top">
-    <h1 id="deal-title">Gawah</h1>
+    <h1 id="deal-title"></h1>
     <span id="call-pill" class="pill"></span>
     <span class="mark" lang="hi" aria-label="Gawah">गवाह</span>
   </header>
 
-  <main id="board">
-    <section class="contract" aria-labelledby="contract-title">
-      <h2 class="label" id="contract-title">The contract · <span id="settled-count"></span></h2>
-      <ol id="items" class="card"></ol>
-    </section>
+  <section class="deal" aria-labelledby="deal-label">
+    <div class="head"><h2 class="label" id="deal-label">The deal</h2><span id="settled-count" class="label"></span></div>
+    <div id="terms" class="card">
+      <ol id="rows"></ol>
+      <div id="spine" class="spine">
+        <span id="chain" class="chain label"></span>
+        <span id="ticks" class="ticks" aria-hidden="true"></span>
+        <span id="chain-head" class="label"></span>
+      </div>
+    </div>
+    <div id="detail" class="card" aria-live="polite"></div>
+  </section>
 
-    <section class="feed" aria-labelledby="feed-title">
-      <h2 class="label" id="feed-title">Facts · <span id="graph-count"></span></h2>
-      <ol id="feed" class="card"></ol>
-    </section>
-
-    <section class="hear" aria-labelledby="hear-title">
-      <h2 class="label" id="hear-title">On the call</h2>
-      <div id="tracks" class="card"></div>
-    </section>
-
-    <section class="layer" aria-labelledby="layer-title">
-      <div class="layer-head"><h2 class="label" id="layer-title">The fact layer</h2><span id="layer-time" class="label"></span></div>
-      <div id="layer"></div>
-      <div id="chain-row"></div>
-      <div class="chain-foot"><span id="chain" class="chain label"></span><span id="chain-head" class="label"></span></div>
-    </section>
-
-    <section class="below" aria-live="polite">
-      <div id="below"></div>
-    </section>
-  </main>
+  <section class="moments" aria-labelledby="moments-label">
+    <div class="head"><h2 class="label" id="moments-label">Timeline</h2><span id="fact-count" class="label"></span></div>
+    <div class="card timeline-card">
+      <button type="button" id="newer" class="pill newer" hidden></button>
+      <ol id="timeline"></ol>
+    </div>
+  </section>
 
   <aside id="phone" aria-labelledby="phone-title">
-    <header class="phone-head">
-      <h2 class="label" id="phone-title">Second phone</h2>
-      <button type="button" id="phone-back" class="quiet" hidden>Back to chat</button>
-    </header>
+    <div class="head"><h2 class="label" id="phone-title">Second phone</h2><button type="button" id="phone-back" class="quiet" hidden>Back to chat</button></div>
     <div class="device">
       <iframe id="phone-frame" title="Second phone" allow="microphone *; autoplay *"></iframe>
     </div>

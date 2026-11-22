@@ -1,7 +1,7 @@
 // A fact's few seconds of the call, cut by memory from the recordings (/memory/clip/<id>).
 // One plays at a time; pressing the playing one again stops it.
 
-import { h } from "./render.js";
+import { h } from "./dom.js";
 
 export const clipPath = (factId) => `/memory/clip/${factId}`;
 

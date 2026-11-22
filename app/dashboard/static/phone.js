@@ -7,12 +7,15 @@
 // this same page (so in the board's frame). With "AI plays this person" on, a call link
 // that arrives starts the actor (/actor/start) instead, and the call's state is shown.
 
+// It looks like WhatsApp's chat; chat.js reads each message into what it shows.
+
 import { NO_DEAL } from "./state.js";
-import { h, isWebLink } from "./render.js";
+import { h, isWebLink } from "./dom.js";
+import { fillIcons, icon } from "./icons.js";
+import { buttonIds, callLink, chosen, parse } from "./chat.js";
 
 const $ = (id) => document.getElementById(id);
 const DEFAULT_NUMBER = "+910000000002"; // not a real number: the worker in the practice calls
-const CALL_PATH = /^\/(call|callback)\/([^/]+)\/(hirer|worker)\/?$/;
 const digits = (phone) => (phone || "").replace(/\D/g, "");
 const store = {
   get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
@@ -20,6 +23,8 @@ const store = {
 };
 
 let messages = [];
+let asked = []; // record.confirm_requested, fact.changed and record.confirmed: what each reply button answers
+const tapping = new Map(); // message event id -> the button tapped here, until the answer comes back
 let people = {}; // role -> { name, phone }, from the deal the board shows
 let dealId = null;
 let seen = new Set();
@@ -30,14 +35,6 @@ let call = null; // "on" or "ended", for the actor's call
 const number = () => $("number").value.trim() || DEFAULT_NUMBER;
 const mine = (m) => digits(m.phone) === digits(number());
 const personWith = (phone) => Object.entries(people).find(([, p]) => p.phone && digits(p.phone) === digits(phone));
-
-// A link to a call page on this server, opened here, at this page's own address.
-function callLink(url) {
-  let u;
-  try { u = new URL(url); } catch { return null; }
-  const m = u.pathname.match(CALL_PATH);
-  return m ? { href: u.pathname + u.search, kind: m[1] === "call" ? "deal" : "callback", deal_id: m[2], role: m[3] } : null;
-}
 
 function linked(text) {
   return text.split(/(https?:\/\/\S+)/).flatMap((part) => {
@@ -53,14 +50,23 @@ function linked(text) {
 function bubble(m) {
   const image = isWebLink(m.media_url) && (m.media_type || "").startsWith("image/");
   const voice = isWebLink(m.media_url) && (m.media_type || "").startsWith("audio/");
-  return h("div", { class: `bubble ${m.direction}` },
+  const { text, replies, cta } = parse(m);
+  const ids = replies.length ? buttonIds(m, text, asked) : null;
+  const picked = replies.length ? chosen(m, replies, ids, messages, asked, tapping) : null;
+  return h("div", { class: `bubble ${m.direction}${cta || replies.length ? " actions" : ""}` },
     image && h("a", { href: m.media_url, target: "_blank", rel: "noopener" }, h("img", { src: m.media_url, alt: "attached image" })),
     voice && h("audio", { src: m.media_url, controls: true, preload: "none", "aria-label": "voice note" }),
     !image && !voice && isWebLink(m.media_url) && h("a", { href: m.media_url, target: "_blank", rel: "noopener" },
       `Attachment${m.media_type ? ` (${m.media_type.split("/").pop()})` : ""}`),
-    m.text && h("div", { class: "text" }, linked(m.text)),
+    text && h("div", { class: "text" }, linked(text)),
     h("div", { class: "meta" }, m.direction === "out" ? "Gawah · " : "",
-      new Date(m.ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })));
+      new Date(m.ts).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }).toLowerCase()),
+    cta && h("a", { href: cta.href, class: "call-link cta", onclick: (ev) => openCall(ev, cta) }, icon("phone"), cta.label),
+    replies.length > 0 && h("div", { class: `replies${picked ? " used" : ""}` }, ...replies.map((title, i) =>
+      h("button", {
+        type: "button", class: `reply${picked === title ? " picked" : ""}`, disabled: picked ? "" : null, "data-id": ids?.[i] || null,
+        onclick: () => tap(m, title, ids?.[i]),
+      }, picked === title ? icon("check") : icon("reply"), title))));
 }
 
 function render() {
@@ -152,6 +158,11 @@ function onEvent(e, live) {
     return;
   }
   if (e.deal_id === NO_DEAL || (dealId && e.deal_id !== dealId)) return;
+  if (["record.confirm_requested", "record.confirmed", "fact.changed"].includes(e.name)) {
+    asked.push(e);
+    if (live) render();
+    return;
+  }
   const list = e.name === "deal.requested" ? [e.requested_by, e.other] : e.name === "call.started" ? e.people : [];
   for (const p of list || []) {
     const known = people[p.role] || {};
@@ -171,6 +182,7 @@ async function load() {
   const data = await r.json();
   dealId = data.deal_id;
   messages = [];
+  asked = [];
   people = {};
   seen = new Set();
   for (const e of data.events) onEvent(e, false);
@@ -192,6 +204,37 @@ function connect() {
 
 // ---------- sending ----------
 
+// A reply button tapped: sent as Meta sends a tap, with the button's id; with no id found,
+// as the words, which the intake also takes as a yes or a no.
+async function tap(m, title, id) {
+  if (tapping.has(m.event_id)) return;
+  tapping.set(m.event_id, title);
+  render();
+  const status = $("send-status");
+  try {
+    await deliver(id ? { text: title, button: { id, title } } : { text: title });
+    status.className = "send-status";
+    status.textContent = "Delivered to Gawah";
+  } catch (error) {
+    tapping.delete(m.event_id);
+    render();
+    status.className = "send-status failed";
+    status.textContent = `Not delivered: ${error.message}`;
+  }
+}
+
+async function deliver(body) {
+  const found = personWith(number());
+  const response = await fetch("/dashboard/phone/send", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ phone: number(), profile_name: found?.[1].name || "Second phone", ...body }),
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(typeof result.detail === "string" ? result.detail : "the message was not accepted");
+  if (result.status >= 300) throw new Error(`the WhatsApp webhook answered ${result.status}`);
+}
+
 async function send(event) {
   event.preventDefault();
   const text = $("text").value.trim();
@@ -207,22 +250,12 @@ async function send(event) {
       if (!up.ok) throw new Error((await up.json()).detail || "the file could not be stored");
       media = await up.json();
     }
-    const found = personWith(number());
-    const response = await fetch("/dashboard/phone/send", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        phone: number(), text, media_url: media.url, media_type: media.content_type,
-        profile_name: found?.[1].name || "Second phone",
-      }),
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(typeof result.detail === "string" ? result.detail : "the message was not accepted");
-    if (result.status >= 300) throw new Error(`the WhatsApp webhook answered ${result.status}`);
+    await deliver({ text, media_url: media.url, media_type: media.content_type });
     status.textContent = "Delivered to Gawah";
     $("text").value = "";
     $("file").value = "";
     showAttached();
+    canSend();
   } catch (error) {
     status.className = "send-status failed";
     status.textContent = `Not delivered: ${error.message}`;
@@ -233,20 +266,37 @@ function showAttached() {
   const file = $("file").files[0];
   $("attached").hidden = !file;
   $("attached").replaceChildren(...(file ? [
-    `Photo: ${file.name} `,
-    h("button", { type: "button", class: "quiet", onclick: () => { $("file").value = ""; showAttached(); } }, "Remove"),
+    `${(file.type || "").startsWith("audio/") ? "Voice note" : "Photo"}: ${file.name} `,
+    h("button", { type: "button", class: "quiet", onclick: () => { $("file").value = ""; showAttached(); canSend(); } }, "Remove"),
   ] : []));
 }
 
-const asked = new URLSearchParams(location.search).get("number");
-$("number").value = asked || store.get("gawah.second-phone") || DEFAULT_NUMBER;
+// The send button works once there is something to send.
+const canSend = () => { $("send").disabled = !$("text").value.trim() && !$("file").files[0]; };
+
+// "+": a small menu, Photo or Voice note, each opening the file picker for its kind.
+function menu(open) {
+  $("attach-menu").hidden = !open;
+  $("attach").setAttribute("aria-expanded", String(open));
+}
+$("attach").addEventListener("click", () => menu($("attach-menu").hidden));
+for (const item of $("attach-menu").querySelectorAll("[data-accept]")) {
+  item.addEventListener("click", () => { $("file").accept = item.dataset.accept; menu(false); $("file").click(); });
+}
+addEventListener("click", (ev) => { if (!ev.target.closest(".attach")) menu(false); });
+addEventListener("keydown", (ev) => { if (ev.key === "Escape") menu(false); });
+$("text").addEventListener("input", canSend);
+
+const pinnedNumber = new URLSearchParams(location.search).get("number");
+$("number").value = pinnedNumber || store.get("gawah.second-phone") || DEFAULT_NUMBER;
 $("number").addEventListener("change", () => {
-  if (!asked) store.set("gawah.second-phone", number());
+  if (!pinnedNumber) store.set("gawah.second-phone", number());
   render();
 });
 $("actor-on").checked = store.get("gawah.actor") === "on";
 $("actor-on").addEventListener("change", () => store.set("gawah.actor", $("actor-on").checked ? "on" : "off"));
-$("file").addEventListener("change", showAttached);
+$("file").addEventListener("change", () => { showAttached(); canSend(); });
+fillIcons();
 $("composer").addEventListener("submit", send);
 if (new URLSearchParams(location.search).has("embed")) document.body.classList.add("embed");
 render();

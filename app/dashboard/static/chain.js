@@ -4,7 +4,7 @@
 // a request that comes in the gap is sent when the gap is over.
 
 import { ITEMS } from "./state.js";
-import { h } from "./render.js";
+import { h } from "./dom.js";
 
 const $ = (id) => document.getElementById(id);
 const ITEM_LABEL = Object.fromEntries(ITEMS);
@@ -47,20 +47,44 @@ function brokenAt(state, broken) {
   return `broken at link ${broken.index + 1} (${what})`;
 }
 
-// The verdict on the whole chain, under the fact layer; the layer's own row shows the
-// links of the term on screen (layer.js).
-export function renderChain(state) {
+const MAX_TICKS = 96;
+
+// The spine under the graph: the verdict, one tick per link (green once memory has checked
+// it, red from a broken one), and the head of the chain. Hovering a tick points at its fact.
+export function renderChain(state, fresh = {}) {
   const check = state.chainCheck;
   const links = state.chain.links;
   const el = $("chain");
   const plural = (n) => `${n} link${n === 1 ? "" : "s"}`;
-  const [tone, text] = !check ? ["wait", `checking ${plural(links)}`]
+  const [tone, text] = !links && !check?.links ? ["wait", "· no links yet"]
+    : !check ? ["wait", `checking ${plural(links)}`]
     : check.error ? ["wait", `not checked: ${check.error}`]
     : !check.verified ? ["bad", brokenAt(state, check.first_broken)]
     : ["ok", `verified · ${plural(check.links)}${links > check.links ? ` · checking ${links - check.links} new` : ""}`];
   const head = check?.verified && check.links ? check.head : null;
   el.title = head ? `Head of the chain: ${head}` : "";
   el.className = `chain label ${tone}`;
-  el.replaceChildren(...(!links && !check?.links ? [] : ["Witness chain ", h("span", { class: "verdict" }, text)]));
-  $("chain-head").textContent = head ? `head ${head.slice(0, 12)}` : "";
+  el.replaceChildren("Witness chain ", h("span", { class: "verdict" }, text));
+  $("chain-head").textContent = head ? `head ${head.slice(0, 10)}` : "";
+  const broken = check && !check.error && !check.verified ? check.first_broken.index + 1 : null;
+  const checked = check && !check.error ? check.links : 0;
+  const list = state.chain.list.slice(-MAX_TICKS);
+  const skip = state.chain.list.length - list.length;
+  const ticks = $("ticks");
+  ticks.classList.toggle("dense", list.length > 48);
+  while (ticks.children.length > list.length) ticks.lastChild.remove();
+  list.forEach((link, i) => {
+    const n = skip + i + 1;
+    const cls = `tick ${broken != null && n >= broken ? "broken" : n <= checked ? "verified" : "waiting"}`;
+    let t = ticks.children[i];
+    if (!t) {
+      t = h("i", {});
+      if (fresh.fact) t.classList.add("enter");
+      ticks.append(t);
+      t.addEventListener("animationend", () => t.classList.remove("enter"));
+    }
+    t.className = cls + (t.classList.contains("enter") ? " enter" : "");
+    t.dataset.facts = link.factId;
+    t.title = `Link ${n}`;
+  });
 }

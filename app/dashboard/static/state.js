@@ -32,9 +32,8 @@ export function emptyState(dealId) {
     dealId,
     people: {}, // role -> { name, phone }
     lines: {}, // "call:line" -> the deal-call line, for "when was it said"
-    voice: [], // what Gawah said on a deal call: { callNo, start, end, text }, for its track
     calls: [], // the deal calls seen, by call_no
-    live: null, // the call going on now, if any: { kind, callNo }, for where a chain link was sealed
+    live: null, // the call going on now, if any: { kind, callNo, since }, for where a chain link was sealed and its call time
     currentCall: 1,
     itemCall: {}, // item -> the call it was last changed on, to find its line
     earlier: {}, // item -> its last agreed value on an earlier call, with callNo
@@ -52,7 +51,7 @@ function people(state, list) {
 }
 
 // Returns what the page has to redraw: { panels, moved, fact, conflict, changed }.
-// moved: the checklist terms whose state or value just changed.
+// moved: the checklist terms whose state, value or contradiction just changed.
 export function apply(state, e) {
   const change = { panels: [], moved: [] };
   const before = Object.fromEntries(ITEMS.map(([key]) => [key, termView(state, key)]));
@@ -60,7 +59,7 @@ export function apply(state, e) {
   if (change.panels.includes("checklist")) {
     change.moved = ITEMS.map(([key]) => key).filter((key) => {
       const [a, b] = [before[key], termView(state, key)];
-      return a.state !== b.state || a.value !== b.value;
+      return a.state !== b.state || a.value !== b.value || a.contradicted !== b.contradicted;
     });
   }
   return change;
@@ -76,7 +75,10 @@ function applyDeal(state, e, change) {
     case "call.started": {
       people(state, e.people);
       const no = e.call_no ?? 1;
-      state.live = { kind: e.kind || "deal", callNo: no };
+      const kind = e.kind || "deal";
+      // since: when this call began, for call time; a call.started sent again (a name learned) keeps it
+      const since = state.live?.kind === kind && state.live?.callNo === no ? state.live.since : e.ts;
+      state.live = { kind, callNo: no, since };
       if (e.kind !== "callback" && !state.calls.includes(no)) {
         // The brain starts each call with a fresh checklist, so keep what was agreed so far.
         for (const i of state.items) if (i.state === "agreed") state.earlier[i.key] = { ...i, callNo: state.itemCall[i.key] ?? state.currentCall };
@@ -88,22 +90,14 @@ function applyDeal(state, e, change) {
     }
 
     case "call.ended":
+      people(state, e.people);
       state.live = null;
+      change.panels = ["header"];
       break;
 
     case "transcript.line":
       if (e.kind !== "callback" && e.line_no != null) {
         state.lines[`${e.call_no ?? 1}:${e.line_no}`] = e;
-        change.panels = ["tracks"];
-        change.line = `${e.call_no ?? 1}:${e.line_no}`;
-      }
-      break;
-
-    case "judge.spoke":
-      if (state.live?.kind === "deal" && e.start != null) {
-        state.voice.push({ callNo: state.live.callNo, start: e.start, end: e.end ?? e.start + 3, text: e.text });
-        change.panels = ["tracks"];
-        change.spoke = state.voice.length - 1;
       }
       break;
 
