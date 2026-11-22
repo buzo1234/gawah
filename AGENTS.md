@@ -132,7 +132,7 @@ No `.env`, no keys, nothing outside your machine. See "Run it yourself" for the 
 6. Journeys (c) and (d) work on this deal too, on the simulated phones.
 7. To see the agreement go out in the offline mode, start it with the call-back step off: `CALLBACKS_ENABLED=false uv run python -m tests.offline --port 8000`, then do steps 3 and 4. Both chats get "Aapki deal ka contract taiyaar hai ..." and two links. Offline nothing is printed or stored, so those links are placeholders; a real agreement made this way is in `fixtures/contract-sample/` (`contract.pdf`, `summary.ogg`, and `v2/` for a second version with its change history).
 
-Also offline: `uv run python tools/walkthrough.py --offline` plays the whole two-call story by itself (simulated phones, both calls, the agreement, a payment, the reminder) with the app in-process, and saves events and board screenshots to `runs/walk-<time>/`. It needs a Chrome-family browser.
+Also offline: `uv run python tools/walkthrough.py --offline` plays the whole two-call story by itself (simulated phones, both calls, the agreement, a payment, the reminder) with the app in-process, and saves events, each step's result (`steps.json`) and board screenshots to `runs/walk-<time>/`. It takes about 3 minutes and needs a Chrome-family browser. Gawah's voice is a stand-in there, so a step that waits for something Gawah says (the read-back at the end of call 1) may report `broke` even though the brain asked for it.
 
 The offline mode has no real call: the call page opens, but its room is a local stand-in, so speaking into it does nothing. Recorded calls are how calls are seen offline. The other recorded call is `fixtures/call_missing_balance.json` (the balance is never settled, and Gawah asks).
 
