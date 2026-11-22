@@ -4,6 +4,7 @@ Listens to terms.confirmed, terms.disputed, checklist.updated, call.started, cal
 fact.recorded and fact.changed, and reads each term from memory (MemoryQueries). When both
 people have confirmed, it writes the contract and publishes contract.ready; whatsapp does
 the sending. When a change both confirmed reaches memory, it writes the next version.
+On start it writes whatever the event log says is due and was never written.
 """
 
 from fastapi import FastAPI
@@ -26,4 +27,6 @@ def register(app: FastAPI, bus: Bus) -> None:
     )
     # One subscription for every event it watches, so they are handled in the order they were published.
     bus.subscribe_all(stream.on_event)
+    app.state.contract = stream
+    app.state.on_startup.append(stream.start)  # memory registers first, so its facts are rebuilt by then
     app.state.on_shutdown.append(stream.close)
