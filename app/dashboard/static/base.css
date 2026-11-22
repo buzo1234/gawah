@@ -1,7 +1,8 @@
 /* Shared by the board and the second phone, in the look of the pitch deck: a warm
-   off-white ground, near-black ink, white cards with one hairline border and no shadow.
-   Every size, space, radius and colour on either page comes from the tokens below; the
-   page sheets use nothing else.
+   off-white ground, near-black ink, white cards with one hairline border and no shadow;
+   one soft shadow only for a menu that floats over other content.
+   Every size, space, radius, colour and the one shadow on either page comes from the
+   tokens below; the page sheets use nothing else.
 
    Colour carries meaning only: green agreed or confirmed, red a contradiction or a
    dispute, slate blue the hirer, ochre the worker, grey Gawah or a record; on the second
@@ -31,6 +32,8 @@
   /* radius: cards, small inline chips, pills and buttons; the phone's device frame once */
   --r-card: 10px; --r-chip: 6px; --r-pill: 999px; --r-device: 44px;
   --hair: 1px solid var(--rule);
+  /* the one shadow: only for something floating over other content (the phone's "+" menu) */
+  --shadow-float: 0 6px 20px rgb(17 17 17 / 0.14);
 
   /* type: five sizes, one line height each */
   --t-label: 14px; --lh-label: 20px;
