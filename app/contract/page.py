@@ -7,7 +7,7 @@ from html import escape as e
 
 from app.contract.document import Bi, ChangeRow, Clause, Document, both
 from app.contract.wording import (
-    BEFORE, BOTH_CONFIRMED, CHAIN, CHAIN_MEANS, CHANGED, CHANGES, CHANGES_LEAD, CONFIRMED, FINGERPRINT,
+    BEFORE, BOTH_CONFIRMED, CHAIN, CHAIN_MEANS, CHANGED, CHANGES, CHANGES_LEAD, FINGERPRINT,
     IF_YOU_DISAGREE, IS, IS_NOT, NOW, TITLE,
 )
 
@@ -22,7 +22,7 @@ def html(doc: Document) -> str:
     accepted = "".join(
         f"<div class=sign><h4>{e(a.party.title.hi)} <span>/ {e(a.party.title.en)}</span></h4>"
         + (f"<p class=name>{e(both(a.party.name))}</p>" if a.party.name else "")
-        + f"<p>फ़ोन / Phone: {e(a.party.phone)}</p><p>{e(CONFIRMED.hi)}<br>{e(CONFIRMED.en)}</p>"
+        + f"<p>फ़ोन / Phone: {e(a.party.phone)}</p><p>{e(a.how.hi)}<br>{e(a.how.en)}</p>"
         f"<p>{e(a.when.hi)}<br>{e(a.when.en)}</p>"
         + (f"<p>कहा / Said: \u201c{e(a.said)}\u201d</p>" if a.said else "")
         + "</div>"

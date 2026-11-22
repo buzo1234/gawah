@@ -25,6 +25,7 @@ from app.mouth import script, tuning
 from app.mouth.player import Player
 from app.mouth.realtime import session
 from app.mouth.script import Script
+from app.records.no_callbacks import callbacks_enabled
 
 HERE = Path(__file__).parent
 log = logging.getLogger("gawah.mouth")
@@ -278,6 +279,7 @@ def register(app: FastAPI, bus: Bus, rooms: Callable, make_seat: Callable, make_
     answers: dict[str, FactChanged] = {}  # a change put to both on their call-backs: its latest step, by change id
     joining = asyncio.Lock()
     page = (HERE / "page.html").read_text()
+    off = not callbacks_enabled(getattr(app.state, "settings", None))  # CALLBACKS_ENABLED=false: nothing to confirm, ever
     app.mount("/mouth/static", StaticFiles(directory=HERE / "static"), name="mouth-static")
 
     # The same path as contracts.callback_path(deal_id, role).
@@ -292,7 +294,7 @@ def register(app: FastAPI, bus: Bus, rooms: Callable, make_seat: Callable, make_
             call = live.get((deal_id, role))
             try:
                 if call is None or call.over:
-                    plan = await script.build(app.state.store, deal_id, role, bus.publish, answers)
+                    plan = None if off else await script.build(app.state.store, deal_id, role, bus.publish, answers)
                     if plan is None:
                         return JSONResponse({"message": tuning.PAGE_NOTHING}, 404)
                     deal = await app.state.store.deal(deal_id)

@@ -38,6 +38,7 @@ ALL_AGREED = Bi(
     "if the work is late or left unfinished. All six were agreed on the call.",
 )
 CONFIRMED = Bi("गवाह के साथ अलग कॉल पर बोलकर पुष्टि की", "Confirmed by voice on a separate call with Gawah")
+ON_THE_CALL = Bi("गवाह के सामने कॉल पर बोलकर तय किया", "Agreed by voice on the call, with Gawah as witness")  # call-backs off
 WITNESS = Bi(
     "गवाह (Gawah) एक AI गवाह है। वह इस कॉल पर मौजूद था, और दोनों लोगों के रिकॉर्डिंग के लिए हाँ कहने के बाद उसने कॉल रिकॉर्ड की।",
     "Gawah is an AI witness. It was on the call, and recorded it after both people agreed to the recording.",
