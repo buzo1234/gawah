@@ -42,13 +42,13 @@ ol { margin: 0; padding: 0; list-style: none; }
 
 /* ---------- the fact graph: a node and a lane per term ---------- */
 
-#terms { flex: none; height: 626px; overflow: hidden; }
-.term { display: grid; grid-template-columns: 340px 1fr; height: 96px; border-bottom: var(--hair); }
+#terms { flex: none; height: 662px; overflow: hidden; }
+.term { display: grid; grid-template-columns: 340px 1fr; height: 102px; border-bottom: var(--hair); }
 .node-slot { border-right: var(--hair); cursor: pointer; }
-.node { display: grid; grid-template-rows: 22px 30px 24px; row-gap: var(--s1); align-content: center; height: 100%; padding: 0 var(--s5); }
+.node { display: grid; grid-template-rows: 20px auto 24px; row-gap: var(--s1); align-content: center; height: 100%; padding: 0 var(--s5); }
 .node .l1 { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); white-space: nowrap; }
 .node .owed { font: 500 var(--t-meta) / var(--lh-meta) var(--font); color: var(--ink-2); }
-.node .value { display: flex; align-items: center; min-width: 0; font: 500 var(--t-body) / var(--lh-body) var(--font); white-space: nowrap; overflow: hidden; }
+.node .value { min-width: 0; max-height: 48px; font: 500 var(--t-body) / var(--lh-body) var(--font); overflow: hidden; }
 .node .value.money { font: 600 var(--t-value) / var(--lh-value) var(--font); letter-spacing: -0.01em; }
 .node .value.none { color: var(--ink-3); font-weight: 400; }
 .node .l3 { display: flex; align-items: center; gap: var(--s2); }
@@ -56,7 +56,7 @@ ol { margin: 0; padding: 0; list-style: none; }
 .term.pulse .node { animation: redwash 900ms var(--ease); }
 
 .lane { position: relative; min-width: 0; }
-.chips { position: absolute; left: var(--s4); right: var(--s5); top: 28px; height: 56px; display: flex; align-items: center; gap: var(--s4); }
+.chips { position: absolute; left: var(--s4); right: var(--s5); top: 32px; height: 56px; display: flex; align-items: center; gap: var(--s4); }
 .lane.empty .chips::before { content: ""; width: 100%; border-top: 1px dashed var(--rule); }
 svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 
@@ -66,7 +66,8 @@ svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overf
   display: inline-flex;
   align-items: center;
   gap: var(--s2);
-  flex: none;
+  flex: 0 1 auto;
+  min-width: 0;
   min-height: 34px;
   padding: var(--s1) var(--s3);
   border: 1px solid var(--rule);
@@ -78,22 +79,24 @@ svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overf
   outline: 2px solid transparent;
   outline-offset: 2px;
 }
-.chip .v { min-width: 0; max-width: 152px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.chip .v { min-width: 0; max-width: 280px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .chip[hidden] { display: none; }
+.chips.measuring .chip { flex-shrink: 0; }
 .chip.claim .v, .chip.kind-payment .v, .chip .v:first-letter { font-variant-numeric: tabular-nums; }
 .chip.agreed { --chip-bg: var(--ok-wash); border-color: var(--ok-line); color: var(--ok); }
-.chip.confirmed, .chip.paid { --chip-bg: var(--ok); border-color: var(--ok); color: var(--surface); font-weight: 600; }
+.chip.confirmed { --chip-bg: var(--ok-wash); border-color: var(--ok); color: var(--ok); font-weight: 600; }
+.chip .check { flex: none; }
+.chip .check path { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .chip.superseded { --chip-bg: var(--surface); border-style: dashed; border-color: var(--rule-strong); color: var(--ink-3); }
 .chip.superseded .v { text-decoration: line-through; text-decoration-color: var(--rule-strong); }
 .chip.disputed, .chip.claim, .chip.broken { --chip-bg: var(--bad-wash); border-color: var(--bad); color: var(--bad); font-weight: 600; }
-.chip.stub { --chip-bg: var(--surface); min-height: 34px; padding: 0 var(--s3); color: var(--ink-3); font: 400 var(--t-label) / var(--lh-label) var(--mono); letter-spacing: var(--track); }
+.chip.stub { --chip-bg: var(--surface); flex-shrink: 0; white-space: nowrap; min-height: 34px; padding: 0 var(--s3); color: var(--ink-3); font: 400 var(--t-label) / var(--lh-label) var(--mono); letter-spacing: var(--track); }
 .chip.lit { outline-color: var(--ink); }
 .node-slot.lit, .node-slot:hover { background: var(--sunk); }
 
-/* who said or agreed it: one dot per person, in their colour, ringed in the chip's own colour */
-.chip .who { display: inline-flex; flex: none; }
-.chip .who i { width: 12px; height: 12px; border-radius: var(--r-pill); border: 2px solid var(--chip-bg); background: var(--none); box-sizing: content-box; }
-.chip .who i + i { margin-left: calc(-1 * var(--s1)); }
+/* who said or agreed it: one 10px dot per person, in their colour, 6px apart */
+.chip .who { display: inline-flex; gap: 6px; flex: none; }
+.chip .who i { width: 10px; height: 10px; border-radius: var(--r-pill); background: var(--none); }
 .chip .who i.hirer { background: var(--hirer); }
 .chip .who i.worker { background: var(--worker); }
 .chip .voice-mark { flex: none; }
@@ -104,9 +107,9 @@ svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overf
 .chip.superseded + .chip::before, .chip.stub:not([hidden]) + .chip::before { border-top-style: dashed; }
 
 /* the red edge back to the version contradicted */
-.arc path { fill: none; stroke: var(--bad); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.arc path { fill: none; stroke: var(--bad); stroke-width: 2; stroke-linecap: butt; stroke-linejoin: round; }
 .arc .tag-bg { fill: var(--surface); }
-.arc text { font: 600 var(--t-label) var(--font); fill: var(--bad); }
+.arc text { font: 600 var(--t-meta) var(--font); fill: var(--bad); }
 
 /* ---------- the witness chain, as a spine ---------- */
 
@@ -124,9 +127,9 @@ svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overf
 
 /* ---------- the card under the graph: one fact (slide 9) or the contradiction (slide 7) ---------- */
 
-#detail { flex: none; height: 238px; padding: var(--s5); overflow: hidden; }
+#detail { flex: none; height: 202px; padding: var(--s4) var(--s5); overflow: hidden; }
 #detail > * { display: flex; flex-direction: column; height: 100%; }
-#detail .body { flex: 1; align-content: center; align-items: center; }
+#detail .body { flex: 1; align-content: center; align-items: center; min-height: 0; }
 .fact-card .head, .conflict-card .head { display: flex; align-items: center; gap: var(--s3); height: 24px; }
 .took { margin-left: auto; text-transform: none; letter-spacing: 0; color: var(--ok); }
 .took.bad { color: var(--bad); }
@@ -134,9 +137,9 @@ svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overf
 .fact-card .body { display: grid; grid-template-columns: 420px 1fr; column-gap: var(--s6); }
 .fact-card .hero { font: 600 var(--t-value) / var(--lh-value) var(--font); letter-spacing: -0.01em; }
 .fact-card .hero.money { font: 600 var(--t-hero) / var(--lh-hero) var(--font); letter-spacing: -0.02em; }
-.fact-card .quote { margin: var(--s2) 0 0; color: var(--ink-2); }
+.fact-card .quote { margin: var(--s2) 0 0; font: 400 var(--t-body) / var(--lh-body) var(--font); color: var(--ink-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .fact-card dl { display: grid; grid-template-columns: 112px 1fr; margin: 0; }
-.fact-card dt, .fact-card dd { display: flex; align-items: center; height: 36px; margin: 0; border-top: var(--hair); white-space: nowrap; overflow: hidden; }
+.fact-card dt, .fact-card dd { display: flex; align-items: center; height: 32px; margin: 0; border-top: var(--hair); white-space: nowrap; overflow: hidden; }
 .fact-card dt { color: var(--ink-3); }
 .fact-card dd { gap: var(--s2); }
 .fact-card dd .and, .fact-card dd .none { color: var(--ink-3); }
@@ -148,7 +151,7 @@ svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overf
 .conflict-card .now .value { color: var(--bad); text-decoration-thickness: 3px; }
 .conflict-card .then .value { color: var(--ok); }
 .conflict-card .proof { display: flex; flex-direction: column; gap: var(--s3); min-width: 0; }
-.conflict-card .said { margin: 0; height: 44px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--ink-2); }
+.conflict-card .said { margin: 0; max-height: 66px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; color: var(--ink-2); }
 .conflict-card .moment { display: flex; align-items: center; gap: var(--s3); height: 48px; padding: 0 var(--s3); border-radius: var(--r-card); background: var(--sunk); border: var(--hair); }
 .conflict-card .moment-label { margin-left: auto; color: var(--ink-2); white-space: nowrap; }
 .conflict-card .mark-off { width: 32px; }
@@ -169,8 +172,8 @@ svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overf
 #timeline { position: relative; height: 100%; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--rule-strong) transparent; }
 .moment { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; height: 40px; padding: 0 var(--s4); background: var(--surface); border-bottom: var(--hair); }
 .moment .count { text-transform: none; letter-spacing: 0; }
-.entry { display: grid; grid-template-columns: 48px 1fr 32px; column-gap: var(--s3); padding: var(--s3) var(--s4); border-bottom: var(--hair); cursor: pointer; }
-.entry .time { display: flex; align-items: center; height: 24px; font: 400 var(--t-meta) / var(--lh-meta) var(--mono); color: var(--ink-3); }
+.entry { display: grid; grid-template-columns: 80px 1fr 32px; column-gap: var(--s3); padding: var(--s3) var(--s4); border-bottom: var(--hair); cursor: pointer; }
+.entry .time { display: flex; align-items: center; height: 24px; font: 400 var(--t-meta) / var(--lh-meta) var(--mono); color: var(--ink-3); white-space: nowrap; }
 .entry .main { min-width: 0; }
 .entry .people { display: flex; align-items: center; gap: var(--s2); height: 24px; }
 .entry .people .word { margin-left: auto; }

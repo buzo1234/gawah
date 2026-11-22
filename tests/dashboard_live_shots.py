@@ -77,16 +77,17 @@ VERIFIED = "document.getElementById('chain').textContent.includes('verified') &&
 # Every fact in the timeline at its newest status (its newest entry is the first), and the
 # chips: which facts each stands for, in which term's lane, and whether the term stands on it.
 TIMELINE = """JSON.stringify([...document.querySelectorAll('#timeline .entry')].map((el) => ({
-  id: el.dataset.fact, status: el.dataset.status, item: el.dataset.item, word: el.querySelector('.word').textContent })))"""
+  id: el.dataset.fact, status: el.dataset.status, item: el.dataset.item, word: el.querySelector('.word')?.textContent || 'Said' })))"""
 CHIPS = """JSON.stringify([...document.querySelectorAll('#rows .chip:not(.stub)')].map((el) => ({
-  ids: el.dataset.facts.split(' '), item: el.closest('.term').dataset.item, stands: el.classList.contains('stands'),
+  ids: el.dataset.facts.split(' '), item: el.closest('.term').dataset.item, stands: el.classList.contains('stands'), value: el.dataset.value,
   status: [...el.classList].find((c) => ['said','agreed','confirmed','superseded','disputed','claim','paid'].includes(c)) })))"""
 OWED = "JSON.stringify([...document.querySelectorAll('#rows .owed')].map((el) => [el.closest('.term').dataset.item, el.textContent]))"
 DETAIL = """JSON.stringify({ fact: document.querySelector('#detail .fact-card')?.dataset.fact || null, text: document.getElementById('detail').textContent })"""
 # A term's value is cut at a word when it is too long for its node; its full text is the
 # first line of the node's hover text.
 CHECKLIST = """JSON.stringify(Object.fromEntries([...document.querySelectorAll('#rows .term')].map((el) => [el.dataset.item, {
-  state: el.querySelector('.state').textContent, value: el.querySelector('.node').title.split('\\n')[0] || el.querySelector('.value').textContent,
+  state: el.querySelector('.state')?.textContent || '', value: el.querySelector('.node').title.split('\\n')[0] || el.querySelector('.value').textContent,
+  node: el.querySelector('.node').dataset.value, lane: el.querySelectorAll('.chip:not(.stub)').length,
   shown: el.querySelector('.value').textContent, title: el.querySelector('.node').title,
   when: el.dataset.when || '', contradicted: el.querySelector('.contradicted')?.title || '',
 }])))"""
@@ -126,6 +127,8 @@ AUDIO = Path("fixtures/audio")
 FRAME = "document.getElementById('phone-frame').contentWindow"
 PROBE = "/actor/status"  # the phone asks once whether the actor is there; its 404 is the answer "not yet"
 money = lambda text: text.replace(" ", "").replace(" ", "").replace(",", "")
+# How the board writes memory's value: "13,000 rupees" as ₹ 13,000, a few words after the figure kept.
+board = lambda value: re.sub(r"^([\d,]+) rupees\b[\s,;:]*", r"₹\1 ", value or "").strip()
 
 
 def errors(browser) -> list[str]:
@@ -313,6 +316,19 @@ async def main(port: int, out: Path) -> None:
                     check((term is None and not stands) or (len(stands) == 1 and term["id"] in stands[0]["ids"]),
                           f"{item.value}: the chip marked as standing holds memory's current term"
                           + ("" if (term is None and not stands) or (len(stands) == 1 and term["id"] in stands[0]["ids"]) else f" (memory: {term and (term['id'], term['value'])}, page: {stands})"))
+                rows = json.loads(await chrome.js(CHECKLIST))
+                for item in ItemKey:
+                    term = (await http.get(f"/memory/term/{deal}/{item.value}")).json()["current"]
+                    stand = next((c for c in chips if c["stands"] and c["item"] == item.value), None)
+                    row = rows[item.value]
+                    if term:
+                        same = bool(stand) and row["node"] == stand["value"] and money(row["value"]).startswith(money(row["node"])) \
+                            and money(row["value"]) == money(board(term["value"] or term["text"]))
+                        check(same, f"{item.value}: the node and the standing chip show memory's current term, {row['node']!r}"
+                              + ("" if same else f" (node {row['node']!r} / {row['value']!r}, chip {stand and stand['value']!r}, memory {term['value']!r})"))
+                    else:
+                        want = "Not agreed yet" if row["lane"] else "Not said yet"
+                        check(row["shown"] == want and not row["state"], f"{item.value}: nothing stands, the node says {row['shown']!r} and no pill")
                 for i, f in held.items():
                     target = held.get(f.get("counts_towards") or "")
                     if target and target["item"]:
@@ -354,14 +370,12 @@ async def main(port: int, out: Path) -> None:
                     if item["key"] in changed:
                         continue
                     if item["state"] == "agreed":
-                        check(row["state"] in ("Agreed", "Confirmed by both") and row["value"] == item["value"], f"checklist {item['key']}: {row['state']} {row['value']!r}")
+                        check(row["state"] in ("Agreed", "Confirmed by both"), f"checklist {item['key']}: {row['state']}, as the brain has it agreed")
                         check(row["when"].startswith("Call 1 · "), f"checklist {item['key']}: settled at {row['when']!r}")
-                    else:
-                        check(row["state"] == "Waiting" and row["shown"] in ("Not said yet", "Not agreed yet"), f"checklist {item['key']}: {row['state']} {row['shown']!r}")
-                    said = re.sub(r"^([\d,]+) rupees\b[\s,;:]*", r"₹\1 ", row["value"]).strip()  # how the board writes a figure
-                    if row["value"] and money(row["shown"]) not in (money(row["value"]), money(said)):
-                        kept = row["shown"].removesuffix("…").replace("\u202f", " ")
-                        check(row["shown"].endswith("…") and said.startswith(kept) and said[len(kept)] in " ;,.",
+                    if row["value"] and money(row["shown"]) != money(row["value"]) and not row["shown"].startswith("Not "):
+                        kept = row["shown"].removesuffix("…").replace(" ", " ")
+                        full = row["value"].replace(" ", " ")
+                        check(row["shown"].endswith("…") and full.startswith(kept) and full[len(kept)] in " ;,.",
                               f"checklist {item['key']}: cut at a word, {row['shown']!r}")
                 gone = await chrome.js(f"JSON.stringify({GONE!r}.filter((id) => document.getElementById(id)))")
                 check(gone == "[]", f"nothing else on the board: {gone}")
@@ -389,7 +403,7 @@ async def main(port: int, out: Path) -> None:
             await chrome.wait_for(LOADED)
             await asyncio.sleep(0.6)
             text = await chrome.js("document.getElementById('detail').textContent")
-            check("No deal yet" in text and "On WhatsApp" in text and await chrome.js("document.querySelectorAll('#rows .term .state').length") == 6,
+            check("No deal yet" in text and "On WhatsApp" in text and await chrome.js("[...document.querySelectorAll('#rows .term .value')].filter((v) => v.textContent === 'Not said yet').length") == 6,
                   f"no deal: the six terms wait, and the card says how a deal starts: {text[:80]!r}")
             await chrome.shot(out / "0-no-deal.png")
 
@@ -541,7 +555,7 @@ async def main(port: int, out: Path) -> None:
             check("Voice note · day 1" in moments, f"the voice notes have their own moment in the timeline: {moments}")
             rows = json.loads(await chrome.js(CHECKLIST))
             amount = rows["amount"]
-            check(amount["state"] == "Changed" and amount["value"].startswith("25,000") and amount["when"] == "WhatsApp voice note"
+            check(amount["state"] == "Changed" and money(amount["value"]).startswith("₹25000") and amount["when"] == "WhatsApp voice note"
                   and "Changed by voice note, both said yes" in amount["title"], f"the amount changed by voice note: {amount}")
             await point_at(chrome, "#rows .term[data-item='amount'] .node-slot")
             shown = json.loads(await chrome.js(DETAIL))
@@ -570,7 +584,7 @@ async def main(port: int, out: Path) -> None:
             check(old and old["status"] == "superseded", f"the old amount shows as replaced: {old}")
             check(len(json.loads(await chrome.js(OWED))) == 3, "paid and owed shown on the amount, the advance and the balance")
             rows = json.loads(await chrome.js(CHECKLIST))
-            check((rows["amount"]["state"], rows["amount"]["value"]) == ("Changed", "26,000 rupees, with the balcony"), f"the checklist shows the change: {rows['amount']}")
+            check(rows["amount"]["state"] == "Changed" and money(rows["amount"]["value"]) == money(board("26,000 rupees, with the balcony")), f"the checklist shows the change: {rows['amount']}")
             await asyncio.sleep(0.5)
             await chrome.shot(out / "3-payments-and-change.png")
             await reload_check("payments and change")

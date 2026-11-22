@@ -33,7 +33,7 @@ export function emptyState(dealId) {
     people: {}, // role -> { name, phone }
     lines: {}, // "call:line" -> the deal-call line, for "when was it said"
     calls: [], // the deal calls seen, by call_no
-    live: null, // the call going on now, if any: { kind, callNo }, for where a chain link was sealed
+    live: null, // the call going on now, if any: { kind, callNo, since }, for where a chain link was sealed and its call time
     currentCall: 1,
     itemCall: {}, // item -> the call it was last changed on, to find its line
     earlier: {}, // item -> its last agreed value on an earlier call, with callNo
@@ -75,7 +75,10 @@ function applyDeal(state, e, change) {
     case "call.started": {
       people(state, e.people);
       const no = e.call_no ?? 1;
-      state.live = { kind: e.kind || "deal", callNo: no };
+      const kind = e.kind || "deal";
+      // since: when this call began, for call time; a call.started sent again (a name learned) keeps it
+      const since = state.live?.kind === kind && state.live?.callNo === no ? state.live.since : e.ts;
+      state.live = { kind, callNo: no, since };
       if (e.kind !== "callback" && !state.calls.includes(no)) {
         // The brain starts each call with a fresh checklist, so keep what was agreed so far.
         for (const i of state.items) if (i.state === "agreed") state.earlier[i.key] = { ...i, callNo: state.itemCall[i.key] ?? state.currentCall };
@@ -87,6 +90,7 @@ function applyDeal(state, e, change) {
     }
 
     case "call.ended":
+      people(state, e.people);
       state.live = null;
       change.panels = ["header"];
       break;

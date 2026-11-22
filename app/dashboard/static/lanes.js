@@ -11,7 +11,7 @@ import { claims, itemOfConflict, itemOfFact, contradicting, valueParts } from ".
 
 const IN_LANE = new Set(["term", "change", "payment", "work"]);
 // Which member speaks for a chip: a claim, then the strongest standing, then replaced, then said.
-const RANK = { claim: 6, confirmed: 5, agreed: 4, paid: 4, superseded: 3, disputed: 2, said: 1 };
+const RANK = { claim: 6, confirmed: 5, agreed: 4, superseded: 3, disputed: 2, said: 1 };
 
 const norm = (s) => s.toLowerCase().replace(/[\s.,;:]+/g, " ").trim();
 
@@ -20,11 +20,7 @@ export function laneFacts(state, key) {
     itemOfFact(state, f) === key && (IN_LANE.has(f.kind) || f.value));
 }
 
-function chipStatus(f, claimed) {
-  if (claimed.has(f.id)) return "claim";
-  if (f.kind === "payment" && f.status !== "disputed" && f.status !== "superseded") return f.status === "said" ? "said" : "paid";
-  return f.status;
-}
+const chipStatus = (f, claimed) => (claimed.has(f.id) ? "claim" : f.status);
 
 // One lane: its chips, oldest first. Each chip: key (its first fact), ids, the value it
 // shows and in full, its status, the people who said or agreed it, its newest seq, whether
@@ -51,7 +47,7 @@ export function lane(state, key, claimed = claims(state)) {
     if (RANK[status] >= RANK[chip.status]) { chip.status = status; chip.lead = f.id; }
     chip.seq = Math.max(chip.seq, f.seq);
     chip.voice ||= f.source === "voice_note";
-    chip.stands ||= stands?.id === f.id;
+    if (stands?.id === f.id) { chip.stands = true; chip.value = parts.main; } // the node shows these same words
   }
   for (const c of chips) c.full = [...new Set(c.full)].join("\n");
   const edges = state.conflicts.filter((c) => itemOfConflict(state, c) === key).map((c) => {
@@ -63,11 +59,11 @@ export function lane(state, key, claimed = claims(state)) {
   return { chips, edges };
 }
 
-// The whole graph: each term's node (its state, value and money) and its lane.
+// The whole graph: each term's node (its state, the fact it stands on, its money) and its lane.
 export function graph(state) {
   const claimed = claims(state);
   const money = owed(state);
-  return ITEMS.map(([key, label]) => ({ key, label, view: termView(state, key), owed: money[key] || null, ...lane(state, key, claimed) }));
+  return ITEMS.map(([key, label]) => ({ key, label, view: termView(state, key), stands: standing(state, key), owed: money[key] || null, ...lane(state, key, claimed) }));
 }
 
 // Which chips a lane of `width` shows: every chip if they fit; else the oldest give way,

@@ -79,7 +79,7 @@ export function applyCrew(state, e, change) {
       const known = state.facts[e.fact.id];
       if (!known) state.factOrder.push(e.fact.id);
       state.facts[e.fact.id] = { ...e.fact, seq: known ? known.seq : ++state.seq, ts: known ? known.ts : e.ts, last: ++state.chain.links };
-      state.chain.list.push({ factId: e.fact.id, status: e.fact.status, where: sealedIn(e.fact, state.live, e.ts), ts: e.ts, source: e.fact.source });
+      state.chain.list.push({ factId: e.fact.id, status: e.fact.status, where: sealedIn(e.fact, state.live, e.ts), ts: e.ts, source: e.fact.source, since: state.live?.since ?? null });
       // Memory sends a replacement first and the old version again as superseded after
       // it: the highlight stays on the replacement.
       change.fact = e.fact.status === "superseded"

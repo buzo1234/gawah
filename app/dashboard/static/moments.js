@@ -10,7 +10,9 @@ import { clock } from "./state.js";
 
 const DAY = 86400000;
 const midnight = (ts) => { const d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); };
-const hhmm = (ts) => new Date(ts).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+// Wall-clock time for WhatsApp, as "7:26 pm", so it never looks like a call's "0:24".
+const wall = (ts) => new Date(ts).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }).toLowerCase();
+const callTime = (ts, since) => clock(Math.max(0, (Date.parse(ts) - Date.parse(since)) / 1000));
 
 function momentOf(link, first) {
   if (link.where.startsWith("Call")) return link.where;
@@ -34,7 +36,7 @@ export function moments(state) {
     const key = `${link.factId}|${moment}`;
     if (!seenIn.has(link.factId)) seenIn.set(link.factId, moment);
     const known = entries.get(key);
-    entries.set(key, { key, factId: link.factId, moment, n: known ? known.n : n, status: link.status, ts: known ? known.ts : link.ts });
+    entries.set(key, { key, factId: link.factId, moment, n: known ? known.n : n, status: link.status, ts: known ? known.ts : link.ts, since: known ? known.since : link.since });
   });
   return [...entries.values()].sort((a, b) => b.n - a.n).map((e) => {
     const f = state.facts[e.factId];
@@ -46,14 +48,16 @@ export function moments(state) {
     const roles = follow
       ? [...new Set(e.status === "confirmed" ? f.confirmed_by || [] : f.agreed_by || [])]
       : [f.said_by || (f.kind === "payment" ? "hirer" : null)];
-    const onCall = (f.source === "call" && !follow) && f.start != null;
+    // A call's entry shows call time: when it was said, or else how far into the call (or
+    // call-back) memory wrote it. WhatsApp shows the time of day.
+    const said = f.source === "call" && !follow && f.start != null;
     return {
       key: e.key, factId: e.factId, moment: e.moment, follow,
       text: follow ? `${LABEL[item] || "Other detail"}: ${parts.main}` : f.text,
       term: LABEL[item] || "Other detail", item: item || "",
       word: f.status === "superseded" ? "Replaced" : word, tone: f.status === "superseded" ? "" : tone,
       people: roles.filter((r) => r === "hirer" || r === "worker").map((r) => person(state, r)).concat(roles.some((r) => r === "hirer" || r === "worker") ? [] : [person(state, null)]),
-      time: onCall ? clock(f.start) : hhmm(e.ts),
+      time: said ? clock(f.start) : e.moment.startsWith("Call") && e.since ? callTime(e.ts, e.since) : wall(e.ts),
       latency: follow ? null : factLatency(state, f),
       status: f.status, clip: hasClip(f), voice: f.source === "voice_note", replaced: f.status === "superseded", claim: claimed.has(f.id),
     };

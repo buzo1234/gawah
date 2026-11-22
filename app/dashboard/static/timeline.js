@@ -13,7 +13,7 @@ import { clipButton } from "./clips.js";
 import { h, measure, pointable, sync } from "./dom.js";
 
 const $ = (id) => document.getElementById(id);
-const TEXT_W = 296;
+const TEXT_W = 272;
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 let unseen = 0;
 
@@ -33,7 +33,7 @@ function entry(e, fresh, before) {
     h("span", { class: "time" }, e.time),
     h("div", { class: "main" },
       h("div", { class: "people" }, ...e.people.map((p) => h("span", { class: `tag ${p.role}` }, p.name)), e.voice && voiceMark(),
-        h("span", { class: `word pill ${e.tone}` }, e.word)),
+        e.word !== "Said" && h("span", { class: `word pill ${e.tone}` }, e.word)),
       h("p", { class: "text" }, text),
       h("div", { class: "meta label" }, h("span", {}, e.term),
         e.latency != null && [h("span", { class: "sep" }, " · "), h("span", { class: "took", title: "after it was said" }, took(e.latency))])),
@@ -45,8 +45,8 @@ function entry(e, fresh, before) {
 export function renderTimeline(state, fresh = {}) {
   const list = moments(state);
   const facts = state.factOrder.length;
-  $("fact-count").replaceChildren(...(facts ? [plural(facts, "fact"),
-    ...(state.conflicts.length ? [h("span", { class: "sep" }, " · "), h("span", { class: "contradictions" }, plural(state.conflicts.length, "contradiction"))] : [])] : []));
+  // Each moment says how many facts it holds; the section says only what went wrong.
+  $("fact-count").replaceChildren(...(state.conflicts.length ? [h("span", { class: "contradictions" }, plural(state.conflicts.length, "contradiction"))] : []));
   const items = grouped(list).flatMap((run) => [{ group: true, moment: run.moment, key: `m|${run.moment}|${run.entries.at(-1).key}`, count: run.entries.length }, ...run.entries]);
   const box = $("timeline");
   const scroller = box;
