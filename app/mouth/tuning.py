@@ -200,6 +200,10 @@ TERM_DISPUTED = (
     "Noted. Tell {name} in one sentence that Gawah will raise this with {other}. Do not discuss it. Then: {step}"
 )
 NEVER_AGREED = "Tell {name} plainly that these were never agreed on the call, so they are not on record: {labels}. "
+UNCHANGED = (
+    "Say in one short sentence that the rest is as {name} already confirmed, naming it, for example \"Baaki sab pehle "
+    "jaisa hai: ...\": {labels}. Do not read those terms again. "
+)
 SAID_NOT_AGREED = "Tell {name} that, as they say, this was said on the call but not agreed, so it is not on record as agreed: {labels}. "
 # The last thing said. The call is ended by our code once this has been spoken, not by the model.
 END = "Last step: say all of this to {name} now, then stop. The call will end by itself. "

@@ -476,3 +476,65 @@ async def test_a_term_nobody_spoke_of_is_not_asked(desk):
         await link.calls("term_answer", item=item, agrees=True, said="haan")
     then = await link.calls("term_answer", item="dates", agrees=True, said="haan")
     assert "never agreed" in then and "the advance, the balance" in then and "Kya yeh tay hua tha" not in then
+
+
+async def call_2_changed_the_amount(desk, tmp_path=None, confirmed_on_the_call: list[Role] = ()) -> tuple[Fact, Fact]:
+    """After call 1 both confirmed every term on their call-backs. Call 2 agreed 24,000 for the
+    amount and ended before Gawah put it to both; `confirmed_on_the_call` said yes to Gawah on it."""
+    record, change = await amount_left_open(desk)
+    for role in Role:
+        desk.bus.publish(TermsConfirmed(deal_id="d1", person=role, said="haan"))
+    items = [ChecklistItem(key=k, state=ItemState.AGREED if k in AGREED else ItemState.PENDING, value=AGREED.get(k))
+             for k in ItemKey]
+    desk.bus.publish(ChecklistUpdated(deal_id="d1", items=items))  # call 2's checklist: the record still stands
+    if confirmed_on_the_call:
+        common = dict(deal_id="d1", change_id="c-on-call", fact_id=record.id, new_value=change.value,
+                      item=ItemKey.AMOUNT, proposed_by=Role.WORKER)
+        desk.bus.publish(FactChanged(status=ChangeStatus.PROPOSED, **common))
+        desk.bus.publish(FactChanged(status=ChangeStatus.CONFIRMED_ONE, confirmed_by=list(confirmed_on_the_call), **common))
+    await desk.bus.drain()
+    return record, change
+
+
+async def test_after_a_second_call_the_call_back_asks_only_what_changed(desk):
+    """The user: "it repeats all the terms that did not change; only new ones should happen"."""
+    await call_2_changed_the_amount(desk)
+    for role in Role:
+        seat, link = await desk.join(role=role)
+        opening = link.of("conversation.item.create")[0]["item"]["content"][0]["text"]
+        assert "Record mein 22,000 rupees with material tha; call par 24,000" in opening
+        assert "painting" not in opening and "Monday to Friday" not in opening  # confirmed before, unchanged
+        then = await link.calls("change_answer", agrees=True, said="haan")
+        assert "Baaki sab pehle jaisa hai" in then and "the work, the dates" in then and "Do not read those terms again" in then
+        assert "never agreed" not in then  # told on the first call-back already
+        await link.says("Theek hai. Namaste.")
+        await until(lambda: [e for e in desk.of(CallEnded) if e.room == seat.room])
+    assert [(c.status, c.confirmed_by) for c in desk.of(FactChanged)][-1] == (ChangeStatus.CONFIRMED_BOTH, [Role.HIRER, Role.WORKER])
+    assert [e.item for e in desk.of(TermsConfirmed)] == [None, None]  # only call 1's confirmations: nothing read again
+
+
+async def test_a_term_said_but_not_agreed_on_the_second_call_is_asked_with_the_change(desk, tmp_path):
+    await call_2_changed_the_amount(desk)
+    memory = Memory(desk.bus, None, WordHashEmbedder(), root=tmp_path, embed_model="hash")
+    memory.attach(desk.bus)
+    memory.record(Fact(deal_id="d1", text="Sunita will pay the rest after the work.", item=ItemKey.BALANCE,
+                       kind=FactKind.TERM, value="rest after completion", said_by=Role.HIRER, call_no=2, line_no=5))
+    await desk.bus.drain()
+    seat, link = await desk.join(role=Role.WORKER)
+    opening = link.of("conversation.item.create")[0]["item"]["content"][0]["text"]
+    assert "Record mein 22,000" in opening and "painting" not in opening
+    then = await link.calls("change_answer", agrees=True, said="haan")
+    assert "Call par Sunita ji ne kaha: rest after completion. Kya yeh tay hua tha?" in then
+    then = await link.calls("term_answer", item="balance", agrees=True, said="haan")
+    assert "Baaki sab pehle jaisa hai" in then and "the work, the dates" in then
+
+
+async def test_who_confirmed_the_change_on_the_call_has_nothing_left_to_confirm(desk):
+    await call_2_changed_the_amount(desk, confirmed_on_the_call=[Role.HIRER])
+    response = await desk.http.post(callback_path("d1", Role.HIRER) + "/join")  # an old link
+    assert response.status_code == 404 and response.json()["message"] == tuning.PAGE_NOTHING
+    seat, link = await desk.join(role=Role.WORKER)
+    assert "Record mein 22,000" in link.of("conversation.item.create")[0]["item"]["content"][0]["text"]
+    await link.calls("change_answer", agrees=True, said="haan")
+    await desk.bus.drain()
+    assert (desk.of(FactChanged)[-1].status, desk.of(FactChanged)[-1].change_id) == (ChangeStatus.CONFIRMED_BOTH, "c-on-call")

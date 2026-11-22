@@ -8,7 +8,8 @@ from whatsapp_world import BASE, RAMESH, SCREENSHOT, SUNITA, World
 
 from app.config import Settings
 from app.contracts import (
-    CallEnded, CallOpened, Fact, FactKind, FactRecorded, FactSource, FactStatus, ItemKey, RecordConfirmed, Role,
+    CallEnded, CallOpened, ChangeStatus, Fact, FactChanged, FactKind, FactRecorded, FactSource, FactStatus, ItemKey,
+    RecordConfirmed, Role,
     call_path, callback_path, clip_path,
 )
 from app.records import tuning
@@ -245,6 +246,43 @@ async def test_a_change_the_call_left_open_sends_both_the_call_back(watched):
     assert {p: len(watched.texts_to(p)) for p in (SUNITA, RAMESH)} == {p: n + 1 for p, n in before.items()}
     assert notes(watched)[-1] == "call 2 changed amount (a change still open): call-back links sent"
 
+
+
+async def test_who_confirmed_an_open_change_on_the_call_gets_no_call_back(watched):
+    """Only those with something left to confirm get the link: the hirer said yes to Gawah on the
+    change before the call ended, so only the worker is asked."""
+    deal_id = await deal(watched)
+    before = {p: len(watched.texts_to(p)) for p in (SUNITA, RAMESH)}
+    record = (await watched.memory.get_term(deal_id, ItemKey.AMOUNT)).current
+    watched.memory.facts.append(Fact(
+        deal_id=deal_id, text="Balcony 2,000 extra.", item=ItemKey.AMOUNT, kind=FactKind.CHANGE, value="15,000 rupees",
+        value_rupees=15000, said_by=Role.WORKER, agreed_by=[Role.HIRER], status=FactStatus.AGREED, source=FactSource.CALL,
+        call_no=2, line_no=9,
+    ))
+    common = dict(deal_id=deal_id, change_id="c-1", fact_id=record.id, new_value="15,000 rupees", item=ItemKey.AMOUNT,
+                  proposed_by=Role.WORKER)
+    watched.bus.publish(FactChanged(status=ChangeStatus.PROPOSED, **common))
+    watched.bus.publish(FactChanged(status=ChangeStatus.CONFIRMED_ONE, confirmed_by=[Role.HIRER], **common))
+    await watched.settle()  # said on the call, before it ended
+    watched.bus.publish(CallEnded(deal_id=deal_id, call_no=2))
+    await watched.settle()
+    assert len(watched.texts_to(SUNITA)) == before[SUNITA]
+    assert callback_path(deal_id, Role.WORKER) in watched.texts_to(RAMESH)[-1]
+
+
+async def test_a_term_said_and_never_agreed_on_a_second_call_sends_both_the_call_back(watched):
+    deal_id = await deal(watched)
+    watched.memory.facts[:] = [f for f in watched.memory.facts if f.item is not ItemKey.LATE_OR_UNFINISHED]
+    watched.memory.facts.append(Fact(
+        deal_id=deal_id, text="300 a day is cut if late.", item=ItemKey.LATE_OR_UNFINISHED, kind=FactKind.TERM,
+        value="300 rupees cut per day late", said_by=Role.HIRER, status=FactStatus.SAID, source=FactSource.CALL,
+        call_no=2, line_no=6,
+    ))
+    watched.bus.publish(CallEnded(deal_id=deal_id, call_no=2))
+    await watched.settle()
+    assert callback_path(deal_id, Role.HIRER) in watched.texts_to(SUNITA)[-1]
+    assert callback_path(deal_id, Role.WORKER) in watched.texts_to(RAMESH)[-1]
+    assert notes(watched)[-1] == "call 2 changed late_or_unfinished (said, not agreed): call-back links sent"
 
 def paid(world: World, rupees: int, towards: str) -> Fact:
     deal_id = world.named("deal.requested")[-1].deal_id
