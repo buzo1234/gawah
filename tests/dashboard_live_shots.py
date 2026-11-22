@@ -107,6 +107,11 @@ OVERLAPS = """(() => {
     const lr = box(lane.closest('.lane'));
     chips.forEach((c) => { if (c.right > lr.right + 0.5) out.push('chip past its lane in ' + lane.closest('.term').dataset.item); });
   }
+  const scale = document.getElementById('stage').getBoundingClientRect().width / 1920;
+  for (const node of document.querySelectorAll('.node')) {
+    const edge = box(node).right - 24 * scale;
+    for (const el of node.querySelectorAll('.l1 > *, .value, .l3 > *')) if (box(el).right > edge + 0.5) out.push('into the padding of ' + node.closest('.term').dataset.item + ': ' + el.textContent.slice(0, 30));
+  }
   for (const el of document.querySelectorAll('.node .value, .node .l1, .entry .text, #detail .hero, #detail .value')) {
     if (el.scrollWidth > el.clientWidth + 1) out.push('cut by its box: ' + el.className + ' ' + el.textContent.slice(0, 30));
   }

@@ -1,6 +1,6 @@
 /* The second phone: a narrow column on its own page, the whole frame on the board. The
    same tokens as the board (base.css): bubbles are cards, the tail corner a chip, the
-   composer and its button pills. */
+   composer and its button pills; every part starts 24px in. */
 
 body.phone-page { background: var(--bg); }
 body.phone-page.embed { background: var(--surface); }
@@ -48,7 +48,7 @@ body.phone-page.embed { background: var(--surface); }
 .call-state.on { color: var(--ok); font-weight: 500; }
 .call-state.failed { color: var(--bad); }
 
-.chat { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: var(--s2); padding: var(--s4); scrollbar-width: none; }
+.chat { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: var(--s2); padding: var(--s4) var(--s5); scrollbar-width: none; }
 .chat::-webkit-scrollbar { display: none; }
 .chat .empty { margin: auto; color: var(--ink-3); }
 
@@ -62,7 +62,7 @@ body.phone-page.embed { background: var(--surface); }
 .bubble audio { display: block; max-width: 100%; margin-bottom: var(--s1); }
 .bubble a.call-link { font-weight: 600; text-decoration-color: currentColor; }
 
-#composer { padding: var(--s3) var(--s4) var(--s4); border-top: var(--hair); }
+#composer { padding: var(--s3) var(--s5) var(--s4); border-top: var(--hair); }
 #composer .row { display: flex; align-items: center; gap: var(--s2); }
 #composer input[type="text"] { flex: 1; min-width: 0; height: 40px; padding: 0 var(--s4); border: var(--hair); border-color: var(--rule-strong); border-radius: var(--r-pill); background: var(--surface); }
 #composer input[type="text"]:focus { outline: none; border-color: var(--ink); }

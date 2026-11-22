@@ -72,11 +72,11 @@ export function graph(state) {
 
 // Which chips a lane of `width` shows: every chip if they fit; else the oldest give way,
 // gathered into one "+n earlier" chip, but never the version the term stands on, a claim,
-// a version a claim contradicts, or the newest. widthOf(chip) is its drawn width.
+// a version a claim contradicts, a chip whose chain link broke, or the newest. widthOf(chip) is its drawn width.
 export function visible(chips, edges, width, widthOf, gap, stub) {
   const total = (list) => list.reduce((sum, c) => sum + widthOf(c), 0) + gap * Math.max(0, list.length - 1);
   if (total(chips) <= width) return { shown: chips, hidden: [] };
-  const keep = new Set([...edges.flatMap((e) => [e.from, e.to]), chips.at(-1).key, ...chips.filter((c) => c.stands).map((c) => c.key)]);
+  const keep = new Set([...edges.flatMap((e) => [e.from, e.to]), chips.at(-1).key, ...chips.filter((c) => c.stands || c.broken).map((c) => c.key)]);
   const shown = [...chips], hidden = [];
   for (const c of chips) {
     if (total(shown) + stub + gap <= width) break;

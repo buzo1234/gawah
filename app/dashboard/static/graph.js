@@ -12,7 +12,7 @@ import { h, measure, pointable, sync } from "./dom.js";
 const $ = (id) => document.getElementById(id);
 const CHIP_TEXT = 140; // where a chip's words are cut, a little short of where its box wraps them (152)
 const GAP = 16; // between chips, where the connector runs
-const NODE_TEXT = 248;
+const NODE_TEXT = 288; // the node's 340px less its padding
 const NODE_AFTER = 780; // ms: after the timeline entry (240), the chip (240) and its connector (300)
 const WORD = { said: "Said", agreed: "Agreed", confirmed: "Confirmed by both", superseded: "Replaced", disputed: "Disputed", claim: "Contradicted", paid: "Paid" };
 
@@ -132,6 +132,8 @@ function lane(state, row, laneEl, fresh) {
   stub.hidden = false;
   stub.textContent = "+00";
   const width = new Map(els.map((el) => [el.dataset.key, el.offsetWidth]));
+  const broken = brokenFact(state);
+  for (const c of row.chips) c.broken = c.ids.includes(broken);
   const { hidden } = visible(row.chips, row.edges, chips.clientWidth, (c) => width.get(c.key), GAP, stub.offsetWidth + GAP);
   const gone = new Set(hidden.map((c) => c.key));
   for (const el of els) el.hidden = gone.has(el.dataset.key);

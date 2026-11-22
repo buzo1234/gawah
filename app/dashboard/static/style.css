@@ -2,6 +2,8 @@
    window. One grid: a 48px page margin, three columns (the deal 960, the timeline 440, the
    second phone 360) with 32px gutters; the header on top; every section's label on one
    baseline 24px under it; every card 12px under its label and ending 48px from the bottom.
+   Inside a card the content starts 24px in (the deal, the detail) or 16px in (the
+   timeline's dense list).
    Sizes, spaces, radii and colours come from the tokens in base.css only.
 
    Motion follows speech becoming a fact, one thing at a time: the timeline entry comes in
@@ -41,9 +43,9 @@ ol { margin: 0; padding: 0; list-style: none; }
 /* ---------- the fact graph: a node and a lane per term ---------- */
 
 #terms { flex: none; height: 626px; overflow: hidden; }
-.term { display: grid; grid-template-columns: 300px 1fr; height: 96px; border-bottom: var(--hair); }
+.term { display: grid; grid-template-columns: 340px 1fr; height: 96px; border-bottom: var(--hair); }
 .node-slot { border-right: var(--hair); cursor: pointer; }
-.node { display: grid; grid-template-rows: 22px 30px 24px; row-gap: var(--s1); align-content: center; height: 100%; padding: 0 var(--s5) 0 var(--s5); }
+.node { display: grid; grid-template-rows: 22px 30px 24px; row-gap: var(--s1); align-content: center; height: 100%; padding: 0 var(--s5); }
 .node .l1 { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); white-space: nowrap; }
 .node .owed { font: 500 var(--t-meta) / var(--lh-meta) var(--font); color: var(--ink-2); }
 .node .value { display: flex; align-items: center; min-width: 0; font: 500 var(--t-body) / var(--lh-body) var(--font); white-space: nowrap; overflow: hidden; }
