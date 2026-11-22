@@ -125,7 +125,13 @@ The whole app can run with every outside service stood in for: no `.env`, no key
 uv run python -m tests.offline --port 8000
 ```
 
-Add `--whatsapp meta` to see Meta's message shapes (reply buttons, link buttons, the agreement as a captioned PDF) as text on the board. The recorded calls in `fixtures/` (`call_missing_balance.json`, `call_two_amounts.json`) can be replayed into the running server line by line to watch the facts, the checklist and a contradiction arrive; the command is in `AGENTS.md`.
+Add `--whatsapp meta` to see Meta's message shapes (reply buttons, link buttons, the agreement as a captioned PDF) as text on the board. The recorded calls in `fixtures/` (`call_missing_balance.json`, `call_two_amounts.json`) can be replayed into the running server line by line to watch the facts, the checklist and a contradiction arrive:
+
+```sh
+uv run python tools/replay.py fixtures/call_two_amounts.json --speed 10
+```
+
+Every journey to try, step by step, is in [`AGENTS.md`](AGENTS.md).
 
 ### Settings
 
@@ -148,6 +154,7 @@ Copy `.env.example` to `.env` and fill it in. Never commit `.env`.
 | `REPLY_TIMEOUT_SECONDS` | How long to wait for a yes or no before following up |
 | `DATABASE_PATH` | Where the SQLite file lives (default `gawah.db`) |
 | `DEV_ROUTES` | `false` removes the development-only routes |
+| `CALLBACKS_ENABLED`, `ACTOR_ROUTES`, `ACCESS_KEY` and the rest | Every key, with what it does, is in [`AGENTS.md`](AGENTS.md) and `.env.example` |
 
 For webhooks on a laptop, a tunnel gives a public address:
 
@@ -217,7 +224,8 @@ These create and remove paid AWS resources. The steps are in [`tools/deploy/READ
 | `fixtures/` | Recorded calls, audio, voice notes, screenshots, a sample agreement |
 | `tools/` | Server checks, the CI script, deployment, data deletion steps |
 | `deploy/` | Docker Compose and Caddy for the server |
-| `idea.md`, `PLAN.md`, `AGENTS.md` | The idea, the build plan, and how to work in this repository |
+| `AGENTS.md` | How to set up, run and try Gawah: the live server, test logins, journeys, settings |
+| `idea.md`, `PLAN.md`, `docs/DEVELOPMENT.md` | The idea, the build plan, and how to work in this repository |
 
 ## Languages
 
