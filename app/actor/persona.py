@@ -2,13 +2,16 @@
 Adjust the actor here and nowhere else. Instructions are English; what it says is Hinglish."""
 
 import json
+import re
 from pathlib import Path
 
 from app.contracts import Role
 
 DEMO = Path(__file__).resolve().parent.parent.parent / "fixtures" / "demo"
 STORY_NAMES = {Role.HIRER: "Sunita", Role.WORKER: "Ramesh"}
-WHO = {Role.HIRER: "who wants her flat painted and is paying for it", Role.WORKER: "a house painter who will do the work"}
+# A form of address that guesses a gender. In a line it becomes "<the other person's name> ji".
+ADDRESS = re.compile(r"\b(madam|sir)\b", re.IGNORECASE)
+WHO = {Role.HIRER: "who wants their flat painted and is paying for it", Role.WORKER: "a house painter who will do the work"}
 
 COMMON = (
     "You are {me}, {me_who}. You are on a phone call in India with {other}, {other_who}. "
@@ -22,6 +25,8 @@ COMMON = (
     "You have a tool, wait. Whenever it is not your turn to speak, call wait instead of saying anything: "
     "when {other} has more to say, when Gawah is speaking to {other}, when the script's next line is "
     "{other}'s or Gawah's, or when you have nothing to add. Saying nothing is often right.\n"
+    "Hindi verb endings that mark gender (de dungi or de dunga, karungi or karunga) may follow how you "
+    "naturally speak; the numbers and terms stay exactly as written.\n"
 )
 
 DEAL = (
@@ -57,13 +62,21 @@ def story(call_no: int) -> dict:
     return json.loads((wanted if wanted in files else files[-1]).read_text())
 
 
-def script(call: dict, me: Role, other_name: str) -> str:
+def recast(text: str, named: dict[Role, str]) -> str:
+    """The story's names in text swapped for the deal's, whole words, in one pass."""
+    by_story = {STORY_NAMES[r]: named[r] for r in Role}
+    return re.sub(r"\b(" + "|".join(by_story) + r")\b", lambda m: by_story[m.group()], text)
+
+
+def script(call: dict, me: Role, named: dict[Role, str]) -> str:
     rows = []
     for line in call["lines"]:
-        who = "You" if line["speaker"] == me.value else other_name
-        rows.append(f"{line['line_no']}. {who}: {line['text']}")
+        speaker = Role(line["speaker"])
+        who = "You" if speaker is me else named[me.other]
+        said = ADDRESS.sub(f"{named[speaker.other]} ji", recast(line["text"], named))
+        rows.append(f"{line['line_no']}. {who}: {said}")
         if then := line.get("then"):
-            rows.append(f"   [After the line above, Gawah {then['gawah']}.]")
+            rows.append(f"   [After the line above, Gawah {recast(then['gawah'], named)}.]")
     return "\n".join(rows)
 
 
@@ -73,7 +86,7 @@ def instructions(me: Role, kind: str, call_no: int, names: dict[Role, str | None
     head = COMMON.format(me=named[me], me_who=WHO[me], other=named[me.other], other_who=WHO[me.other])
     if kind == "callback":
         return head + CALLBACK
-    return head + DEAL.format(other=named[me.other], script=script(story(call_no), me, named[me.other]))
+    return head + DEAL.format(other=named[me.other], script=script(story(call_no), me, named))
 
 
 WAIT_TOOL = {
