@@ -39,7 +39,7 @@ async def heard(bus, settings):
 def test_each_recording_holds_the_lines_of_its_call(path):
     """Change a practice call and its saved answers no longer fit: record it again."""
     saved = json.loads(path.read_text())
-    fixture = next(p for p in (Path("fixtures"), Path("tests/brain")) if (p / f"{saved['fixture']}.json").exists())
+    fixture = next(p for p in (Path("fixtures"), Path("fixtures/demo"), Path("tests/brain")) if (p / f"{saved["fixture"]}.json").exists())
     fixture = load(fixture / f"{saved['fixture']}.json")
     people = [Person(**p) for p in fixture["people"]]
     assert saved["lines"] == {
