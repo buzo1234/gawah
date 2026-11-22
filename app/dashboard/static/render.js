@@ -4,7 +4,7 @@
 // under the viewer's eye jumps, and only the new thing moves. A reload draws the same thing
 // at once. Text only ever goes in through h(), as text nodes.
 
-import { nameOf } from "./state.js";
+import { nameOf, phoneLabel } from "./state.js";
 import { person } from "./board.js";
 import { renderGraph } from "./graph.js";
 import { renderTimeline } from "./timeline.js";
@@ -58,10 +58,24 @@ function header(state) {
   pill.className = `pill${live ? " live" : ""}`;
 }
 
+// The second phone's frame is titled by whose phone it shows: the number comes from the
+// phone page in the frame, the name from the board's own fold.
+let phoneNumber = null;
+export function showPhone(number) {
+  phoneNumber = number;
+  if (current) phoneTitle(current);
+}
+function phoneTitle(state) {
+  const label = phoneLabel(state.people, phoneNumber, state.dealId);
+  document.getElementById("phone-title").textContent = label;
+  document.getElementById("phone-frame").title = label;
+}
+
 function draw(state, change = {}, live = false) {
   current = state;
   const fresh = live ? change : {};
   header(state);
+  phoneTitle(state);
   renderGraph(state, fresh);
   renderTimeline(state, fresh);
   renderDetail(state, hovered || picked, fresh);

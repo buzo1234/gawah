@@ -19,6 +19,18 @@ export const clock = (s) =>
 export const nameOf = (state, role) =>
   state.people[role]?.name || { hirer: "Hirer", worker: "Worker", both: "both" }[role] || role;
 
+// The second phone's title: whose phone it is on the deal shown. "Ramesh's phone", or "The
+// worker's phone" before the name is known; "Second phone" with no deal or no one on it with
+// that number.
+const digits = (phone) => (phone || "").replace(/\D/g, "");
+export function phoneLabel(people, phone, dealId) {
+  if (!dealId || dealId === NO_DEAL || !digits(phone)) return "Second phone";
+  const found = Object.entries(people || {}).find(([, p]) => digits(p?.phone) === digits(phone));
+  if (!found) return "Second phone";
+  const [role, p] = found;
+  return p.name ? `${p.name}'s phone` : `The ${role}'s phone`;
+}
+
 // A deal-call line, by its call and its line number (line numbers start again each call).
 export const lineAt = (state, lineNo, callNo = state.currentCall) => state.lines[`${callNo}:${lineNo}`];
 

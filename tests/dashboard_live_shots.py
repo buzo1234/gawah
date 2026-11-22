@@ -129,6 +129,7 @@ ARRIVING = """new Promise((done) => {
 })"""
 AUDIO = Path("fixtures/audio")
 FRAME = "document.getElementById('phone-frame').contentWindow"
+PHONE_TITLE = "document.getElementById('phone-title')"
 PROBE = "/actor/status"  # the phone asks once whether the actor is there; its 404 is the answer "not yet"
 money = lambda text: text.replace(" ", "").replace(" ", "").replace(",", "")
 # How the board writes memory's value: "13,000 rupees" as ₹ 13,000, a few words after the figure kept.
@@ -482,6 +483,7 @@ async def main(port: int, out: Path) -> None:
             text = await chrome.js("document.getElementById('detail').textContent")
             check("No deal yet" in text and "On WhatsApp" in text and await chrome.js("[...document.querySelectorAll('#rows .term .value')].filter((v) => v.textContent === 'Not said yet').length") == 6,
                   f"no deal: the six terms wait, and the card says how a deal starts: {text[:80]!r}")
+            check(await chrome.js(f"{PHONE_TITLE}.textContent") == "Second phone", "no deal: the phone is the second phone")
             await chrome.shot(out / "0-no-deal.png")
 
             # ---------- 1. mid-call, with a clip from the user's recorded voice ----------
@@ -496,6 +498,8 @@ async def main(port: int, out: Path) -> None:
             await settle(deal)
             await matches_memory(deal)
             await asyncio.sleep(0.5)
+            await chrome.wait_for(f"{PHONE_TITLE}.innerText === \"RAMESH'S PHONE\"", timeout=5)
+            check(True, "the frame is titled for whose phone it shows: RAMESH'S PHONE")
             await chrome.shot(out / "1-mid-call.png")
             # Facts arriving: five more lines, caught while the first new entry comes in.
             entering = asyncio.create_task(chrome.js(ARRIVING))
@@ -563,6 +567,13 @@ async def main(port: int, out: Path) -> None:
             check("Waiting for the call" in text and await chrome.js("document.getElementById('call-pill').textContent") == "Before the call",
                   f"before the call: the six terms wait, the card says what happens next: {text[:60]!r}")
             await chrome.shot(out / "0b-before-the-call.png")
+            # The phone shows Ramesh's number before anyone has said his name: titled by his role.
+            await chrome.wait_for(f"{FRAME}.document.body.dataset.loaded === 'true'")
+            show_number = f"(n) => {{ const i = {FRAME}.document.getElementById('number'); i.value = n; i.dispatchEvent(new Event('change')); }}"
+            await chrome.js(f"({show_number})({json.dumps(ramesh_phone)})")
+            await chrome.wait_for(f"{PHONE_TITLE}.textContent === \"The worker's phone\"", timeout=5)
+            check(await chrome.js(f"{FRAME}.document.getElementById('name').textContent") == "The worker's phone",
+                  "no name yet: the board and the phone both say The worker's phone")
             frames = home / "frames"
             frames.mkdir(parents=True, exist_ok=True)
             shooting = True
@@ -579,6 +590,9 @@ async def main(port: int, out: Path) -> None:
             camera = asyncio.create_task(film())
             silent_recordings(home / "recordings" / deal2 / "1", seconds=int(ta["lines"][-1]["end"]) + 5)
             await play(deal2, ta, range(1, 22), gap=0.3)  # the contradiction is on line 19; two lines on, it is still in view
+            await chrome.wait_for(f"{PHONE_TITLE}.textContent === \"Ramesh's phone\" && {FRAME}.document.getElementById('name').textContent === \"Ramesh's phone\"", timeout=5)
+            check(True, "once the call names him, the title turns to Ramesh's phone, live, on the board and in the phone")
+            await chrome.js(f"({show_number})('+910000000002')")
             await asyncio.sleep(2.0)
             shooting = False
             await camera
@@ -707,6 +721,7 @@ async def main(port: int, out: Path) -> None:
                 await asyncio.sleep(0.5)
                 check(await phone.js("document.getElementById('actor').hidden"), "the actor's endpoints answer 404: no toggle")
                 check(await phone.js("document.getElementById('number').value") == ramesh["phone"], "it plays Ramesh's number")
+                check(await phone.js("document.getElementById('name').textContent") == "Ramesh's phone", "its header: Ramesh's phone")
                 before = await phone.js("document.querySelectorAll('.bubble').length")
                 await phone.js("document.getElementById('text').value = 'Namaste ji'; document.getElementById('composer').requestSubmit()")
                 await phone.wait_for("document.getElementById('send-status').textContent === 'Delivered to Gawah'")
