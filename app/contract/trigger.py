@@ -69,6 +69,9 @@ class DealState:
                 if step and event.fact.status is FactStatus.CONFIRMED:
                     del self.pending[event.fact.replaces]
                     self.landed[step.change_id] = (step, event.fact)
+                    if step.item is not None:  # both confirmed the term at its new value: a dispute on it is over
+                        for role in step.confirmed_by or list(Role):
+                            self.confirmed[role].add(step.item)
             case FactChanged():
                 if event.said and event.change_id not in self.proposed:
                     self.proposed[event.change_id] = event.said

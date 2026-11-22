@@ -2,7 +2,8 @@
 and decides when the Judge speaks and what about.
 
 Listens to call.started, transcript.line, call.ended, judge.spoke (deal calls only), and
-fact.recorded and fact.conflict from the memory. Sends checklist.updated and judge.speak,
+fact.recorded and fact.conflict from the memory, and term.dispute from the Sentinel (a term
+disputed on a call-back and still open is raised when the next deal call opens). Sends checklist.updated and judge.speak,
 and call.started again (same room, same call_no) when it learns a name on the call that
 the deal did not have.
 
@@ -46,8 +47,8 @@ from app.brain.session import Session
 from app.brain.values import OpenAIValues, RecordedValues, Values
 from app.bus import Bus
 from app.contracts import (
-    MEMORY_STATE, CallEnded, CallKind, CallStarted, Event, FactConflict, FactRecorded, JudgeSpoke, MemoryQueries,
-    TranscriptLine,
+    MEMORY_STATE, CallEnded, CallKind, CallStarted, DisputeStep, Event, FactConflict, FactRecorded, JudgeSpoke,
+    MemoryQueries, TermDispute, TranscriptLine,
 )
 from app.log import deal_log
 
@@ -62,6 +63,7 @@ class Brain:
         self.sessions: dict[str, Session] = {}
         self.terms: dict[str, Terms] = {}  # deal id -> its facts, across calls
         self.checked: dict[str, set[str]] = {}  # deal id -> fact ids checked for two meanings
+        self.disputes: dict[str, dict[str, TermDispute]] = {}  # deal id -> open disputes from call-backs, by id
         # One subscription for everything, so a call's events are handled in order.
         bus.subscribe_all(self.on_event)
 
@@ -70,6 +72,10 @@ class Brain:
         if isinstance(event, FactRecorded):
             if self.terms.setdefault(event.deal_id, Terms()).add(event.fact) and session:
                 session.on_fact(event.fact)
+        elif isinstance(event, TermDispute):
+            self.dispute(event)
+            if session:
+                session.on_dispute(event)
         elif isinstance(event, CallStarted) and event.kind is CallKind.DEAL:
             if session and session.room == event.room:
                 session.meet(event.people)  # sent again with a name learned on the call
@@ -83,7 +89,7 @@ class Brain:
             session = self.sessions[event.deal_id] = Session(
                 event, self.bus, decisions, values, self.mode, terms, self.checked.setdefault(event.deal_id, set()),
             )
-            await session.start()
+            await session.start(list(self.disputes.get(event.deal_id, {}).values()))
         elif session is None:
             return
         elif isinstance(event, TranscriptLine) and event.kind is CallKind.DEAL:
@@ -95,6 +101,24 @@ class Brain:
         elif isinstance(event, CallEnded) and event.kind is CallKind.DEAL:
             del self.sessions[event.deal_id]
             await session.end()
+
+    def dispute(self, event: TermDispute) -> None:
+        """Keep each open dispute as its latest step, its version once given; settled, drop it."""
+        open_ = self.disputes.setdefault(event.deal_id, {})
+        if event.step is DisputeStep.SETTLED:
+            open_.pop(event.dispute_id, None)
+        else:
+            before = open_.get(event.dispute_id)
+            open_[event.dispute_id] = event.model_copy(update={
+                "version": event.version or (before.version if before else None),
+                "fact_id": event.fact_id or (before.fact_id if before else None),
+            })
+
+    async def load(self, store) -> None:
+        """After a restart: the disputes still open, from the event log."""
+        for event in await store.events():
+            if isinstance(event, TermDispute):
+                self.dispute(event)
 
     async def idle(self) -> None:
         """Wait for model replies still on their way. For tests and the recorder."""
@@ -171,5 +195,10 @@ def register(app: FastAPI, bus: Bus) -> None:
             await client.close()
 
     # Memory registers before the brain (app/main.py), so it is there when it is wanted.
-    app.state.brain = Brain(bus, settings.judge_mode, sources, getattr(app.state, MEMORY_STATE, None))
+    app.state.brain = brain = Brain(bus, settings.judge_mode, sources, getattr(app.state, MEMORY_STATE, None))
+
+    async def load() -> None:
+        await brain.load(app.state.store)
+
+    app.state.on_startup.append(load)
     app.state.on_shutdown.append(close)

@@ -67,9 +67,11 @@ def wire(
     sentinel = None
     if memory is not None:
         saved = Path(settings.database_path).with_suffix(".sentinel.json")
+        held = Path(settings.database_path).with_suffix(".sentinel-disputes.json")  # a disputed term's one reminder
         sentinel = Sentinel(
             bus, outbox, store, memory, signed_links(settings, link_for(settings)),
             reminders=lambda s: Reminders(saved, clock, wall, s.remind), wall=wall,
+            dispute_reminders=lambda t: Reminders(held, clock, wall, t.remind),
         )
         sentinel.subscribe()
         if not callbacks:
@@ -80,7 +82,8 @@ def wire(
         sentinel.ask_change, sentinel.ask_again = intake.ask_change, intake.put
         sentinel.keep_proof = keeper(root, upload or s3.upload, s3.signed_url)
     # Voice notes are kept beside the calls' recordings, recordings/<deal id>/voice/ under root.
-    voice = VoiceNotes(bus, outbox, intake, provider, transcriber or Transcriber(settings), upload or s3.upload, root)
+    voice = VoiceNotes(bus, outbox, intake, provider, transcriber or Transcriber(settings), upload or s3.upload, root,
+                       terms=sentinel.terms if sentinel else None)
     bot = Bot(settings, bus, store, provider, outbox, intake, sign=s3.signed_url, sentinel=sentinel, voice=voice)
     bus.subscribe(CallOpened, bot.on_call_opened)
     if callbacks:  # both send call-back links

@@ -47,6 +47,8 @@ class DealBook:
     calls: dict[int, Call] = field(default_factory=dict)
     names: dict[Role, str] = field(default_factory=dict)
     turns: list[GawahTurn] = field(default_factory=list)  # what Gawah said on the calls, in order
+    # Who has a term in dispute (terms.disputed), until their own yes (terms.confirmed) lifts it.
+    disputed_by: dict[ItemKey, set[Role]] = field(default_factory=dict)
 
     def call(self, call_no: int) -> Call:
         return self.calls.setdefault(call_no, Call())
@@ -67,6 +69,21 @@ class DealBook:
         if role is None:
             return "someone"
         return self.names.get(role) or f"the {role.value}"
+
+    def dispute(self, role: Role, item: ItemKey | None) -> None:
+        for key in [item] if item else list(ItemKey):
+            self.disputed_by.setdefault(key, set()).add(role)
+
+    def lift(self, role: Role, item: ItemKey | None) -> set[ItemKey]:
+        """Their yes lifts their own dispute. The terms nobody disputes any more."""
+        lifted = set()
+        for key in [item] if item else list(ItemKey):
+            held = self.disputed_by.get(key)
+            if held and role in held:
+                held.discard(role)
+                if not held:
+                    lifted.add(key)
+        return lifted
 
     def learn_people(self, started: CallStarted) -> None:
         for person in started.people:

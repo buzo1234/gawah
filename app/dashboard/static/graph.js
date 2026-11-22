@@ -9,6 +9,7 @@
 import { graph, visible } from "./lanes.js";
 import { TERM_TONE, TERM_WORD, factLatency, rupees, splitMoney, statusWord, took, valueOf, valueParts } from "./board.js";
 import { h, measure, pointable, sync } from "./dom.js";
+import { nameOf } from "./state.js";
 
 const $ = (id) => document.getElementById(id);
 const CHIP_TEXT = 268; // where a chip's words are cut, a little short of where its box wraps them (280)
@@ -74,7 +75,15 @@ function node(state, row) {
         v.contradicted && h("span", { class: "contradicted pill bad", title: `Contradicted · ${v.contradicted}` }, "Contradicted"))),
     h("div", { class: "l2" },
       h("div", { class: `value${parts.bare ? " money" : ""}${pending ? " none" : ""}` }, shown),
-      owedLine(row.owed)));
+      v.versus ? versusLine(state, v.versus) : owedLine(row.owed)));
+}
+
+// A term in dispute: the other version, beside the one on record, in its speaker's words.
+function versusLine(state, versus) {
+  const fact = state.facts[versus.factId];
+  const said = fact?.value_rupees != null ? rupees(fact.value_rupees) : `“${versus.value}”`;
+  const who = nameOf(state, versus.by);
+  return h("span", { class: "owed versus", title: `${who}'s version: ${versus.value}` }, `${who}: `, fitLines(said, NODE_TEXT / 2, "500 16px").replace("\n", " "));
 }
 
 function check() {

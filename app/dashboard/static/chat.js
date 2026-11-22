@@ -6,7 +6,8 @@
 // button inside the bubble, the reply buttons as rows under it. A tapped reply button is
 // sent as Meta sends a tap, with the button's id; the id ("yes:<id>" or "no:<id>", as the
 // question was sent) is found from the question's own event: record.confirm_requested
-// with the same words, or the fact.changed the question asks about.
+// with the same words, or the fact.changed the question asks about; for a term in dispute
+// ("term-ok:<id>" or "term-other:<id>"), the term.dispute step that offered the choice.
 
 const CALL_PATH = /^\/(call|callback)\/([^/]+)\/(hirer|worker)\/?$/;
 // The labels Meta's link button carries (app/whatsapp/words.py), for a call and a call-back.
@@ -51,7 +52,11 @@ export function buttonIds(m, words, asked) {
   const change = !record && asked.filter((e) => e.name === "fact.changed" && e.deal_id === m.deal_id && e.ts <= m.ts
     && e.proposed_by !== m.role && !["confirmed_both", "withdrawn"].includes(e.status)).at(-1);
   const id = record?.record_id || change?.change_id;
-  return id ? [`yes:${id}`, `no:${id}`] : null;
+  if (id) return [`yes:${id}`, `no:${id}`];
+  // A term in dispute: the choices go out just before the step that offers them.
+  const dispute = asked.find((e) => e.name === "term.dispute" && e.deal_id === m.deal_id && e.person === m.role
+    && ["opened", "reminded"].includes(e.step) && e.ts >= m.ts);
+  return dispute ? [`term-ok:${dispute.dispute_id}`, `term-other:${dispute.dispute_id}`] : null;
 }
 
 // The button already chosen, as WhatsApp shows it: the question's own event says it was
@@ -62,7 +67,13 @@ export function chosen(m, replies, ids, messages, asked, tapping) {
     const next = messages.find((x) => x.direction === "in" && digits(x.phone) === digits(m.phone) && x.ts > m.ts);
     return next && replies.includes((next.text || "").trim()) ? next.text.trim() : tapping.get(m.event_id) || null;
   }
-  const id = ids[0].slice(4);
+  const id = ids[0].slice(ids[0].indexOf(":") + 1);
+  if (ids[0].startsWith("term-")) {
+    const after = asked.filter((e) => e.name === "term.dispute" && e.dispute_id === id && e.ts > m.ts);
+    if (after.some((e) => e.step === "settled" && e.how === "recording")) return replies[0];
+    if (after.some((e) => e.step === "asked")) return replies[1];
+    return tapping.get(m.event_id) || null;
+  }
   const done = id && asked.find((e) => (e.name === "record.confirmed" && e.record_id === id)
     || (e.name === "fact.changed" && e.change_id === id && ["confirmed_both", "withdrawn"].includes(e.status)));
   if (done) return replies[(done.name === "record.confirmed" ? done.confirmed : done.status === "confirmed_both") ? 0 : 1];

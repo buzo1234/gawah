@@ -99,6 +99,7 @@ class SpeakReason(StrEnum):
     OPEN_TERMS = "open_terms"  # a term just settled and a pause came: Gawah names the terms still open
     UNANSWERED_QUESTION = "unanswered_question"  # a question about the record, to no one by name, that nobody answered
     READ_BACK = "read_back"  # someone asked for the agreed terms to be read back
+    DISPUTE_OPEN = "dispute_open"  # a term disputed on a call-back is still open: raised when a call on the deal opens
 
 
 class CallKind(StrEnum):
@@ -538,6 +539,33 @@ class FactChanged(Event):
     said: str | None = None  # the words of this step
 
 
+class DisputeStep(StrEnum):
+    OPENED = "opened"  # both told what the record holds; the person who said no offered two buttons
+    ASKED = "asked"  # they said something else was agreed: asked for their version
+    VERSION = "version"  # their version, in their own words: memory keeps it as a said fact
+    REMINDED = "reminded"  # the one reminder to both, with the two buttons again
+    SETTLED = "settled"  # closed; nothing of it holds the agreement any more
+
+
+class TermDispute(Event):
+    """Sent by whatsapp (the Sentinel) for each step of a term disputed on a call-back, all with
+    the same dispute_id: the event_id of the terms.disputed that opened it. The agreement is held
+    while one is open. Listened to by memory (keeps the version as a said fact), brain (a deal call
+    raises an open one, as judge.speak dispute_open), dashboard."""
+
+    name: Literal["term.dispute"] = "term.dispute"
+    dispute_id: str
+    item: ItemKey
+    person: Role  # who said no
+    step: DisputeStep
+    fact_id: str | None = None  # the term on record it is about
+    version: str | None = None  # step version: what they say was agreed, in their words
+    version_fact_id: str | None = None  # step version: the id memory gives the said fact it makes of it
+    media_key: str | None = None  # step version, sent as a voice note: the note, as in whatsapp.voice_note
+    seconds: float | None = None  # the voice note's length
+    how: str | None = None  # step settled: "recording" (they said it was right), "confirmed", "changed", or "kept" (both confirmed the figure on record again, on a call)
+
+
 class CrewAgent(StrEnum):
     EARS = "ears"
     SCRIBE = "scribe"
@@ -581,6 +609,7 @@ AnyEvent = Annotated[
     | FactRecorded
     | FactConflict
     | FactChanged
+    | TermDispute
     | AgentNote,
     Field(discriminator="name"),
 ]

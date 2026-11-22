@@ -252,6 +252,45 @@ async def test_a_no_or_a_line_about_the_term_plays_nothing(world):
     await until(lambda: "played the clip of what was said" in notes(world))
 
 
+async def test_a_dispute_from_the_call_back_is_raised_with_the_record_then_settled_by_both_through_the_change_tools(world):
+    """The amount was disputed after call 1: its record is in memory, not among this call's facts. Gawah
+    says what the record holds and the other version, offers the recording, plays it on a yes, and then
+    a value both say (here the one on record) goes through propose_change and both yeses."""
+    seat, link = await world.call()
+    link.replies = [{"text": "Amount par baat baaki hai. Pehli call par terah hazaar tay hua tha. Ramesh ji ke hisaab se "
+                             "chaudah. Kya main woh recording sunaun?", "ms": 400}]
+    world.bus.publish(JudgeSpeak(
+        deal_id="d1", instruction='The total amount is still in dispute. Ramesh says it was: "14,000".', to=Audience.BOTH,
+        reason=SpeakReason.DISPUTE_OPEN, item=ItemKey.AMOUNT, fact_ids=["f-amount"], after_line=2))
+    await until(lambda: said(world))
+    await settle(world, link)
+    [situation] = [a for a in link.asked() if "still to be settled" in a]
+    assert "[f-amount] confirmed" in situation and "13,000 rupees" in situation, "the record, looked up in memory"
+    assert "Kya main woh recording sunaun?" in situation and "do not suggest one" in situation
+    assert link.of("response.create")[-1]["response"]["tool_choice"] == "none"
+
+    world.bus.publish(line(3, Role.WORKER, "Haan, sunaiye."))
+    await until(lambda: "played the clip of what was said" in notes(world))
+    await settle(world, link)
+
+    link.replies = [
+        {"calls": [("propose_change", {"fact_id": "f-amount", "new_value": "13,000 rupees", "proposed_by": "worker",
+                                       "said": "terah hi tha"})]},
+        {"text": "Toh kya aap dono total terah hazaar par sahmat hain? Dono haan kahiye.", "ms": 200},
+    ]
+    world.bus.publish(line(4, Role.WORKER, "Achha, terah hi tha. Theek hai."))
+    [proposed] = await until(lambda: world.of(FactChanged))
+    assert (proposed.status, proposed.fact_id, proposed.new_value) == (ChangeStatus.PROPOSED, "f-amount", "13,000 rupees")
+    assert "in dispute (the record: fact f-amount)" in link.asked()[-2]
+    await settle(world, link)
+    link.replies = [{"calls": [("confirm_change", {"change_id": proposed.change_id, "person": "worker", "agrees": True, "said": "haan"}),
+                               ("confirm_change", {"change_id": proposed.change_id, "person": "hirer", "agrees": True, "said": "haan"})]},
+                    {"text": "Dono ne haan kaha.", "ms": 200}]
+    world.bus.publish(line(5, Role.HIRER, "Haan."))
+    world.bus.publish(line(6, Role.WORKER, "Haan ji."))
+    await until(lambda: world.of(FactChanged)[-1].status is ChangeStatus.CONFIRMED_BOTH, timeout=5)
+
+
 async def test_a_change_is_proposed_and_holds_only_when_both_say_yes(world):
     seat, link = await world.call()
     for fact in FACTS:

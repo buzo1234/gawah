@@ -7,7 +7,7 @@ from app.contracts import (
     ContractReady, CrewAgent, DealRequested, Direction, Event, Fact, FactChanged, FactConflict, FactKind,
     FactRecorded, FactSource, FactStatus, ItemKey, ItemState, JudgeSpeak, JudgeSpoke, Person, Record,
     RecordConfirmed, RecordConfirmRequested, RecordKind, RecordReceived, ReplyTimeout, Role,
-    SpeakReason, TermsConfirmed, TermsDisputed, TranscriptLine, VoiceNote, WhatsAppMessage, empty_checklist,
+    SpeakReason, TermDispute, DisputeStep, TermsConfirmed, TermsDisputed, TranscriptLine, VoiceNote, WhatsAppMessage, empty_checklist,
 )
 from fakes import RAMESH, SUNITA
 
@@ -80,6 +80,10 @@ def sample_events(deal_id: str = "sample") -> list[Event]:
             fact_ids=[advance.id], line_nos=[16],
         ),
         CallOpened(deal_id=deal_id, call_no=2, opened_by=Role.HIRER, room=f"deal-{deal_id}-2"),
+        TermDispute(
+            deal_id=deal_id, dispute_id="dispute0001", item=ItemKey.ADVANCE, person=Role.WORKER, step=DisputeStep.VERSION,
+            fact_id=advance.id, version="Advance 10 hazaar tay hua tha.", version_fact_id="version0001",
+        ),
         VoiceNote(
             deal_id=deal_id, speaker=Role.WORKER, phone=RAMESH.phone, text="Balcony bhi karni hai, 2000 aur lagenge.",
             media_key=f"recordings/{deal_id}/voice/wamid.VOICE1.ogg", media_type="audio/ogg", message_id="wamid.VOICE1",

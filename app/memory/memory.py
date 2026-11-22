@@ -13,7 +13,7 @@ from app.bus import Bus
 from app.contracts import (
     CallEnded, CallKind, CallStarted, ChecklistUpdated, CrewAgent, AgentNote, Event, Fact, FactChanged,
     FactConflict, FactKind, FactRecorded, FactSource, FactStatus, ItemKey, JudgeSpeak, JudgeSpoke, OwedRow, RecordConfirmed,
-    RecordReceived, Role, TermsConfirmed, TermsDisputed, TermView, TranscriptLine, VoiceNote,
+    RecordReceived, Role, TermDispute, TermsConfirmed, TermsDisputed, TermView, TranscriptLine, VoiceNote,
 )
 from app.memory import clips, voice_notes
 from app.memory.book import IST, Book, DealBook
@@ -58,7 +58,7 @@ class Memory:
             (TranscriptLine, self.scribe.on_line), (ChecklistUpdated, s.on_checklist),
             (TermsConfirmed, s.on_confirmed), (TermsDisputed, s.on_disputed), (RecordReceived, s.on_record),
             (RecordConfirmed, s.on_record_confirmed), (FactChanged, s.on_changed), (VoiceNote, self.voice.on_note),
-            (JudgeSpeak, self.gawah.on_speak), (JudgeSpoke, self.gawah.on_spoke),
+            (JudgeSpeak, self.gawah.on_speak), (JudgeSpoke, self.gawah.on_spoke), (TermDispute, s.on_dispute),
         ]:
             bus.subscribe(event_type, handler)
 
@@ -77,6 +77,10 @@ class Memory:
                 self.gawah.asked(e)
             elif isinstance(e, JudgeSpoke):
                 self.gawah.spoke(e)
+            elif isinstance(e, TermsDisputed):
+                self.book.deal(e.deal_id).dispute(e.person, e.item)
+            elif isinstance(e, TermsConfirmed):
+                self.book.deal(e.deal_id).lift(e.person, e.item)
         for deal in self.book.deals.values():
             broken = first_break(deal.versions)
             if broken is not None:
@@ -196,7 +200,8 @@ class Memory:
         agreed balance figure, or else the amount less the advance; payments towards the
         balance or the amount count."""
         deal = self.book.deal(deal_id)
-        agreed = {k: (deal.current(k).value_rupees if deal.current(k) else None) for k in (ItemKey.AMOUNT, ItemKey.ADVANCE, ItemKey.BALANCE)}
+        # The figure on record, in dispute or not: a dispute holds the agreement, not what is owed.
+        agreed = {k: (deal.record(k).value_rupees if deal.record(k) else None) for k in (ItemKey.AMOUNT, ItemKey.ADVANCE, ItemKey.BALANCE)}
         payments = [f for f in deal.standing() if f.kind == FactKind.PAYMENT and f.status not in NOT_COUNTED and f.value_rupees]
 
         def towards(p: Fact) -> ItemKey:

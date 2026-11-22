@@ -6,6 +6,8 @@ treated like a line that person said.
 - A voice note that says money was paid or work was done is a record (records' intake):
   one person's word, so the other is asked yes or no. The record owns it, so memory does
   not read it again: one voice note is never two payment facts.
+- Sent when Gawah has asked for their version of a term they disputed, it is that version
+  (records' term_disputes): nothing else is made of it.
 - Anything else is memory's: whatsapp.voice_note goes out, the Scribe reads it as one line
   the sender said, and the Sentinel answers what it finds (a contradiction, a change).
 
@@ -44,10 +46,11 @@ def key_for(deal_id: str, message_id: str, media_type: str | None) -> str:
 class VoiceNotes:
     def __init__(
         self, bus: Bus, outbox: Outbox, intake: Intake, provider: Provider, transcriber: Transcriber,
-        upload: Upload, root: Path,
+        upload: Upload, root: Path, terms=None,
     ) -> None:
         self.bus, self.outbox, self.intake, self.provider = bus, outbox, intake, provider
         self.transcriber, self.upload, self.root = transcriber, upload, root
+        self.terms = terms  # the Sentinel's TermDisputes, or None with no memory
 
     async def take(self, deal: Deal, sender: Person, message: Inbound) -> None:
         """Hear one voice note and do what it calls for. Raises if it could not be heard."""
@@ -71,6 +74,9 @@ class VoiceNotes:
             self.outbox.send(deal.id, sender.phone, sender.role, words.VOICE_EMPTY)
             return
         voice = {"message_id": message_id, "media_key": key, "seconds": seconds}
+        if self.terms is not None and self.terms.waiting(deal.id, sender.role):
+            await self.terms.version(deal, sender, text, voice)
+            return
         record = await self.intake.take(deal, sender, text, media_url=key, message_id=message.sid, voice=voice)
         self.bus.publish(VoiceNote(
             deal_id=deal.id, speaker=sender.role, phone=sender.phone, text=text, media_key=key,

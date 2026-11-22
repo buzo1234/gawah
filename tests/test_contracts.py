@@ -15,6 +15,7 @@ PLAN_EVENTS = {
     "judge.speak", "judge.spoke", "terms.confirmed", "terms.disputed", "contract.ready",
     "record.received", "record.confirm_requested", "record.confirmed", "reply.timeout",
     "whatsapp.message", "whatsapp.voice_note", "fact.recorded", "fact.conflict", "fact.changed", "agent.note",
+    "term.dispute",
 }
 CREW_EVENTS = {"fact.recorded", "fact.conflict", "fact.changed", "agent.note"}
 
@@ -49,6 +50,7 @@ def test_judge_speak_carries_what_whom_which_item_and_why():
     assert {r.value for r in SpeakReason} == {
         "addressed_directly", "term_unclear", "conflicting_figures", "wrapping_up",
         "ambiguous", "contradicts_record", "change_proposed", "open_terms", "unanswered_question", "read_back",
+        "dispute_open",
     }
 
 
