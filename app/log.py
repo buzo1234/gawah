@@ -1,4 +1,4 @@
-"""Two logging rules from AGENTS.md, in one place: every line carries the deal id,
+"""Two logging rules from docs/DEVELOPMENT.md, in one place: every line carries the deal id,
 and phone numbers show only their last 4 digits."""
 
 import logging

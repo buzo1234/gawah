@@ -28,7 +28,7 @@ Goal: <what this stream builds, one or two sentences>
 Owns: <the folders it may edit>
 Events: listens to <...>; sends <...>
 Done when: <the exact line from the PLAN.md table>
-Rules: read AGENTS.md first. Build against the fakes. Do not edit
+Rules: read docs/DEVELOPMENT.md first. Build against the fakes. Do not edit
   contracts.py, bus.py, or main.py. Use prove-it-works before reporting.
 ```
 

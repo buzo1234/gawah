@@ -21,7 +21,7 @@ Scaffold a thin skeleton on `main` first, with the shared event types frozen and
 
 ## Use the free plans with care
 
-LiveKit and Twilio are on free plans. The rules are in `tech-feasibility.md` and `AGENTS.md`. In short: build against the fakes, open a real room or send a real message only for a spike, a manual check, or a demo run, and always close the room after. Sage2's free usage is the tightest of all - about a dozen full-length calls a month - so the brain is built against saved results and goes live only to tune and to demo.
+LiveKit and Twilio are on free plans. The rules are in `tech-feasibility.md` and `docs/DEVELOPMENT.md`. In short: build against the fakes, open a real room or send a real message only for a spike, a manual check, or a demo run, and always close the room after. Sage2's free usage is the tightest of all - about a dozen full-length calls a month - so the brain is built against saved results and goes live only to tune and to demo.
 
 ## Folder layout
 
@@ -151,7 +151,7 @@ workmux add dashboard -b -P <brief file>
 
 One orchestrator session writes the briefs, starts the agents, watches them, reviews each stream's work, and opens a pull request for it. The user reviews and merges each pull request. The orchestrator does not write code.
 
-The full rules for agents are in `AGENTS.md`, and the working routines (briefing a stream, running a spike, merging, handing off, checking the demo) are skills in `.claude/skills/`.
+The full rules for agents are in `docs/DEVELOPMENT.md`, and the working routines (briefing a stream, running a spike, merging, handing off, checking the demo) are skills in `.claude/skills/`.
 
 Rules every agent is given:
 

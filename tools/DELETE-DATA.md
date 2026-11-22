@@ -1,6 +1,6 @@
 # Removing a deal's data when someone asks
 
-Gawah's privacy policy says either person can send "delete my data" to Gawah on WhatsApp, and their deal's data will then be removed. Gawah also understands "mera data delete karo" and "data hata do". It answers in one line that the request is received. It deletes nothing itself, because deleting recordings and the database needs a person (AGENTS.md, "Stop and ask"). Do these steps by hand, soon after the request.
+Gawah's privacy policy says either person can send "delete my data" to Gawah on WhatsApp, and their deal's data will then be removed. Gawah also understands "mera data delete karo" and "data hata do". It answers in one line that the request is received. It deletes nothing itself, because deleting recordings and the database needs a person (docs/DEVELOPMENT.md, "Stop and ask"). Do these steps by hand, soon after the request.
 
 ## 1. Find the request
 

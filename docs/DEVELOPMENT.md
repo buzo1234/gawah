@@ -1,4 +1,6 @@
-# AGENTS.md
+# Development guide
+
+The rules and commands for this repository's own coding agents. The reviewer's guide (setup, running, journeys) is the root `AGENTS.md`.
 
 Gawah is an AI witness for deals made on a call: it joins the call, asks about missing terms, writes the contract, and tracks payments on WhatsApp. This is a 2-day hackathon build. For the demo the call runs in the browser on LiveKit. WhatsApp runs on the Twilio sandbox, or on Meta's Cloud API test number when `.env` has `WHATSAPP_PROVIDER=meta` (setup and the live check: `tools/META-SETUP.md`).
 
@@ -60,7 +62,7 @@ LiveKit, Twilio and Meta's WhatsApp test number are on free plans with monthly a
 | Remove everything tagged `app=gawah` from AWS, after typing `gawah` | `tools/deploy/teardown.sh` |
 | Record the Scribe's replies for a practice call (a fixture's `gawah` turns are sent as `judge.spoke` after their line): the live model reads each line (about 31 small-model calls), prints the facts, conflicts and time per line, and saves the replies to `tests/memory/recorded/` | `uv run python -m tests.memory.record fixtures/<call>.json --save` |
 | Record the Scribe's replies for the voice notes in `fixtures/voice-notes/` (read after `call_two_amounts` is replayed from its saved replies; 4 small-model calls) | `uv run python -m tests.memory.record_voice --save` |
-| Replay a practice call into the running server, at real speed | `uv run python -m fakes.replayer fixtures/<call>.json` |
+| Replay a practice call into the running server, at real speed (`uv run python tools/replay.py ...` is the same, under a name for reviewers) | `uv run python -m fakes.replayer fixtures/<call>.json` |
 | Replay it faster (10 = ten times faster, 0 = no waiting) | `uv run python -m fakes.replayer fixtures/<call>.json --speed 10` |
 | Run the server with every outside service faked: no `.env`, no keys, every phone simulated, a fake LiveKit and voice model, every call answered from the brain's saved answers, no Chrome or S3 for the contract. Add `--whatsapp meta` for Meta's message shapes (reply buttons, link buttons, reactions, the contract as a captioned PDF), shown as text on the dashboard | `uv run python -m tests.offline --port 8000` |
 | Send the sample contract (PDF and voice note) to both people of the newest deal through the running server, for the Meta live check (2 S3 uploads, 2 WhatsApp messages per real phone) | `uv run python -m tests.meta_contract_live` |
@@ -188,3 +190,5 @@ Project skills are in `.claude/skills/`. Each is one short file.
 ## Keep this file true
 
 If you change a command, a folder, or a rule, update this file in the same change. A wrong instruction here is worse than a missing one.
+
+The root `AGENTS.md` is the reviewers' guide: how a stranger sets up, runs and uses the product. If a change touches a command, a setting, a URL or a journey it describes, update it too, and check `.env.example` against the settings the code reads. It, `README.md` and `.env.example` present Gawah as a product: keep the words demo, hackathon, rehearsal, dry run, pitch, fake and prototype out of them and out of any command, file or folder name they tell a reviewer to use (simulated and offline mode are fine).
