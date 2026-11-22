@@ -1,0 +1,41 @@
+{
+ "voice": "verse",
+ "improvised": false,
+ "turns": [
+  {
+   "line": 1,
+   "sunita": "Main Sunita hoon. Main sehmat hoon.",
+   "actor": [
+    "Main Ramesh hoon, painter hoon. Main bhi sehmat hoon, ji."
+   ]
+  },
+  {
+   "line": 3,
+   "sunita": "Mujhe apna flat paint karwana hai. Two BHK hai, Indirapuram mein, third floor pe.",
+   "actor": [
+    "Haan ji Sunita ji, do coat aur putty ka touch-up, material ke saath pachees hazaar lagega. Third floor ho ya ground, kaam toh neat hi karna hai, ji. Rate ismein set hai."
+   ]
+  },
+  {
+   "line": 5,
+   "sunita": "Pachees hazaar bahut zyada hai. Mera budget twenty thousand ka hai.",
+   "actor": [
+    "Arre Sunita ji, bees mein possible nahi hai, labour hi teen aadmi ka hai. Material bhi mera, aur do coat ke saath putty touch-up. Chalo, baees hazaar final kar lo. Isse neeche main nahi ja paunga, ji."
+   ]
+  },
+  {
+   "line": 7,
+   "sunita": "Theek hai, twenty two thousand done. Lekin material aapka hoga, upar se koi extra charge nahi.",
+   "actor": [
+    "Haan ji, theek hai. Material mera hi hoga, upar se koi extra charge nahi, ji. Ab bas ek cheez: advance kitna doge, Sunita ji? Material lene ke liye paanch hazaar pehle chahiye."
+   ]
+  }
+ ],
+ "heard": [
+  "मैं सुनिता हूँ। मैं सहमत हूँ।",
+  "मुझे अपना फ्लैट पेंट करवाना है, टू BHK है, एक तरा फ्लोर, थर्ड फ्लोर।",
+  "अच्छे से कर बहुत ज़्यादा। मेरा बजट है ट्वेंटी थाउज़ेंड का।",
+  "ठीक है, 22,000 का, लेकिन मटेरियल आपका होगा, ऊपर से कोई एक्स्ट्रा चार्ज नहीं।"
+ ],
+ "realtime_minutes": 1.01
+}

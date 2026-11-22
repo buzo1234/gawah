@@ -44,6 +44,7 @@ class Actor:
         self._reply: str | None = None  # the reply being played, and its item, for telling the model where it was cut
         self._item: str | None = None
         self._cut: set[str] = set()
+        self._logged: set[str] = set()  # reply items already in the log
         self._tasks: set[asyncio.Task] = set()
         self._done = asyncio.Event()
         self._closing: asyncio.Task | None = None
@@ -135,21 +136,42 @@ class Actor:
         elif kind == "input_audio_buffer.speech_started":
             await self._talked_over()
         elif kind == "response.output_audio_transcript.done":
-            text = " ".join(str(event.get("transcript", "")).split())
-            if text:
-                self.said.append(text)
-                self.log.info("actor (%s) said: %s", self.role.value, text[:300])
+            self._said(event.get("item_id"), event.get("transcript"))
         elif kind == "conversation.item.input_audio_transcription.completed":
             text = " ".join(str(event.get("transcript", "")).split())
             if text:
                 self.heard.append(text)
                 self.log.info("actor heard: %s", text[:300])
         elif kind == "response.done":
+            self._said_in(event["response"])
             await self._answer_tools(event["response"])
         elif kind == "error":
             self.log.warning("actor's voice model error: %s", str((event.get("error") or {}).get("message"))[:200])
         elif kind == "closed":
             self.stop("the voice model connection closed")
+
+    def _said(self, item: str | None, transcript) -> None:
+        """Every reply in the log, deal call or call-back, from the model's own transcript of it, once."""
+        text = " ".join(str(transcript or "").split())
+        if item and item in self._logged:
+            return
+        if item:
+            self._logged.add(item)
+        if text:
+            self.said.append(text)
+            self.log.info("actor (%s) said: %s", self.role.value, text[:300])
+        else:
+            self.log.info("actor (%s) spoke, with no transcript of it", self.role.value)
+
+    def _said_in(self, response: dict) -> None:
+        """The reply as response.done has it: in case its transcript event never came."""
+        for out in response.get("output") or []:
+            if out.get("type") == "function_call":
+                self.log.info("actor (%s) waited", self.role.value)
+            elif out.get("type") == "message" and out.get("id") not in self._logged:
+                audio = [c for c in out.get("content") or [] if c.get("type") == "output_audio"]
+                if audio:
+                    self._said(out.get("id"), " ".join(str(c.get("transcript") or "") for c in audio))
 
     async def _talked_over(self) -> None:
         """Someone started speaking: a person stops when talked over, so go quiet and tell the model."""

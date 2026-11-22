@@ -136,7 +136,7 @@ def test_it_takes_the_workers_seat_through_the_pages_own_join(world):
     assert url == LIVEKIT_SETTINGS.livekit_url and claims["sub"] == "worker" and claims["video"]["room"] == "deal-d1-1"
     # It plays Ramesh from the demo story, with a man's voice and the wait tool.
     config = links[0].config
-    assert links[0].opened and config["audio"]["output"]["voice"] == "ash" and config["tools"] == [persona.WAIT_TOOL]
+    assert links[0].opened and config["audio"]["output"]["voice"] == "cedar" and config["tools"] == [persona.WAIT_TOOL]
     said = config["instructions"]
     assert "You are Ramesh" in said and "You: Do coat aur putty ka touch-up" in said and "Sunita: Pachees hazaar bahut zyada" in said
     assert "[After the line above, Gawah asks Sunita when the balance will be paid.]" in said
@@ -273,7 +273,7 @@ def test_what_it_hears_goes_to_the_model_in_100_ms_pieces(world):
 
 def test_the_callback_persona_says_yes_to_each_term():
     said = persona.instructions(Role.HIRER, "callback", 1, {Role.HIRER: "Sunita", Role.WORKER: None})
-    assert "You are Sunita" in said and "Haan, sahi hai" in said and "Ramesh" in said
+    assert "You are Sunita" in said and "Haan ji, sahi hai" in said and "Ramesh" in said
 
 
 def test_call_two_has_the_wrong_total_and_the_balcony():
@@ -335,3 +335,28 @@ def test_the_beats_and_numbers_are_still_there():
     assert "you remember pachees hazaar" in worker2 and "do hazaar extra" in worker2 and "balcony" in worker2
     hirer2 = persona.instructions(Role.HIRER, "deal", 2, {Role.HIRER: "Karan", Role.WORKER: "Namesh"})
     assert "chaubees hazaar" in hirer2 and "Namesh" in hirer2 and "Ramesh" not in hirer2
+
+
+def test_every_reply_is_in_the_log_on_a_call_back_too(world, caplog):
+    """Gawah's transcription of the actor can be a bare 'na'; the log shows what the actor itself said,
+    from the model's own transcript, with the deal id, once per reply even if both events carry it."""
+    client, app, livekit, seats, links, _ = world
+    client.post("/actor/start", json={"deal_id": "d1", "role": "worker", "kind": "deal"})
+    app.state.actor.kind = "callback"
+    on = lambda event: client.portal.call(links[0].on_event, event)  # noqa: E731
+    reply = {"type": "message", "id": "i1", "content": [{"type": "output_audio", "transcript": "Haan ji, sahi hai."}]}
+    with caplog.at_level("INFO", logger="gawah.actor"):
+        on({"type": "response.done", "response": {"output": [reply]}})  # no transcript event came
+        on({"type": "response.output_audio_transcript.done", "item_id": "i2", "transcript": "Ji haan, theek hai."})
+        on({"type": "response.done", "response": {"output": [{**reply, "id": "i2"}]}})
+        on({"type": "response.done", "response": {"output": [{"type": "function_call", "status": "completed", "call_id": "c1"}]}})
+    said = [r.getMessage() for r in caplog.records if r.name == "gawah.actor"]
+    assert app.state.actor.said == ["Haan ji, sahi hai.", "Ji haan, theek hai."]
+    assert said.count("deal=d1 actor (worker) said: Haan ji, sahi hai.") == 1
+    assert said.count("deal=d1 actor (worker) said: Ji haan, theek hai.") == 1
+    assert "deal=d1 actor (worker) waited" in said
+
+
+def test_the_call_back_persona_never_answers_with_a_bare_sound():
+    said = persona.instructions(Role.WORKER, "callback", 1, {Role.HIRER: "Karan", Role.WORKER: "Namesh"})
+    assert "Haan ji, sahi hai" in said and "Never answer with a bare one-syllable sound" in said
