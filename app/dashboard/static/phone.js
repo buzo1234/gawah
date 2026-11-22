@@ -9,7 +9,7 @@
 
 // It looks like WhatsApp's chat; chat.js reads each message into what it shows.
 
-import { NO_DEAL } from "./state.js";
+import { NO_DEAL, phoneLabel } from "./state.js";
 import { h, isWebLink } from "./dom.js";
 import { fillIcons, icon } from "./icons.js";
 import { buttonIds, callLink, chosen, parse } from "./chat.js";
@@ -74,8 +74,9 @@ function render() {
   const shown = messages.filter(mine);
   chat.replaceChildren(...(shown.length ? shown.map(bubble) : [h("div", { class: "empty" }, "No messages yet.")]));
   chat.scrollTop = chat.scrollHeight;
-  const found = personWith(number());
-  $("name").textContent = found?.[1].name || "Second phone";
+  $("name").textContent = phoneLabel(people, number(), dealId);
+  // The board titles its frame by whose phone this is, so it is told which number is shown.
+  if (parent !== window) parent.postMessage({ secondPhone: number() }, location.origin);
 }
 
 // ---------- the actor: "AI plays this person" ----------

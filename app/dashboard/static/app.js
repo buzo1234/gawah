@@ -3,7 +3,7 @@
 // Another deal is picked with ?deal=<id>, or by pressing D.
 
 import { NO_DEAL, apply, emptyState } from "./state.js";
-import { h, renderAll, renderChange, renderChecked } from "./render.js";
+import { h, renderAll, renderChange, renderChecked, showPhone } from "./render.js";
 import { checkChain } from "./chain.js";
 import { watchTimeline } from "./timeline.js";
 
@@ -124,6 +124,9 @@ frame.addEventListener("load", () => {
   $("phone-back").hidden = path === "/dashboard/phone";
 });
 $("phone-back").addEventListener("click", () => { frame.src = phonePage; });
+addEventListener("message", (e) => {
+  if (e.origin === location.origin && e.source === frame.contentWindow && typeof e.data?.secondPhone === "string") showPhone(e.data.secondPhone);
+});
 
 function connect() {
   const ws = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/dashboard/ws`);

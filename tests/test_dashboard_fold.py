@@ -151,3 +151,40 @@ const state = emptyState("d-st");
 for (const e of JSON.parse(readFileSync(process.argv[2], "utf8"))) apply(state, e);
 console.log(standing(state, "dates").id);
 """
+
+
+LABELS = """
+import { phoneLabel } from "%s";
+const ramesh = { role: "worker", name: "Ramesh", phone: "+91 00000 00002" };
+const people = { hirer: { name: "Sunita", phone: "+910000000001" }, worker: ramesh };
+console.log(JSON.stringify([
+  phoneLabel(people, "+910000000002", "d1"),
+  phoneLabel(people, "+910000000001", "d1"),
+  phoneLabel({ hirer: { name: "Paras", phone: "+910000000001" } }, "+910000000001", "d1"),
+  phoneLabel({ worker: { phone: "+910000000002" } }, "+910000000002", "d1"),
+  phoneLabel({ hirer: { name: null, phone: "+910000000001" } }, "+910000000001", "d1"),
+  phoneLabel(people, "+919999999999", "d1"),
+  phoneLabel(people, "+910000000002", null),
+  phoneLabel({}, "+910000000002", "no-deal"),
+  phoneLabel(people, null, "d1"),
+]));
+"""
+
+
+@pytest.mark.skipif(not shutil.which("node"), reason="needs Node to run the page's own rule")
+def test_the_second_phone_is_named_for_whose_phone_it_is(tmp_path):
+    script = tmp_path / "labels.mjs"
+    script.write_text(LABELS % (STATIC / "state.js").as_uri())
+    run = subprocess.run(["node", script], capture_output=True, text=True, timeout=30)
+    assert run.returncode == 0, run.stderr
+    assert json.loads(run.stdout) == [
+        "Ramesh's phone",  # the number matched in any spacing
+        "Sunita's phone",
+        "Paras's phone",  # a name ending in s still takes 's
+        "The worker's phone",  # no name known yet: the role
+        "The hirer's phone",
+        "Second phone",  # a number no one on the deal has
+        "Second phone",  # no deal
+        "Second phone",
+        "Second phone",
+    ]
