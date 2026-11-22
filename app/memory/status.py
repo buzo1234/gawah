@@ -6,13 +6,14 @@ terms.disputed      disputed on the call-back
 record.received     a payment or work record from WhatsApp, linked to the term it counts towards
 record.confirmed    the other person's yes or no to that record (a screenshot sent as proof after a no is kept)
 fact.changed        an amendment both confirmed: a new fact that replaces the old one
+term.dispute        what the person who disputed a term says was agreed: a said fact beside it
 """
 
 import logging
 
 from app.contracts import (
-    Backing, ChangeStatus, ChecklistUpdated, Fact, FactChanged, FactKind, FactSource, FactStatus, ItemKey,
-    ItemState, Record, RecordConfirmed, RecordKind, RecordReceived, Role, TermsConfirmed, TermsDisputed,
+    Backing, ChangeStatus, ChecklistUpdated, DisputeStep, Fact, FactChanged, FactKind, FactSource, FactStatus, ItemKey,
+    ItemState, Record, RecordConfirmed, RecordKind, RecordReceived, Role, TermDispute, TermsConfirmed, TermsDisputed,
 )
 from app.memory import voice_notes
 from app.memory.book import valued
@@ -75,27 +76,53 @@ class Status:
     async def on_confirmed(self, event: TermsConfirmed) -> None:
         await self.m.scribe.settle()
         deal = self.m.book.deal(event.deal_id)
+        lifted = deal.lift(event.person, event.item)  # their own yes lifts their own dispute, nobody else's
         for key in [event.item] if event.item else list(ItemKey):
-            current = deal.current(key)
+            current = deal.record(key)
             if current is None:
                 if event.item and not self._said_confirmed(deal, event) and event.value:
                     self._from_callback(event, key, FactStatus.CONFIRMED)
                 continue
-            if event.person in current.confirmed_by and current.status == FactStatus.CONFIRMED:
+            held = current.status == FactStatus.DISPUTED and key not in lifted
+            if event.person in current.confirmed_by and (held or current.status == FactStatus.CONFIRMED):
                 continue
             fact = self.m.record(current.model_copy(update={
-                "status": FactStatus.CONFIRMED, "confirmed_by": sorted({*current.confirmed_by, event.person}),
+                "status": FactStatus.DISPUTED if held else FactStatus.CONFIRMED,
+                "confirmed_by": sorted({*current.confirmed_by, event.person}),
             }))
-            self.m.note("memory", f"{key.value} confirmed by {deal.name(event.person)}", fact)
+            what = "no longer disputed, confirmed" if key in lifted else "confirmed"
+            self.m.note("memory", f"{key.value} {what} by {deal.name(event.person)}", fact)
 
     async def on_disputed(self, event: TermsDisputed) -> None:
         await self.m.scribe.settle()
         deal = self.m.book.deal(event.deal_id)
+        deal.dispute(event.person, event.item)
         for key in [event.item] if event.item else list(ItemKey):
             current = deal.current(key)
             if current is not None:
                 fact = self.m.record(current.model_copy(update={"status": FactStatus.DISPUTED}))
                 self.m.note("memory", f"{key.value} disputed by {deal.name(event.person)}", fact)
+
+    async def on_dispute(self, event: TermDispute) -> None:
+        """Their version of a disputed term: said by them, beside the term on record, never in
+        its place. Not a change and not agreed, so nothing is asked of anyone because of it."""
+        if event.step is not DisputeStep.VERSION or not event.version or not event.version_fact_id:
+            return
+        deal = self.m.book.deal(event.deal_id)
+        if event.version_fact_id in deal.latest:
+            return
+        voice = event.media_key is not None
+        rupees = one_amount(event.version) if event.item in (ItemKey.AMOUNT, ItemKey.ADVANCE, ItemKey.BALANCE) else None
+        label = event.item.value.replace("_", " ")
+        fact = self.m.record(Fact(
+            id=event.version_fact_id, deal_id=event.deal_id, item=event.item, kind=FactKind.TERM,
+            text=f"{deal.name(event.person)} says the {label} agreed was: {event.version}",
+            value=format_rupees(rupees) if rupees is not None else event.version, value_rupees=rupees,
+            said_by=event.person, status=FactStatus.SAID, source=FactSource.VOICE_NOTE if voice else FactSource.TEXT,
+            quote=event.version, media_url=event.media_key, valid_from=event.ts,
+            start=0.0 if voice else None, end=event.seconds if voice else None,
+        ))
+        self.m.note("memory", f"{label} in dispute: {deal.name(event.person)}'s version kept beside the record", fact)
 
     def _said_confirmed(self, deal, event: TermsConfirmed) -> bool:
         """A term said on a call and never agreed there, put to the person on their call-back as
