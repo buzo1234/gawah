@@ -66,13 +66,14 @@ def register(app: FastAPI, bus: Bus) -> None:
     if not enabled(settings):
         return
     app.state.actor = None
+    leaving: set[Actor] = set()  # replaced while still leaving its last call; shutdown waits for them
     lock = asyncio.Lock()
     # Tests swap these for fakes once the app is built.
     app.state.actor_seat = lambda call_log: Seat(call_log)
     app.state.actor_link = lambda config, on_event, call_log: Realtime(settings.require("openai_api_key"), config, on_event, call_log)
 
     def view(actor: Actor | None) -> dict:
-        if actor is None or actor.state == "ended":
+        if actor is None or not actor.running:
             return {"active": False, "role": None, "kind": None}
         return {"active": True, "role": actor.role.value, "kind": actor.kind, "state": actor.state,
                 "seconds": actor.seconds(), "name": actor.name, "room": actor.room}
@@ -83,18 +84,24 @@ def register(app: FastAPI, bus: Bus) -> None:
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://actor", timeout=30) as http:
             answer = await http.post(f"{path}/join")
         if answer.status_code != 200:
-            raise HTTPException(409 if answer.status_code in (404, 410) else 503, {"join": answer.status_code, **answer.json()})
+            # 410: that call is over. 404: the link is not valid, or a call-back has nothing to ask.
+            raise HTTPException(409 if answer.status_code in (404, 410) else 503, {**answer.json(), "join": answer.status_code})
         return answer.json()
 
     @app.post("/actor/start")
     async def start(body: Start, request: Request) -> dict:
         local_or_keyed(request)
         async with lock:
+            # An actor whose room closed or whose call ended is only leaving: it does not hold the seat.
+            # The next call's link often comes while it is still leaving (about 2 s), so it is replaced.
             running: Actor | None = app.state.actor
-            if running and running.state != "ended":
+            if running and running.running:
                 if (running.deal_id, running.role, running.kind) == (body.deal_id, body.role, body.kind):
                     return view(running)
-                raise HTTPException(409, {"error": "busy", **view(running)})
+                raise HTTPException(409, {"error": "busy", "deal_id": running.deal_id, **view(running)})
+            if running and running.state == "ending":
+                leaving.add(running)
+                running.on_over = leaving.discard
             deal = await app.state.store.deal(body.deal_id)
             if deal is None:
                 raise HTTPException(404, "no such deal")
@@ -119,7 +126,7 @@ def register(app: FastAPI, bus: Bus) -> None:
     async def stop(body: Stop, request: Request) -> dict:
         local_or_keyed(request)
         actor: Actor | None = app.state.actor
-        if actor and actor.deal_id == body.deal_id and actor.role is body.role and actor.state != "ended":
+        if actor and actor.deal_id == body.deal_id and actor.role is body.role and actor.running:
             actor.stop("stopped from the dashboard")
             await actor.wait()
         return view(None)
@@ -136,16 +143,17 @@ def register(app: FastAPI, bus: Bus) -> None:
 
     async def call_over(event: CallEnded) -> None:
         actor: Actor | None = app.state.actor
-        if actor and actor.deal_id == event.deal_id and actor.kind == event.kind.value and actor.state != "ended":
+        if actor and actor.deal_id == event.deal_id and actor.kind == event.kind.value and actor.running:
             if event.kind is CallKind.CALLBACK and actor.role not in {p.role for p in event.people}:
                 return
             actor.stop("the call ended")
 
     async def shutdown() -> None:
         actor: Actor | None = app.state.actor
-        if actor and actor.state != "ended":
+        if actor and actor.running:
             actor.stop("server stopping")
-            await actor.wait()
+        for one in {actor, *leaving} - {None}:
+            await one.wait()
 
     bus.subscribe(CallEnded, call_over)
     app.state.on_shutdown.append(shutdown)

@@ -32,7 +32,7 @@ class Actor:
         self.seat = make_seat(self.log)
         config = session(instructions, VOICES[role.value], [persona.WAIT_TOOL])
         self.link = make_link(config, self.on_event, self.log)
-        self.state = "joining"  # joining, waiting, on, ended
+        self.state = "joining"  # joining, waiting, on, ending (leaving in the background), ended
         self.reason: str | None = None
         self.room: str | None = None
         self.said: list[str] = []  # what it said, for the log and the proof
@@ -46,6 +46,12 @@ class Actor:
         self._cut: set[str] = set()
         self._tasks: set[asyncio.Task] = set()
         self._done = asyncio.Event()
+        self._closing: asyncio.Task | None = None
+
+    @property
+    def running(self) -> bool:
+        """Still taking part: once its room closed, its call ended or it was stopped, it is only leaving."""
+        return self.state in ("joining", "waiting", "on")
 
     def seconds(self) -> float | None:
         return round(time.monotonic() - self._on_at, 1) if self._on_at else None
@@ -65,9 +71,9 @@ class Actor:
         self._spawn(self._watch())
 
     def stop(self, reason: str) -> None:
-        if self.state != "ended" and self.reason is None:
-            self.reason = reason
-            asyncio.get_running_loop().create_task(self._close(reason))
+        if self.running and self.reason is None:
+            self.reason, self.state = reason, "ending"
+            self._closing = asyncio.get_running_loop().create_task(self._close(reason))
 
     async def wait(self) -> None:
         await self._done.wait()
@@ -98,7 +104,7 @@ class Actor:
             now = time.monotonic()
             others = self.seat.present() - {"gawah-ears"}
             needed = {self.role.other.value} if self.kind == "deal" else {"gawah"}
-            if needed <= others and self._on_at is None:
+            if needed <= others and self._on_at is None and self.state == "waiting":
                 self._on_at, self.state = now, "on"
             if now - self._made > MAX_S[self.kind]:
                 return self.stop("time limit")
