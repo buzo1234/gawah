@@ -17,6 +17,7 @@ from app.brain.judge import Ambiguity, Conflict, Judge, Proposal, View
 from app.brain.names import People
 from app.brain.sage import Answers, Decisions, yes
 from app.brain.values import TERMS, Kind, Values
+from app.brain.words import names_gawah
 from app.bus import Bus
 from app.contracts import (
     CallKind,
@@ -94,6 +95,13 @@ class Session:
         self.ending = Closing()
         self.tasks: set[asyncio.Task] = set()
         self.ended = False
+        self.asked: dict[int, dict] = {}  # line no -> the model's reading of what it asks of the record
+        self.reading: set[int] = set()  # lines whose reading was asked for
+        self.gawah_said: list[tuple[int, str]] = []  # (after line, words): what Gawah said, for that reading
+        self.paused_after: int | None = None  # the latest line, once a pause has followed it
+        self.spoke_after: int | None = None  # the latest line Gawah has spoken after
+        self.pause_timer = True  # off in a replay, which says when the pauses come (tests/brain/replaying.py)
+        self._pause: asyncio.Task | None = None
 
     # ---- events ----
 
@@ -119,8 +127,14 @@ class Session:
         self._closing_signal()
         await self._find_unclear_item()
         self._look_for_names()
+        answers_gawah = bool(self.gawah_said) and len(self.lines) > 1 and self.gawah_said[-1][0] == self.lines[-2].no
+        if yes(self.answers, "addressed_gawah") or names_gawah(line.text) or answers_gawah:
+            # What it asks of Gawah, if anything: Sage2 may have missed the name, and the first line
+            # after Gawah spoke may answer it ("nahi, pehle recording sunao").
+            self._read(line.no)
         self._decide()
         self._wait_for_silence()
+        self._wait_for_pause()
         # A reply that is already there (a recorded one) lands before the next line.
         await asyncio.sleep(0)
 
@@ -232,6 +246,10 @@ class Session:
         self._decide()
 
     def on_spoke(self, event: JudgeSpoke) -> None:
+        if event.text:  # Gawah's words, whoever asked for them: what the next line may answer
+            self.gawah_said.append((self.lines[-1].no if self.lines else 0, event.text))
+        if event.text or event.start is not None:
+            self.spoke_after = self.lines[-1].no if self.lines else None
         # Gawah also speaks on its own (answers, follow-ups): only our own judge.speaks count here.
         speak = self.speaks.get(event.speak_id or "")
         if speak is None:
@@ -250,6 +268,8 @@ class Session:
     async def end(self) -> None:
         self.ended = True
         self.ending.stop()
+        if self._pause:
+            self._pause.cancel()
         await self.decisions.close()
         if self.tasks:
             _, late = await asyncio.wait(self.tasks, timeout=tuning.END_WAIT_S)
@@ -347,6 +367,47 @@ class Session:
         self._decide(silence=tuning.CLOSING_SILENCE_S)
         self.closing = False
 
+    # ---- a pause, and what a line asks of the record ----
+
+    def _wait_for_pause(self) -> None:
+        if self._pause:
+            self._pause.cancel()
+        self._pause = None
+        if self.pause_timer:
+            self._pause = asyncio.create_task(self._pause_after(len(self.lines)))
+
+    async def _pause_after(self, lines: int) -> None:
+        await asyncio.sleep(tuning.PAUSE_AFTER_LINE_S)
+        if len(self.lines) == lines:
+            self.pause_passed()
+
+    def pause_passed(self) -> None:
+        """Nobody has spoken for PAUSE_S since the latest line. The timer calls this; a replay may too."""
+        if self.ended or not self.lines or self.paused_after == self.lines[-1].no:
+            return
+        self.paused_after = self.lines[-1].no
+        self._read(self.lines[-1].no)
+        self._decide(pause=True)
+
+    def _read(self, line_no: int) -> None:
+        """Ask the model, once per line and off the line's path, what the line asks of the record."""
+        if line_no in self.reading:
+            return
+        self.reading.add(line_no)
+        self._spawn(self._read_line(line_no, self._transcript(gawah=True)))
+
+    async def _read_line(self, line_no: int, transcript: str) -> None:
+        try:
+            got = await self.values.lookup("asked", None, transcript, line_no) or {}
+        except Exception as e:
+            self.log.warning("reading line %s gave nothing (%s: %s)", line_no, type(e).__name__, str(e)[:200])
+            return
+        self.asked[line_no] = got if isinstance(got, dict) else {}
+        if got.get("asks") not in (None, "none") or got.get("named"):
+            self.log.info("line %s asks %s of the record, to %s (named: %s)", line_no, got.get("asks"), got.get("to"), got.get("named"))
+        if not self.ended and self.lines and self.lines[-1].no == line_no:
+            self._decide(pause=self.paused_after == line_no)
+
     # ---- names, and the term left unclear ----
 
     def _look_for_names(self) -> None:
@@ -391,9 +452,14 @@ class Session:
             self.log.warning("%s lookup gave nothing (%s: %s)", kind, type(e).__name__, str(e)[:200])
             return None
 
-    def _transcript(self) -> str:
+    def _transcript(self, gawah: bool = False) -> str:
+        """The call so far, one numbered line each; gawah: with what Gawah said, where it said it."""
         head = sage.preamble(self.who.all)
-        return head + "\n".join(f"{line.no}. {self.who.names[line.speaker]}: {line.text}" for line in self.lines)
+        rows = []
+        for line in self.lines:
+            rows.append(f"{line.no}. {self.who.names[line.speaker]}: {line.text}")
+            rows += [f"Gawah: {text}" for after, text in self.gawah_said if gawah and after == line.no]
+        return head + "\n".join(rows)
 
     # ---- the Judge ----
 
@@ -408,10 +474,23 @@ class Session:
                 found[key] = Proposal(words, speakers.pop() if len(speakers) == 1 else None, [f.id for f in facts])
         return found
 
-    def _decide(self, silence: float = 0.0) -> None:
+    def _bargaining(self) -> bool:
+        """A term still open was offered in the last two lines."""
+        last = self.lines[-1].no
+        return any(
+            f.item and self.items[f.item].state is ItemState.PENDING and f.status is FactStatus.SAID
+            and f.kind in (FactKind.TERM, FactKind.CHANGE) and f.call_no == self.call_no and (f.line_no or 0) >= last - 1
+            and (f.value_rupees is not None or f.value_date is not None or bool((f.value or "").strip()))
+            for f in self.terms.latest.values()
+        )
+
+    def _decide(self, silence: float = 0.0, pause: bool = False) -> None:
         if self.ended or not self.lines:
             return
         line = self.lines[-1]
+        paused = pause or self.paused_after == line.no
+        if paused and not silence:
+            silence = tuning.PAUSE_S
         view = View(
             now=line.end + silence, closing=self.closing, speaker=line.speaker, text=line.text, answers=self.answers,
             items=self.items, unclear=self.unclear, names=self.who.names, conflicts=self.conflicts, held=(held := self._held()),
@@ -419,6 +498,13 @@ class Session:
             proposals=self._proposals(),
             ambiguities=self.ambiguities, follow_up=self.call_no > 1, changed=self._changed(),
             memory_silent=self.facts_heard == 0 and len(self.lines) >= tuning.MEMORY_SILENT_LINES,
+            line_no=line.no, paused=paused, asked=self.asked.get(line.no),
+            settled_at=max(self.ending.settled_on, default=None), bargaining=self._bargaining(),
+            valued={
+                f.item for f in self.terms.latest.values() if f.item and f.call_no == self.call_no and f.line_no == line.no
+                and (f.value_rupees is not None or f.value_date is not None)
+            },
+            gawah_since=self.spoke_after == line.no,
         )
         speak = self.judge.decide(view)
         if speak is None:

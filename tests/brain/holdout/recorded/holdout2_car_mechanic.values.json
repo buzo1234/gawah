@@ -1,6 +1,6 @@
 {
  "fixture": "holdout2_car_mechanic",
- "recorded_at": "2026-11-21T19:48:34+00:00",
+ "recorded_at": "2026-11-22T06:22:52+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "ambiguous:amount@6": {
@@ -54,6 +54,20 @@
   "ambiguous:late_or_unfinished@20": {
    "ambiguous": false,
    "readings": null
+  },
+  "asked:-@20": {
+   "asks": "none",
+   "waits": false,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@28": {
+   "asks": "agreed",
+   "waits": true,
+   "to": "gawah",
+   "item": "amount",
+   "named": null
   }
  }
 }

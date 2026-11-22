@@ -1,6 +1,6 @@
 {
  "fixture": "call_missing_balance",
- "recorded_at": "2026-11-21T19:41:41+00:00",
+ "recorded_at": "2026-11-22T06:31:12+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "names:-@1": {
@@ -100,6 +100,27 @@
   "ambiguous:work@5": {
    "ambiguous": false,
    "readings": null
+  },
+  "asked:-@20": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@31": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@32": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
   }
  }
 }

@@ -1,0 +1,69 @@
+{
+ "fixture": "6aae99c104d1-3",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "names:-@1": {
+   "hirer": "Karan",
+   "worker": null
+  },
+  "names:-@2": {
+   "hirer": "Karan",
+   "worker": "Ramesh"
+  },
+  "ambiguous:amount@1": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@1": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:balance@1": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@5": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@9": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "asked:-@3": {
+   "asks": "agreed",
+   "waits": true,
+   "to": "other",
+   "item": "amount",
+   "named": null
+  },
+  "asked:-@6": {
+   "asks": "agreed",
+   "waits": true,
+   "to": "gawah",
+   "item": "amount",
+   "named": null
+  },
+  "asked:-@7": {
+   "asks": "agreed",
+   "waits": true,
+   "to": "gawah",
+   "item": "amount",
+   "named": null
+  },
+  "asked:-@8": {
+   "asks": "open",
+   "waits": true,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@9": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": "amount",
+   "named": null
+  }
+ }
+}

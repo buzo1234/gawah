@@ -74,7 +74,8 @@ async def play(
 ) -> None:
     """The call's events in order, each handled before the next. Where the next line (or the
     end of the call, `ended_at`) comes CLOSING_SILENCE_S or more after a line, in call
-    seconds, the brain is told that silence passed, as its own timer would on a real call."""
+    seconds, the brain is told that silence passed, as its own timer would on a real call; and
+    where nobody speaks for PAUSE_S after a line, that a pause passed.""" 
     silence_s = silence_s or tuning.CLOSING_SILENCE_S
     people = [Person(**p) for p in fixture["people"]]
     room = f"replay-{deal_id}-{call_no}"
@@ -85,6 +86,13 @@ async def play(
         await emit(TranscriptLine(deal_id=deal_id, call_no=call_no, **line))
         next_at = lines[i + 1]["end"] if i + 1 < len(lines) else ended_at
         session = brain.sessions.get(deal_id)
+        if session:
+            session.pause_timer = False  # the fixture's times say where the pauses are
+            # A pause: nobody speaks for PAUSE_S after this line ends (by when the next line starts).
+            next_start = min((later["start"] for later in lines[i + 1:]), default=ended_at)
+            if next_start - line["end"] >= tuning.PAUSE_S:
+                session.pause_passed()
+                await emit(None)
         if session and next_at - line["end"] >= silence_s and session.ending.waiting:
             session.silence_passed()
             await emit(None)

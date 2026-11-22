@@ -3,7 +3,9 @@ moment to speak. Text only; nothing here talks to the model or to memory."""
 
 import re
 
-from app.contracts import Audience, Fact, FactConflict, FactStatus, JudgeSpeak, Person, Role, TranscriptLine
+from app.contracts import (
+    Audience, ChecklistUpdated, Fact, FactConflict, FactStatus, ItemState, JudgeSpeak, Person, Role, TranscriptLine,
+)
 from app.mouth import tuning
 
 ROLE_SHORT = {Role.HIRER: "paying for the work", Role.WORKER: "doing the work"}
@@ -11,9 +13,11 @@ _SPLIT = re.compile(r"[\s,.!?।|:;\"'()\[\]-]+")
 
 
 def addresses_gawah(text: str) -> bool:
-    """A line that names Gawah. Whole words only: "gawahi" (testimony) must not wake it."""
+    """A line that names Gawah. Whole words only: "gawahi" (testimony) must not wake it. A nasal
+    mark the transcript added ("गवां जी") and a "ji" run on ("गवांजी") still name it."""
     for word in _SPLIT.split(text.lower()):
-        if word in tuning.ADDRESS_WORDS or word.removesuffix("ji").removesuffix("जी") in tuning.ADDRESS_WORDS:
+        bare = word.replace("ं", "").replace("ँ", "")
+        if any(w in tuning.ADDRESS_WORDS for w in (word, bare, bare.removesuffix("ji"), bare.removesuffix("जी"))):
             return True
     return False
 
@@ -22,19 +26,26 @@ def _words(text: str) -> list[str]:
     return [w for w in _SPLIT.split(text.lower()) if w]
 
 
+def asks_for_clip(text: str) -> bool:
+    """Asks to hear the recording, whatever comes first: "nahi, pehle recording sunao" asks for it,
+    "recording mat sunao" does not."""
+    words = _words(text)
+    return any(w in tuning.CLIP_ASK_WORDS for w in words) and not any(w in tuning.CLIP_REFUSE_WORDS for w in words)
+
+
 def wants_clip(text: str) -> bool:
-    """A yes to the offer to play the recording, or asking for it: "Haan, sunaiye", "haan ji",
+    """A yes to the offer to play the recording, or asking for it: "Haan, sunaiye", "haan ji", "haan suno",
     "recording chalaiye". A yes that goes on about the term ("haan ji, baees hi tha") is not one."""
+    if asks_for_clip(text):
+        return True
     words = _words(text)
     if any(w in tuning.CLIP_NO_WORDS for w in words):
         return False
-    if any(w in tuning.CLIP_ASK_WORDS for w in words):
-        return True
     return bool(words) and len(words) <= 3 and all(w in tuning.CLIP_YES_WORDS for w in words)
 
 
 def declines_clip(text: str) -> bool:
-    return any(w in tuning.CLIP_NO_WORDS for w in _words(text)) and not any(w in tuning.CLIP_ASK_WORDS for w in _words(text))
+    return any(w in tuning.CLIP_NO_WORDS or w in tuning.CLIP_REFUSE_WORDS for w in _words(text)) and not asks_for_clip(text)
 
 
 def clip_moment(name: str, fact_id: str) -> str:
@@ -116,15 +127,20 @@ def conflict(event: FactConflict) -> str:
     return tuning.CONFLICT_NOTE.format(ids=", ".join(event.fact_ids), explanation=clean(event.explanation), said=said)
 
 
-def moment(speak: JudgeSpeak, names: Names, facts: dict[str, Fact], question: str | None) -> str:
+def moment(
+    speak: JudgeSpeak, names: Names, facts: dict[str, Fact], question: str | None, checklist: ChecklistUpdated | None = None,
+) -> str:
     """A judge.speak turned into a situation: why, to whom, the facts, and what was asked."""
     reason = speak.reason.value
     head = tuning.MOMENT.format(why=tuning.MOMENT_WHY[reason], to=names.to(speak.to))
     known = [fact(facts[i], names) for i in speak.fact_ids if i in facts]
     on_record = " ".join(known) or f"(facts {', '.join(speak.fact_ids) or 'not given'}; look them up)"
-    if reason == "addressed_directly":
+    if reason in ("addressed_directly", "unanswered_question"):
         role = Role(speak.to.value) if speak.to in (Audience.HIRER, Audience.WORKER) else None
-        return head + addressed(names.of(role), speak.after_line, question or speak.question or speak.instruction)
+        asked = addressed(names.of(role), speak.after_line, question or speak.question or speak.instruction, checklist)
+        return head + asked + tuning.JUDGE_NOTE.format(instruction=clean_long(speak.instruction))
+    if reason in ("open_terms", "read_back"):
+        return head + tuning.MOMENT_SAY.format(instruction=clean_long(speak.instruction), to=names.to(speak.to))
     if reason == "change_proposed":
         fact_id = speak.fact_ids[0] if speak.fact_ids else "(look it up with get_term)"
         return head + tuning.MOMENT_CHANGE.format(instruction=clean(speak.instruction), facts=on_record, fact=fact_id, to=names.to(speak.to))
@@ -134,14 +150,28 @@ def moment(speak: JudgeSpeak, names: Names, facts: dict[str, Fact], question: st
     return head + body + (f" On record: {on_record}" if known else "")
 
 
-def addressed(name: str, line_no: int | None, question: str) -> str:
-    return tuning.MOMENT_ADDRESSED.format(name=name, no=line_no or "?", question=clean(question))
+def clean_long(text: str | None) -> str:
+    """A Judge's note: a read-back lists every term, so it is kept whole."""
+    return " ".join(str(text or "").split())[:1200].replace('"', "'")
 
 
-def addressed_moment(event: TranscriptLine, names: Names) -> str:
+def status(checklist: ChecklistUpdated | None) -> str:
+    """What the checklist holds now, agreed and still open, for an answer about the deal."""
+    if checklist is None:
+        return ""
+    agreed = [f"{tuning.LABEL[i.key]}: {clean(i.value)}" for i in checklist.items if i.state is ItemState.AGREED and i.value]
+    still = [tuning.LABEL[i.key] for i in checklist.items if i.state is not ItemState.AGREED]
+    return tuning.STATUS.format(agreed="; ".join(agreed) or "nothing yet", open=", ".join(still) or "nothing")
+
+
+def addressed(name: str, line_no: int | None, question: str, checklist: ChecklistUpdated | None = None) -> str:
+    return tuning.MOMENT_ADDRESSED.format(name=name, no=line_no or "?", question=clean(question), status=status(checklist))
+
+
+def addressed_moment(event: TranscriptLine, names: Names, checklist: ChecklistUpdated | None = None) -> str:
     name = names.of(event.speaker)
     head = tuning.MOMENT.format(why=tuning.MOMENT_WHY["addressed_directly"], to=name)
-    return head + addressed(name, event.line_no, event.text)
+    return head + addressed(name, event.line_no, event.text, checklist)
 
 
 def follow_up(about: str, names: Names, to: Audience = Audience.BOTH) -> str:

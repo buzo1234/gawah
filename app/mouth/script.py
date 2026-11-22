@@ -64,6 +64,21 @@ TOOLS = [
     },
     {
         "type": "function",
+        "name": "group_answer",
+        "description": "Report the person's answer to the terms just read together: all right, or which of them are wrong.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "agrees": {"type": "boolean", "description": "true if all of them are what was agreed"},
+                "wrong": {"type": "array", "items": {"type": "string", "enum": [key.value for key in ItemKey]},
+                          "description": "the terms they say are wrong, if they named any"},
+                "said": _SAID,
+            },
+            "required": ["agrees", "wrong", "said"],
+        },
+    },
+    {
+        "type": "function",
         "name": "change_answer",
         "description": "Report whether the person wants the term changed to the value said on the call.",
         "parameters": {
@@ -82,6 +97,9 @@ class _Step:
     item: ChecklistItem | None = None
     change: OpenChange | None = None
     said: tuple[ItemKey, Said] | None = None  # a term said on the call and never agreed there
+    group: list[ChecklistItem] | None = None  # agreed terms read together and asked once
+    answered: set[ItemKey] | None = None  # of the group, the terms already answered
+    asked_which: bool = False  # a no that named no term: asked once which
 
 
 def _record_said(ask: RecordConfirmRequested) -> str:
@@ -121,18 +139,24 @@ class Script:
         # Confirmed before at the value on record now: not read again, one line covers them all.
         self.unchanged = [item.key for item in agreed if _same(confirmed.get(item.key), item.value)]
         self.terms = [item for item in agreed if item.key not in self.unchanged]
-        for key in ItemKey:
-            item = next((i for i in self.terms if i.key is key), None)
-            if key in changes:
-                c = changes[key]
-                self.steps.append(_Step(tuning.STEP_CHANGE.format(
-                    label=tuning.LABEL[key], old=c.record.value or c.record.text, new=c.change.value or c.change.text,
-                    other=self.other), change=c))
-            elif item:
-                say = tuning.STEP_TERM.format(label=tuning.LABEL[item.key], value=item.value, key=item.key.value)
-                self.steps.append(_Step(say, item=item))
-            elif key in (said or {}):
-                self.steps.append(_Step(self._said_step(key, said[key], names), said=(key, said[key])))
+        for heading, keys in tuning.GROUPS:
+            plain = [i for key in keys for i in self.terms if i.key is key and key not in changes]
+            if len(plain) > 1:  # related terms, read together and asked once
+                terms = "; ".join(f"{tuning.LABEL[i.key]}: {i.value}" for i in plain)
+                say = tuning.STEP_GROUP.format(heading=heading, terms=terms, keys=", ".join(i.key.value for i in plain))
+                self.steps.append(_Step(say, group=plain, answered=set()))
+            for key in keys:
+                item = next((i for i in self.terms if i.key is key), None)
+                if key in changes:
+                    c = changes[key]
+                    self.steps.append(_Step(tuning.STEP_CHANGE.format(
+                        label=tuning.LABEL[key], old=c.record.value or c.record.text, new=c.change.value or c.change.text,
+                        other=self.other), change=c))
+                elif item and len(plain) == 1:
+                    say = tuning.STEP_TERM.format(label=tuning.LABEL[item.key], value=item.value, key=item.key.value)
+                    self.steps.append(_Step(say, item=item))
+                elif key in (said or {}) and not item:
+                    self.steps.append(_Step(self._said_step(key, said[key], names), said=(key, said[key])))
         read = {item.key for item in agreed} | open_keys | set(said or {})
         # Nothing said about these on the call: only these may be called never discussed, and only
         # to a person hearing it for the first time.
@@ -182,6 +206,8 @@ class Script:
             else:  # not agreed: nothing to dispute, it stays open
                 self.said_no.append(key)
             return self._next(said)
+        if step and step.group and name in ("group_answer", "term_answer"):
+            return self._group(step, name, args, said)
         item = step.item if step else None
         if item and name == "term_answer" and args.get("item") == item.key.value and isinstance(args.get("agrees"), bool):
             if not args["agrees"]:
@@ -191,6 +217,40 @@ class Script:
                 return tuning.TERM_DISPUTED.format(name=self.name, other=self.other, step=self._now())
             return self._next(said)
         return tuning.NOT_NOW.format(step=self._now())
+
+    def _group(self, step: _Step, name: str, args: dict, said: str | None) -> str:
+        """An answer to terms read together: a yes holds for all of them; a no names the ones that
+        are wrong, and only those are disputed; a no that names none is asked about once."""
+        left = [i for i in step.group if i.key not in step.answered]
+        wrong: list[ChecklistItem] = []
+        if name == "term_answer":
+            item = next((i for i in left if i.key.value == args.get("item")), None)
+            if item is None or not isinstance(args.get("agrees"), bool):
+                return tuning.NOT_NOW.format(step=self._now())
+            step.answered.add(item.key)
+            wrong = [] if args["agrees"] else [item]
+        elif not isinstance(args.get("agrees"), bool):
+            return tuning.NOT_NOW.format(step=self._now())
+        elif not args["agrees"]:
+            named = {str(k) for k in args.get("wrong") or [] if isinstance(k, str)}
+            wrong = [i for i in left if i.key.value in named]
+            if not wrong and not step.asked_which:
+                step.asked_which = True
+                return tuning.GROUP_WHICH
+            wrong = wrong or left  # asked which, and still none named: the no stands for all of them
+            step.answered |= {i.key for i in left}
+        else:
+            step.answered |= {i.key for i in left}
+        for item in wrong:
+            self.disputed.append(item.key)
+            self.publish(TermsDisputed(deal_id=self.deal_id, person=self.role, item=item.key, value=item.value, said=said))
+        still = [i for i in step.group if i.key not in step.answered]
+        if still:
+            return tuning.GROUP_LEFT.format(labels=", ".join(tuning.LABEL[i.key] for i in still))
+        if any(i.key in self.disputed for i in step.group):
+            self.at += 1
+            return tuning.TERM_DISPUTED.format(name=self.name, other=self.other, step=self._now())
+        return self._next(said)
 
     def _next(self, said: str | None) -> str:
         self.at += 1

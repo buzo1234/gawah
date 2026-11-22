@@ -1,0 +1,511 @@
+{
+ "deal": "24d9c0bc0e72",
+ "people": [
+  {
+   "role": "hirer",
+   "name": "Karan"
+  },
+  {
+   "role": "worker",
+   "name": "Ramesh"
+  }
+ ],
+ "events": [
+  {
+   "kind": "started",
+   "call_no": 1
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 1,
+   "speaker": "hirer",
+   "text": "You can.",
+   "start": 2.96,
+   "end": 4.0
+  },
+  {
+   "kind": "spoke",
+   "text": "Namaste. Main Gawah hoon. Yeh call record ho rahi hai, aur main is deal ka gawah rahunga. Karan ji aur Ramesh ji, ...",
+   "reason": null,
+   "item": null,
+   "start": 2.67,
+   "end": 11.05,
+   "clip_fact_id": null
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 2,
+   "speaker": "hirer",
+   "text": "कुछ सैंपल.",
+   "start": 5.34,
+   "end": 11.18
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 3,
+   "speaker": "hirer",
+   "text": "So, it just asked me to verify from Karan. So मैं करन हूँ और मैं उससे सहमत हूँ।",
+   "start": 13.16,
+   "end": 18.5
+  },
+  {
+   "kind": "fact",
+   "fact": {
+    "id": "ef98233c6171",
+    "deal_id": "24d9c0bc0e72",
+    "text": "Karan says he is Karan and agrees with it.",
+    "item": null,
+    "kind": "other",
+    "value": null,
+    "value_rupees": null,
+    "value_date": null,
+    "said_by": "hirer",
+    "agreed_by": [],
+    "confirmed_by": [],
+    "status": "said",
+    "source": "call",
+    "quote": "So, it just asked me to verify from Karan. So मैं करन हूँ और मैं उससे सहमत हूँ।",
+    "call_no": 1,
+    "line_no": 3,
+    "start": 13.16,
+    "end": 18.5,
+    "record_id": null,
+    "valid_from": "2026-11-22T05:40:44.248780Z",
+    "superseded_at": null,
+    "replaces": null,
+    "counts_towards": null,
+    "hash": "32e46f3455400cfe5ffe33d480e380ad5b122c294125f6eff783f552041b616f"
+   }
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 4,
+   "speaker": "hirer",
+   "text": "For the recording.",
+   "start": 20.04,
+   "end": 20.96
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 5,
+   "speaker": "worker",
+   "text": "मैं रमेश, पेंटर। मैं भी सहमत हूँ।",
+   "start": 20.82,
+   "end": 23.48
+  },
+  {
+   "kind": "fact",
+   "fact": {
+    "id": "da645b84dd1b",
+    "deal_id": "24d9c0bc0e72",
+    "text": "The worker says he is Ramesh the painter and agrees.",
+    "item": null,
+    "kind": "other",
+    "value": null,
+    "value_rupees": null,
+    "value_date": null,
+    "said_by": "worker",
+    "agreed_by": [],
+    "confirmed_by": [],
+    "status": "said",
+    "source": "call",
+    "quote": "मैं रमेश, पेंटर। मैं भी सहमत हूँ।",
+    "call_no": 1,
+    "line_no": 5,
+    "start": 20.82,
+    "end": 23.48,
+    "record_id": null,
+    "valid_from": "2026-11-22T05:40:51.908780Z",
+    "superseded_at": null,
+    "replaces": null,
+    "counts_towards": null,
+    "hash": "fbc78061e0b4281e8fedcc8dd7fa4a93b8ad4c5cb7d70941e4edb230605c551e"
+   }
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 6,
+   "speaker": "hirer",
+   "text": "So Ramesh, मुझे अपने कमरे का पेंट कराना है। तीन बीएचके कमरा है, मारेसली में, सेकंड फ्लोर पर।",
+   "start": 24.04,
+   "end": 32.76
+  },
+  {
+   "kind": "fact",
+   "fact": {
+    "id": "0074a8670759",
+    "deal_id": "24d9c0bc0e72",
+    "text": "Karan says he wants Ramesh to paint his room, a 3BHK room in Mareseli on the second floor.",
+    "item": "work",
+    "kind": "term",
+    "value": "paint a 3BHK room in Mareseli on the second floor",
+    "value_rupees": null,
+    "value_date": null,
+    "said_by": "hirer",
+    "agreed_by": [],
+    "confirmed_by": [],
+    "status": "said",
+    "source": "call",
+    "quote": "So Ramesh, मुझे अपने कमरे का पेंट कराना है। तीन बीएचके कमरा है, मारेसली में, सेकंड फ्लोर पर।",
+    "call_no": 1,
+    "line_no": 6,
+    "start": 24.04,
+    "end": 32.76,
+    "record_id": null,
+    "valid_from": "2026-11-22T05:40:55.128780Z",
+    "superseded_at": null,
+    "replaces": null,
+    "counts_towards": null,
+    "hash": "978f9d854e56c88ca365d3cb2da55c69a62b173d8f4a8a082109e4fce30958cc"
+   }
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 7,
+   "speaker": "hirer",
+   "text": "It.",
+   "start": 37.68,
+   "end": 40.48
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 8,
+   "speaker": "worker",
+   "text": "रिकॉर्ड में तो 2BHK इंदिरापुरम थर्ड फ्लोर है, पर काम के लिए मैं बता रहा हूँ, दो कोट और पुट्टी का टचअप, मटेरियल के साथ पच्चीस हज़ार लगेगा करण जी।",
+   "start": 36.04,
+   "end": 46.3
+  },
+  {
+   "kind": "fact",
+   "fact": {
+    "id": "6dc53409a389",
+    "deal_id": "24d9c0bc0e72",
+    "text": "Ramesh says the work is two coats and putty touch-up, with material included.",
+    "item": "work",
+    "kind": "term",
+    "value": "two coats and putty touch-up, with material",
+    "value_rupees": null,
+    "value_date": null,
+    "said_by": "worker",
+    "agreed_by": [],
+    "confirmed_by": [],
+    "status": "said",
+    "source": "call",
+    "quote": "रिकॉर्ड में तो 2BHK इंदिरापुरम थर्ड फ्लोर है, पर काम के लिए मैं बता रहा हूँ, दो कोट और पुट्टी का टचअप, मटेरियल के साथ पच्चीस हज़ार लगेगा करण जी।",
+    "call_no": 1,
+    "line_no": 8,
+    "start": 36.04,
+    "end": 46.3,
+    "record_id": null,
+    "valid_from": "2026-11-22T05:41:07.128780Z",
+    "superseded_at": null,
+    "replaces": null,
+    "counts_towards": null,
+    "hash": "86f9bbb911826209b0176f4b2dff02f61f9fac11161f1461704cad3b5c608768"
+   }
+  },
+  {
+   "kind": "fact",
+   "fact": {
+    "id": "3c1eba1160b7",
+    "deal_id": "24d9c0bc0e72",
+    "text": "Ramesh offers a total price of 25,000 rupees.",
+    "item": "amount",
+    "kind": "term",
+    "value": "25,000 rupees",
+    "value_rupees": 25000,
+    "value_date": null,
+    "said_by": "worker",
+    "agreed_by": [],
+    "confirmed_by": [],
+    "status": "said",
+    "source": "call",
+    "quote": "रिकॉर्ड में तो 2BHK इंदिरापुरम थर्ड फ्लोर है, पर काम के लिए मैं बता रहा हूँ, दो कोट और पुट्टी का टचअप, मटेरियल के साथ पच्चीस हज़ार लगेगा करण जी।",
+    "call_no": 1,
+    "line_no": 8,
+    "start": 36.04,
+    "end": 46.3,
+    "record_id": null,
+    "valid_from": "2026-11-22T05:41:07.128780Z",
+    "superseded_at": null,
+    "replaces": null,
+    "counts_towards": null,
+    "hash": "eb293b4d96d0774919370ef43c7a569bc1eec401220aa360349beb2f320f51ac"
+   }
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 9,
+   "speaker": "hirer",
+   "text": "ठीक है, और आपको एडवांस कितना चाहिए होगा?",
+   "start": 48.3,
+   "end": 50.3
+  },
+  {
+   "kind": "fact",
+   "fact": {
+    "id": "3c1eba1160b7",
+    "deal_id": "24d9c0bc0e72",
+    "text": "Ramesh offers a total price of 25,000 rupees.",
+    "item": "amount",
+    "kind": "term",
+    "value": "25,000 rupees",
+    "value_rupees": 25000,
+    "value_date": null,
+    "said_by": "worker",
+    "agreed_by": [
+     "hirer"
+    ],
+    "confirmed_by": [],
+    "status": "agreed",
+    "source": "call",
+    "quote": "रिकॉर्ड में तो 2BHK इंदिरापुरम थर्ड फ्लोर है, पर काम के लिए मैं बता रहा हूँ, दो कोट और पुट्टी का टचअप, मटेरियल के साथ पच्चीस हज़ार लगेगा करण जी।",
+    "call_no": 1,
+    "line_no": 8,
+    "start": 36.04,
+    "end": 50.3,
+    "record_id": null,
+    "valid_from": "2026-11-22T05:41:07.128780Z",
+    "superseded_at": null,
+    "replaces": null,
+    "counts_towards": null,
+    "hash": "9fd8a6680157e0cad2a6705b2a8d2aae14ca12229cc8bc7a8347f61427455755"
+   }
+  },
+  {
+   "kind": "fact",
+   "fact": {
+    "id": "6dc53409a389",
+    "deal_id": "24d9c0bc0e72",
+    "text": "Ramesh says the work is two coats and putty touch-up, with material included.",
+    "item": "work",
+    "kind": "term",
+    "value": "two coats and putty touch-up, with material",
+    "value_rupees": null,
+    "value_date": null,
+    "said_by": "worker",
+    "agreed_by": [
+     "hirer"
+    ],
+    "confirmed_by": [],
+    "status": "agreed",
+    "source": "call",
+    "quote": "रिकॉर्ड में तो 2BHK इंदिरापुरम थर्ड फ्लोर है, पर काम के लिए मैं बता रहा हूँ, दो कोट और पुट्टी का टचअप, मटेरियल के साथ पच्चीस हज़ार लगेगा करण जी।",
+    "call_no": 1,
+    "line_no": 8,
+    "start": 36.04,
+    "end": 46.3,
+    "record_id": null,
+    "valid_from": "2026-11-22T05:41:07.128780Z",
+    "superseded_at": null,
+    "replaces": null,
+    "counts_towards": null,
+    "hash": "38320c47d869341d24a2179fae92c95ff6890baf77c95d0bda009065eb6eb0ce"
+   }
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 10,
+   "speaker": "worker",
+   "text": "अभी अमाउंट फाइनल नहीं हुआ, पहले वो फिक्स करते हैं, फिर मटेरियल के लिए पाँच हज़ार एडवांस चाहिए होगा।",
+   "start": 54.32,
+   "end": 61.8
+  },
+  {
+   "kind": "fact",
+   "fact": {
+    "id": "3b48f7f6cb4d",
+    "deal_id": "24d9c0bc0e72",
+    "text": "Ramesh says he needs 5,000 rupees as advance for material after the amount is fixed.",
+    "item": "advance",
+    "kind": "term",
+    "value": "5,000 rupees",
+    "value_rupees": 5000,
+    "value_date": null,
+    "said_by": "worker",
+    "agreed_by": [],
+    "confirmed_by": [],
+    "status": "said",
+    "source": "call",
+    "quote": "अभी अमाउंट फाइनल नहीं हुआ, पहले वो फिक्स करते हैं, फिर मटेरियल के लिए पाँच हज़ार एडवांस चाहिए होगा।",
+    "call_no": 1,
+    "line_no": 10,
+    "start": 54.32,
+    "end": 61.8,
+    "record_id": null,
+    "valid_from": "2026-11-22T05:41:25.408780Z",
+    "superseded_at": null,
+    "replaces": null,
+    "counts_towards": null,
+    "hash": "c64e90951611a4eb031fda82be434bf01eff8c702b04ee56f22747aeb67e3d9a"
+   }
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 11,
+   "speaker": "hirer",
+   "text": "ठीक है, पाँच हज़ार एडवांस चलेगा।",
+   "start": 63.74,
+   "end": 66.98
+  },
+  {
+   "kind": "fact",
+   "fact": {
+    "id": "3b48f7f6cb4d",
+    "deal_id": "24d9c0bc0e72",
+    "text": "Ramesh says he needs 5,000 rupees as advance for material after the amount is fixed.",
+    "item": "advance",
+    "kind": "term",
+    "value": "5,000 rupees",
+    "value_rupees": 5000,
+    "value_date": null,
+    "said_by": "worker",
+    "agreed_by": [
+     "hirer"
+    ],
+    "confirmed_by": [],
+    "status": "agreed",
+    "source": "call",
+    "quote": "अभी अमाउंट फाइनल नहीं हुआ, पहले वो फिक्स करते हैं, फिर मटेरियल के लिए पाँच हज़ार एडवांस चाहिए होगा।",
+    "call_no": 1,
+    "line_no": 10,
+    "start": 54.32,
+    "end": 66.98,
+    "record_id": null,
+    "valid_from": "2026-11-22T05:41:25.408780Z",
+    "superseded_at": null,
+    "replaces": null,
+    "counts_towards": null,
+    "hash": "4b57e1caf89614944857d9545753a5043f4cceafe8fbeeca88cf735d1de50c35"
+   }
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 12,
+   "speaker": "worker",
+   "text": "जी करण जी, ठीक है।",
+   "start": 73.2,
+   "end": 74.38
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 13,
+   "speaker": "hirer",
+   "text": "गवाजी, कोई और बचा है?",
+   "start": 69.86,
+   "end": 75.6
+  },
+  {
+   "kind": "speak",
+   "after_line": 13,
+   "reason": "addressed_directly",
+   "item": null,
+   "to": "hirer"
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 14,
+   "speaker": "hirer",
+   "text": "हाँ.",
+   "start": 77.38,
+   "end": 79.08
+  },
+  {
+   "kind": "spoke",
+   "text": "Haan ji, ek second. Karan ji, record ke hisaab se abhi paid zero hai. Advance aur balance dono abhi due hain.",
+   "reason": "addressed_directly",
+   "item": null,
+   "start": 79.04,
+   "end": 87.1,
+   "clip_fact_id": null
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 15,
+   "speaker": "hirer",
+   "text": "Can you make this voice more lively? Which model you are using?",
+   "start": 87.14,
+   "end": 90.68
+  },
+  {
+   "kind": "speak",
+   "after_line": 15,
+   "reason": "addressed_directly",
+   "item": null,
+   "to": "hirer"
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 16,
+   "speaker": "hirer",
+   "text": "GPT real time 1.2.",
+   "start": 91.23,
+   "end": 93.35
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 17,
+   "speaker": "hirer",
+   "text": "अच्छा।",
+   "start": 97.29,
+   "end": 97.95
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 18,
+   "speaker": "hirer",
+   "text": "Again, again try.",
+   "start": 99.13,
+   "end": 100.63
+  },
+  {
+   "kind": "spoke",
+   "text": "Haan ji, ek second. Karan ji, yeh baat record mein nahi hai. Main bas deal ke terms aur recorded facts bata sakta hoon, model ...",
+   "reason": "addressed_directly",
+   "item": null,
+   "start": 93.94,
+   "end": 103.83,
+   "clip_fact_id": null
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 19,
+   "speaker": "hirer",
+   "text": "It's like lotta monitor and central voice, and then the conversation will not give you that wow factor. Right. So the second, and why you are using like a multiple person in this case? Multiple voices coming because you have like a multiple person.",
+   "start": 102.43,
+   "end": 116.85
+  },
+  {
+   "kind": "line",
+   "call_no": 1,
+   "line_no": 20,
+   "speaker": "hirer",
+   "text": "Yeah, so I just wanted to ask another question for demo. Sorry.",
+   "start": 117.21,
+   "end": 121.89
+  },
+  {
+   "kind": "ended",
+   "call_no": 1
+  }
+ ]
+}

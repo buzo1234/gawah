@@ -1,6 +1,6 @@
 {
  "fixture": "dry_run_call",
- "recorded_at": "2026-11-21T19:41:42+00:00",
+ "recorded_at": "2026-11-22T06:22:51+00:00",
  "model": "gpt-5.4-mini",
  "replies": {
   "names:-@1": {
@@ -100,6 +100,20 @@
   "ambiguous:balance@19": {
    "ambiguous": false,
    "readings": null
+  },
+  "asked:-@17": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": "dates",
+   "named": null
+  },
+  "asked:-@24": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
   }
  }
 }

@@ -1,0 +1,81 @@
+{
+ "fixture": "24d9c0bc0e72-1",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "ambiguous:amount@8": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@8": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@10": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "asked:-@2": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@6": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@9": {
+   "asks": "none",
+   "waits": true,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@11": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": "advance",
+   "named": null
+  },
+  "asked:-@13": {
+   "asks": "open",
+   "waits": true,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@14": {
+   "asks": "none",
+   "waits": false,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@15": {
+   "asks": "none",
+   "waits": false,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@16": {
+   "asks": "none",
+   "waits": false,
+   "to": "nobody",
+   "item": null,
+   "named": null
+  },
+  "asked:-@19": {
+   "asks": "none",
+   "waits": false,
+   "to": "nobody",
+   "item": null,
+   "named": null
+  }
+ }
+}

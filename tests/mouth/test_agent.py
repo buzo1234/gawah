@@ -111,6 +111,22 @@ async def test_spoken_to_by_name_it_acknowledges_at_once_then_answers_from_memor
     assert "heard its name: Ramesh asked something" in notes(world)
 
 
+async def test_a_question_with_nothing_to_look_up_is_answered_not_left_in_silence(world):
+    # try_agent: "kya bacha hai?", "boliye" and "terms wapas bolo" need no lookup, and in the forced lookup
+    # round the model reached for stay_silent, the one tool that fitted; Gawah said the ack and nothing more.
+    seat, link = await world.call()
+    link.replies = [
+        {"calls": [("stay_silent", {"reason": "no tool lookup needed"})]},
+        {"text": "Abhi balance aur dates baaki hain.", "ms": 500},
+    ]
+    world.bus.publish(line(20, Role.HIRER, "Gawah ji, kuch aur bacha hai?"))
+    call = world.mouth.calls["d1"]
+    await until(lambda: call.outcomes and call.outcomes[-1]["what"] == "addressed_directly")
+    assert call.outcomes[-1]["said"], call.outcomes[-1]
+    assert tuning.NOTHING_TO_LOOK_UP in link.outputs()
+    await until(lambda: any(n.startswith("said: Haan ji, ek second. Abhi balance aur dates baaki hain.") for n in notes(world)))
+
+
 async def test_the_brains_own_addressed_moment_joins_the_turn_already_under_way(world):
     seat, link = await world.call()
     link.replies = [{"calls": [("get_term", {"item": "amount"})]}, {"text": "13,000 tay hua tha.", "ms": 300}]
@@ -177,20 +193,48 @@ async def test_a_contradiction_states_the_record_and_offers_the_recording_withou
 
 
 async def test_a_yes_to_the_offer_plays_the_recording_after_a_short_lead_in(world):
+    """The lead-in was made at the start of the call and the clip fetched when it was offered, so a
+    yes plays both at the next pause with no round trip to the model."""
     seat, link, spoke, _ = await contradiction_offered(world)
-    link.replies = [{"text": "Suniye, yeh pehli call ki recording hai.", "ms": 300}]
-    played = len(seat.played)
-    world.bus.publish(line(20, Role.HIRER, "Haan, sunaiye."))
+    played, asked = len(seat.played), len(link.of("response.create"))
+    world.bus.publish(line(20, Role.HIRER, "हाँ सुनो।"))  # 479b7f788c68 call 2 line 9: "suno" was not a word it knew
     await until(lambda: "played the clip of what was said" in notes(world))
     await settle(world, link)
-    situation = link.asked()[-1]
-    assert "Sunita wants to hear the recording of fact f-amount" in situation and "say nothing after it" in situation
-    assert link.of("response.create")[-1]["response"]["tool_choice"] == "none"
+    assert len(link.of("response.create")) == asked, "no model turn: the made lead-in and the fetched clip"
     assert link.items("system")[-1].startswith("The clip of fact f-amount is now playing")
     clip_ms = 1000 + 2 * tuning.CLIP_PAD_MS
-    assert (len(seat.played) - played) * tuning.FRAME_MS >= 300 + clip_ms - 40, "the lead-in, then the clip resampled to the room's rate"
-    assert "Sunita said yes to hearing the recording" in notes(world)
-    assert any(o["what"] == "clip" and o["said"] for o in world.mouth.calls["d1"].outcomes)
+    assert (len(seat.played) - played) * tuning.FRAME_MS >= clip_ms - 40, "the lead-in, then the clip resampled to the room's rate"
+    assert "Sunita asked to hear the recording" in notes(world)
+    [clip] = [o for o in world.mouth.calls["d1"].outcomes if o["what"] == "clip"]
+    assert clip["said"] and clip["text"] == f"{tuning.LEAD_IN} [clip]" and clip["wait_ms"] < 1000
+
+
+async def test_a_request_for_the_recording_is_one_whatever_comes_first(world):
+    """479b7f788c68 call 2 line 10: "नहीं, पहले हमें वो रिकॉर्डिंग सुनाओ।" was taken as a no. A request
+    beats a 'nahi' in front of it; "recording mat sunao" still refuses."""
+    seat, link, spoke, _ = await contradiction_offered(world)
+    link.replies = [{"calls": [("stay_silent", {})]}]
+    world.bus.publish(line(20, Role.HIRER, "Nahi, recording mat sunao."))
+    await settle(world, link)
+    assert "played the clip of what was said" not in notes(world)
+    world.bus.publish(line(21, Role.HIRER, "नहीं, पहले हमें वो रिकॉर्डिंग सुनाओ।"))
+    await until(lambda: "played the clip of what was said" in notes(world))
+    await settle(world, link)
+
+
+async def test_the_offered_recording_asked_for_by_name_later_plays_at_once(world):
+    """479b7f788c68 call 2 line 13: "गवाजी, उसकी रिकॉर्डिंग सुनाओ।" after the offer had closed took an
+    acknowledgement, two tool rounds and a lead-in from the model: 30 s to the clip."""
+    seat, link, spoke, _ = await contradiction_offered(world)
+    for no, text in ((20, "Achha."), (21, "Theek hai."), (22, "Haan.")):
+        link.replies = [{"calls": [("stay_silent", {})]}] if no < 20 + tuning.FOLLOW_UP_LINES else []
+        world.bus.publish(line(no, Role.WORKER, text))
+        await settle(world, link)
+    asked = len(link.of("response.create"))
+    world.bus.publish(line(23, Role.HIRER, "गवाजी, उसकी रिकॉर्डिंग सुनाओ।"))
+    await until(lambda: "played the clip of what was said" in notes(world))
+    await settle(world, link)
+    assert len(link.of("response.create")) == asked and not any("heard its name" in n for n in notes(world))
 
 
 async def test_a_no_or_a_line_about_the_term_plays_nothing(world):
@@ -204,9 +248,8 @@ async def test_a_no_or_a_line_about_the_term_plays_nothing(world):
     await settle(world, link)
     assert "played the clip of what was said" not in notes(world) and len(seat.played) == played
     assert not any("wants to hear the recording" in a for a in link.asked())
-    world.bus.publish(line(22, Role.HIRER, "Haan, sunaiye."))  # the offer has closed
-    await settle(world, link)
-    assert "played the clip of what was said" not in notes(world)
+    world.bus.publish(line(22, Role.HIRER, "Haan, sunaiye."))  # the offer has closed, but asking for it is a request
+    await until(lambda: "played the clip of what was said" in notes(world))
 
 
 async def test_a_change_is_proposed_and_holds_only_when_both_say_yes(world):

@@ -1,0 +1,186 @@
+{
+ "fixture": "6aae99c104d1-2",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "names:-@1": {
+   "hirer": "Karan",
+   "worker": null
+  },
+  "names:-@2": {
+   "hirer": "Karan",
+   "worker": null
+  },
+  "names:-@3": {
+   "hirer": "Karan",
+   "worker": "Ramesh"
+  },
+  "asked:-@3": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@4": {
+   "asks": "agreed",
+   "waits": true,
+   "to": "gawah",
+   "item": "advance",
+   "named": null
+  },
+  "asked:-@5": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@6": {
+   "asks": "agreed",
+   "waits": true,
+   "to": "gawah",
+   "item": "advance",
+   "named": null
+  },
+  "asked:-@7": {
+   "asks": "agreed",
+   "waits": true,
+   "to": "other",
+   "item": "advance",
+   "named": null
+  },
+  "asked:-@8": {
+   "asks": "none",
+   "waits": true,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@9": {
+   "asks": "agreed",
+   "waits": true,
+   "to": "gawah",
+   "item": "dates",
+   "named": null
+  },
+  "asked:-@10": {
+   "asks": "none",
+   "waits": false,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@11": {
+   "asks": "none",
+   "waits": false,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@12": {
+   "asks": "recording",
+   "waits": true,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@13": {
+   "asks": "recording",
+   "waits": true,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@14": {
+   "asks": "open",
+   "waits": true,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@15": {
+   "asks": "open",
+   "waits": true,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@16": {
+   "asks": "paid",
+   "waits": true,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@17": {
+   "asks": "open",
+   "waits": true,
+   "to": "gawah",
+   "item": null,
+   "named": null
+  },
+  "asked:-@18": {
+   "asks": "none",
+   "waits": true,
+   "to": "other",
+   "item": "amount",
+   "named": null
+  },
+  "asked:-@19": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@20": {
+   "asks": "none",
+   "waits": false,
+   "to": "nobody",
+   "item": null,
+   "named": null
+  },
+  "asked:-@22": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@23": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": "amount"
+  },
+  "asked:-@24": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": "amount"
+  },
+  "asked:-@25": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": null
+  },
+  "asked:-@26": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": "amount"
+  },
+  "asked:-@27": {
+   "asks": "none",
+   "waits": false,
+   "to": "other",
+   "item": null,
+   "named": "amount"
+  }
+ }
+}
