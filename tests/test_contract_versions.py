@@ -9,7 +9,7 @@ from contract_fakes import FakeFiles, FakeSpeaker, FakeWriter, checklist, fake_f
 
 from app.contract.stream import ContractStream
 from app.contracts import (
-    AgentNote, CallEnded, CallStarted, ChangeStatus, ContractReady, CrewAgent, Fact, FactChanged, FactKind,
+    AgentNote, CallEnded, CallStarted, ChangeStatus, ContractReady, CrewAgent, Fact, FactChanged, FactKind, ItemState,
     FactRecorded, FactSource, FactStatus, ItemKey, Role, TermsConfirmed,
 )
 from app.memory import Memory, chain
@@ -247,3 +247,45 @@ async def test_version_2_from_the_real_memory(bus, store, tmp_path):
     report = chain.report(memory.book.deal(deal_id).versions)
     assert report["verified"]
     assert f"Witness chain: {report['links']} कड़ियाँ / links, आख़िरी पहचान / head fingerprint {report['head']}" in v2.text
+
+
+def balance_said(deal_id=DEAL, **changes) -> Fact:
+    """The user's real call: the hirer said when the balance is paid; nobody was heard agreeing."""
+    fact = Fact(
+        id="f-balance", deal_id=deal_id, text="The hirer will pay the rest after the work is done.", item=ItemKey.BALANCE,
+        kind=FactKind.TERM, value="rest after completion", said_by=Role.HIRER, status=FactStatus.SAID,
+        quote="बाकी का पैसा काम पूरे होने के बाद दूँगा।", call_no=1, line_no=12, start=68.0, end=71.0,
+    )
+    return fact.model_copy(update=changes)
+
+
+async def test_a_term_said_but_not_agreed_is_written_as_not_agreed_with_what_was_said(bus, store):
+    rig = Rig(bus, store, FakeMemory([]))
+    rig.record(balance_said())
+    await replay(bus, CALL, speed=0, deal_id=DEAL)
+    bus.publish(checklist(DEAL, pending=(ItemKey.BALANCE,)))
+    for role in Role:
+        bus.publish(TermsConfirmed(deal_id=DEAL, person=role))
+    [ready] = await rig.settle()
+    assert "बाकी पैसा: तय नहीं हुआ। कॉल पर सुनीता ने कहा: “बाकी का पैसा काम पूरे होने के बाद दूँगा।”  [कॉल / call 1, 1:08]" in ready.text
+    assert "Balance: not agreed. On the call, Sunita said: “बाकी का पैसा काम पूरे होने के बाद दूँगा।” (rest after completion)." in ready.text
+    assert "when the balance is paid and against what" in ready.text  # and among what was not agreed
+    assert next(i for i in ready.items if i.key is ItemKey.BALANCE).state is ItemState.PENDING
+
+
+async def test_a_term_said_on_the_call_and_confirmed_by_both_on_their_call_backs_is_written(bus, store):
+    rig = Rig(bus, store, FakeMemory([]))
+    rig.record(balance_said())
+    await replay(bus, CALL, speed=0, deal_id=DEAL)
+    bus.publish(checklist(DEAL, pending=(ItemKey.BALANCE,)))
+    for role in Role:
+        bus.publish(TermsConfirmed(deal_id=DEAL, person=role, item=ItemKey.BALANCE, value="rest after completion", said="haan"))
+        if role is Role.HIRER:
+            await rig.settle()
+            assert not rig.ready, "not before the second person has answered"
+        bus.publish(TermsConfirmed(deal_id=DEAL, person=role, said="haan"))
+    [ready] = await rig.settle()
+    balance = next(i for i in ready.items if i.key is ItemKey.BALANCE)
+    assert (balance.state, balance.value) == (ItemState.AGREED, "rest after completion")
+    assert "तय हुआ: rest after completion" in ready.text and "Balance: not agreed" not in ready.text
+    assert "All six were agreed" in ready.text

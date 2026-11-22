@@ -74,14 +74,23 @@ def resolve(
     changed_facts: dict[ItemKey, Fact],
     lines: dict[tuple[int, int], TranscriptLine],
     starts: dict[int, datetime],
+    said_yes: dict[ItemKey, str] | None = None,
 ) -> list[Term]:
     """checklist: each agreed item with the call it was agreed on; current: memory's get_term
-    for each item; changed_facts: the fact each item was last changed to, if it still stands."""
+    for each item; changed_facts: the fact each item was last changed to, if it still stands;
+    said_yes: terms said on a call, never agreed there, that both confirmed on their call-backs."""
     found = []
     for key in ItemKey:
         fact = changed_facts.get(key)
         if fact is not None:
             found.append(Term(_from_fact(key, fact), fact_at(fact, starts), changed=True))
+            continue
+        if key not in checklist and key in (said_yes or {}):
+            fact = current.get(key)
+            source = fact.quote if fact else None
+            item = ChecklistItem(key=key, state=ItemState.AGREED, value=said_yes[key], source_text=source,
+                                 line_no=fact.line_no if fact else None)
+            found.append(Term(item, fact_at(fact, starts) if fact else None))
             continue
         if key not in checklist:
             continue

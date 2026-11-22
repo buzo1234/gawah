@@ -16,13 +16,13 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from app.contract import check
-from app.contract.terms import AlsoAgreed, Bi, Change, Term
+from app.contract.terms import AlsoAgreed, Bi, Change, Said, Term
 from app.contract.trigger import Call
 from app.contract.wording import (
     ALL_AGREED, ALSO_AGREED, AS_STATED, CLAUSES, LEAD, NOT_AGREED, OPEN_CLAUSE, OPEN_POINTS, PARTIES,
     PAYMENT_CLAUSE, PAYMENTS, ROLES, SUBTITLE, THE_REST, VOICES, WITNESS,
 )
-from app.contracts import Fact, FactKind, FactStatus, ItemKey, Person, Role
+from app.contracts import Fact, FactKind, FactSource, FactStatus, ItemKey, Person, Role
 
 __all__ = ["Bi", "Document", "build", "both"]
 
@@ -164,7 +164,11 @@ def build(
     def said_at(key: ItemKey) -> str | None:
         return agreed[key].at.label() if agreed[key].at else None
 
+    said = {key: found for key in ItemKey if key not in agreed and (found := said_not_agreed(facts or {}, key, names))}
+
     def clause(key: ItemKey) -> Clause:
+        if key in said:
+            return Clause(CLAUSES[key], said[key].text, said[key].said_at)
         if key not in agreed:
             return Clause(CLAUSES[key], say(NOT_AGREED))
         return Clause(CLAUSES[key], body(key), said_at(key), changed=agreed[key].changed)
@@ -179,7 +183,7 @@ def build(
         clause(ItemKey.WORK),
         clause(ItemKey.AMOUNT),
         Clause(PAYMENT_CLAUSE, None if payments else say(NOT_AGREED), payments=payments,
-               notes=disputed(facts or {}, names),
+               notes=[said[k] for k in (ItemKey.ADVANCE, ItemKey.BALANCE) if k in said] + disputed(facts or {}, names),
                changed=any(agreed[k].changed for k in (ItemKey.ADVANCE, ItemKey.BALANCE) if k in agreed)),
         clause(ItemKey.DATES),
         clause(ItemKey.LATE_OR_UNFINISHED),
@@ -218,6 +222,26 @@ def build(
         ],
         chain=chain,
     )
+
+
+def said_not_agreed(facts: dict[str, Fact], key: ItemKey, names: dict[Role, Bi | None]) -> Note | None:
+    """A term said on a call that was never agreed: never left out, written as not agreed, with
+    the last thing said for it and who said it, in their own words. Who said it, never who is right."""
+    said = sorted(
+        (f for f in facts.values() if f.item is key and f.kind is FactKind.TERM and f.source is FactSource.CALL
+         and f.status in (FactStatus.SAID, FactStatus.AGREED) and f.said_by is not None and (f.quote or f.value)),
+        key=lambda f: (f.call_no or 0, f.line_no or 0),
+    )
+    if not said:
+        return None
+    fact, label = said[-1], CLAUSES.get(key) or PAYMENTS[key]
+    who = names.get(fact.said_by) or ROLES[fact.said_by]
+    words = " ".join((fact.quote or fact.value).split())
+    value = f" ({fact.value})" if fact.value and fact.quote else ""
+    return Note(Bi(
+        f"{label.hi}: तय नहीं हुआ। कॉल पर {who.hi} ने कहा: “{words}”",
+        f"{label.en}: not agreed. On the call, {who.en} said: “{words}”{value}.",
+    ), None, Said(fact.call_no, fact.start).label() if fact.call_no else None)
 
 
 def disputed(facts: dict[str, Fact], names: dict[Role, Bi | None]) -> list[Note]:

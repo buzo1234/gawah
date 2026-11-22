@@ -39,6 +39,8 @@ class DealState:
     confirmed: dict[Role, set[ItemKey]] = field(default_factory=lambda: {r: set() for r in Role})
     confirmed_at: dict[Role, datetime] = field(default_factory=dict)
     confirmed_said: dict[Role, str | None] = field(default_factory=dict)  # their words, if the event has them
+    # A term said on a call and never agreed there, confirmed term by term on the call-backs: who said yes to what.
+    said_yes: dict[ItemKey, dict[Role, str]] = field(default_factory=dict)
     calls: dict[int, Call] = field(default_factory=dict)  # the deal calls, by call no
     call_no: int = 1  # the deal call going on, or the last one
     facts: list[Fact] = field(default_factory=list)  # every fact.recorded, in order: the witness chain
@@ -73,6 +75,8 @@ class DealState:
                 if event.status is ChangeStatus.CONFIRMED_BOTH:
                     self.pending[event.fact_id] = event
             case TermsConfirmed():
+                if event.item is not None and event.value:
+                    self.said_yes.setdefault(event.item, {})[event.person] = event.value
                 if event.item is None:
                     self.confirmed[event.person] = set(ItemKey)
                 else:
@@ -80,6 +84,8 @@ class DealState:
                 self.confirmed_at[event.person] = event.ts
                 self.confirmed_said[event.person] = event.said
             case TermsDisputed():
+                if event.item is not None:
+                    self.said_yes.get(event.item, {}).pop(event.person, None)
                 if event.item is None:
                     self.confirmed[event.person].clear()
                 else:
@@ -104,8 +110,14 @@ class DealState:
                     found[item.key] = (item, call_no)
         return {key: found[key] for key in ItemKey if key in found}
 
+    def both_said_yes(self) -> dict[ItemKey, str]:
+        """Terms the checklist does not have agreed that both confirmed, term by term, on their
+        call-backs: the value as read to the second of them."""
+        agreed = self.checklist()
+        return {key: list(yes.values())[-1] for key, yes in self.said_yes.items() if key not in agreed and set(yes) == set(Role)}
+
     def agreed(self) -> set[ItemKey]:
-        return set(self.checklist())
+        return set(self.checklist()) | set(self.both_said_yes())
 
     def latest(self) -> dict[str, Fact]:
         """Each fact as it stands now, oldest fact first."""

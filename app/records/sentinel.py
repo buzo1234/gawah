@@ -23,7 +23,7 @@ from datetime import UTC, datetime, time, timedelta, timezone
 
 from app.bus import Bus
 from app.contracts import (
-    AgentNote, CrewAgent, Fact, FactConflict, FactKind, FactRecorded, FactSource, FactStatus, ItemKey,
+    AgentNote, ChangeStatus, CrewAgent, Fact, FactChanged, FactConflict, FactKind, FactRecorded, FactSource, FactStatus, ItemKey,
     MemoryQueries, OwedRow, Record, RecordConfirmed, RecordKind, Role, clip_path,
 )
 from app.log import deal_log
@@ -202,27 +202,39 @@ class Sentinel:
     # ---------- after a second call ----------
 
     async def callback_roles(self, deal_id: str, call_no: int) -> set[Role]:
-        """Who needs the call-back after this call: those who have not confirmed a term it
-        changed. Waits for memory to finish the call's last lines first."""
+        """Who needs the call-back after this call: those with something left to confirm. A term
+        it changed that they have not confirmed; a change it left open that they did not confirm
+        on the call; a term said on it and never agreed. Waits for memory to finish the call's
+        last lines first."""
         settle = getattr(self.memory, "settle", None)  # not in MemoryQueries; the real memory has it
         if settle:
             await settle()
+        steps = [e for e in await self.store.events(deal_id) if isinstance(e, FactChanged)]
         roles, changed = set(), []
         for item in ItemKey:
             view = await self.memory.get_term(deal_id, item)
             term = view.current
+            latest = {f.id: f for f in view.history}
             if term and term.call_no == call_no and term.source is FactSource.CALL:
                 missing = set(Role) - set(term.confirmed_by)
                 if missing:
                     roles |= missing
                     changed.append(item.value)
-            latest = {f.id: f for f in view.history}
             if any(  # a change said or agreed on the call that Gawah never put to both: the call-back asks it
                 f.kind is FactKind.CHANGE and f.status in (FactStatus.SAID, FactStatus.AGREED) and f.call_no == call_no
                 and f.source is FactSource.CALL and f.value_rupees is not None for f in latest.values()
             ):
+                put = [c for c in steps if c.item is item and (term is None or c.fact_id == term.id)]
+                done = set(put[-1].confirmed_by) if put and put[-1].status is ChangeStatus.CONFIRMED_ONE else set()
+                if set(Role) - done:
+                    roles |= set(Role) - done  # who confirmed it on the call has nothing left to say
+                    changed.append(f"{item.value} (a change still open)")
+            elif term is None and any(  # said on the call, never agreed: the call-back asks whether it was
+                f.kind is FactKind.TERM and f.status is FactStatus.SAID and f.call_no == call_no
+                and f.source is FactSource.CALL and (f.value or f.value_rupees is not None) for f in latest.values()
+            ):
                 roles |= set(Role)
-                changed.append(f"{item.value} (a change still open)")
+                changed.append(f"{item.value} (said, not agreed)")
         if changed:
             self._note(deal_id, f"call {call_no} changed {', '.join(changed)}: call-back links sent")
         else:

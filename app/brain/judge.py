@@ -68,7 +68,7 @@ class Proposal:
 
     value: str
     said_by: Role | None
-    fact_id: str
+    fact_ids: list[str]  # every fact its words come from: a yes to the question agrees them all
 
 
 @dataclass
@@ -281,7 +281,7 @@ def _ask(item: ItemKey, view: View, reason: SpeakReason) -> Speak:
         by = f", as {view.names[proposal.said_by]} said" if proposal.said_by else ""
         to = Audience.BOTH
         text = f'Ask {_who(to, view.names)} to confirm {LABEL[item]}: "{_quoted(proposal.value)}"{by}.'
-        fact_ids = [proposal.fact_id]
+        fact_ids = list(proposal.fact_ids)
     else:
         to = ASK[item]
         text = QUESTION[item].format(who=_who(to, view.names))

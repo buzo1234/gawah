@@ -15,6 +15,7 @@ from app.contracts import (
     ItemState, Record, RecordConfirmed, RecordKind, RecordReceived, Role, TermsConfirmed, TermsDisputed,
 )
 from app.memory import voice_notes
+from app.memory.book import valued
 from app.memory.dates import pin_date
 from app.memory.normalise import format_rupees, one_amount
 
@@ -77,7 +78,7 @@ class Status:
         for key in [event.item] if event.item else list(ItemKey):
             current = deal.current(key)
             if current is None:
-                if event.item and event.value:
+                if event.item and not self._said_confirmed(deal, event) and event.value:
                     self._from_callback(event, key, FactStatus.CONFIRMED)
                 continue
             if event.person in current.confirmed_by and current.status == FactStatus.CONFIRMED:
@@ -95,6 +96,27 @@ class Status:
             if current is not None:
                 fact = self.m.record(current.model_copy(update={"status": FactStatus.DISPUTED}))
                 self.m.note("memory", f"{key.value} disputed by {deal.name(event.person)}", fact)
+
+    def _said_confirmed(self, deal, event: TermsConfirmed) -> bool:
+        """A term said on a call and never agreed there, put to the person on their call-back as
+        said ("Call par Karan ji ne kaha: ... Kya yeh tay hua tha?"): their yes agrees and confirms
+        what was said, for them. Confirmed once both have said yes. False if nothing was said."""
+        said = [
+            f for f in deal.standing()
+            if f.item == event.item and f.kind == FactKind.TERM and f.source == FactSource.CALL
+            and f.status in (FactStatus.SAID, FactStatus.AGREED) and valued(f)
+        ]
+        named = [f for f in said if f.value and f.value.lower() in (event.value or "").lower()]
+        for fact in named or said:
+            agreed = sorted({*fact.agreed_by, event.person} - {fact.said_by}, key=list(Role).index)
+            confirmed = sorted({*fact.confirmed_by, event.person}, key=list(Role).index)
+            status = (
+                FactStatus.CONFIRMED if set(confirmed) == set(Role)
+                else FactStatus.AGREED if {fact.said_by, *agreed} == set(Role) else FactStatus.SAID
+            )
+            fact = self.m.record(fact.model_copy(update={"agreed_by": agreed, "confirmed_by": confirmed, "status": status}))
+            self.m.note("memory", f"{event.item.value} as said on the call: yes from {deal.name(event.person)} on the call-back", fact)
+        return bool(said)
 
     def _from_callback(self, event: TermsConfirmed, key: ItemKey, status: FactStatus) -> None:
         deal = self.m.book.deal(event.deal_id)

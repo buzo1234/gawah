@@ -188,12 +188,23 @@ STEP_CHANGE = (
     "call par {new} kaha gaya. Kya aap ise {new} karna chahte hain?\" Do not say which is right. Report the answer "
     "with change_answer."
 )
+STEP_SAID = (
+    "Step: on the call, {who} said this about {label}, and it was never agreed there: {value} (the words on the "
+    "call: \"{quote}\"). Say it slowly, in Hindi, as something said on the call, not as an agreed term: "
+    "\"Call par {who_hi} ne kaha: {value}. Kya yeh tay hua tha?\" Do not say whether it is right. Report the "
+    "answer with term_answer (item \"{key}\"): agrees true if {name} says it was agreed."
+)
 NEXT = "Noted. {step}"
 NOT_NOW = "That was not recorded: it does not belong to the current step. {step}"
 TERM_DISPUTED = (
     "Noted. Tell {name} in one sentence that Gawah will raise this with {other}. Do not discuss it. Then: {step}"
 )
 NEVER_AGREED = "Tell {name} plainly that these were never agreed on the call, so they are not on record: {labels}. "
+UNCHANGED = (
+    "Say in one short sentence that the rest is as {name} already confirmed, naming it, for example \"Baaki sab pehle "
+    "jaisa hai: ...\": {labels}. Do not read those terms again. "
+)
+SAID_NOT_AGREED = "Tell {name} that, as they say, this was said on the call but not agreed, so it is not on record as agreed: {labels}. "
 # The last thing said. The call is ended by our code once this has been spoken, not by the model.
 END = "Last step: say all of this to {name} now, then stop. The call will end by itself. "
 END_CONFIRMED = (

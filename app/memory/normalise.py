@@ -230,16 +230,46 @@ def filler_kind(text: str, names: set[str] = frozenset()) -> str | None:
     return "yes" if any(t in _YES for t in toks) else "greeting"
 
 
+# Said after a name when speaking to someone: "Karan ji", "करण जी".
+_HONORIFIC = normed({"ji", "jee", "जी"})
+
+
+def _yes_head(text: str, names: set[str]) -> tuple[list[str], list[str]]:
+    """The clauses a line opens with that are only a yes, fillers, or the person spoken to
+    ("Ji Karan ji, theek hai."), and the words after them. A word followed by "ji" that is not
+    itself a yes or a filler ("haan ji") is taken as a name, so a name heard in another script
+    or spelling still reads as one."""
+    names = {norm(n) for n in names}
+    clauses, clause = [], []
+    for t in tokens(text, breaks=True) + [BREAK]:
+        if t == BREAK:
+            clauses.append(clause)
+            clause = []
+        else:
+            clause.append(t)
+    head: list[str] = []
+    for i, words in enumerate(clauses):
+        said = [t for j, t in enumerate(words) if t not in names and not (
+            j + 1 < len(words) and words[j + 1] in _HONORIFIC and t not in _YES and t not in _FILLER)]
+        if not said or not all(t in _YES or t in _FILLER for t in said):
+            return head, [t for c in clauses[i:] for t in c]
+        head += said
+    return head, []
+
+
 def opens_with_yes(text: str, names: set[str] = frozenset()) -> bool:
-    """A line whose first clause is a firm yes and that then goes on ("Chalo theek hai. To
-    Wednesday aa jao"). "Haan" or "achha" alone can just mean "I hear you", so a firm word
-    ("theek", "pakka", "done") is needed."""
-    toks = tokens(text, breaks=True)
-    if BREAK not in toks:
-        return False
-    cut = toks.index(BREAK)
-    first, rest = toks[:cut], [t for t in toks[cut:] if t != BREAK]
-    return bool(rest) and filler_kind(" ".join(first), names) == "yes" and any(t in STRONG_YES for t in first)
+    """A line that opens with a firm yes and then goes on ("Chalo theek hai. To Wednesday aa
+    jao", "Ji Karan ji, theek hai. Agle somvaar se..."). "Haan" or "achha" alone can just mean
+    "I hear you", so a firm word ("theek", "pakka", "done") is needed."""
+    head, rest = _yes_head(text, names)
+    return bool(rest) and any(t in STRONG_YES for t in head)
+
+
+def answers_yes(text: str, names: set[str] = frozenset()) -> bool:
+    """The line opens with a yes, "haan" included: the answer to a yes-or-no question put to
+    the speaker. Whether the rest takes it back is for the caller to judge."""
+    head, _ = _yes_head(text, names)
+    return any(t in _YES for t in head)
 
 
 _ALL = normed({"sab", "sabhi", "saara", "sara", "everything", "सब", "सभी", "सारा"})

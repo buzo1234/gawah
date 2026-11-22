@@ -33,7 +33,7 @@ from app.contracts import (
     TermsDisputed,
 )
 from app.mouth import tuning
-from app.mouth.left_open import OpenChange, open_changes
+from app.mouth.left_open import OpenChange, Said, open_changes, said_not_agreed
 from app.store import Store
 
 _SAID = {"type": "string", "description": "The person's own words, as they said them."}
@@ -81,6 +81,7 @@ class _Step:
     ask: RecordConfirmRequested | None = None
     item: ChecklistItem | None = None
     change: OpenChange | None = None
+    said: tuple[ItemKey, Said] | None = None  # a term said on the call and never agreed there
 
 
 def _record_said(ask: RecordConfirmRequested) -> str:
@@ -100,7 +101,9 @@ class Script:
         self, deal_id: str, role: Role, people: list[Person], asks: list[RecordConfirmRequested],
         items: list[ChecklistItem], publish: Callable[[Event], None],
         changes: dict[ItemKey, OpenChange] | None = None, answers: dict[str, FactChanged] | None = None,
+        said: dict[ItemKey, Said] | None = None, confirmed: dict[ItemKey, str] | None = None,
     ) -> None:
+        """confirmed: what this person already confirmed, by term, at the value read to them then."""
         self.deal_id, self.role, self.publish = deal_id, role, publish
         names = {p.role: p.name.split()[0] for p in people if p.name}
         self.name = names.get(role) or "the person"
@@ -111,8 +114,13 @@ class Script:
             sender = names.get(ask.record.sender if ask.record else role.other) or "The other person"
             self.steps.append(_Step(tuning.STEP_RECORD.format(sender=sender, said=_record_said(ask), name=self.name), ask=ask))
         self.answers = answers if answers is not None else {}  # change id -> its latest step, from either call-back
+        open_keys = set(changes or {})  # its record is not what is being confirmed: never read as the term
         changes = {k: c for k, c in (changes or {}).items() if role not in self._step_of(c).confirmed_by}
-        self.terms = [item for item in items if item.state is ItemState.AGREED and item.value and item.key not in changes]
+        agreed = [item for item in items if item.state is ItemState.AGREED and item.value and item.key not in open_keys]
+        confirmed = confirmed or {}
+        # Confirmed before at the value on record now: not read again, one line covers them all.
+        self.unchanged = [item.key for item in agreed if _same(confirmed.get(item.key), item.value)]
+        self.terms = [item for item in agreed if item.key not in self.unchanged]
         for key in ItemKey:
             item = next((i for i in self.terms if i.key is key), None)
             if key in changes:
@@ -123,10 +131,25 @@ class Script:
             elif item:
                 say = tuning.STEP_TERM.format(label=tuning.LABEL[item.key], value=item.value, key=item.key.value)
                 self.steps.append(_Step(say, item=item))
-        read = {item.key for item in self.terms} | set(changes)
-        self.never_agreed = [item.key for item in items if item.key not in read]
+            elif key in (said or {}):
+                self.steps.append(_Step(self._said_step(key, said[key], names), said=(key, said[key])))
+        read = {item.key for item in agreed} | open_keys | set(said or {})
+        # Nothing said about these on the call: only these may be called never discussed, and only
+        # to a person hearing it for the first time.
+        self.never_agreed = [key for key in ItemKey if key not in read] if (items or said) and not confirmed else []
         self.disputed: list[ItemKey] = []
+        self.said_yes: list[ItemKey] = []  # said on the call, and this person says it was agreed
+        self.said_no: list[ItemKey] = []  # said on the call, and this person says it was not agreed
         self.at = 0
+
+    def _said_step(self, key: ItemKey, said: Said, names: dict[Role, str]) -> str:
+        mine = said.said_by is self.role
+        who = names.get(said.said_by) if said.said_by else None
+        return tuning.STEP_SAID.format(
+            who=f"{self.name} (the person you are talking to)" if mine else who or "one of them",
+            who_hi="aap" if mine else f"{who} ji" if who else "ek ne", label=tuning.LABEL[key], value=said.value,
+            quote=" ".join(said.quote.split())[:200].replace('"', "'"), key=key.value, name=self.name,
+        )
 
     @property
     def done(self) -> bool:
@@ -151,6 +174,14 @@ class Script:
         if step and step.change and name == "change_answer" and isinstance(args.get("agrees"), bool):
             self._answer_change(step.change, args["agrees"], said)
             return self._next(said)
+        if step and step.said and name == "term_answer" and args.get("item") == step.said[0].value and isinstance(args.get("agrees"), bool):
+            key, what = step.said
+            if args["agrees"]:  # agreed and confirmed for this person; memory makes it agreed once both say yes
+                self.said_yes.append(key)
+                self.publish(TermsConfirmed(deal_id=self.deal_id, person=self.role, item=key, value=what.value, said=said))
+            else:  # not agreed: nothing to dispute, it stays open
+                self.said_no.append(key)
+            return self._next(said)
         item = step.item if step else None
         if item and name == "term_answer" and args.get("item") == item.key.value and isinstance(args.get("agrees"), bool):
             if not args["agrees"]:
@@ -163,7 +194,7 @@ class Script:
 
     def _next(self, said: str | None) -> str:
         self.at += 1
-        if self.done and not self.disputed and self.terms:
+        if self.done and not self.disputed and (self.terms or self.said_yes):
             self.publish(TermsConfirmed(deal_id=self.deal_id, person=self.role, said=said))
         return tuning.NEXT.format(step=self._now())
 
@@ -195,10 +226,14 @@ class Script:
             return self.steps[self.at].say
         labels = ", ".join(tuning.LABEL[key] for key in self.never_agreed)
         never = tuning.NEVER_AGREED.format(name=self.name, labels=labels) if labels else ""
+        if self.unchanged:
+            never = tuning.UNCHANGED.format(name=self.name, labels=", ".join(tuning.LABEL[k] for k in self.unchanged)) + never
+        if self.said_no:
+            never += tuning.SAID_NOT_AGREED.format(name=self.name, labels=", ".join(tuning.LABEL[k] for k in self.said_no))
         if self.disputed:
             disputed = ", ".join(tuning.LABEL[key] for key in self.disputed)
             end = tuning.END_DISPUTED.format(never=never, name=self.name, other=self.other, labels=disputed)
-        elif self.terms:
+        elif self.terms or self.said_yes:
             end = tuning.END_CONFIRMED.format(never=never, name=self.name, other=self.other)
         else:
             end = never + tuning.END_RECORD_ONLY.format(name=self.name)
@@ -218,7 +253,7 @@ async def build(
     steps: dict[str, FactChanged] = {}
     asks: dict[str, RecordConfirmRequested] = {}
     checklist: ChecklistUpdated | None = None
-    settled = False  # this person has already confirmed every term of the latest checklist
+    confirmed: dict[ItemKey, str] = {}  # what this person confirmed, by term, at the value read to them
     for event in await store.events(deal_id):
         match event:
             case RecordConfirmRequested() if event.confirm_by is role:
@@ -226,23 +261,34 @@ async def build(
             case RecordConfirmed():
                 asks.pop(event.record_id, None)
             case ChecklistUpdated():
-                checklist, settled = event, False
-            case TermsConfirmed(person=person, item=None) if person is role:
-                settled = True
-            case TermsDisputed(person=person) if person is role:
-                settled = False
+                checklist = event
+            case TermsConfirmed(person=person, item=None) if person is role and checklist:
+                confirmed |= {i.key: i.value for i in checklist.items if i.state is ItemState.AGREED and i.value}
+            case TermsConfirmed(person=person, item=key) if person is role and key and event.value:
+                confirmed[key] = event.value
+            case TermsDisputed(person=person, item=key) if person is role:
+                confirmed = {k: v for k, v in confirmed.items() if key not in (None, k)}
             case FactRecorded():
                 facts.pop(event.fact.id, None)  # in the order they last changed
                 facts[event.fact.id] = event.fact
             case FactChanged():
                 steps[event.change_id] = event
+                if role in event.confirmed_by and event.item and event.status in (ChangeStatus.CONFIRMED_ONE, ChangeStatus.CONFIRMED_BOTH):
+                    confirmed[event.item] = event.new_value  # confirmed the change, on the call or a call-back
     for change_id, step in steps.items():
         answers.setdefault(change_id, step)
     # A change both confirmed after the call's last checklist: the checklist's value for it is the old one.
     since = checklist.ts if checklist else None
     moved = {c.item for c in answers.values() if c.deal_id == deal_id and c.status is ChangeStatus.CONFIRMED_BOTH
              and (since is None or c.ts > since)}
-    items = [i for i in checklist.items if i.key not in moved] if checklist and not settled else []
+    items = [i for i in checklist.items if i.key not in moved] if checklist else []
     changes = open_changes(facts, {**steps, **{k: v for k, v in answers.items() if v.deal_id == deal_id}})
-    plan = Script(deal_id, role, deal.people, list(asks.values()), items, publish, changes, answers)
+    pending = {key for key in ItemKey if key not in changes and key not in moved} - {
+        i.key for i in items if i.state is ItemState.AGREED and i.value}
+    said = said_not_agreed(facts, pending, role)
+    plan = Script(deal_id, role, deal.people, list(asks.values()), items, publish, changes, answers, said, confirmed)
     return plan if plan.steps else None
+
+
+def _same(confirmed: str | None, now: str) -> bool:
+    return confirmed is not None and " ".join(confirmed.split()).casefold() == " ".join(now.split()).casefold()

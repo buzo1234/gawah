@@ -12,13 +12,14 @@ import numpy as np
 from app.bus import Bus
 from app.contracts import (
     CallEnded, CallKind, CallStarted, ChecklistUpdated, CrewAgent, AgentNote, Event, Fact, FactChanged,
-    FactConflict, FactKind, FactRecorded, FactSource, FactStatus, ItemKey, OwedRow, RecordConfirmed,
+    FactConflict, FactKind, FactRecorded, FactSource, FactStatus, ItemKey, JudgeSpeak, JudgeSpoke, OwedRow, RecordConfirmed,
     RecordReceived, Role, TermsConfirmed, TermsDisputed, TermView, TranscriptLine, VoiceNote,
 )
 from app.memory import clips, voice_notes
 from app.memory.book import IST, Book, DealBook
 from app.memory.chain import first_break
 from app.memory.extract import Extractor
+from app.memory.gawah import Gawah
 from app.memory.normalise import asks_agreed, format_rupees, items_named, search_words
 from app.memory.scribe import Scribe
 from app.memory.status import Status
@@ -45,6 +46,7 @@ class Memory:
         self.scribe = Scribe(self)
         self.status = Status(self)
         self.voice = voice_notes.VoiceNotes(self)
+        self.gawah = Gawah(self)
         self.latency: dict[str, list[float]] = {"fact": [], "conflict": []}
         self.conflicts: list[FactConflict] = []
         self._raised: set[tuple] = set()
@@ -56,6 +58,7 @@ class Memory:
             (TranscriptLine, self.scribe.on_line), (ChecklistUpdated, s.on_checklist),
             (TermsConfirmed, s.on_confirmed), (TermsDisputed, s.on_disputed), (RecordReceived, s.on_record),
             (RecordConfirmed, s.on_record_confirmed), (FactChanged, s.on_changed), (VoiceNote, self.voice.on_note),
+            (JudgeSpeak, self.gawah.on_speak), (JudgeSpoke, self.gawah.on_spoke),
         ]:
             bus.subscribe(event_type, handler)
 
@@ -70,6 +73,10 @@ class Memory:
                 self.book.load(e.fact)
             elif isinstance(e, FactConflict):
                 self.conflicts.append(e)
+            elif isinstance(e, JudgeSpeak):
+                self.gawah.asked(e)
+            elif isinstance(e, JudgeSpoke):
+                self.gawah.spoke(e)
         for deal in self.book.deals.values():
             broken = first_break(deal.versions)
             if broken is not None:
