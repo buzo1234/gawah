@@ -49,3 +49,53 @@ def _rupees(text: str | None) -> int | None:
 
 def _valued(fact: Fact) -> bool:
     return fact.value_rupees is not None or fact.value_date is not None or bool((fact.value or "").strip())
+
+
+ONE_FIGURE = {ItemKey.AMOUNT, ItemKey.ADVANCE}  # one figure is the term: two different ones said is bargaining
+
+
+@dataclass
+class Said:
+    """A term one person said on a deal call that was never agreed there."""
+
+    facts: list[Fact]  # what was said for it, oldest first
+
+    @property
+    def value(self) -> str:
+        words: list[str] = []
+        for fact in self.facts:
+            if fact.value and fact.value.lower() not in (w.lower() for w in words):
+                words.append(fact.value)
+        return "; ".join(words[:4])
+
+    @property
+    def said_by(self):
+        return self.facts[-1].said_by
+
+    @property
+    def quote(self) -> str:
+        return self.facts[-1].quote or ""
+
+
+def said_not_agreed(facts: dict[str, Fact], pending: set[ItemKey], role) -> dict[ItemKey, Said]:
+    """By term, for the terms still pending: what was said on a call and not yet confirmed by
+    `role` on a call-back. A money term with two different figures said is left out: that was
+    bargaining, not something to confirm. Nothing said, nothing found."""
+    found = {}
+    for item in ItemKey:
+        if item not in pending:
+            continue
+        said = [
+            f for f in facts.values()
+            if f.item is item and f.kind is FactKind.TERM and f.source is FactSource.CALL and _valued(f)
+            and f.status in (FactStatus.SAID, FactStatus.AGREED, FactStatus.CONFIRMED)
+        ]
+        said.sort(key=lambda f: (f.call_no or 0, f.line_no or 0))
+        if not said or all(role in f.confirmed_by for f in said):
+            continue
+        if item in ONE_FIGURE:
+            if len({f.value_rupees for f in said if f.value_rupees is not None}) > 1:
+                continue
+            said = said[-1:]
+        found[item] = Said(said)
+    return found

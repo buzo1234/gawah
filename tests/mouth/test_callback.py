@@ -12,6 +12,8 @@ from app.contracts import (
     ItemState, Record, RecordConfirmed, RecordConfirmRequested, RecordKind, RecordReceived, Role, TermsConfirmed,
     TermsDisputed, callback_path,
 )
+from app.memory import Memory
+from app.memory.vectors import WordHashEmbedder
 from app.mouth import callback, tuning
 from app.store import Store
 from fakes import RAMESH, SUNITA
@@ -408,3 +410,69 @@ async def test_a_change_one_person_already_confirmed_on_the_call_is_asked_only_o
     seat, link = await desk.join(role=Role.HIRER)
     then = await link.calls("term_answer", item="work", agrees=True, said="haan")
     assert "change_answer" not in then and "the total amount" not in then, "both said yes: the old figure is not read to her"
+
+
+async def balance_said_not_agreed(desk, tmp_path) -> tuple[Memory, Fact]:
+    """The user's real call: the hirer said when the balance is paid, nobody was heard agreeing,
+    and the checklist ended with the balance pending."""
+    memory = Memory(desk.bus, None, WordHashEmbedder(), root=tmp_path, embed_model="hash")
+    memory.attach(desk.bus)
+    await desk.deal()
+    said = Fact(deal_id="d1", text="Sunita will pay the rest after the work is done.", item=ItemKey.BALANCE,
+                kind=FactKind.TERM, value="rest after completion", said_by=Role.HIRER,
+                quote="बाकी का पैसा काम पूरे होने के बाद दूँगा।", call_no=1, line_no=12)
+    memory.record(said)  # memory keeps it and sends fact.recorded, which the call-back reads from the log
+    await desk.bus.drain()
+    return memory, said
+
+
+async def test_a_term_said_but_never_agreed_is_asked_and_both_yeses_confirm_it(desk, tmp_path):
+    memory, said = await balance_said_not_agreed(desk, tmp_path)
+    for role in (Role.WORKER, Role.HIRER):
+        seat, link = await desk.join(role=role)
+        await link.calls("term_answer", item="work", agrees=True, said="haan")
+        then = await link.calls("term_answer", item="amount", agrees=True, said="haan")
+        assert "Call par Sunita ji ne kaha: rest after completion. Kya yeh tay hua tha?" in then or (
+            role is Role.HIRER and "Call par aap ne kaha: rest after completion" in then)
+        assert "बाकी का पैसा काम पूरे होने के बाद दूँगा" in then and 'term_answer (item "balance")' in then
+        await link.calls("term_answer", item="balance", agrees=True, said="haan ji, yahi tay hua tha")
+        then = await link.calls("term_answer", item="dates", agrees=True, said="haan")
+        # Only what nobody spoke of is called never agreed: never the balance.
+        assert "never agreed on the call, so they are not on record: the advance, what happens" in then
+        assert "the balance" not in then.split("never agreed")[1].split(".")[0]
+        await link.says("Dhanyavaad. Namaste.")
+        await until(lambda: [e for e in desk.of(CallEnded) if e.room == seat.room])
+        await desk.bus.drain()
+        await memory.settle()
+        fact = memory.book.deal("d1").latest[said.id]
+        if role is Role.WORKER:  # said by Sunita, agreed by Ramesh, confirmed by him alone so far
+            assert (fact.agreed_by, fact.confirmed_by) == ([Role.WORKER], [Role.WORKER])
+    assert (fact.status, fact.confirmed_by) == (FactStatus.CONFIRMED, [Role.HIRER, Role.WORKER])
+    assert (await memory.get_term("d1", ItemKey.BALANCE)).current.id == said.id
+    per_term = [e for e in desk.of(TermsConfirmed) if e.item is ItemKey.BALANCE]
+    assert [(e.person, e.value) for e in per_term] == [(Role.WORKER, "rest after completion"), (Role.HIRER, "rest after completion")]
+    assert [e.person for e in desk.of(TermsConfirmed) if e.item is None] == [Role.WORKER, Role.HIRER]
+
+
+async def test_a_no_to_a_term_said_on_the_call_leaves_it_open_and_disputes_nothing(desk, tmp_path):
+    memory, said = await balance_said_not_agreed(desk, tmp_path)
+    seat, link = await desk.join(role=Role.WORKER)
+    for item in ("work", "amount"):
+        await link.calls("term_answer", item=item, agrees=True, said="haan")
+    await link.calls("term_answer", item="balance", agrees=False, said="nahi, woh tay nahi hua tha")
+    then = await link.calls("term_answer", item="dates", agrees=True, said="haan")
+    assert "said on the call but not agreed" in then and "the balance" in then
+    await desk.bus.drain()
+    await memory.settle()
+    assert memory.book.deal("d1").latest[said.id].status is FactStatus.SAID
+    assert not desk.of(TermsDisputed) and not [e for e in desk.of(TermsConfirmed) if e.item]
+    assert [e.person for e in desk.of(TermsConfirmed)] == [Role.WORKER]  # the agreed terms still stand confirmed
+
+
+async def test_a_term_nobody_spoke_of_is_not_asked(desk):
+    await desk.deal()
+    seat, link = await desk.join(role=Role.WORKER)
+    for item in ("work", "amount"):
+        await link.calls("term_answer", item=item, agrees=True, said="haan")
+    then = await link.calls("term_answer", item="dates", agrees=True, said="haan")
+    assert "never agreed" in then and "the advance, the balance" in then and "Kya yeh tay hua tha" not in then
