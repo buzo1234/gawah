@@ -1,0 +1,232 @@
+{
+ "fixture": "demo_call_1",
+ "recorded_at": "2026-11-22T02:31:49+00:00",
+ "preamble": "Phone call between Sunita (the hirer, who is paying for a job) and Worker (the worker, who will do it). Gawah is an AI witness listening on the call. Today is Sunday 22 November 2026. Amounts are in Indian rupees.\n\n",
+ "questions": {
+  "addressed_gawah": "In the last line of the transcript, is the speaker talking directly to Gawah, the AI witness, for example by calling it by name?",
+  "topic_left_unclear": "Is there a contract term (price, advance, when the balance is paid, or dates) that one speaker asked about, where the other speaker has already replied without giving a clear answer and moved on to a different topic? A question in the last line that the other speaker has not yet had a chance to answer does not count. Answer yes only if that term is still unsettled.",
+  "wrapping_up": "Is the call ending right now? Answer yes only if, in the last two lines, a speaker says goodbye, says they are hanging up, or thanks the other person to close the conversation. Agreeing to a term (for example 'theek hai', 'pakka', 'done') or promising to finish the work on time is not ending the call.",
+  "balance_skipped": "Have the speakers agreed on an advance and then started talking about a different subject, such as the dates of the work or what happens if it is late, without anyone saying when the remaining balance will be paid? Answer no if when the balance is paid has been agreed, if no advance has been agreed yet, or if the speakers are still talking about payments.",
+  "closing_soon": "Have the speakers finished discussing the terms and started closing the conversation, for example by confirming when and where they will meet next, thanking each other, or saying goodbye? Answer no while a price, a payment, a date or any other term is still being discussed."
+ },
+ "updates": 27,
+ "lines": {
+  "1": "Sunita: Main Sunita hoon. Main sehmat hoon.\n",
+  "2": "Worker: Main Ramesh, painter. Main bhi sehmat hoon.\n",
+  "3": "Sunita: Mujhe apna flat paint karwana hai. Two BHK hai, Indirapuram mein, third floor pe.\n",
+  "4": "Worker: Do coat aur putty ka touch-up, material ke saath pachees hazaar lagega madam.\n",
+  "5": "Sunita: Pachees hazaar bahut zyada hai. Mera budget twenty thousand ka hai.\n",
+  "6": "Worker: Madam bees mein nahi ho payega, labour hi teen aadmi ka hai. Chalo baees hazaar final kar lo.\n",
+  "7": "Sunita: Theek hai, twenty two thousand done. Lekin material aapka hoga, upar se koi extra charge nahi.\n",
+  "8": "Worker: Haan theek hai.\n",
+  "9": "Worker: Advance kitna doge madam? Material lene ke liye paanch hazaar toh pehle chahiye.\n",
+  "10": "Sunita: Theek hai, paanch hazaar advance.\n",
+  "11": "Worker: Ji madam, theek hai.\n",
+  "12": "Sunita: Chalo theek hai. Kaam kab se start karoge?\n",
+  "13": "Sunita: Baaki paisa kaam poora hone ke din de dungi.\n",
+  "14": "Worker: Ji madam, theek hai.\n",
+  "15": "Worker: Agle somvaar se shuru kar denge, subah nau baje tak pahunch jayenge.\n",
+  "16": "Sunita: Aur khatam kab tak hoga? 15 tareekh ko mere ghar pe guests aa rahe hain.\n",
+  "17": "Worker: Paanch din ka kaam hai madam. Shukravaar tak finish, pandrah tareekh se pehle ho jayega.\n",
+  "18": "Sunita: Pakka?\n",
+  "19": "Worker: Pakka.\n",
+  "20": "Worker: Late hua to har din ka paanch sau kaat lena.\n",
+  "21": "Sunita: Theek hai, paanch sau kaat lena.\n",
+  "22": "Worker: Gawah ji, advance kitna tay hua tha?\n",
+  "23": "Sunita: Chalo, sab tay ho gaya. Dhanyavaad Ramesh ji.\n",
+  "24": "Worker: Ji madam, dhanyavaad.\n",
+  "25": "Sunita: Haan, sab sahi hai.\n",
+  "26": "Worker: Haan ji, sab sahi hai.\n"
+ },
+ "answers": {
+  "0": {
+   "addressed_gawah": 0.017982100372550918,
+   "topic_left_unclear": 0.16885320457818342,
+   "wrapping_up": null,
+   "balance_skipped": null,
+   "closing_soon": null
+  },
+  "1": {
+   "addressed_gawah": 0.0010576536891935687,
+   "topic_left_unclear": 0.00970513959293293,
+   "wrapping_up": 0.004812307364876019,
+   "balance_skipped": 0.048325586932295266,
+   "closing_soon": null
+  },
+  "2": {
+   "addressed_gawah": 0.000231507999176004,
+   "topic_left_unclear": 0.005913226753988647,
+   "wrapping_up": 0.008599426304551605,
+   "balance_skipped": 0.06971287058845395,
+   "closing_soon": 0.892723830039067
+  },
+  "3": {
+   "addressed_gawah": 0.00010814315354769428,
+   "topic_left_unclear": 0.0028288309668288744,
+   "wrapping_up": 9.062368058043538e-05,
+   "balance_skipped": 0.0017236637977118764,
+   "closing_soon": 0.0020644433115565236
+  },
+  "4": {
+   "addressed_gawah": 0.00011197401646730572,
+   "topic_left_unclear": 0.0019437511326298972,
+   "wrapping_up": 0.000331444162057085,
+   "balance_skipped": 0.014292866639206791,
+   "closing_soon": 0.04360010172142665
+  },
+  "5": {
+   "addressed_gawah": 5.6342763794735775e-05,
+   "topic_left_unclear": 0.0043781318725563245,
+   "wrapping_up": 0.00015796286166116293,
+   "balance_skipped": 0.0036493316012491607,
+   "closing_soon": 0.0003879226052308722
+  },
+  "6": {
+   "addressed_gawah": 7.942283442148526e-05,
+   "topic_left_unclear": 0.022033373768254143,
+   "wrapping_up": 0.0002926574018066992,
+   "balance_skipped": 0.0027190218269495365,
+   "closing_soon": 0.007076157049168569
+  },
+  "7": {
+   "addressed_gawah": 7.260237410371069e-05,
+   "topic_left_unclear": 0.006064844560507653,
+   "wrapping_up": 0.001471605023530063,
+   "balance_skipped": 0.02367489610037652,
+   "closing_soon": 0.2526067026463914
+  },
+  "8": {
+   "addressed_gawah": 7.340497634823025e-05,
+   "topic_left_unclear": 0.00951691046610446,
+   "wrapping_up": 0.0013475688209569896,
+   "balance_skipped": 0.013679810749853204,
+   "closing_soon": 0.22860976139181982
+  },
+  "9": {
+   "addressed_gawah": 5.8999495219739486e-05,
+   "topic_left_unclear": 0.034915094591725954,
+   "wrapping_up": 0.00018879781865331784,
+   "balance_skipped": 0.0013519974195457531,
+   "closing_soon": 0.011929716690519806
+  },
+  "10": {
+   "addressed_gawah": 6.318356982470714e-05,
+   "topic_left_unclear": 0.05563163876837313,
+   "wrapping_up": 0.002633171286248577,
+   "balance_skipped": 0.041112492138157715,
+   "closing_soon": 0.1504310760044223
+  },
+  "11": {
+   "addressed_gawah": 8.383119956400733e-05,
+   "topic_left_unclear": 0.042597874946528835,
+   "wrapping_up": 0.003161031887197745,
+   "balance_skipped": 0.027852762688302894,
+   "closing_soon": null
+  },
+  "12": {
+   "addressed_gawah": 9.669348101551444e-05,
+   "topic_left_unclear": 0.024086193040725415,
+   "wrapping_up": 0.00010191233843458298,
+   "balance_skipped": 0.9918266681580832,
+   "closing_soon": 0.015614524971727503
+  },
+  "13": {
+   "addressed_gawah": 0.00018534729239470598,
+   "topic_left_unclear": 0.929386097310099,
+   "wrapping_up": 0.004217546048832753,
+   "balance_skipped": 0.058094219577117294,
+   "closing_soon": 0.09863480847216537
+  },
+  "14": {
+   "addressed_gawah": 0.00010707802465233995,
+   "topic_left_unclear": 0.9453986065637692,
+   "wrapping_up": 0.006563975587683016,
+   "balance_skipped": 0.05139874620746143,
+   "closing_soon": 0.10650885448095185
+  },
+  "15": {
+   "addressed_gawah": 6.615968995869241e-05,
+   "topic_left_unclear": 0.0021966018371247127,
+   "wrapping_up": 0.010220402972050607,
+   "balance_skipped": 0.010723076578755502,
+   "closing_soon": 0.8510356883882628
+  },
+  "16": {
+   "addressed_gawah": 0.00019253457307829278,
+   "topic_left_unclear": 0.026265811305205403,
+   "wrapping_up": 0.00023126532109729063,
+   "balance_skipped": 0.007859375902665838,
+   "closing_soon": 0.0013787038832669214
+  },
+  "17": {
+   "addressed_gawah": 0.00021296266212467746,
+   "topic_left_unclear": 0.0058541717050010185,
+   "wrapping_up": 0.008056525145596299,
+   "balance_skipped": 0.0041093185294087285,
+   "closing_soon": null
+  },
+  "18": {
+   "addressed_gawah": 0.0001734250370802253,
+   "topic_left_unclear": 0.010492952281404849,
+   "wrapping_up": 0.000640659732281578,
+   "balance_skipped": 0.004190811948586093,
+   "closing_soon": 0.06516233663558782
+  },
+  "19": {
+   "addressed_gawah": 0.00014792843143005897,
+   "topic_left_unclear": 0.003687600620742708,
+   "wrapping_up": 0.0026510617011172325,
+   "balance_skipped": 0.004329606363982575,
+   "closing_soon": null
+  },
+  "20": {
+   "addressed_gawah": 0.00014714063014734563,
+   "topic_left_unclear": 0.0028296381271948777,
+   "wrapping_up": 0.0030805670365529163,
+   "balance_skipped": 0.0016228125418127441,
+   "closing_soon": 0.7674450184174327
+  },
+  "21": {
+   "addressed_gawah": 0.00014301446410232543,
+   "topic_left_unclear": 0.002273687754422793,
+   "wrapping_up": 0.0031170955307804043,
+   "balance_skipped": 0.0008953204241365408,
+   "closing_soon": 0.7777241724919188
+  },
+  "22": {
+   "addressed_gawah": 0.999676381226695,
+   "topic_left_unclear": 0.00017936764485789502,
+   "wrapping_up": 3.7802632004853374e-05,
+   "balance_skipped": 0.04520704966454701,
+   "closing_soon": null
+  },
+  "23": {
+   "addressed_gawah": 0.009801002101864808,
+   "topic_left_unclear": 0.047773558367703174,
+   "wrapping_up": 0.9973568492039033,
+   "balance_skipped": 0.004845515439858111,
+   "closing_soon": 0.9505861546725284
+  },
+  "24": {
+   "addressed_gawah": 0.026223160617013668,
+   "topic_left_unclear": 0.06661234262242208,
+   "wrapping_up": 0.9989167286236389,
+   "balance_skipped": 0.0037526780783775143,
+   "closing_soon": 0.978109893441117
+  },
+  "25": {
+   "addressed_gawah": 0.004030276105568076,
+   "topic_left_unclear": 0.031198782135027553,
+   "wrapping_up": 0.9891546365804246,
+   "balance_skipped": 0.001566585989328251,
+   "closing_soon": 0.9891144585308457
+  },
+  "26": {
+   "addressed_gawah": 0.0081329208701957,
+   "topic_left_unclear": 0.041077992879369356,
+   "wrapping_up": 0.060537850830085074,
+   "balance_skipped": 0.0016830971863242465,
+   "closing_soon": 0.9867903370301059
+  }
+ }
+}

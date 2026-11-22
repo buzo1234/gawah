@@ -1,0 +1,66 @@
+{
+ "fixture": "demo_call_1",
+ "recorded_at": "2026-11-22T02:32:12+00:00",
+ "model": "gpt-5.4-mini",
+ "replies": {
+  "names:-@1": {
+   "hirer": "Sunita",
+   "worker": null
+  },
+  "names:-@2": {
+   "hirer": "Sunita",
+   "worker": "Ramesh"
+  },
+  "ambiguous:work@4": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:amount@6": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:work@7": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:advance@9": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "unclear:-@13": {
+   "item": "dates"
+  },
+  "ambiguous:balance@13": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@17": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:late_or_unfinished@20": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@23": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:balance@25": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@25": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:dates@26": {
+   "ambiguous": false,
+   "readings": null
+  },
+  "ambiguous:balance@26": {
+   "ambiguous": false,
+   "readings": null
+  }
+ }
+}
