@@ -49,6 +49,20 @@ There are no user accounts. The roles are:
 
 Spoken words and WhatsApp messages are in Hindi and Hinglish. The lines below are written out so you can read them aloud.
 
+### Without a microphone: a recorded call into a live deal (live server)
+
+For a reviewer, or a reviewer's AI agent, that cannot speak into a call. You start a deal on a simulated phone and replay a recorded call into it from your machine (after the install in "Run it yourself"). A replay is answered from saved model replies, so it costs the live server almost nothing beyond writing the agreement. About 3 minutes.
+
+1. Open `https://44.253.37.59.sslip.io/dashboard/phone?number=+91900000XXXX` (any number of your own, not in `VERIFIED_NUMBERS`), enter the access key, and send `Ramesh +91900000YYYY`.
+   **You should see:** "Namaste! Gawah aapki deal ka gawah rahega. Call ke liye yeh link kholiye" and a link `/call/<deal id>/hirer`. Note the deal id.
+2. Replay the call into that deal:
+   `uv run python tools/replay.py fixtures/call_two_amounts.json --speed 10 --deal-id <deal id> --url https://44.253.37.59.sslip.io --key REVIEWER_ACCESS_KEY_HERE`
+   (or set `GAWAH_ACCESS_KEY` instead of `--key`). It prints each line and ends with `call.ended`, in about 15 seconds.
+3. **You should see on the board** (`https://44.253.37.59.sslip.io/dashboard?deal=<deal id>`) fill as the lines arrive: the six terms agreed (amount ₹13,000, advance ₹3,000), a red **Contradicted** on the amount (Ramesh's "total 14 hazaar" at line 19 against the ₹13,000 both agreed at line 11) with its card, and the witness chain "verified".
+4. **About a minute after the replay ends,** both chats (`?number=+91900000XXXX` and `?number=+91900000YYYY`) get "Aapki deal ka contract, version 1. Awaaz mein summary neeche hai." with the agreement PDF and the spoken summary. The call-back step is off on the live server, so what both agreed on the call is the confirmation.
+
+Journeys (c) and (d) then work on this deal on the same simulated phones.
+
 ### (a) A deal from WhatsApp to the agreement (live server)
 
 You need a laptop with a microphone and earphones, and about 10 minutes. You speak as the hirer, Sunita; the AI plays the worker, Ramesh.
@@ -187,7 +201,7 @@ Replay a recorded call into a running server (offline or full mode on this machi
 uv run python tools/replay.py fixtures/call_two_amounts.json --speed 10 [--deal-id <id>] [--url http://localhost:8000]
 ```
 
-`--speed 1` is real time; 10 is ten times faster. Use 10 or slower: at 0 the whole call reaches Gawah before the first fact does. A recorded call is answered from saved model replies (`tests/brain/recorded/`, `tests/memory/recorded/`), so a replay makes no outside call even in the full mode.
+To a public server add `--url https://... --key <access key>` (or set `GAWAH_ACCESS_KEY`); the key is sent as `X-Access-Key`. `--speed 1` is real time; 10 is ten times faster. Use 10 or slower: at 0 the whole call reaches Gawah before the first fact does. A recorded call is answered from saved model replies (`tests/brain/recorded/`, `tests/memory/recorded/`), so a replay makes no outside call even in the full mode.
 
 ### Full mode (real calls, real WhatsApp)
 

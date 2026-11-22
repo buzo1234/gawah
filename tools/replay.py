@@ -3,6 +3,7 @@
     uv run python tools/replay.py fixtures/call_two_amounts.json --speed 10
 
 --speed 1 is real time, 10 is ten times faster. --url defaults to http://localhost:8000.
+--key (or GAWAH_ACCESS_KEY) is the access key of a public server, sent as X-Access-Key.
 """
 
 import sys
