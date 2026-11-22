@@ -1,5 +1,5 @@
 {
- "fixture": "dry_run_call",
+ "fixture": "walkthrough_call",
  "recorded_at": "2026-11-21T14:35:32+00:00",
  "preamble": "Phone call between Sunita (the hirer, who is paying for a job) and Worker (the worker, who will do it). Gawah is an AI witness listening on the call. Today is Saturday 21 November 2026. Amounts are in Indian rupees.\n\n",
  "questions": {

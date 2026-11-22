@@ -72,11 +72,15 @@ async def _replay_to_server(path: str, url: str, speed: float, deal_id: str | No
             raise SystemExit(f"No server at {url}. Start it: uv run uvicorn app.main:app --reload --port 8000")
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Replay a practice call into a running server.")
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Replay a recorded call into a running server.")
     parser.add_argument("fixture", help="fixtures/<call>.json")
     parser.add_argument("--speed", type=float, default=1.0, help="1 = real time, 10 = ten times faster, 0 = no waiting")
     parser.add_argument("--url", default="http://localhost:8000")
     parser.add_argument("--deal-id", default=None)
     args = parser.parse_args()
     asyncio.run(_replay_to_server(args.fixture, args.url, args.speed, args.deal_id))
+
+
+if __name__ == "__main__":
+    main()

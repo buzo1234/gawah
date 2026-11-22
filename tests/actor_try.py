@@ -30,7 +30,7 @@ from app.actor.actor import Actor  # noqa: E402
 from app.actor.realtime import RATE, VOICES, Realtime  # noqa: E402
 from app.config import get_settings  # noqa: E402
 from app.contracts import Role  # noqa: E402
-from tools import demo_story  # noqa: E402
+from tools import story  # noqa: E402
 
 FRAME = RATE // 50  # 20 ms
 
@@ -112,9 +112,9 @@ async def main(last: int, out: Path, voice: str | None, improvised: bool, callba
         lines = [{"line_no": i, "speaker": "hirer", "text": text, "audio": "voice"} for i, text in enumerate(said[:last], 1)]
         names = {Role.HIRER: "Karan", Role.WORKER: "Ramesh"}
     else:
-        lines = [line for line in demo_story.call(1)["lines"] if line["line_no"] <= last]
+        lines = [line for line in story.call(1)["lines"] if line["line_no"] <= last]
         names = {Role.HIRER: "Sunita", Role.WORKER: None}
-    speech = await demo_story.speech([line for line in lines if line["speaker"] == "hirer"], key)
+    speech = await story.speech([line for line in lines if line["speaker"] == "hirer"], key)
     seats: list[EarOnly] = []
 
     def link(config, on_event, log):

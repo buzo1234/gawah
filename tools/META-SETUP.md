@@ -68,7 +68,7 @@ cloudflared tunnel --url http://localhost:8000          # prints https://<words>
 PUBLIC_BASE_URL=https://<words>.trycloudflare.com uv run uvicorn app.main:app --port 8000
 ```
 
-(`uv run python tools/demo.py` also starts both. Its service check still tests Twilio and prints Twilio's instructions, so a Twilio `FAIL` there means nothing when you are on Meta.)
+(`uv run python tools/run_live.py` also starts both. Its service check still tests Twilio and prints Twilio's instructions, so a Twilio `FAIL` there means nothing when you are on Meta.)
 
 b. On Meta's dashboard, open **WhatsApp > Configuration > Webhook > Edit**:
 

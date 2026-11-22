@@ -1,4 +1,4 @@
-# The demo, step by step: two calls with the whole crew
+# A live run, step by step: two calls with the whole crew
 
 You play both people, alone, in a quiet room.
 
@@ -8,16 +8,16 @@ You play both people, alone, in a quiet room.
 
 The story: Day 1, the deal call and the call-backs, version 1 of the agreement, the advance screenshot. Day 5, a second call where Ramesh remembers the total wrong and both agree a change by voice; version 2 arrives. Day 7, the work is done, and Gawah reminds Sunita of the balance. In the room it all happens in about 35 minutes.
 
-It uses about 45 LiveKit participant-minutes and two of the dozen Sage2 calls a month. Rehearse it with `tools/dry_run.py` (no person) first; then do it once, properly.
+It uses about 45 LiveKit participant-minutes and two of the dozen Sage2 calls a month. Walk it through first with `tools/walkthrough.py` (no person); then do it once, properly.
 
-The lines are in `fixtures/demo/demo_call_1.json` and `demo_call_2.json`; the tables below are the same lines. `tools/dry_run.py` plays exactly these.
+The lines are in `fixtures/story/story_call_1.json` and `story_call_2.json`; the tables below are the same lines. `tools/walkthrough.py` plays exactly these.
 
 ## Before you start
 
 - Earphones in the laptop. Phone volume all the way down: you hear Gawah and "Ramesh" through the laptop's earphones. A phone loudspeaker would be picked up by the laptop's microphone and taken for Ramesh.
 - Phone and laptop at opposite ends of the room, at least 3 metres apart. Speak each person's lines close to that person's device, at a normal voice.
 - Phone: screen timeout 5 minutes or more. The phone mutes its microphone when the screen locks or the call page goes to the background.
-- Put `fixtures/demo/advance-5000.png` (a ₹5,000 UPI payment screen) in the phone's photos: AirDrop it, or mail it to yourself.
+- Put `fixtures/story/advance-5000.png` (a ₹5,000 UPI payment screen) in the phone's photos: AirDrop it, or mail it to yourself.
 - Phone hotspot ready, in case the laptop's network drops.
 - **WhatsApp runs on Meta's test number** (`WHATSAPP_PROVIDER=meta` in `.env`; the setup is in `tools/META-SETUP.md`). Before you start:
   - Make a fresh access token on Meta's API Setup page and put it in `.env` (`META_WHATSAPP_TOKEN`): the temporary one lasts only a few hours.
@@ -31,7 +31,7 @@ The lines are in `fixtures/demo/demo_call_1.json` and `demo_call_2.json`; the ta
 - **Wait for Gawah to finish.** Talking over Gawah stops it mid-sentence. Where a table says **Wait for Gawah**, stay quiet until it has finished, up to the time given.
 - One line, then about a second's pause, then the next. Gawah needs about 5 seconds after a line before it can speak (the line is written down about 2 seconds after you stop, then it decides and finds its words), so it gets in only where you wait for it. That is why the waits are marked.
 - When Gawah has finished, give it a few more seconds before the next line: it often goes on after a short pause (a clip, then a question).
-- Say "Gawah ji" clearly, as two words. In the dry run a generated voice's "Gawah ji" was written down as "दबा जी", and Gawah never knew it was asked.
+- Say "Gawah ji" clearly, as two words. In a test run a generated voice's "Gawah ji" was written down as "दबा जी", and Gawah never knew it was asked.
 - Say the numbers as written ("pachees hazaar", "baees hazaar"). Look at the dashboard checklist, not the transcript, to see what was understood: the transcript is in Devanagari and not exact.
 
 ---
@@ -41,7 +41,7 @@ The lines are in `fixtures/demo/demo_call_1.json` and `demo_call_2.json`; the ta
 ### 1. Start everything (laptop)
 
 ```
-uv run python tools/demo.py
+uv run python tools/run_live.py
 ```
 
 **You should see** six lines marked `OK` (OpenAI, Sage2, LiveKit, Meta WhatsApp, S3, Chrome; Twilio in Meta's place on Twilio), then a box with the dashboard address and the webhook steps.
@@ -138,7 +138,7 @@ Then press the red **End** button on both.
 
 **If Gawah does not ask about the balance in 30 seconds:** go on to line 18 anyway, and note it. **If it does not answer line 22:** say it once more, a little closer to the laptop. **If it does not read the terms back:** go on; the call-backs read every term to each of you.
 
-**Line 12, say "kab se" clearly.** Your recording of it was written down as "काम कल से स्टार्ट करो" (start tomorrow) in both dry runs.
+**Line 12, say "kab se" clearly.** Your recording of it was written down as "काम कल से स्टार्ट करो" (start tomorrow) in both test runs.
 
 **If a line appears twice, once under each name,** the far microphone heard you: move the devices further apart next time.
 
@@ -176,7 +176,7 @@ Send the picture `advance-5000.png` to Gawah, with the words `Advance bhej diya`
 
 A screenshot of a payment is proof on its own, so nobody is asked to confirm it.
 
-**If it says "₹5,000 pehle se record mein hai" and "Baaki ₹12,000":** memory took something said on the call as the advance already paid, and counted it twice. In the dry run that was "Paanch hazaar advance main kal GPay kar dungi", which is why line 10 no longer promises to pay. Say the call lines as written. The dashboard's fact graph shows the payment under the advance with the call line it came from.
+**If it says "₹5,000 pehle se record mein hai" and "Baaki ₹12,000":** memory took something said on the call as the advance already paid, and counted it twice. In a test run that was "Paanch hazaar advance main kal GPay kar dungi", which is why line 10 no longer promises to pay. Say the call lines as written. The dashboard's fact graph shows the payment under the advance with the call line it came from.
 
 ---
 
@@ -219,7 +219,7 @@ Then the red **End** button on both.
 
 **If nobody says "haan, sunaiye" at line 4,** Gawah does not play the recording: it plays it only on a yes, or when someone asks for it.
 
-**If Gawah says it heard you both but "record mein final update nahi hai",** the yes was not recorded (it happened in the dry run, see the report). Each say once more, after Gawah is quiet: "Gawah ji, mujhe chaubees hazaar manzoor hai." A line with Gawah's name gets a turn that can record a yes.
+**If Gawah says it heard you both but "record mein final update nahi hai",** the yes was not recorded (it happened in a test run, see the report). Each say once more, after Gawah is quiet: "Gawah ji, mujhe chaubees hazaar manzoor hai." A line with Gawah's name gets a turn that can record a yes.
 
 **If Gawah says nothing at line 3 in 45 seconds:** go on and note it; the dashboard still shows the red link if the Scribe caught it. **If it never proposes the change:** say line 8 once more. **If it does not hear one "haan":** say it again.
 
@@ -265,13 +265,13 @@ On Meta, the server log says why (`not sent to ***NNNN: meta http ... code ...`;
 
 To get a link onto the phone: WhatsApp it to yourself from the laptop, or AirDrop it.
 
-## Rehearsing without a person
+## Walking it through without a person
 
 ```
-uv run python tools/demo.py            # in one terminal
-uv run python tools/dry_run.py         # in another: the whole story, simulated phones, headless browsers
-uv run python tools/dry_run.py --from call2   # retry from call 2 on the latest deal
-uv run python tools/dry_run.py --offline      # nothing outside: tests/offline.py in-process
+uv run python tools/run_live.py            # in one terminal
+uv run python tools/walkthrough.py         # in another: the whole story, simulated phones, headless browsers
+uv run python tools/walkthrough.py --from call2   # retry from call 2 on the latest deal
+uv run python tools/walkthrough.py --offline      # nothing outside: tests/offline.py in-process
 ```
 
-It writes every event, each step with its time and result, and dashboard screenshots to `runs/dry-<time>/`.
+It writes every event, each step with its time and result, and dashboard screenshots to `runs/walk-<time>/`.

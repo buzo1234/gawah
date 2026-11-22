@@ -1,6 +1,6 @@
 {
- "id": "demo_call_1",
- "description": "Day 1 of the demo (tools/DEMO-RUN.md): the deal call. The lines the user says, and the lines tools/dry_run.py plays: 'audio' names the user's recording in fixtures/audio/, or 'voice' for speech generated as tests/mouth/voices.py makes it. 'then' is where Gawah should speak before the next line; 'spoken', if there, is what the generated voice reads (so the name Gawah comes out clearly). Times are estimates for a replay; the dry run waits on Gawah instead.",
+ "id": "story_call_1",
+ "description": "Day 1 of the demo (tools/LIVE-RUN.md): the deal call. The lines the user says, and the lines tools/walkthrough.py plays: 'audio' names the user's recording in fixtures/audio/, or 'voice' for speech generated as tests/mouth/voices.py makes it. 'then' is where Gawah should speak before the next line; 'spoken', if there, is what the generated voice reads (so the name Gawah comes out clearly). Times are estimates for a replay; the dry run waits on Gawah instead.",
  "call_no": 1,
  "people": [
   {

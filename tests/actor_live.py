@@ -3,7 +3,7 @@
     uv run python tests/actor_live.py [last line no, default 26]
 
 The real app on a free port (WhatsApp off: made-up numbers, no tokens), a deal, Sunita's call
-link in a headless Chrome whose microphone plays her lines of fixtures/demo/demo_call_1.json
+link in a headless Chrome whose microphone plays her lines of fixtures/story/story_call_1.json
 (the user's recordings, and generated speech for the rest) when the floor is free, and the
 actor started as Ramesh through POST /actor/start. A second headless Chrome shows Ramesh's page
 in a phone-shaped frame, which should say "AI is playing Ramesh". At the end Sunita leaves, the
@@ -37,8 +37,8 @@ from app.actor.room import Seat  # noqa: E402
 from app.config import ROOT, get_settings  # noqa: E402
 from app.contracts import DealRequested, Person, Role, call_path, new_id  # noqa: E402
 from app.main import create_app  # noqa: E402
-from tools import demo_story  # noqa: E402
-from tools.dry_browser import Person as Browser  # noqa: E402
+from tools import story  # noqa: E402
+from tools.walk_browser import Person as Browser  # noqa: E402
 
 SAMPLE = ROOT / "fixtures" / "actor-samples" / "ramesh-call1.wav"
 SAMPLE_S = 40
@@ -66,9 +66,9 @@ async def main(last: int) -> None:
         "database_path": str(Path(tempfile.mkdtemp(prefix="actor-live-")) / "proof.db"),
     })
     key = settings.require("openai_api_key")
-    call = demo_story.call(1)
+    call = story.call(1)
     lines = [line for line in call["lines"] if line["line_no"] <= last]
-    speech = await demo_story.speech([line for line in lines if line["speaker"] == "hirer"], key)
+    speech = await story.speech([line for line in lines if line["speaker"] == "hirer"], key)
 
     app = create_app(settings)
     app.state.calls.limits.max_age = 390

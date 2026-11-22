@@ -1,8 +1,8 @@
 """One command for a real run: a fresh database, a public tunnel, the server, and a check
 of every outside service it will use.
 
-    uv run python tools/demo.py            start everything; Ctrl-C stops it all
-    uv run python tools/demo.py --check    only check the services, then exit
+    uv run python tools/run_live.py            start everything; Ctrl-C stops it all
+    uv run python tools/run_live.py --check    only check the services, then exit
 
 Each check is one cheap read-only call. Nothing here sends a message or opens a room.
 On Ctrl-C the server shuts down (which closes any call in progress), the tunnel stops,
@@ -159,7 +159,7 @@ Public address of this run:       {public}
 
 {webhook_steps(public, meta)}
 
-What to do first (tools/DEMO-RUN.md has every step):
+What to do first (tools/LIVE-RUN.md has every step):
   1. Paste the address above into {where} and save.{' ' * (15 if not meta else 2)}(step 2)
   2. Open the dashboard on the laptop.                           (step 3)
   3. From your phone, send "hi" to {number}. It should

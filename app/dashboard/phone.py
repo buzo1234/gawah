@@ -67,7 +67,7 @@ class Outgoing(BaseModel):
     text: str = ""
     media_url: str | None = None
     media_type: str | None = None
-    profile_name: str = "Second phone"
+    profile_name: str = ""  # no name: the call fills it in, as for a WhatsApp profile with none
     button: Tap | None = None  # a reply button tapped, instead of words typed
 
 

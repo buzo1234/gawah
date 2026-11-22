@@ -1,6 +1,6 @@
 {
- "id": "dry_run_call",
- "description": "The deal call of the first whole-demo dry run (runs/dry-20261121-194050, 21 November 2026), as transcribed. REBUILT: that run's events file was deleted; its timings and the first 50 characters of each line survive in a log, and the rest of each line is filled in from the script it played (fixtures/audio/state.json), in the same style. The deal was started on WhatsApp, so the worker's name is not known at the start. Gawah asked about the balance after line 16; the answer at 18 was heard as 'seventy thousand'. The call ended 25 seconds after the last line (ended_at).",
+ "id": "walkthrough_call",
+ "description": "The deal call of the first whole-demo dry run (runs/walk-20261121-194050, 21 November 2026), as transcribed. REBUILT: that run's events file was deleted; its timings and the first 50 characters of each line survive in a log, and the rest of each line is filled in from the script it played (fixtures/audio/state.json), in the same style. The deal was started on WhatsApp, so the worker's name is not known at the start. Gawah asked about the balance after line 16; the answer at 18 was heard as 'seventy thousand'. The call ended 25 seconds after the last line (ended_at).",
  "people": [
   {
    "role": "hirer",

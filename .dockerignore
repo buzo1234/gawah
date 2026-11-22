@@ -7,7 +7,7 @@
 # The brain's and the Scribe's saved answers: read by the app for replayed calls.
 !tests/brain/recorded
 !tests/memory/recorded
-# The demo story: read by the AI actor (app/actor) when that branch is merged.
-!fixtures/demo
+# The story: read by the AI actor (app/actor) and tools/story.py.
+!fixtures/story
 **/__pycache__
 **/*.pyc

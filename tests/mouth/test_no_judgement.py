@@ -1,4 +1,4 @@
-"""Gawah never judges a term (AGENTS.md, Safety). In try_agent, asked on the call to call 15,000
+"""Gawah never judges a term (docs/DEVELOPMENT.md, Safety). In try_agent, asked on the call to call 15,000
 fair, it said "Record mein abhi 15 hazaar fair ya final nahi hai": a judgement, even as a denial.
 Every persona carries the rule; nothing else Gawah is told names a judgement word."""
 

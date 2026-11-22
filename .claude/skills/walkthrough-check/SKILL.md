@@ -1,5 +1,5 @@
 ---
-name: demo-check
+name: walkthrough-check
 description: Use at every checkpoint in PLAN.md and before any rehearsal. Walks the eight demo steps in order on main and reports the first one that breaks, so the team knows what the demo can actually show right now.
 ---
 

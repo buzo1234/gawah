@@ -103,9 +103,10 @@ def offline_app(database_path: str | Path, clock: FakeClock | None = None, whats
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Serve Gawah with every outside service faked.")
+    parser = argparse.ArgumentParser(description="Serve Gawah in offline mode: every outside service simulated, no keys.")
     parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--host", default="127.0.0.1", help="0.0.0.0 to open it from another machine")
     parser.add_argument("--whatsapp", choices=("twilio", "meta"), default="twilio")
     args = parser.parse_args()
     database = Path(tempfile.mkdtemp(prefix="gawah-offline-")) / "gawah.db"
-    uvicorn.run(offline_app(database, whatsapp=args.whatsapp), host="127.0.0.1", port=args.port)
+    uvicorn.run(offline_app(database, whatsapp=args.whatsapp), host=args.host, port=args.port)

@@ -1,7 +1,7 @@
 """Who plays the two people in the dry run.
 
 Live: two headless Chrome browsers on the real call links, each saying its lines into the
-call when the dry run says so (tools/dry_browser.py), and one headless Chrome on each
+call when the dry run says so (tools/walk_browser.py), and one headless Chrome on each
 call-back, in a noisy room with a "haan theek hai" every 22 seconds (as
 tests/mouth/prove_callback.py does).
 
@@ -21,7 +21,7 @@ from pathlib import Path
 
 import httpx
 
-from tools.dry_browser import Person
+from tools.walk_browser import Person
 
 ROLES = ("hirer", "worker")
 # Offline only: call 2's line -> the step of the change it stands in for (see the docstring).
@@ -54,7 +54,7 @@ class LivePlayers:
         try:
             await person.open(link)
         except TimeoutError:
-            # The laptop may not resolve a new tunnel's name yet (tools/DEMO-RUN.md, step 1): same page, locally.
+            # The laptop may not resolve a new tunnel's name yet (tools/LIVE-RUN.md, step 1): same page, locally.
             print(f"{role}: {link} did not load; opening it on {self.local}", flush=True)
             await person.open(self.local + path_of(link))
         await person.click("join")
@@ -111,7 +111,7 @@ class OfflinePlayers:
         tuning.BALANCE_REMINDER_SECONDS = 15.0  # the offline run need not wait a minute
         self.app = offline_app(folder / "offline.db", whatsapp=whatsapp)
         self.port, self.url = port, f"http://127.0.0.1:{port}"
-        self._read_the_demo_screenshot()
+        self._read_the_story_screenshot()
         self.http = httpx.AsyncClient(base_url=self.url, timeout=20)
         self.room: str | None = None
         self.call_t0 = 0.0
@@ -119,8 +119,8 @@ class OfflinePlayers:
         self._change: dict | None = None
         self._events: list = []
 
-    def _read_the_demo_screenshot(self) -> None:
-        """The fake reader reads any picture as the tests' 8,000 screenshot: read the demo's as what it shows."""
+    def _read_the_story_screenshot(self) -> None:
+        """The fake reader reads any picture as the tests' 8,000 screenshot: read the story's as what it shows."""
         from app.records.reader import Reading
         from tests.whatsapp_world import FakeReader
 

@@ -11,7 +11,7 @@ from app.bus import Bus
 from app.contracts import ChecklistUpdated, ItemKey, ItemState, JudgeSpeak, SpeakReason
 from tests.brain.replaying import run_call, run_followup
 
-CALLS = sorted(Path("fixtures").glob("call_*.json")) + [Path("tests/brain/dry_run_call.json"), Path("tests/brain/demo_script_call.json")]
+CALLS = sorted(Path("fixtures").glob("call_*.json")) + [Path("tests/brain/walkthrough_call.json"), Path("tests/brain/story_script_call.json")]
 ALL = CALLS + [Path("tests/brain/spike_painter_call.json")]
 MODES = ["live", "wrapup"]
 modes = pytest.mark.parametrize("mode", MODES)
@@ -175,8 +175,8 @@ WRAP = {
     "call_missing_balance": (29, 30),  # "Chalo theek hai phir. Monday subah 9 baje aa jana" ... 32 lines
     "call_two_amounts": (30, 31),  # "Chalo theek hai. To Wednesday subah aa jao, 10 baje." ... 33
     "spike_painter_call": (27, 28),  # "Chalo theek hai phir, kal advance bhej deti hoon. Ab rakhti hoon." ... 30
-    "dry_run_call": (24, 24),  # its one closing line is its last, then 25 seconds of silence
-    "demo_script_call": (12, 13),  # "चलो ठीक है फिर। सब तय हो गया।" ... then the late-work question
+    "walkthrough_call": (24, 24),  # its one closing line is its last, then 25 seconds of silence
+    "story_script_call": (12, 13),  # "चलो ठीक है फिर। सब तय हो गया।" ... then the late-work question
 }
 
 
@@ -208,7 +208,7 @@ async def test_wrap_up_comes_at_the_closing_words_never_before(path):
         ("fixtures/call_missing_balance.json", (19, "term_unclear", "balance", "hirer"), 20),
         ("fixtures/call_two_amounts.json", (19, "contradicts_record", "amount", "both"), 20),
         ("tests/brain/spike_painter_call.json", (18, "term_unclear", "balance", "hirer"), 19),
-        ("tests/brain/demo_script_call.json", (8, "term_unclear", "balance", "hirer"), 9),
+        ("tests/brain/story_script_call.json", (8, "term_unclear", "balance", "hirer"), 9),
     ],
     ids=lambda v: Path(v).stem if isinstance(v, str) else None,
 )
@@ -228,7 +228,7 @@ async def test_a_dropped_question_is_asked_again_and_wrap_up_still_asks(path, fi
 
 
 @pytest.mark.parametrize(
-    ("path", "worker"), [("tests/brain/dry_run_call.json", "Ravesh"), ("tests/brain/demo_script_call.json", "Ramesh")]
+    ("path", "worker"), [("tests/brain/walkthrough_call.json", "Ravesh"), ("tests/brain/story_script_call.json", "Ramesh")]
 )
 async def test_a_name_said_on_the_call_is_learned_and_used(bus, path, worker):
     # Both deals were started on WhatsApp, which knows only the worker's phone.
