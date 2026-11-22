@@ -16,7 +16,7 @@ import pytest
 from app.contracts import (
     MEMORY_STATE, WHATSAPP_WEBHOOK_PATH, CallEnded, DealRequested, CallKind, CallStarted, ChangeStatus, ChecklistUpdated, ContractReady,
     Direction, DisputeStep, Event, FactChanged, FactStatus, ItemKey, ItemState, Person, Role, TermDispute,
-    TermsConfirmed, TermsDisputed, TranscriptLine, WhatsAppMessage, call_path, clip_path,
+    JudgeSpeak, SpeakReason, TermsConfirmed, TermsDisputed, TranscriptLine, WhatsAppMessage, call_path, clip_path,
 )
 from app.records import term_words, tuning
 from app.whatsapp.inbound import Inbound
@@ -346,6 +346,46 @@ async def test_a_change_both_confirm_settles_it_and_writes_the_agreement(meta_de
     assert deal.texts(Role.HIRER)[-3] == ("Kul paisa ab ₹14,000 hai, dono ne confirm kiya. Is par ab koi vivaad nahi. "
                                           "Ab sab tay hai: agreement thodi der mein yahin aayega.")
     assert deal.of(ContractReady)
+
+
+async def test_a_call_on_the_deal_raises_the_dispute_first_and_both_keeping_the_record_settles_it(meta_deal):
+    """Point 4: the worker gave their version; call 2 opens and the brain raises the amount first, with the
+    record and the version. Both then confirm the figure on record through Gawah (a change to the same
+    figure, as the mouth's tools send it): the dispute is settled as kept and the agreement is written."""
+    deal = meta_deal
+    await disputed_by_the_worker(deal)
+    await deal.send(Role.WORKER, "Recording sahi hai", button=deal.button("advance", "ok"))
+    await deal.send(Role.WORKER, "Kuch aur tay hua tha", button=deal.button("amount", "other"))
+    await deal.send(Role.WORKER, "15 hazaar tay hua tha")
+    record = deal.memory.book.deal(deal.id).record(ItemKey.AMOUNT)
+    people = [Person(role=Role.HIRER, name="Sunita"), Person(role=Role.WORKER, name="Ramesh")]
+    room = f"replay-{deal.id}-2"
+    deal.bus.publish(CallStarted(deal_id=deal.id, people=people, room=room, call_no=2))
+    deal.bus.publish(TranscriptLine(deal_id=deal.id, speaker=Role.HIRER, text="Namaste, main Sunita.", start=1.0, end=3.0,
+                                    line_no=1, call_no=2))
+    await deal.settle()
+    [speak] = deal.of(JudgeSpeak)[-1:]
+    assert (speak.reason, speak.item, speak.fact_ids, speak.after_line) == (
+        SpeakReason.DISPUTE_OPEN, ItemKey.AMOUNT, [record.id], 1)
+    assert "still in dispute" in speak.instruction and '"15 hazaar tay hua tha"' in speak.instruction
+    assert not deal.of(ContractReady)
+
+    deal.bus.publish(FactChanged(
+        deal_id=deal.id, fact_id=record.id, new_value="13,000 rupees", item=ItemKey.AMOUNT, proposed_by=Role.WORKER,
+        confirmed_by=list(Role), status=ChangeStatus.CONFIRMED_BOTH, said="Haan, terah hi tha.",
+    ))
+    await deal.settle()
+    assert deal.disputes()[-1].how == "kept"
+    assert deal.memory.book.deal(deal.id).current(ItemKey.AMOUNT).status is FactStatus.CONFIRMED
+    assert not deal.app.state.brain.disputes[deal.id], "off the agenda"
+    assert deal.texts(Role.HIRER)[-1] == ("Kul paisa ₹13,000 hi rahega: dono ne call par confirm kiya. Is par ab koi "
+                                          "vivaad nahi. Ab sab tay hai: agreement thodi der mein yahin aayega.")
+    assert not deal.of(ContractReady), "not while the call is on"
+    silent_recordings(deal.root, deal.id, seconds=10)
+    deal.bus.publish(CallEnded(deal_id=deal.id, people=people, room=room, duration=10.0, call_no=2))
+    await deal.settle()
+    assert deal.of(ContractReady)
+    assert not [t for t in deal.texts(Role.WORKER)[-3:] if "/callback/" in t], "both confirmed it on the call"
 
 
 async def test_owed_messages_use_the_figure_on_record_and_say_it_is_in_dispute(meta_deal):

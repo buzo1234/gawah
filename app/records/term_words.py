@@ -83,6 +83,10 @@ def changed(item: ItemKey, new: str) -> str:
     return f"{_upper(term_name(item))} ab {new} hai, dono ne confirm kiya. Is par ab koi vivaad nahi."
 
 
+def kept(item: ItemKey, figure: str) -> str:
+    return f"{_upper(term_name(item))} {figure} hi rahega: dono ne call par confirm kiya. Is par ab koi vivaad nahi."
+
+
 ALL_SETTLED = " Ab sab tay hai: agreement thodi der mein yahin aayega."
 
 

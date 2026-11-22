@@ -10,7 +10,9 @@ sure both know why it is held and how to settle it.
   terms.confirmed for them, as a yes on the call-back would be. [Kuch aur tay hua tha] asks for
   their version; their next text or voice note is it (memory keeps it as a said fact beside the
   term, never in its place), and both see both versions with a call link.
-- Settled by that person's yes (the button, or a later call-back), or by a change both confirmed.
+- Settled by that person's yes (the button, or a later call-back), or by a change both confirmed:
+  on a later deal call the brain raises the dispute first and the mouth puts a value both agree on
+  through the change tools; the figure on record agreed again is "kept", any other "changed".
 - One reminder to both after tuning.DISPUTE_REMINDER_SECONDS if still open, with the choices
   again; never repeated (kept beside the Sentinel's reminders, so a restart keeps it).
 - Every open dispute and the wait for a version are rebuilt from the event log on start.
@@ -116,6 +118,8 @@ class TermDisputes:
     async def on_event(self, event: Event) -> None:
         for d in self.apply(event):
             how = d.settling or ("changed" if isinstance(event, FactChanged) else "confirmed")
+            if how == "changed" and await self._same_as_record(d, event.new_value):
+                how = "kept"  # both confirmed on a call, through Gawah, the figure on record
             await self._settled(d, how, event.new_value if isinstance(event, FactChanged) else None)
             whole = isinstance(event, TermsConfirmed) and event.item is None
             if not whole and not self._mine(d.deal_id, d.person) and self.finished.get((d.deal_id, d.person)):
@@ -235,6 +239,8 @@ class TermDisputes:
         for p in people.values():
             if how == "changed":
                 text = term_words.changed(d.item, _figure(new))
+            elif how == "kept":
+                text = term_words.kept(d.item, _figure(new))
             elif how == "recording":
                 text = (term_words.withdrawn_for_them(d.item, shown) if p.role is d.person
                         else term_words.withdrawn_for_other(person, d.item, shown))
@@ -290,6 +296,13 @@ class TermDisputes:
         latest = {f.id: f for f in view.history}
         disputed = [f for f in latest.values() if f.status is FactStatus.DISPUTED and f.kind.value == "term"]
         return disputed[-1] if disputed else None
+
+    async def _same_as_record(self, d: TermOpen, new: str | None) -> bool:
+        view = await self.s.memory.get_term(d.deal_id, d.item)
+        record = next((f for f in reversed(view.history) if f.id == d.fact_id), None)
+        figure = re.fullmatch(r"₹([\d,]+)", _figure(new))
+        return bool(record and record.value_rupees is not None and figure
+                    and int(figure.group(1).replace(",", "")) == record.value_rupees)
 
     async def _quote(self, fact: Fact, people: dict[Role, Person]) -> tuple[str, str | None]:
         clip = await self.s._clip(fact)
