@@ -27,12 +27,13 @@ def ledger(paid: list[tuple[int, str]]) -> str:
     return f"Record ke hisaab se ab tak {total} mila hai: " + ", ".join(f"{rupees(r)} ({how})" for r, how in paid) + "."
 
 
-def owed_now(advance: int | None, total: int | None) -> str:
+def owed_now(advance: int | None, total: int | None, when: str = "") -> str:
+    """when: ' kaam ke baad' or ', 30 Nov tak' when the rest is the balance, as in words.paid."""
     if total is None:
         return ""
     if advance is not None and advance > 0:
         return f" Advance ke {rupees(advance)} baaki, kul baaki {rupees(total)}."
-    return " Ab kuch baaki nahi." if total == 0 else f" Baaki {rupees(total)}." if total > 0 else f" Deal se {rupees(-total)} zyada record mein hai."
+    return " Ab kuch baaki nahi." if total == 0 else f" Baaki {rupees(total)}{when}." if total > 0 else f" Deal se {rupees(-total)} zyada record mein hai."
 
 
 def still_disputed(amounts: list[int], work: bool = False) -> str:

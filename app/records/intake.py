@@ -100,7 +100,7 @@ class Intake:
         voice note, what is known of it (kept on the record as extra); text is its words."""
         reading = await self.reader.read(text, image, image_type)
         if self.sentinel and voice is None:  # proof asked for after a "no"
-            proven = await self.sentinel.disputes.proof(deal, sender, reading, image, image_type, media_url)
+            proven = await self.sentinel.disputes.proof(deal, sender, reading, image, image_type, media_url, text)
             if proven:
                 return proven
         if reading.kind == "unclear" or (voice is not None and reading.kind not in VOICE_KINDS):

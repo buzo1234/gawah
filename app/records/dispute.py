@@ -68,7 +68,9 @@ class Disputes:
         rows = _without(await self.s._rows(event.deal_id), mine)
         total = total_row(rows)
         advance = rows.get(ItemKey.ADVANCE) if record.kind is RecordKind.ADVANCE else None
-        owed = told.owed_now(advance.owed_rupees if advance else None, total.owed_rupees if total else None)
+        balance = (await self.s.memory.get_term(event.deal_id, ItemKey.BALANCE)).current
+        owed = told.owed_now(advance.owed_rupees if advance else None, total.owed_rupees if total else None,
+                             self.s._balance_when(event.deal_id, balance))
         others = await self.still_disputed(event.deal_id, skip=record.id)
         dispute = self.open.get(record.id)
         if dispute and dispute.proof:  # the second no, after proof: nothing more is asked
@@ -139,14 +141,20 @@ class Disputes:
 
     # ---------- proof ----------
 
+    def waiting(self, deal_id: str, role: Role) -> Dispute | None:
+        """The disputed claim this person was asked to prove, while the ask is open."""
+        return next((d for d in self.open.values() if d.deal_id == deal_id and d.record.sender is role
+                     and d.proof_asked and d.proof is None), None)
+
     async def proof(
         self, deal: Deal, sender: Person, reading: Reading, image: bytes | None, image_type: str | None,
-        media_url: str | None,
+        media_url: str | None, text: str | None = None,
     ) -> Record | None:
         """A message from someone asked for proof. The disputed record, now with its proof,
         when it is proof of that claim; None when it is not (the message goes on as usual)."""
-        dispute = next((d for d in self.open.values() if d.deal_id == deal.id and d.record.sender is sender.role
-                        and d.proof_asked and d.proof is None), None)
+        dispute = self.waiting(deal.id, sender.role)
+        if dispute and not image and (ref := reference(text)):  # a bare reference: whatever the reader made of it
+            reading = Reading(kind="payment", transaction_id=ref)
         if dispute is None or not reading.transaction_id and not (image and reading.payment_screenshot):
             return None
         record = dispute.record
@@ -246,6 +254,16 @@ def _claim(record: Record) -> str:
         return f"{record.sender.value}'s work-done claim"
     amount = f"{words.rupees(round(record.amount))} " if record.amount is not None else ""
     return f"{record.sender.value}'s {amount}{record.kind.value} claim"
+
+
+_REF_WORDS = re.compile(r"\b(?:utr|upi|ref|reference|txn|transaction|id|no|number)\b", re.IGNORECASE)
+
+
+def reference(text: str | None) -> str | None:
+    """A UPI reference or UTR: 10 to 22 digits, with spaces and words like 'UTR', 'ref' or
+    'UPI' around them. Said to a proof ask, never a phone number."""
+    rest = re.sub(r"[\s:#.\-]", "", _REF_WORDS.sub(" ", text or ""))
+    return rest if rest.isascii() and rest.isdigit() and 10 <= len(rest) <= 22 else None
 
 
 def _plain(amount: float | None) -> str | None:

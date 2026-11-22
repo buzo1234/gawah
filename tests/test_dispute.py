@@ -111,7 +111,7 @@ async def owed(world: World, deal_id: str) -> dict[ItemKey, int | None]:
 
 
 DENIED = ("Ramesh ji ne mana kiya. Yeh ₹2,000 hisaab mein nahi juda. Record ke hisaab se ab tak ₹3,000 mila hai "
-          "(advance, {day}, screenshot se pakka). Baaki ₹10,000.")
+          "(advance, {day}, screenshot se pakka). Baaki ₹10,000 kaam ke baad.")
 PROOF_ASK = "₹2,000 ke payment ka screenshot ya UPI reference bhejiye. Milne par Ramesh ji se ek baar phir poochunga."
 
 
@@ -196,9 +196,31 @@ async def test_a_upi_reference_puts_it_again_and_a_second_no_keeps_it_disputed_w
     await world.say(RAMESH, "nahi")
     await settled(world)
     again = ("Ramesh ji ne phir mana kiya. ₹2,000 ka payment disputed hai, hisaab mein nahi. UPI reference record mein "
-             "rakha hai. Baaki ₹10,000.")
+             "rakha hai. Baaki ₹10,000 kaam ke baad.")
     assert world.texts_to(SUNITA)[sent:] == [again] and world.texts_to(RAMESH)[-1] == again
     assert claim_fact(world, deal_id).status is FactStatus.DISPUTED
+
+
+@pytest.mark.parametrize("said, utr", [
+    ("UTR 9198 7654 3210", "919876543210"),  # 12 digits starting 91: read alone, +91 98765 43210
+    ("9876543210", "9876543210"),  # 10 digits starting 9: an Indian mobile's shape
+])
+async def test_a_utr_shaped_like_a_phone_number_is_proof_never_a_new_deal(world, said, utr):
+    deal_id = await with_a_promise_and_an_advance(world)
+    deals = len(world.named("deal.requested"))
+    await world.say(SUNITA, said)
+    assert len(world.named("deal.requested")) == deals
+    assert world.texts_to(RAMESH)[-1].startswith(
+        f"Sunita ji ne ₹2,000 ke payment ka UPI reference bheja: {utr}. Kya yeh payment aapko mila?")
+    assert world.named("record.confirm_requested")[-1].record.transaction_id == utr
+    assert claim_fact(world, deal_id).status is FactStatus.DISPUTED
+
+
+async def test_with_no_proof_asked_a_number_still_starts_a_deal(world):
+    await after_the_call(world)
+    deals = len(world.named("deal.requested"))
+    await world.say(SUNITA, "9876543210")
+    assert len(world.named("deal.requested")) == deals + 1
 
 
 async def test_later_owed_messages_and_reminders_name_the_disputed_amount(world):
@@ -222,7 +244,7 @@ async def test_a_work_done_claim_denied_quotes_the_work_and_stays_visible(world)
     await world.say(RAMESH, "kaam poora ho gaya")
     await world.say(SUNITA, "nahi")
     await settled(world)
-    denied = "Sunita ji ne mana kiya ki kaam poora ho gaya. Record mein kaam poora hona disputed hai, pakka nahi. Baaki ₹13,000."
+    denied = "Sunita ji ne mana kiya ki kaam poora ho gaya. Record mein kaam poora hona disputed hai, pakka nahi. Baaki ₹13,000 kaam ke baad."
     assert world.texts_to(SUNITA)[-2] == world.texts_to(RAMESH)[-2] == denied
     quoted = world.texts_to(RAMESH)[-1]
     assert quoted.startswith("Kaam ke baare mein record mein yeh hai:\n1. ")
