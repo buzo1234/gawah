@@ -2,8 +2,8 @@
 // separators for each moment. Newest at the top because that is where the eye already is
 // when something is said: the header, the count and the newest fact sit together, and
 // nothing has to scroll for a new fact to be seen. Each entry: the time, who is responsible
-// (their name on their colour), the fact in plain words, its term and status, how long
-// after its line it came, and its clip. It scrolls on its own; when the viewer has scrolled
+// (their name on their colour) and the status as a pill, the fact in plain words, its term
+// and how long after its line it came, and its clip. It scrolls on its own; when the viewer has scrolled
 // down, new entries go in above without moving what they are reading, and a pill says how
 // many are newer.
 
@@ -32,11 +32,11 @@ function entry(e, fresh, before) {
   },
     h("span", { class: "time" }, e.time),
     h("div", { class: "main" },
-      h("div", { class: "people" }, ...e.people.map((p) => h("span", { class: `tag ${p.role}` }, p.name)), e.voice && voiceMark()),
+      h("div", { class: "people" }, ...e.people.map((p) => h("span", { class: `tag ${p.role}` }, p.name)), e.voice && voiceMark(),
+        h("span", { class: `word pill ${e.tone}` }, e.word)),
       h("p", { class: "text" }, text),
-      h("div", { class: "meta label" },
-        !e.follow && [h("span", {}, e.term), h("span", { class: "sep" }, " · ")], h("span", { class: `word ${e.tone}` }, e.word),
-        e.latency != null && [h("span", { class: "sep" }, " · "), h("span", { class: "took" }, took(e.latency))])),
+      h("div", { class: "meta label" }, h("span", {}, e.term),
+        e.latency != null && [h("span", { class: "sep" }, " · "), h("span", { class: "took", title: "after it was said" }, took(e.latency))])),
     e.clip ? clipButton(e.factId) : h("span", { class: "no-clip" }));
   if (fresh) setTimeout(() => el.classList.remove("enter", "landed"), 1900);
   return pointable(el, [e.factId]);
