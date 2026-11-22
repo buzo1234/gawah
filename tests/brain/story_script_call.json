@@ -1,6 +1,6 @@
 {
- "id": "demo_script_call",
- "description": "The deal call as tools/DEMO-RUN.md step 7 has the user say it, written in Devanagari as the transcription gives it. Not a recording: the timings are made up, with the silences the run sheet asks for (after line 9 for Gawah's balance question, after line 14 for the late-work question, after line 16 for the read-back). The deal was started on WhatsApp, so the worker's name is not known at the start.",
+ "id": "story_script_call",
+ "description": "The deal call as tools/LIVE-RUN.md step 7 has the user say it, written in Devanagari as the transcription gives it. Not a recording: the timings are made up, with the silences the run sheet asks for (after line 9 for Gawah's balance question, after line 14 for the late-work question, after line 16 for the read-back). The deal was started on WhatsApp, so the worker's name is not known at the start.",
  "people": [
   {
    "role": "hirer",

@@ -8,16 +8,16 @@ You play both people, alone, in a quiet room.
 
 The story: Day 1, the deal call and the call-backs, version 1 of the agreement, the advance screenshot. Day 5, a second call where Ramesh remembers the total wrong and both agree a change by voice; version 2 arrives. Day 7, the work is done, and Gawah reminds Sunita of the balance. In the room it all happens in about 35 minutes.
 
-It uses about 45 LiveKit participant-minutes and two of the dozen Sage2 calls a month. Rehearse it with `tools/dry_run.py` (no person) first; then do it once, properly.
+It uses about 45 LiveKit participant-minutes and two of the dozen Sage2 calls a month. Rehearse it with `tools/walkthrough.py` (no person) first; then do it once, properly.
 
-The lines are in `fixtures/demo/demo_call_1.json` and `demo_call_2.json`; the tables below are the same lines. `tools/dry_run.py` plays exactly these.
+The lines are in `fixtures/story/story_call_1.json` and `story_call_2.json`; the tables below are the same lines. `tools/walkthrough.py` plays exactly these.
 
 ## Before you start
 
 - Earphones in the laptop. Phone volume all the way down: you hear Gawah and "Ramesh" through the laptop's earphones. A phone loudspeaker would be picked up by the laptop's microphone and taken for Ramesh.
 - Phone and laptop at opposite ends of the room, at least 3 metres apart. Speak each person's lines close to that person's device, at a normal voice.
 - Phone: screen timeout 5 minutes or more. The phone mutes its microphone when the screen locks or the call page goes to the background.
-- Put `fixtures/demo/advance-5000.png` (a ₹5,000 UPI payment screen) in the phone's photos: AirDrop it, or mail it to yourself.
+- Put `fixtures/story/advance-5000.png` (a ₹5,000 UPI payment screen) in the phone's photos: AirDrop it, or mail it to yourself.
 - Phone hotspot ready, in case the laptop's network drops.
 - **WhatsApp runs on Meta's test number** (`WHATSAPP_PROVIDER=meta` in `.env`; the setup is in `tools/META-SETUP.md`). Before you start:
   - Make a fresh access token on Meta's API Setup page and put it in `.env` (`META_WHATSAPP_TOKEN`): the temporary one lasts only a few hours.
@@ -41,7 +41,7 @@ The lines are in `fixtures/demo/demo_call_1.json` and `demo_call_2.json`; the ta
 ### 1. Start everything (laptop)
 
 ```
-uv run python tools/demo.py
+uv run python tools/run_live.py
 ```
 
 **You should see** six lines marked `OK` (OpenAI, Sage2, LiveKit, Meta WhatsApp, S3, Chrome; Twilio in Meta's place on Twilio), then a box with the dashboard address and the webhook steps.
@@ -268,10 +268,10 @@ To get a link onto the phone: WhatsApp it to yourself from the laptop, or AirDro
 ## Rehearsing without a person
 
 ```
-uv run python tools/demo.py            # in one terminal
-uv run python tools/dry_run.py         # in another: the whole story, simulated phones, headless browsers
-uv run python tools/dry_run.py --from call2   # retry from call 2 on the latest deal
-uv run python tools/dry_run.py --offline      # nothing outside: tests/offline.py in-process
+uv run python tools/run_live.py            # in one terminal
+uv run python tools/walkthrough.py         # in another: the whole story, simulated phones, headless browsers
+uv run python tools/walkthrough.py --from call2   # retry from call 2 on the latest deal
+uv run python tools/walkthrough.py --offline      # nothing outside: tests/offline.py in-process
 ```
 
-It writes every event, each step with its time and result, and dashboard screenshots to `runs/dry-<time>/`.
+It writes every event, each step with its time and result, and dashboard screenshots to `runs/walk-<time>/`.

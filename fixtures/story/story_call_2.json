@@ -1,8 +1,8 @@
 {
- "id": "demo_call_2",
- "description": "Day 5 of the demo: the second call on the same deal. Ramesh says the total was 25,000 (his offer on call 1; both agreed 22,000): Gawah says what the record holds and offers the recording, Sunita asks to hear it, and Ramesh takes it back. Then both agree a change by voice: the balcony wall, 2,000 extra, 24,000 in all, which holds only once both say haan to Gawah. Fields as in demo_call_1.json.",
+ "id": "story_call_2",
+ "description": "Day 5 of the demo: the second call on the same deal. Ramesh says the total was 25,000 (his offer on call 1; both agreed 22,000): Gawah says what the record holds and offers the recording, Sunita asks to hear it, and Ramesh takes it back. Then both agree a change by voice: the balcony wall, 2,000 extra, 24,000 in all, which holds only once both say haan to Gawah. Fields as in story_call_1.json.",
  "call_no": 2,
- "follows": "demo/demo_call_1",
+ "follows": "story/story_call_1",
  "people": [
   {
    "role": "hirer",

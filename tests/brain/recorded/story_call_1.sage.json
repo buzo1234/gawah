@@ -1,5 +1,5 @@
 {
- "fixture": "demo_call_1",
+ "fixture": "story_call_1",
  "recorded_at": "2026-11-22T02:31:49+00:00",
  "preamble": "Phone call between Sunita (the hirer, who is paying for a job) and Worker (the worker, who will do it). Gawah is an AI witness listening on the call. Today is Sunday 22 November 2026. Amounts are in Indian rupees.\n\n",
  "questions": {

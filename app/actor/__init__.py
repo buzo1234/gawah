@@ -12,7 +12,7 @@ The actor joins through the call page's own join route, so to the call it is tha
 bridge opens the room, records and transcribes it, and Gawah hears it, as for a phone. One actor
 at a time. It listens to call.ended and leaves with the call.
 
-- persona.py   what it is told, from the demo story in fixtures/demo/ (adjust it there)
+- persona.py   what it is told, from the story in fixtures/story/ (adjust it there)
 - realtime.py  OpenAI: its voice model, which hears the room and replies by itself
 - room.py      LiveKit: its seat in the room
 - actor.py     one actor on one call, and its limits

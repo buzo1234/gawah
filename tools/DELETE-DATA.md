@@ -30,7 +30,7 @@ aws s3 rm s3://<bucket>/contracts/ --recursive --exclude "*" --include "<deal>-v
 
 ## 3. The database
 
-The database is `DATABASE_PATH`, or `gawah.db` in the project folder; a run started with `tools/demo.py` has its own under `runs/`. Copy it aside first and delete the copy when you are done.
+The database is `DATABASE_PATH`, or `gawah.db` in the project folder; a run started with `tools/run_live.py` has its own under `runs/`. Copy it aside first and delete the copy when you are done.
 
 ```
 sqlite3 <database> <<'SQL'

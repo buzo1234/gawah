@@ -4,12 +4,12 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-RUN_SHEET = (ROOT / "tools" / "DEMO-RUN.md").read_text()
+RUN_SHEET = (ROOT / "tools" / "LIVE-RUN.md").read_text()
 
 
 def test_every_line_of_both_calls_is_in_the_run_sheet_in_order():
     for no in (1, 2):
-        lines = json.loads((ROOT / "fixtures" / "demo" / f"demo_call_{no}.json").read_text())["lines"]
+        lines = json.loads((ROOT / "fixtures" / "story" / f"story_call_{no}.json").read_text())["lines"]
         heading = RUN_SHEET.index(f"Call {no}:")
         at = heading
         for line in lines:
@@ -22,6 +22,6 @@ def test_every_line_of_both_calls_is_in_the_run_sheet_in_order():
 def test_a_recorded_line_says_what_its_recording_says():
     spoken = json.loads((ROOT / "fixtures" / "audio" / "state.json").read_text())
     for no in (1, 2):
-        for line in json.loads((ROOT / "fixtures" / "demo" / f"demo_call_{no}.json").read_text())["lines"]:
+        for line in json.loads((ROOT / "fixtures" / "story" / f"story_call_{no}.json").read_text())["lines"]:
             if line["audio"] != "voice":
                 assert spoken[line["audio"]]["text"] == line["text"]

@@ -1,5 +1,5 @@
 """The outside services a real run needs, each checked with one cheap read-only call.
-Used by tools/demo.py. Nothing here sends a message, opens a room, or is billed."""
+Used by tools/run_live.py. Nothing here sends a message, opens a room, or is billed."""
 
 import asyncio
 from pathlib import Path

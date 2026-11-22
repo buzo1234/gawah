@@ -1,5 +1,5 @@
 """What the actor is told: who it plays, what it wants from the call, and how it sounds, with
-the demo story in fixtures/demo/ as an example of how the call may go. Adjust the actor here
+the story in fixtures/story/ as an example of how the call may go. Adjust the actor here
 and nowhere else. Instructions are English; what it says is Hinglish.
 
 The story is a guide, not lines to recite: the person on the other end improvises, and the
@@ -12,7 +12,7 @@ from pathlib import Path
 
 from app.contracts import Role
 
-DEMO = Path(__file__).resolve().parent.parent.parent / "fixtures" / "demo"
+STORY = Path(__file__).resolve().parent.parent.parent / "fixtures" / "story"
 STORY_NAMES = {Role.HIRER: "Sunita", Role.WORKER: "Ramesh"}
 # A form of address that guesses a gender. In a line it becomes "<the other person's name> ji".
 ADDRESS = re.compile(r"\b(madam|sir)\b", re.IGNORECASE)
@@ -137,9 +137,9 @@ CALLBACK = (
 
 
 def story(call_no: int) -> dict:
-    """The demo's call for this call number; a later call than the story has replays the last one."""
-    files = sorted(DEMO.glob("demo_call_*.json"))
-    wanted = DEMO / f"demo_call_{call_no}.json"
+    """The story's call for this call number; a later call than the story has replays the last one."""
+    files = sorted(STORY.glob("story_call_*.json"))
+    wanted = STORY / f"story_call_{call_no}.json"
     return json.loads((wanted if wanted in files else files[-1]).read_text())
 
 

@@ -1,12 +1,12 @@
-"""A rehearsal of the two-call demo with no person (tools/DEMO-RUN.md, fixtures/demo/).
+"""A walkthrough of the two-call story with no person (tools/LIVE-RUN.md, fixtures/story/).
 
-    uv run python tools/demo.py                  (in one terminal: the real services)
-    uv run python tools/dry_run.py               (in another)
-    uv run python tools/dry_run.py --offline     (alone: tests/offline.py in this process, nothing outside)
-    uv run python tools/dry_run.py --from call2  (carry on the server's latest deal from call 2)
+    uv run python tools/run_live.py                  (in one terminal: the real services)
+    uv run python tools/walkthrough.py               (in another)
+    uv run python tools/walkthrough.py --offline     (alone: tests/offline.py in this process, nothing outside)
+    uv run python tools/walkthrough.py --from call2  (carry on the server's latest deal from call 2)
 
 Day 1: Sunita sends "hi" and Ramesh's number on WhatsApp; both open their call link and
-the deal call plays out (fixtures/demo/call_1.json); each confirms on their own call-back;
+the deal call plays out (fixtures/story/call_1.json); each confirms on their own call-back;
 version 1 of the agreement arrives; Sunita's advance screenshot is logged and both are told
 what is still owed. Day 5: Ramesh opens a new call from his link, Sunita is told on WhatsApp
 and joins, and call 2 plays out (call_2.json): the contradiction with its clip, and a change
@@ -23,7 +23,7 @@ people, the listener and Gawah), two call-backs of 2 to 3 minutes (2 in the room
 45 LiveKit participant-minutes; two Sage2 calls (about 35 updates); OpenAI transcription,
 Gawah's realtime sessions, the Scribe, two contract versions and their spoken summaries;
 4 S3 recordings and 4 contract files. Writes every event, the steps, and dashboard
-screenshots to runs/dry-<time>/.
+screenshots to runs/walk-<time>/.
 """
 
 import argparse
@@ -38,9 +38,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from tools import demo_story as story  # noqa: E402
-from tools.dry_events import Run  # noqa: E402
-from tools.dry_players import ROLES, LivePlayers, OfflinePlayers  # noqa: E402
+from tools import story as story  # noqa: E402
+from tools.walk_events import Run  # noqa: E402
+from tools.walk_players import ROLES, LivePlayers, OfflinePlayers  # noqa: E402
 
 GAP_S = 1.0  # between one person's line and the next
 QUIET_S = 1.5  # Gawah silent this long before a person speaks
@@ -221,7 +221,7 @@ async def day7(run: Run, players) -> None:
 
 
 async def main(args) -> None:
-    out = ROOT / "runs" / f"dry-{datetime.now():%Y%m%d-%H%M%S}{'-offline' if args.offline else ''}"
+    out = ROOT / "runs" / f"walk-{datetime.now():%Y%m%d-%H%M%S}{'-offline' if args.offline else ''}"
     out.mkdir(parents=True)
     if args.offline:
         players = OfflinePlayers(out, args.port, args.whatsapp)
@@ -254,7 +254,7 @@ async def main(args) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Walk the two-call demo once with no person.")
+    parser = argparse.ArgumentParser(description="Walk the two-call story once with no person.")
     parser.add_argument("--url", default="http://localhost:8000")
     parser.add_argument("--offline", action="store_true", help="the offline app in this process: nothing outside is called")
     parser.add_argument("--port", type=int, default=8077, help="--offline: where to serve the offline app")
