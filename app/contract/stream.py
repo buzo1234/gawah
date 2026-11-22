@@ -1,8 +1,10 @@
 """Watches each deal's confirmations and, once both people have confirmed, writes the
 contract, the PDF and the spoken summary, uploads them, and publishes contract.ready.
-When a change both confirmed reaches memory, it writes the next version."""
+When a change both confirmed reaches memory, it writes the next version. On start it
+writes whatever the event log says is due and was never written (a restart mid-write)."""
 
 import asyncio
+import logging
 import tempfile
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
@@ -17,11 +19,13 @@ from app.contract.trigger import WATCHED, Call, DealState
 from app.contract.writer import Writer, write_draft
 from app.contracts import (
     AgentNote, CallKind, ChecklistItem, ContractReady, CrewAgent, Event, Fact, ItemKey, MemoryQueries, Role,
+    TermsConfirmed,
 )
 from app.log import deal_log, mask_phone
 from app.store import Store
 
 LOG = "gawah.contract"
+RETRY_SECONDS = 10.0  # a failed write (Chrome, S3, OpenAI) is tried once more after this
 
 
 class Speaker(Protocol):
@@ -42,36 +46,71 @@ class ContractStream:
     def __init__(
         self, bus: Bus, store: Store, writer: Writer, speaker: Speaker, files: Files,
         render_pdf: RenderPdf, fingerprint: Fingerprint, memory: Memory = lambda: None,
+        retry_after: float = RETRY_SECONDS,
     ) -> None:
         self._bus, self._store = bus, store
         self._writer, self._speaker, self._files, self._render_pdf = writer, speaker, files, render_pdf
-        self._fingerprint, self._memory = fingerprint, memory
+        self._fingerprint, self._memory, self._retry_after = fingerprint, memory, retry_after
         self._states: dict[str, DealState] = {}
+        self._loading = asyncio.Lock()  # one DealState per deal, however many ask for it at once
         self._seen: set[str] = set()
         self._tasks: dict[str, asyncio.Task[None]] = {}
+        self._resuming: asyncio.Task[None] | None = None
 
     async def on_event(self, event: Event) -> None:
         if not isinstance(event, WATCHED):
             return
-        state = self._states.get(event.deal_id)
-        if state is None:
-            state = self._states[event.deal_id] = await self._from_store(event.deal_id)
+        state = await self._state(event.deal_id)
         if event.event_id not in self._seen:  # the store may already have had this one
             state.apply(event)
-        if state.should_write() and event.deal_id not in self._tasks:
-            task = self._tasks[event.deal_id] = asyncio.create_task(self._write(event.deal_id, state))
-            task.add_done_callback(lambda _: self._tasks.pop(event.deal_id, None))
+        self._start(event.deal_id, state)
+
+    async def start(self) -> None:
+        """On startup, in the background so startup does not wait for it."""
+        self._resuming = asyncio.create_task(self._resume())
 
     async def idle(self) -> None:
-        """Wait for any contract being written. For tests and shutdown."""
+        """Wait for the startup catch-up and any contract being written. For tests and shutdown."""
+        if self._resuming:
+            await asyncio.gather(self._resuming, return_exceptions=True)
         while self._tasks:
             await asyncio.gather(*self._tasks.values(), return_exceptions=True)
             await asyncio.sleep(0)  # let the finished tasks remove themselves
 
     async def close(self) -> None:
-        for task in self._tasks.values():
-            task.cancel()
+        for task in [self._resuming, *self._tasks.values()]:
+            if task:
+                task.cancel()
         await self.idle()
+
+    async def _resume(self) -> None:
+        """Write each agreement the event log says is due and never got written: the server
+        stopped while it was being written. A deal nobody confirmed can never be due."""
+        try:
+            confirmed = await self._store.events(name=TermsConfirmed.model_fields["name"].default)
+            for deal_id in dict.fromkeys(e.deal_id for e in confirmed):
+                state = await self._state(deal_id)
+                if self._start(deal_id, state):
+                    deal_log(LOG, deal_id).warning(
+                        "version %d was due and never written (a restart mid-write?); writing it now", state.versions + 1
+                    )
+        except Exception:
+            logging.getLogger(LOG).exception("CONTRACT CATCH-UP FAILED: agreements due before the restart were not checked")
+
+    async def _state(self, deal_id: str) -> DealState:
+        async with self._loading:
+            if deal_id not in self._states:
+                self._states[deal_id] = await self._from_store(deal_id)
+            return self._states[deal_id]
+
+    def _start(self, deal_id: str, state: DealState) -> bool:
+        """Start writing if a version is due. At most one write per deal: the one running
+        writes every version that falls due while it runs."""
+        if deal_id in self._tasks or not state.should_write():
+            return False
+        task = self._tasks[deal_id] = asyncio.create_task(self._write(deal_id, state))
+        task.add_done_callback(lambda _: self._tasks.pop(deal_id, None))
+        return True
 
     async def _from_store(self, deal_id: str) -> DealState:
         """After a restart, catch up on what the deal's earlier events said."""
@@ -83,19 +122,27 @@ class ContractStream:
 
     async def _write(self, deal_id: str, state: DealState) -> None:
         log = deal_log(LOG, deal_id)
-        try:
-            while state.should_write():
-                disputes, changes = state.disputes, set(state.landed)
+        failed = False
+        while state.should_write():
+            disputes, changes = state.disputes, set(state.landed)
+            try:
                 ready, note = await self._make(deal_id, state)
-                if state.disputes != disputes:
-                    log.warning("a term was disputed while the contract was being written; it was thrown away")
-                    continue
-                state.wrote(changes)
-                self._bus.publish(ready)
-                self._bus.publish(note)
-                log.info("contract.ready published: %s and %s", ready.pdf_key, ready.voice_summary_key)
-        except Exception:
-            log.exception("CONTRACT NOT WRITTEN, contract.ready not published")
+            except Exception:
+                if failed:
+                    log.exception("CONTRACT NOT WRITTEN after one retry, contract.ready not published")
+                    return
+                failed = True
+                log.exception("contract write failed; trying once more in %.0f seconds", self._retry_after)
+                await asyncio.sleep(self._retry_after)
+                continue
+            failed = False
+            if state.disputes != disputes:
+                log.warning("a term was disputed while the contract was being written; it was thrown away")
+                continue
+            state.wrote(changes)
+            self._bus.publish(ready)
+            self._bus.publish(note)
+            log.info("contract.ready published: %s and %s", ready.pdf_key, ready.voice_summary_key)
 
     async def _make(self, deal_id: str, state: DealState) -> tuple[ContractReady, AgentNote]:
         log = deal_log(LOG, deal_id)

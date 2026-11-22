@@ -17,7 +17,7 @@ class Rig:
     def __init__(self, bus, store, files=None):
         self.bus, self.files, self.speaker = bus, files or FakeFiles(), FakeSpeaker()
         self.stream = ContractStream(
-            bus, store, FakeWriter(), self.speaker, self.files, fake_render_pdf, fake_fingerprint
+            bus, store, FakeWriter(), self.speaker, self.files, fake_render_pdf, fake_fingerprint, retry_after=0
         )
         self.ready: list[ContractReady] = []
         self.off = bus.subscribe_all(self.stream.on_event)
