@@ -101,6 +101,7 @@ class ContractStream:
         log = deal_log(LOG, deal_id)
         version = state.versions + 1
         checklist, confirmed_at, confirmed_said = state.checklist(), dict(state.confirmed_at), dict(state.confirmed_said)
+        said_yes = state.both_said_yes()
         calls = {n: Call(c.started, c.ended) for n, c in state.calls.items()}
         facts, latest, landed, proposed = list(state.facts), state.latest(), list(state.landed.values()), dict(state.proposed)
         new_changes = [new for change_id, (_, new) in state.landed.items() if change_id not in state.written_changes]
@@ -116,7 +117,7 @@ class ContractStream:
         starts = {n: c.started for n, c in calls.items() if c.started}
         changes, changed_facts = change_list(landed, proposed, latest, starts)
         lines = {(line.call_no, line.line_no): line for line in transcript if line.line_no is not None}
-        terms = resolve(checklist, current, changes, changed_facts, lines, starts)
+        terms = resolve(checklist, current, changes, changed_facts, lines, starts, said_yes)
         also = also_agreed(latest, starts)
         items = [t.item for t in terms]
         draft, fingerprints = await asyncio.gather(
