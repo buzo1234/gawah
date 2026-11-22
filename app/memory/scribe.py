@@ -213,6 +213,9 @@ class Scribe:
         self._model_conflict(deal, line, claim, fact, received)
 
     def _change(self, deal: DealBook, line: TranscriptLine, claim: Claim, received: float) -> None:
+        if any(f.status == FactStatus.AGREED and f.call_no == line.call_no and f.value_rupees == claim.rupees
+               for f in deal.open_changes(claim.item)) and claim.rupees is not None:
+            return  # the change both agreed a moment ago, said again ("do hazaar extra. Total chaubees hazaar")
         offer = changes.offered(deal, line, claim.item, claim.rupees, claim.added)
         # A change to a figure is agreed only by saying the figure (or the extra) back with a yes
         # or a promise: a bare "haan theek hai" to a new total changes nothing.
