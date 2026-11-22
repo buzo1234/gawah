@@ -148,7 +148,7 @@ class Bot:
     def _start_deal(self, message: Inbound, other_phone: str) -> None:
         role = Role.WORKER if phone.says_worker(message.text) else Role.HIRER
         me = Person(role=role, name=message.name, phone=message.phone)
-        other = Person(role=role.other, phone=other_phone, name=message.other_name)
+        other = Person(role=role.other, phone=other_phone, name=message.other_name or phone.find_name(message.text))
         deal_id = new_id()
         deal_log("gawah.whatsapp", deal_id).info(
             "deal asked by %s (%s) with %s", mask_phone(me.phone), role.value, mask_phone(other.phone)

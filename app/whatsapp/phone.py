@@ -44,3 +44,27 @@ def find_numbers(text: str) -> list[str]:
 
 def says_worker(text: str) -> bool:
     return bool(_WORKER.search(text))
+
+
+# Words around a number that are not a name: Hinglish and English filler, kin and courtesy words,
+# and the trades a worker names.
+_FILLER = set(
+    "ka ki ke ko se hai hain ye yeh woh wo is the a an this my mera meri mere unka unki uska uski inka "
+    "number no num nmbr mobile phone contact name naam call karo kar kariye kijiye deal aur and with "
+    "for of hi hello namaste please pls plz ji bhai bhaiya didi uncle aunty sir madam sahab saab "
+    "main mai mein hum aap aapka tum i me am is are karna karni karne karwana karwani karenge baat pakki "
+    "chahiye bhejo bhej send add start shuru new nayi naya hoon hu ho tha thi "
+    "painter plumber mistri mistry karigar electrician carpenter mazdoor majdoor worker thekedar "
+    "contractor darzi tailor driver customer client grahak malik maalik seth".split()
+)
+
+
+def find_name(text: str) -> str | None:
+    """The other person's name, when the message has, besides the number, one or two words
+    side by side that can only be a name: 'Namesh +919000000105' or 'Namesh ka number 9000000105'.
+    Anything less clear is no name."""
+    rest = _WORKER.sub(" ", _RUN.sub(" ", text))
+    kept = [(i, w) for i, w in enumerate(re.findall(r"[^\W\d_]+", rest)) if w.lower() not in _FILLER]
+    if not 1 <= len(kept) <= 2 or kept[-1][0] - kept[0][0] != len(kept) - 1:
+        return None
+    return " ".join(w.title() for _, w in kept)

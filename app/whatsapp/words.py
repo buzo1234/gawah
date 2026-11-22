@@ -6,7 +6,8 @@ from app.contracts import Person
 from app.records.words import who
 
 HELP_NO_DEAL = (
-    "Namaste, main Gawah hoon. Deal shuru karne ke liye doosre vyakti ka mobile number bhejiye."
+    "Namaste, main Gawah hoon. Deal shuru karne ke liye doosre vyakti ka mobile number bhejiye, "
+    "saath mein unka naam bhi bhej sakte hain."
 )
 HELP = (
     "Yeh samajh nahi aaya. Payment ka screenshot bhejiye, ya likhiye jaise '2000 cash diya' "

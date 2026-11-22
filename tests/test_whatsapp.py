@@ -45,6 +45,40 @@ async def test_a_phone_number_starts_a_deal_and_each_person_gets_their_own_call_
     assert (await world.store.deal(deal.deal_id)).person(sender_role).phone == SUNITA
 
 
+@pytest.mark.parametrize(
+    ("text", "name"),
+    [
+        ("Namesh +919822200002", "Namesh"),
+        ("Namesh ka number 9822200002", "Namesh"),
+        ("namesh kumar 9822200002", "Namesh Kumar"),
+        ("Main painter hoon 9822200002", None),  # a worker phrase, not a name
+        ("9822200002", None),
+        ("mere painter ka number 9822200002 hai", None),
+        ("Namesh Kumar Singh 9822200002", None),  # three words: not clear
+        ("Namesh se deal karni hai, Kumar ka number 9822200002", None),  # two words apart: not clear
+    ],
+)
+async def test_a_name_beside_the_number_names_the_other_person(world, text, name):
+    await world.say(SUNITA, text, name="Karan")
+
+    [deal] = world.named("deal.requested")
+    assert (deal.other.phone, deal.other.name, deal.requested_by.name) == (RAMESH, name, "Karan")
+    [to_other] = world.sent_to(RAMESH)
+    assert BASE + call_path(deal.deal_id, deal.other.role) in to_other.text
+    assert (await world.store.deal(deal.deal_id)).person(deal.other.role).name == name
+
+
+async def test_a_call_fills_a_missing_name_but_never_replaces_the_one_given(world):
+    await world.say(SUNITA, "Namesh 9822200002")
+    await world.say(GEETA, "+919844400004")
+    named, unnamed = (e.deal_id for e in world.named("deal.requested"))
+    for deal_id in (named, unnamed):
+        fake_call.start_call(world.bus, deal_id)  # the fake call's worker is named Ramesh
+    await world.settle()
+    assert (await world.store.deal(named)).person(Role.WORKER).name == "Namesh"
+    assert (await world.store.deal(unnamed)).person(Role.WORKER).name == "Ramesh"
+
+
 def test_phone_numbers_are_normalised_to_full_indian_numbers():
     assert phone.find_numbers("9822200002") == [RAMESH]
     assert phone.find_numbers("+91-98222-00002 ya 09833300003") == [RAMESH, GEETA]
