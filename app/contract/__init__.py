@@ -27,6 +27,6 @@ def register(app: FastAPI, bus: Bus) -> None:
     )
     # One subscription for every event it watches, so they are handled in the order they were published.
     bus.subscribe_all(stream.on_event)
-    app.state.contract = stream
+    app.state.contract = stream  # for tests: stream.idle() waits for a contract being written
     app.state.on_startup.append(stream.start)  # memory registers first, so its facts are rebuilt by then
     app.state.on_shutdown.append(stream.close)
