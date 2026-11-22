@@ -4,7 +4,9 @@ so tests and replays answer without the model.
 
     uv run python -m tests.memory.record fixtures/call_two_amounts.json [--model gpt-5.4-nano] [--save]
 
-Costs one small-model call per line that is not a greeting or a plain yes.
+Costs one small-model call per line that is not a greeting or a plain yes. A fixture's
+`gawah` turns ({after_line, text, reason, item}) are sent as judge.spoke after that line, so
+the model reads them as context, as on a live call.
 """
 
 import argparse
@@ -16,11 +18,11 @@ from pathlib import Path
 
 from app.bus import Bus
 from app.config import get_settings
-from app.contracts import FactConflict, FactRecorded, ItemKey
+from app.contracts import FactConflict, FactRecorded, ItemKey, JudgeSpoke, TranscriptLine
 from app.memory import Memory, extract
 from app.memory.openai_client import OpenAIClient
 from app.memory.vectors import WordHashEmbedder
-from fakes.replayer import replay
+from fakes.replayer import load, play
 
 
 class Recorder:
@@ -40,6 +42,21 @@ class Recorder:
         return found
 
 
+async def play_with_gawah(bus: Bus, fixture: dict, speed: float, deal_id: str) -> str:
+    """The fixture onto the bus, each of Gawah's turns as judge.spoke after its line."""
+    turns = fixture.get("gawah", [])
+
+    async def emit(event) -> None:
+        bus.publish(event)
+        if isinstance(event, TranscriptLine):
+            for turn in turns:
+                if turn["after_line"] == event.line_no:
+                    await bus.drain()
+                    bus.publish(JudgeSpoke(deal_id=event.deal_id, text=turn["text"], reason=turn.get("reason"), item=turn.get("item")))
+
+    return await play(fixture, emit, speed, deal_id)
+
+
 async def run(path: str, model: str, effort: str, speed: float, save: bool) -> dict:
     client = OpenAIClient(get_settings())
     recorder = Recorder(extract.LiveExtractor(client, model=model, effort=effort))
@@ -54,7 +71,7 @@ async def run(path: str, model: str, effort: str, speed: float, save: bool) -> d
 
     bus.subscribe_all(keep)
     bus.start()
-    deal = await replay(bus, path, speed=speed, deal_id=f"record-{Path(path).stem}")
+    deal = await play_with_gawah(bus, load(path), speed, f"record-{Path(path).stem}")
     await bus.drain()
     await memory.settle()
     await bus.drain()

@@ -108,6 +108,22 @@ def test_a_line_that_opens_with_a_firm_yes_and_goes_on():
     assert not opens_with_yes("Theek hai 300 ki jagah 200 kar do")
 
 
+def test_the_yes_may_come_after_the_person_spoken_to():
+    # The name is heard in another script than the deal has it: "ji" after it marks it as a name.
+    assert opens_with_yes("जी करण जी, ठीक है। अगले सोमवार से शुरू कर देंगे।", {"karan"})
+    assert opens_with_yes("Ji Karan ji, theek hai. Kal se aata hoon.")
+    assert not opens_with_yes("Ji Karan ji. Kal se aata hoon.")  # no yes in it
+    assert not opens_with_yes("Ji Karan ji, haan. Kitna doge?")  # "haan" alone is not firm
+
+
+def test_an_answer_that_opens_with_a_yes():
+    from app.memory.normalise import answers_yes
+
+    assert answers_yes("हाँ, सब सही है।") and answers_yes("हाँ जी, सब सही है।") and answers_yes("Haan ji Gawah ji, bilkul.")
+    assert not answers_yes("Nahi, woh to tay nahi hua tha.")
+    assert not answers_yes("Sab sahi hai par ek baat.")  # no yes opening it
+
+
 # ---------- dates: meeting days (cause 5), start and finish (cause 6) ----------
 
 SAT = date(2026, 11, 21)

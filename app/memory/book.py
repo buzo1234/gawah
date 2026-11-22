@@ -27,6 +27,18 @@ class Call:
 
 
 @dataclass
+class GawahTurn:
+    """Something Gawah said on a deal call: context for the Scribe, never a fact. fact_ids are
+    the facts its question named (from the judge.speak it answers)."""
+
+    call_no: int
+    after_line: int  # the last line of the call heard before it
+    text: str
+    fact_ids: list[str] = field(default_factory=list)
+    answered: set[Role] = field(default_factory=set)  # who has answered it
+
+
+@dataclass
 class DealBook:
     deal_id: str
     versions: list[Fact] = field(default_factory=list)
@@ -34,6 +46,7 @@ class DealBook:
     lines: dict[tuple[int, int], TranscriptLine] = field(default_factory=dict)  # (call_no, line_no)
     calls: dict[int, Call] = field(default_factory=dict)
     names: dict[Role, str] = field(default_factory=dict)
+    turns: list[GawahTurn] = field(default_factory=list)  # what Gawah said on the calls, in order
 
     def call(self, call_no: int) -> Call:
         return self.calls.setdefault(call_no, Call())

@@ -405,7 +405,7 @@ class Session:
             if stated:
                 words, facts = stated
                 speakers = {f.said_by for f in facts}
-                found[key] = Proposal(words, speakers.pop() if len(speakers) == 1 else None, facts[0].id)
+                found[key] = Proposal(words, speakers.pop() if len(speakers) == 1 else None, [f.id for f in facts])
         return found
 
     def _decide(self, silence: float = 0.0) -> None:

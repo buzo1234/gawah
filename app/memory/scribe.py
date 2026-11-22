@@ -63,7 +63,13 @@ class Scribe:
                     await asyncio.wait_for(asyncio.shield(previous), ORDER_WAIT_S)
                 except TimeoutError:
                     log.warning("deal=%s line %s applied before line %s finished", line.deal_id, line.line_no, line.line_no - 1)
-            if kind == "yes" or opening:
+            reply = self.m.gawah.answer(deal, line, received)
+            if reply is not None:
+                # It answers Gawah: a yes in it accepts nothing said before Gawah spoke. What the
+                # model read as accepting the terms Gawah asked about is that same yes.
+                claims = [c for c in claims if c.stance != "accept" or (
+                    (c.accepts_line or 0) > reply.after_line and c.item not in reply.agreed)]
+            if (kind == "yes" or opening) and (reply is None or (not reply.agreed and line.line_no - 1 > reply.after_line)):
                 self._plain_yes(deal, line, received, claims)
             for claim in self._with_total(deal, line, claims):
                 self._apply(deal, line, claim, received)
@@ -81,9 +87,10 @@ class Scribe:
             key=lambda l: l.line_no,
         )[-extract.CONTEXT_LINES:]
         today = deal.call_date(line.call_no)
+        since = (before[0].line_no if before else line.line_no) - 1
         request = extract.Request(
             deal_id=line.deal_id, line=line, before=before, facts=deal.standing(), names=dict(deal.names),
-            today=today, room=deal.call(line.call_no).room,
+            today=today, room=deal.call(line.call_no).room, gawah=self.m.gawah.context(deal, line, since),
         )
         try:
             raw = await self.m.extractor.claims(request)
@@ -220,6 +227,8 @@ class Scribe:
         # A change to a figure is agreed only by saying the figure (or the extra) back with a yes
         # or a promise: a bare "haan theek hai" to a new total changes nothing.
         figure = claim.added or claim.rupees
+        if figure is None and claim.date is None and not claim.parts and claim.stance == "accept" and offer is None:
+            return  # "sab tay ho gaya" after the term is agreed: accepts what stands, and no change was offered
         if figure is not None and not says_figure(line.text, figure):
             return  # a new figure nobody said here or just before: no change was proposed
         if figure is None:

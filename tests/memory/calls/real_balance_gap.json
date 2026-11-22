@@ -1,0 +1,75 @@
+{
+ "id": "real_balance_gap",
+ "description": "The six lines of the user's real call (deal 28f0f514ab54) that decide the balance, at their real line numbers, with Gawah's two turns there. The hirer says when the balance is paid; the worker's next line opens with 'ji, theek hai' and goes on to the dates; at the end Gawah asks both to confirm the balance as said and each says yes. The other lines of that call are not here: they are not in the evidence.",
+ "people": [
+  {
+   "role": "hirer",
+   "name": "Karan",
+   "phone": "+910000000201"
+  },
+  {
+   "role": "worker",
+   "name": "Ramesh",
+   "phone": "+910000000202"
+  }
+ ],
+ "call_date": "2026-11-21",
+ "lines": [
+  {
+   "line_no": 11,
+   "speaker": "hirer",
+   "text": "चलो ठीक है, काम कब से स्टार्ट करोगे?",
+   "start": 60.0,
+   "end": 62.5
+  },
+  {
+   "line_no": 12,
+   "speaker": "hirer",
+   "text": "बाकी का पैसा काम पूरे होने के बाद दूँगा।",
+   "start": 68.0,
+   "end": 71.0
+  },
+  {
+   "line_no": 13,
+   "speaker": "worker",
+   "text": "जी करण जी, ठीक है। अगले सोमवार से शुरू कर देंगे, सुबह नौ बजे तक पहुंच जाएंगे।",
+   "start": 71.8,
+   "end": 77.0
+  },
+  {
+   "line_no": 20,
+   "speaker": "hirer",
+   "text": "चलो, सब तय हो गया। धन्यवाद रमेश जी।",
+   "start": 110.0,
+   "end": 112.5
+  },
+  {
+   "line_no": 22,
+   "speaker": "hirer",
+   "text": "हाँ, सब सही है।",
+   "start": 122.0,
+   "end": 123.5
+  },
+  {
+   "line_no": 23,
+   "speaker": "worker",
+   "text": "हाँ जी, सब सही है।",
+   "start": 124.0,
+   "end": 125.5
+  }
+ ],
+ "gawah": [
+  {
+   "after_line": 11,
+   "reason": "term_unclear",
+   "item": "balance",
+   "text": "Karan ji, balance किस date पर देंगे?"
+  },
+  {
+   "after_line": 20,
+   "reason": "wrapping_up",
+   "item": "balance",
+   "text": "Karan ji aur Ramesh ji, kya aap dono confirm करते हैं कि balance बाकी का पैसा काम पूरा होने के बाद ही मिलेगा?"
+  }
+ ]
+}
