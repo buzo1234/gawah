@@ -11,11 +11,13 @@
   term that call changed.
 - A voice note memory found contradicting an agreed term, or asking to change one: see
   heard.py.
+- A payment or work claim the other person says no to: see dispute.py. Every owed message
+  and reminder after it names what is still disputed.
 """
 
 import logging
 import re
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime, time, timedelta, timezone
 
@@ -26,6 +28,7 @@ from app.contracts import (
 )
 from app.log import deal_log
 from app.records import heard, tuning, words
+from app.records.dispute import Disputes, total_row
 from app.records.reminders import Reminders
 from app.store import Store
 
@@ -56,8 +59,13 @@ class Sentinel:
         self._fact_of: dict[str, str] = {}  # record id -> memory's fact id for it
         self._work_done: set[str] = set()  # deals whose work both have confirmed
         self._asked: set[str] = set()  # voice-note change facts already put to the other person
-        # Puts a change to the other person (Intake.ask_change); set by the whatsapp stream.
+        self.disputes = Disputes(self)
+        # Set by the whatsapp stream: put a change to the other person (Intake.ask_change), put a
+        # disputed record to them again with its proof (Intake.put), keep a proof screenshot and
+        # give a short-lived link to it.
         self.ask_change: Callable[..., None] | None = None
+        self.ask_again: Callable[..., None] | None = None
+        self.keep_proof: Callable[..., Awaitable[str | None]] | None = None
 
     def subscribe(self) -> None:
         self.bus.subscribe(RecordConfirmed, self.on_record_confirmed)
@@ -111,9 +119,16 @@ class Sentinel:
         if record.kind in MONEY and record.amount is not None:
             await self._say_paid(deal_id, record, _minus(check.rows, record))
 
+    def claimed(self, deal_id: str, record: Record, asked: Role) -> None:
+        self._note(deal_id, f"claim from the {record.sender.value}: {words.describe(record)}, "
+                   f"one person's word: the {asked.value} is asked to confirm")
+
     async def on_record_confirmed(self, event: RecordConfirmed) -> None:
         record = event.record
-        if not event.confirmed or record is None:
+        if record is None:
+            return
+        await self.disputes.answered(event)
+        if not event.confirmed:
             return
         if record.kind in MONEY and record.amount is not None:
             rows = await self._rows(event.deal_id)
@@ -122,8 +137,9 @@ class Sentinel:
         elif record.kind is RecordKind.WORK_DONE:
             self._work_done.add(event.deal_id)
             owed = _owed(_total(await self._rows(event.deal_id)))
+            line = words.work_done(owed) + await self.disputes.still_disputed(event.deal_id)
             for person in await self._people(event.deal_id):
-                self.outbox.send(event.deal_id, person.phone, person.role, words.work_done(owed))
+                self.outbox.send(event.deal_id, person.phone, person.role, line)
             if owed and owed > 0:
                 when = self.wall() + timedelta(seconds=tuning.BALANCE_REMINDER_SECONDS)
                 self.reminders.at(event.deal_id, ItemKey.BALANCE, when, WORK)
@@ -154,6 +170,7 @@ class Sentinel:
         balance = (await self.memory.get_term(deal_id, ItemKey.BALANCE)).current
         line = words.paid(record.kind, round(record.amount), _owed(after.get(ItemKey.ADVANCE)), _owed(total),
                           self._balance_when(deal_id, balance))
+        line += await self.disputes.still_disputed(deal_id, skip=record.id)
         for person in await self._people(deal_id):
             self.outbox.send(deal_id, person.phone, person.role, line)
         self._note(deal_id, f"{record.kind.value} of {words.rupees(round(record.amount))} stands: "
@@ -173,10 +190,11 @@ class Sentinel:
         hirer, worker = people.get(Role.HIRER), people.get(Role.WORKER)
         if hirer is None:
             return False
+        disputed = await self.disputes.still_disputed(deal_id, None if why == WORK else {item})
         text = words.remind_after_work(owed) if why == WORK else words.remind_date(item, owed, term.value_date)
-        self.outbox.send(deal_id, hirer.phone, hirer.role, text)
+        self.outbox.send(deal_id, hirer.phone, hirer.role, text + disputed)
         if worker:
-            self.outbox.send(deal_id, worker.phone, worker.role, words.hirer_reminded(hirer, owed))
+            self.outbox.send(deal_id, worker.phone, worker.role, words.hirer_reminded(hirer, owed) + disputed)
         self._note(deal_id, f"reminded the hirer: {words.rupees(owed)} owed ({'work done' if why == WORK else 'date passed'})"
                    + (", told the worker" if worker else ""), term)
         return True
@@ -234,19 +252,14 @@ class Sentinel:
         said = f"{balance.value or ''} {balance.quote or ''}"
         return " kaam ke baad" if deal_id not in self._work_done and _AFTER_WORK.search(said) else ""
 
-    def _note(self, deal_id: str, text: str, fact: Fact | None = None) -> None:
+    def _note(self, deal_id: str, text: str, fact: Fact | None = None, facts: list[Fact] = ()) -> None:
         deal_log("gawah.records", deal_id).info("sentinel: %s", text)
         self.bus.publish(AgentNote(
-            deal_id=deal_id, agent=CrewAgent.SENTINEL, text=text[:160], fact_ids=[fact.id] if fact else [],
+            deal_id=deal_id, agent=CrewAgent.SENTINEL, text=text[:160], fact_ids=[f.id for f in [fact, *facts] if f],
         ))
 
 
-def _total(rows: dict[ItemKey, OwedRow]) -> OwedRow | None:
-    """The whole deal: the amount if one is agreed, else the balance."""
-    for item in (ItemKey.AMOUNT, ItemKey.BALANCE):
-        if _owed(rows.get(item)) is not None:
-            return rows[item]
-    return None
+_total = total_row
 
 
 def _owed(row: OwedRow | None) -> int | None:

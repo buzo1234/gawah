@@ -22,6 +22,7 @@ from app.contracts import (
 )
 from app.log import deal_log, mask_phone
 from app.records import words
+from app.records.dispute import DISPUTABLE
 from app.records.reader import Reader
 
 if TYPE_CHECKING:  # app.whatsapp imports this package, never the other way round
@@ -98,6 +99,10 @@ class Intake:
         message, so Gawah can react to it where the provider has reactions. voice: for a
         voice note, what is known of it (kept on the record as extra); text is its words."""
         reading = await self.reader.read(text, image, image_type)
+        if self.sentinel and voice is None:  # proof asked for after a "no"
+            proven = await self.sentinel.disputes.proof(deal, sender, reading, image, image_type, media_url)
+            if proven:
+                return proven
         if reading.kind == "unclear" or (voice is not None and reading.kind not in VOICE_KINDS):
             return None
         backed = bool(image and reading.payment_screenshot and reading.transaction_id)
@@ -123,20 +128,28 @@ class Intake:
                 await self.sentinel.logged(deal.id, record, check)
             return record
 
-        question = words.confirm_question(sender, record)
-        self.bus.publish(
-            RecordConfirmRequested(
-                deal_id=deal.id, record_id=record.id, confirm_by=other.role, record=record, question=question
-            )
-        )
         if check and check.line:
             await self.sentinel.disagrees(deal.id, record, check, other.role)
-        self.outbox.send(deal.id, other.phone, other.role, question, buttons=buttons_for(record.id))
+        self.put(deal.id, record, sender, other, words.confirm_question(sender, record), message_id)
         self.outbox.send(deal.id, sender.phone, sender.role, words.asking_other(other, record))
-        ask = Ask(deal.id, record, sender, other, question, message_id)
+        if self.sentinel:
+            self.sentinel.claimed(deal.id, record, other.role)
+        return record
+
+    def put(
+        self, deal_id: str, record: Record, sender: Person, other: Person, question: str, message_id: str | None = None,
+    ) -> None:
+        """Ask the other person yes or no about a record: a new one, or a disputed one again
+        with its proof."""
+        self.bus.publish(
+            RecordConfirmRequested(
+                deal_id=deal_id, record_id=record.id, confirm_by=other.role, record=record, question=question
+            )
+        )
+        self.outbox.send(deal_id, other.phone, other.role, question, buttons=buttons_for(record.id))
+        ask = Ask(deal_id, record, sender, other, question, message_id)
         ask.timer = asyncio.create_task(self._wait(ask))
         self._asks.setdefault(other.phone, []).append(ask)
-        return record
 
     def ask_change(self, change: FactChanged, sender: Person, answerer: Person, question: str) -> None:
         """Put a change one person asked for to the other, yes or no. The change is sent as
@@ -177,8 +190,13 @@ class Intake:
             )
         )
         self._tell_sender(ask, record, confirmed)
-        self.outbox.send(ask.deal_id, ask.answerer.phone, ask.answerer.role, words.ANSWER_NOTED)
+        if not self._disputed(record, confirmed):
+            self.outbox.send(ask.deal_id, ask.answerer.phone, ask.answerer.role, words.ANSWER_NOTED)
         return True
+
+    def _disputed(self, record: Record, confirmed: bool) -> bool:
+        """A no to a payment or work claim: the Sentinel tells both what the record holds."""
+        return not confirmed and self.sentinel is not None and record.kind in DISPUTABLE
 
     def _answer_change(self, ask: Ask, confirmed: bool, said: str) -> None:
         change = ask.change
@@ -193,6 +211,8 @@ class Intake:
         self.outbox.send(ask.deal_id, ask.answerer.phone, ask.answerer.role, words.ANSWER_NOTED)
 
     def _tell_sender(self, ask: Ask, record: Record, confirmed: bool) -> None:
+        if self._disputed(record, confirmed):
+            return
         if confirmed:
             self.outbox.react(ask.deal_id, ask.sender.phone, ask.sender.role, ask.message_id, "👍")
         self.outbox.send(

@@ -29,6 +29,7 @@ from app.whatsapp.inbound import parse_inbound
 from app.whatsapp.meta import Meta
 from app.whatsapp.meta_inbound import parse_meta, report_failures
 from app.whatsapp.outbox import Outbox, Provider
+from app.whatsapp.proof import keeper
 from app.whatsapp.settings import whatsapp_settings
 from app.whatsapp.twilio import Twilio
 from app.whatsapp.voice import Upload, VoiceNotes
@@ -69,9 +70,10 @@ def wire(
         )
         sentinel.subscribe()
     intake = Intake(bus, outbox, reader or Reader(settings), clock, settings.reply_timeout_seconds, sentinel)
-    if sentinel:
-        sentinel.ask_change = intake.ask_change
     s3 = S3(settings)
+    if sentinel:
+        sentinel.ask_change, sentinel.ask_again = intake.ask_change, intake.put
+        sentinel.keep_proof = keeper(root, upload or s3.upload, s3.signed_url)
     # Voice notes are kept beside the calls' recordings, recordings/<deal id>/voice/ under root.
     voice = VoiceNotes(bus, outbox, intake, provider, transcriber or Transcriber(settings), upload or s3.upload, root)
     bot = Bot(settings, bus, store, provider, outbox, intake, sign=s3.signed_url, sentinel=sentinel, voice=voice)
