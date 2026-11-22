@@ -48,26 +48,56 @@ body.phone-page.embed { background: var(--surface); }
 .call-state.on { color: var(--ok); font-weight: 500; }
 .call-state.failed { color: var(--bad); }
 
-.chat { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: var(--s2); padding: var(--s4) var(--s5); scrollbar-width: none; }
+.chat { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: var(--s2); padding: var(--s4) var(--s5); background: var(--bg); scrollbar-width: none; }
 .chat::-webkit-scrollbar { display: none; }
 .chat .empty { margin: auto; color: var(--ink-3); }
 
+/* WhatsApp's chat on the board's ground: Gawah's messages white with a hairline, the
+   person's own in ink; the tail corner a chip's radius. */
 .bubble { max-width: 86%; padding: var(--s2) var(--s3); border-radius: var(--r-card); overflow-wrap: anywhere; animation: fade 240ms var(--ease); }
-.bubble.out { align-self: flex-start; background: var(--wash); border-bottom-left-radius: var(--r-chip); }
+.bubble.out { align-self: flex-start; background: var(--surface); border: var(--hair); border-bottom-left-radius: var(--r-chip); }
 .bubble.in { align-self: flex-end; background: var(--ink); color: var(--surface); border-bottom-right-radius: var(--r-chip); }
 .bubble .text { white-space: pre-wrap; }
-.bubble .meta { margin-top: var(--s1); font: 400 var(--t-label) / var(--lh-label) var(--mono); color: var(--ink-3); }
+.bubble .meta { margin-top: var(--s1); font: 400 var(--t-label) / var(--lh-label) var(--mono); color: var(--ink-3); text-align: right; }
 .bubble.in .meta { color: #b9bbc0; }
 .bubble img { display: block; max-width: 100%; border-radius: var(--r-chip); margin-bottom: var(--s2); }
 .bubble audio { display: block; max-width: 100%; margin-bottom: var(--s1); }
 .bubble a.call-link { font-weight: 600; text-decoration-color: currentColor; }
 
+/* A message with buttons: the call button, or the reply buttons, as full-width rows under
+   the words, each behind a hairline, as WhatsApp draws them. */
+.bubble.actions { width: 260px; padding-bottom: 0; }
+.bubble .cta, .bubble .reply {
+  display: flex; align-items: center; justify-content: center; gap: var(--s2);
+  width: calc(100% + 2 * var(--s3)); height: 44px; margin: 0 calc(-1 * var(--s3));
+  border: 0; border-top: var(--hair); background: none;
+  color: var(--link); font: 600 var(--t-meta) / var(--lh-meta) var(--font); text-decoration: none; cursor: pointer;
+}
+.bubble .meta + .cta, .bubble .meta + .replies { margin-top: var(--s2); }
+.bubble .cta:hover, .bubble .reply:not(:disabled):hover { background: var(--sunk); }
+.bubble .cta:last-child, .replies .reply:last-child { border-bottom-left-radius: var(--r-chip); border-bottom-right-radius: var(--r-card); }
+.replies.used .reply { color: var(--ink-3); cursor: default; }
+.replies.used .reply.picked { color: var(--ink-2); }
+
 #composer { padding: var(--s3) var(--s5) var(--s4); border-top: var(--hair); }
 #composer .row { display: flex; align-items: center; gap: var(--s2); }
 #composer input[type="text"] { flex: 1; min-width: 0; height: 40px; padding: 0 var(--s4); border: var(--hair); border-color: var(--rule-strong); border-radius: var(--r-pill); background: var(--surface); }
 #composer input[type="text"]:focus { outline: none; border-color: var(--ink); }
-#composer button[type="submit"] { height: 40px; padding: 0 var(--s4); border: 0; border-radius: var(--r-pill); background: var(--ink); color: var(--surface); font-weight: 600; cursor: pointer; }
-.attach { flex: none; color: var(--ink-2); cursor: pointer; text-decoration: underline; text-decoration-color: var(--rule-strong); text-underline-offset: 0.2em; }
+
+/* Round buttons: "+" left of the field, the paper plane right of it. */
+.round { display: grid; place-items: center; flex: none; width: 40px; height: 40px; padding: 0; border: 0; border-radius: var(--r-pill); cursor: pointer; }
+.round.plain { background: none; color: var(--ink-2); }
+.round.plain:hover, .round.plain[aria-expanded="true"] { background: var(--wash); color: var(--ink); }
+.round.send { background: var(--ink); color: var(--surface); }
+.round.send:disabled { background: var(--wash); color: var(--ink-3); cursor: default; }
+
+/* The "+" menu: Photo or Voice note. */
+.attach { position: relative; flex: none; }
+.menu { position: absolute; left: 0; bottom: calc(100% + var(--s2)); z-index: 2; min-width: 180px; padding: var(--s1); background: var(--surface); border: var(--hair); border-radius: var(--r-card); }
+.menu[hidden] { display: none; }
+.menu button { display: flex; align-items: center; gap: var(--s3); width: 100%; height: 40px; padding: 0 var(--s3); border: 0; border-radius: var(--r-chip); background: none; color: var(--ink); text-align: left; cursor: pointer; }
+.menu button:hover, .menu button:focus-visible { background: var(--wash); }
+.menu .icon { color: var(--ink-2); }
 .attached { margin-bottom: var(--s2); color: var(--ink-2); }
 .attached[hidden] { display: none; }
 .send-status { min-height: 22px; margin-top: var(--s1); color: var(--ink-3); }

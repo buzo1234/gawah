@@ -39,6 +39,10 @@ checklist against the brain's, and a reload must rebuild exactly the same page.
    hidden; answering, with the toggle on, a call link that arrives starts the actor with
    the link's deal, role and kind. On the board, a call link tapped in the frame opens the
    call page in the frame (nothing is joined: the join button is not pressed).
+7. The second phone on Meta's message shapes, as WhatsApp draws them: a call link as a
+   button in its bubble, yes or no questions as reply buttons; one tapped on the page goes
+   to the intake as Meta's button reply for that question, and its buttons look used;
+   "+" opens Photo and Voice note; the send button waits for something to send.
 """
 
 import argparse
@@ -245,6 +249,79 @@ async def sized(chrome, width: int, height: int, path: Path) -> None:
     await chrome.shot(path)
     await chrome.send("Emulation.setDeviceMetricsOverride", width=1920, height=1080, deviceScaleFactor=1, mobile=False)
     await asyncio.sleep(0.3)
+
+
+async def whatsapp_look(port: int, out: Path, check) -> int:
+    """7. The second phone as WhatsApp draws a Meta chat, on its own offline app with Meta's
+    message shapes: Sunita starts a deal (her call link a button), Ramesh reports two things
+    she is asked about (yes or no buttons). One is tapped on the page: it must reach the
+    intake as Meta's button reply for that question only. Returns the messages sent in."""
+    home = Path(tempfile.mkdtemp(prefix="gawah-phone-meta-"))
+    app = offline_app(home / "gawah.db", whatsapp="meta")
+    server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning"))
+    serving = asyncio.create_task(server.serve())
+    url, sent = f"http://127.0.0.1:{port}", 0
+    sunita, ramesh = "+919811100001", "+919822200002"
+    while not server.started:
+        await asyncio.sleep(0.05)
+    async with httpx.AsyncClient(base_url=url, timeout=10) as http:
+        async def whatsapp(phone: str, body: str) -> None:
+            nonlocal sent
+            form = {"From": f"whatsapp:{phone}", "Body": body, "NumMedia": "0", "MessageSid": f"SM{new_id()[:10]}"}
+            (await http.post(WHATSAPP_WEBHOOK_PATH, data=form)).raise_for_status()
+            sent += 1
+            await asyncio.sleep(0.6)
+
+        await whatsapp(sunita, "Ramesh " + ramesh.removeprefix("+91"))
+        await whatsapp(ramesh, "2000 cash diya")
+        await whatsapp(ramesh, "kaam poora ho gaya")
+        deal = (await http.get("/dashboard/state")).json()["deal_id"]
+        events = (await http.get("/dashboard/state", params={"deal": deal})).json()["events"]
+        asked = [e["record_id"] for e in events if e["name"] == "record.confirm_requested"]
+        REPLIES = "JSON.stringify([...document.querySelectorAll('.reply')].map((b) => [b.textContent, b.dataset.id, b.disabled]))"
+        async with Chrome(port=port + 1000, width=390, height=844) as phone:
+            await phone.send("Emulation.setDeviceMetricsOverride", width=390, height=844, deviceScaleFactor=2, mobile=False)
+            await phone.goto(f"{url}/dashboard/phone?deal={deal}&number={sunita.replace('+', '%2B')}")
+            await phone.wait_for("document.body.dataset.loaded === 'true'")
+            await asyncio.sleep(0.6)
+            cta = json.loads(await phone.js("""JSON.stringify([...document.querySelectorAll('.bubble .cta')].map((a) =>
+              [a.textContent, a.getAttribute('href'), a.closest('.bubble').querySelector('.text').textContent]))"""))
+            check(cta and cta[0][0] == "Call kholiye" and cta[0][1] == f"/call/{deal}/hirer" and "http" not in cta[0][2],
+                  f"the call link is a button in its bubble, no address shown: {cta}")
+            replies = json.loads(await phone.js(REPLIES))
+            check([r[1] for r in replies] == [f"{w}:{a}" for a in asked for w in ("yes", "no")] and not any(r[2] for r in replies)
+                  and [r[0] for r in replies[:2]] == ["Haan, sahi hai", "Nahi"],
+                  f"each question's buttons carry the ids it was sent with: {replies}")
+            check(await phone.js("document.getElementById('send').disabled"), "the send button waits for something to send")
+            await phone.js("document.getElementById('text').value = 'ok'; document.getElementById('text').dispatchEvent(new Event('input'))")
+            check(not await phone.js("document.getElementById('send').disabled"), "words typed: the send button works")
+            await phone.js("document.getElementById('text').value = ''; document.getElementById('text').dispatchEvent(new Event('input'))")
+            await phone.shot(out / "5c-phone-buttons.png")
+            await press(phone, "#attach")
+            await asyncio.sleep(0.3)
+            items = await phone.js("[...document.querySelectorAll('#attach-menu button')].filter((b) => b.offsetParent).map((b) => b.textContent)")
+            check(items == ["Photo", "Voice note"], f"'+' opens Photo and Voice note: {items}")
+            await phone.shot(out / "5e-phone-attach-menu.png")
+            await press(phone, "#text")
+            check(await phone.js("document.getElementById('attach-menu').hidden"), "a tap elsewhere closes the menu")
+            await press(phone, ".reply")  # the first question's "Haan, sahi hai", tapped as a person would
+            await phone.wait_for("document.querySelector('.replies').classList.contains('used')", timeout=5)
+            await asyncio.sleep(1.0)
+            events = (await http.get("/dashboard/state", params={"deal": deal})).json()["events"]
+            answered = [(e["record_id"], e["confirmed"]) for e in events if e["name"] == "record.confirmed"]
+            check(answered == [(asked[0], True)], f"the tap reached the intake as Meta's button reply for that question only: {answered}")
+            replies = json.loads(await phone.js(REPLIES))
+            picked = await phone.js("document.querySelector('.reply.picked')?.textContent")
+            check([r[2] for r in replies] == [True, True, False, False] and picked == "Haan, sahi hai",
+                  f"the answered buttons look used, the other question's do not: {replies}")
+            await phone.js("document.getElementById('chat').scrollTop = 1e6")
+            await phone.send("Input.dispatchMouseEvent", type="mouseMoved", x=1, y=1)
+            await asyncio.sleep(0.3)
+            await phone.shot(out / "5d-phone-answered.png")
+            check(not errors(phone), f"no errors in the phone page: {errors(phone)}")
+    server.should_exit = True
+    await serving
+    return sent
 
 
 async def main(port: int, out: Path) -> None:
@@ -683,6 +760,8 @@ async def main(port: int, out: Path) -> None:
 
     server.should_exit = True
     await serving
+    print("7. the second phone as WhatsApp draws it, on Meta's message shapes")
+    sent += await whatsapp_look(port + 2, out, check)
     print(f"events published: {sent}; real rooms 0, messages 0")
     print("FAILED:\n  " + "\n  ".join(failures) if failures else "all checks passed")
 

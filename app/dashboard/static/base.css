@@ -4,7 +4,8 @@
    page sheets use nothing else.
 
    Colour carries meaning only: green agreed or confirmed, red a contradiction or a
-   dispute, slate blue the hirer, ochre the worker, grey Gawah or a record. Every text
+   dispute, slate blue the hirer, ochre the worker, grey Gawah or a record; on the second
+   phone, teal for the buttons inside a WhatsApp message. Every text
    colour on its tint passes WCAG AA (checked: 4.7:1 and up). The tertiary ink is darker
    than a 40% grey on purpose: a 40% grey fails AA for the 14px labels.
 
@@ -59,6 +60,7 @@
   --worker: #8a5a1c;
   --worker-wash: #f4ecdf;
   --none: #5e6066;
+  --link: #1d6b86; /* a button in a WhatsApp message: a muted teal, apart from the hirer's slate and the green (6.0:1 on white) */
   --none-wash: #ebebe5;
 
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -185,3 +187,6 @@ button.play.missing { opacity: 0.4; }
 
 .wave rect { fill: var(--rule-strong); }
 .wave.ok rect { fill: var(--ok); }
+
+/* An icon (icons.js): one size, one stroke, the text colour. */
+.icon { flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
