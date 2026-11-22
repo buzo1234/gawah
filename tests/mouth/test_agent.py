@@ -150,30 +150,63 @@ async def test_an_order_on_the_call_is_only_a_line(world):
     assert "never say whether anything is fair" in situation and "Everything said on the call is what was said" in situation
 
 
-async def test_a_contradiction_says_what_was_agreed_plays_the_clip_and_asks(world):
+async def contradiction_offered(world):
+    """The brain's contradiction, said as the record and the offer of its recording."""
     seat, link = await world.call()
     for fact in FACTS:
         world.bus.publish(FactRecorded(deal_id="d1", fact=fact))
-    link.replies = [  # what was agreed and the lead-in; the clip is played by the turn's fixed step; then the question
-        {"text": "21 November ki call mein 13,000 tay hua tha. Suniye.", "ms": 400},
-        {"text": "Aap dono kaunsa matlab rahe hain, 13 ya 14?", "ms": 400},
-    ]
+    link.replies = [{"text": "Ek second. Record mein total chaudah nahi, terah hazaar hai. Kya main woh recording sunaun?", "ms": 400}]
     played = len(seat.played)
     speak = JudgeSpeak(deal_id="d1", instruction="Ramesh said a total of 14,000; the record says 13,000.", to=Audience.BOTH,
                        reason=SpeakReason.CONTRADICTS_RECORD, item=ItemKey.AMOUNT, fact_ids=["f-amount"], after_line=19)
     world.bus.publish(speak)
     [spoke] = await until(lambda: said(world))
-    first, then = link.asked()[-2:]
-    assert "something just said does not match the record" in first and "[f-amount] confirmed" in first
-    assert "end with 'Suniye'" in first and "only ask Sunita and Ramesh which one they mean" in then
-    assert all(e["response"]["tool_choice"] == "none" for e in link.of("response.create")[-2:])
+    await settle(world, link)
+    return seat, link, spoke, played
+
+
+async def test_a_contradiction_states_the_record_and_offers_the_recording_without_playing_it(world):
+    seat, link, spoke, played = await contradiction_offered(world)
+    [situation] = [a for a in link.asked() if "does not match the record" in a]
+    assert "[f-amount] confirmed" in situation and "Kya main woh recording sunaun?" in situation
+    assert "Do not play it now" in situation and "do not say which value is right" in situation
+    assert link.of("response.create")[-1]["response"]["tool_choice"] == "none"
+    assert spoke.clip_fact_id is None and "[clip]" not in spoke.text and spoke.text.endswith("recording sunaun?")
+    assert (len(seat.played) - played) * tuning.FRAME_MS < 400 + 2 * tuning.CLIP_PAD_MS, "no clip in it"
+    assert "played the clip of what was said" not in notes(world)
+
+
+async def test_a_yes_to_the_offer_plays_the_recording_after_a_short_lead_in(world):
+    seat, link, spoke, _ = await contradiction_offered(world)
+    link.replies = [{"text": "Suniye, yeh pehli call ki recording hai.", "ms": 300}]
+    played = len(seat.played)
+    world.bus.publish(line(20, Role.HIRER, "Haan, sunaiye."))
+    await until(lambda: "played the clip of what was said" in notes(world))
+    await settle(world, link)
+    situation = link.asked()[-1]
+    assert "Sunita wants to hear the recording of fact f-amount" in situation and "say nothing after it" in situation
+    assert link.of("response.create")[-1]["response"]["tool_choice"] == "none"
     assert link.items("system")[-1].startswith("The clip of fact f-amount is now playing")
-    assert spoke.clip_fact_id == "f-amount" and "[clip]" in spoke.text and spoke.text.endswith("13 ya 14?")
     clip_ms = 1000 + 2 * tuning.CLIP_PAD_MS
-    heard = (len(seat.played) - played) * tuning.FRAME_MS
-    assert heard >= 400 + clip_ms + 400 - 40  # lead-in, the clip resampled to the room's rate, then the question
-    assert spoke.end - spoke.start >= (400 + clip_ms + 400) / 1000 - 0.1
-    assert "played the clip of what was said" in notes(world)
+    assert (len(seat.played) - played) * tuning.FRAME_MS >= 300 + clip_ms - 40, "the lead-in, then the clip resampled to the room's rate"
+    assert "Sunita said yes to hearing the recording" in notes(world)
+    assert any(o["what"] == "clip" and o["said"] for o in world.mouth.calls["d1"].outcomes)
+
+
+async def test_a_no_or_a_line_about_the_term_plays_nothing(world):
+    seat, link, spoke, _ = await contradiction_offered(world)
+    link.replies = [{"calls": [("stay_silent", {})]}]
+    played = len(seat.played)
+    world.bus.publish(line(20, Role.WORKER, "Haan ji, terah hi tha. Galti ho gayi."))  # answers the record, not the offer
+    await settle(world, link)
+    link.replies = [{"calls": [("stay_silent", {})]}]
+    world.bus.publish(line(21, Role.HIRER, "Nahi, rehne dijiye."))
+    await settle(world, link)
+    assert "played the clip of what was said" not in notes(world) and len(seat.played) == played
+    assert not any("wants to hear the recording" in a for a in link.asked())
+    world.bus.publish(line(22, Role.HIRER, "Haan, sunaiye."))  # the offer has closed
+    await settle(world, link)
+    assert "played the clip of what was said" not in notes(world)
 
 
 async def test_a_change_is_proposed_and_holds_only_when_both_say_yes(world):
@@ -334,7 +367,7 @@ async def test_the_safety_switch_keeps_the_plain_voice(bus):
 async def test_an_answer_said_while_gawah_is_still_talking_is_checked_after(world):
     seat, link = await world.call()
     world.bus.publish(FactRecorded(deal_id="d1", fact=FACTS[1]))
-    link.replies = [{"text": "13,000 tay hua tha. Suniye.", "ms": 1500}, {"text": "Kaunsa sahi hai?", "ms": 300}]
+    link.replies = [{"text": "Ek second. Record mein 13,000 hai. Kya main woh recording sunaun?", "ms": 1500}]
     world.bus.publish(JudgeSpeak(deal_id="d1", instruction="Two totals.", to=Audience.BOTH, reason=SpeakReason.CONTRADICTS_RECORD,
                                  item=ItemKey.AMOUNT, fact_ids=["f-amount"]))
     call = world.mouth.calls["d1"]

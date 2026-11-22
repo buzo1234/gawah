@@ -230,8 +230,19 @@ WAIT_S = {
     "contradicts_record": 8.0,
     "change_proposed": 8.0,
     "follow_up": 6.0,
+    "clip": 6.0,  # the recording they said yes to
 }
 ANSWER_WAIT_S = 8.0  # after the ack, the answer is said at the next pause within this
+# After a contradiction Gawah offers the recording. A line said within CLIP_OFFER_LINES that says yes to it, or
+# asks for it, plays it; a no closes the offer. Whole words, lower case. A plain yes counts only when it is
+# the whole line ("haan", "haan ji"): "haan ji, baees hi tha" answers the record, not the offer.
+CLIP_OFFER_LINES = 2
+CLIP_ASK_WORDS = (
+    "sunaiye", "sunaaiye", "sunayiye", "sunaye", "sunao", "sunaao", "suna", "sunado", "sunaa",
+    "chalaiye", "chalao", "bajaiye", "bajao", "play", "recording", "सुनाइए", "सुनाइये", "सुनाओ", "सुना", "सुनाएं", "चलाइए", "रिकॉर्डिंग",
+)
+CLIP_YES_WORDS = ("haan", "han", "haa", "haanji", "hanji", "ji", "jee", "zaroor", "jaroor", "bilkul", "yes", "हाँ", "हां", "जी", "ज़रूर", "जरूर", "बिल्कुल")
+CLIP_NO_WORDS = ("nahi", "nahin", "na", "mat", "rehne", "zaroorat", "no", "नहीं", "मत", "रहने")
 FOLLOW_UP_LINES = 2  # after a contradiction or a proposed change, this many lines are checked for an answer. At 6, the
 # checks crowded out the brain's next moments, and one took a claim about the advance for a change (proof run 1).
 NOTE_MAX = 300  # characters of a line or fact sent to the model
@@ -278,6 +289,7 @@ MOMENT_WHY = {
     "change_proposed": "someone wants to change an agreed term, and both should agree to it",
     "addressed_directly": "someone spoke to you",
     "follow_up": "checking a line for an answer you are waiting for",
+    "clip": "someone said yes to hearing the recording you offered",
     "opening": "the call has just started",
 }
 MOMENT_ASK = (
@@ -292,29 +304,38 @@ MOMENT_ADDRESSED = (
     "\"Haan ji, ek second\" has already been said, so do not say it again."
 )
 MOMENT_CONTRADICTION = (
-    "The Judge's note: {instruction} On record: {facts} Say in one short sentence, at most 15 words, what was agreed "
-    "and when (the date, or which call), and end with 'Suniye'. Nothing else: the recording of it plays right after "
-    "you, and then you will ask which one they mean."
+    "The Judge's note: {instruction} On record: {facts} Say, in at most two short sentences: 'Ek second.', then what "
+    "the record holds instead of what was just said, who said it and who agreed, and on which call; then ask if they "
+    "want to hear that recording. The shape, with this call's own values and names: \"Ek second. Record mein total "
+    "baees hazaar nahi, bees hazaar hai: pehli call par Karan ji ne kaha tha aur Ramesh ji ne maana tha. Kya main woh "
+    "recording sunaun?\" Do not play it now, do not say which value is right or fair, and ask nothing else."
+)
+MOMENT_CLIP = (
+    "{name} wants to hear the recording of fact {fact}. Say only a short lead-in, at most 8 words, such as 'Suniye, "
+    "yeh pehli call ki recording hai.' The recording plays right after you; say nothing after it."
 )
 MOMENT_CHANGE = (
     "The Judge's note: {instruction} On record: {facts} First call propose_change for fact {fact}, with the new "
-    "value as it was said, proposed_by the person who said it, and their words. Then ask {to}, in one short sentence, "
-    "to say haan if they both agree. Do not say whether they should. A yes you have already seen in a line since: "
-    "record it with confirm_change."
-)
-MOMENT_CONTRADICTION_ASK = (
-    "The recording of what was agreed has just played in the call (if there was one). Now only ask {to} which one "
-    "they mean, in at most 12 words. Do not repeat what was agreed, and do not say who is right."
+    "value as it was said, proposed_by the person who said it, and their words. Then, in at most two short sentences, "
+    "say what the record holds and what was said now, and ask {to} if they both want to change it; it changes only "
+    "if both say haan. The shape, with this call's own values: \"Record mein total bees hazaar hai; call par baees "
+    "hazaar kaha gaya. Toh kya aap dono amount bees hazaar se badal kar baees hazaar karna chahte hain? Dono haan "
+    "kahiye.\" Do not say whether they should. A yes you have already seen in a line since: record it with confirm_change."
 )
 FOLLOW_UP = (
     "You are waiting for an answer about: {about}. The latest lines are above. Decide, and call a tool first. "
     "If the line is a clear yes or no to a proposed change, call confirm_change for that person. "
     "If someone clearly asks to change that same agreed term to a new value (for example 'chalo 14 kar dete hain'), "
-    "call propose_change with the new value, then ask both of them, in one short sentence, to say haan if they agree. "
+    "or still says the new value after hearing the record, call propose_change with the new value, then ask both, in "
+    "one short sentence of this shape: 'Toh kya aap dono amount bees hazaar se badal kar baees hazaar karna chahte "
+    "hain? Dono haan kahiye.' (with this call's own term and values). "
     "A claim or a question about what was agreed or paid is not a change. A line about another term is not an "
     "answer. In those cases, and whenever you are not sure, call stay_silent."
 )
-FOLLOW_UP_CONTRADICTION = "which of the two they mean, the record ({facts}) or what was just said"
+FOLLOW_UP_CONTRADICTION = (
+    "the record ({facts}) against a different value just said: you told them what the record holds. Only if someone "
+    "still wants the new value is it a change"
+)
 FOLLOW_UP_CHANGE = "change {change}: {item} from \"{old}\" to \"{new}\". Still to answer: {waiting}"
 OPENING_MOMENT = "Say exactly this and nothing else, warmly and clearly: \"{line}\""
 OPENING_LINE = (
@@ -331,7 +352,8 @@ NO_CLIP = "There is no recording of fact {fact}. Say what was agreed in words in
 UNKNOWN_FACT = "There is no fact {fact}. Use an id from Memory's notes or from get_term or search_facts."
 PROPOSED = (
     "Change {change} proposed: {item} from \"{old}\" to \"{new}\". Nothing changes until both say yes. Now, in one "
-    "short sentence, say the change (from what to what) and ask {both} to say haan if they both agree."
+    "short sentence, ask {both} if they both want to change {item} from \"{old}\" to \"{new}\", and to say haan "
+    "if they do ('Toh kya aap dono ... se badal kar ... karna chahte hain? Dono haan kahiye.')."
 )
 CONFIRMED_ONE = "{name}'s {answer} is recorded for change {change}. Still waiting for {other}. Call stay_silent unless {other} needs asking."
 CONFIRMED_BOTH = "Both said yes: change {change} holds, {item} is now \"{new}\". Say so in one short sentence."

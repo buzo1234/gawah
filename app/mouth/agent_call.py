@@ -6,6 +6,9 @@
   any tools (tools.py).
 - A line that names Gawah is a moment of its own: "Haan ji, ek second" at the next pause,
   then the answer. The brain's own addressed judge.speak for that line joins the same turn.
+- A contradiction is answered with the record (its value, who said it and who agreed, which
+  call) and an offer to play the recording. A yes to that offer (or asking for it) in the
+  next CLIP_OFFER_LINES lines plays it, after a short lead-in; a no or anything else does not.
 - After a contradiction is put to them, or a change is proposed, the next lines are each
   checked for an answer (a change wanted, or a yes or no to one), usually silently.
 """
@@ -38,6 +41,7 @@ class AgentCall(DealCall):
         self._follow_about = ""  # the contradiction put to them, while no change is open
         self._follow_queued = False
         self._follow_job: _Job | None = None
+        self._clip_offer: tuple[str, int] | None = None  # the fact whose recording was offered, and lines left to say yes
         super().__init__(*args)
 
     def _connect(self, make_link: Callable):
@@ -83,11 +87,20 @@ class AgentCall(DealCall):
             event = event.model_copy(update={"line_no": len(self.lines) + 1})
         self.lines.append(event)
         await self.agent.hear(moments.line(event, self.names))
+        offer = self._clip_offer
+        if offer:
+            left = offer[1] - 1
+            self._clip_offer = None if left <= 0 or moments.declines_clip(event.text) else (offer[0], left)
         if moments.addresses_gawah(event.text):
             job = _Job(moments.addressed_moment(event, self.names), False, None, ADDRESSED, Audience(event.speaker.value), ack=True)
             self._addressed[event.line_no] = job
             self._note(f"heard its name: {self.names.of(event.speaker)} asked something", line_nos=[event.line_no])
             self._jobs.put_nowait(job)
+        elif offer and moments.wants_clip(event.text):
+            self._clip_offer = None
+            name = self.names.of(event.speaker)
+            self._note(f"{name} said yes to hearing the recording", fact_ids=[offer[0]], line_nos=[event.line_no])
+            self._jobs.put_nowait(_Job(moments.clip_moment(name, offer[0]), False, None, "clip", Audience.BOTH, fact_id=offer[0]))
         elif self._waiting_for() and not self._follow_queued:
             self._follow_left -= 1
             self._follow_queued = True  # one queued is enough: it reads every line up to when it starts
@@ -101,9 +114,10 @@ class AgentCall(DealCall):
         else:
             await self.agent.note(moments.conflict(event))
 
-    def _waiting_for(self) -> str | None:
-        """What Gawah is waiting to hear an answer about, if anything."""
-        if self._follow_left <= 0:
+    def _waiting_for(self, queued: bool = False) -> str | None:
+        """What Gawah is waiting to hear an answer about, if anything. queued: for a check already
+        queued for a line inside the window, whose count it has used."""
+        if self._follow_left <= 0 and not queued:
             return None
         changes = self.tools.open_changes()
         if changes:
@@ -143,15 +157,15 @@ class AgentCall(DealCall):
 
     async def _prepare(self, job: _Job) -> Turn | None:
         if job.kind == "follow_up":
-            about = self._waiting_for()
+            about = self._waiting_for(queued=True)
             if about is None:
                 return None
             job.instruction = moments.follow_up(about, self.names)
         if job.kind == SpeakReason.CONTRADICTS_RECORD.value:
-            # A fixed order, so the clip always comes between what was agreed and the question.
-            facts = job.speak.fact_ids if job.speak else []
-            then = [("clip", facts[0])] if facts else []
-            return await self.agent.turn(job.instruction, use_tools=False, then=then + [("say", moments.contradiction_ask(job.speak, self.names))])
+            # The record and the offer of its recording; the recording plays only on a yes (on_line).
+            return await self.agent.turn(job.instruction, use_tools=False)
+        if job.kind == "clip":
+            return await self.agent.turn(job.instruction, use_tools=False, then=[("clip", job.fact_id)])
         if job.kind in ("follow_up", SpeakReason.CHANGE_PROPOSED.value):
             # A change: propose it (or record a yes already said), then ask both. It needs the tools.
             return await self.agent.turn(job.instruction, first_choice="required", speak_after={"propose_change", "confirm_change"})
@@ -186,6 +200,10 @@ class AgentCall(DealCall):
         if job.kind == SpeakReason.CONTRADICTS_RECORD.value and not self.tools.open_changes():
             self._follow_left = tuning.FOLLOW_UP_LINES
             self._follow_about = tuning.FOLLOW_UP_CONTRADICTION.format(facts=", ".join(job.speak.fact_ids))
+            if job.speak.fact_ids:
+                self._clip_offer = (job.speak.fact_ids[0], tuning.CLIP_OFFER_LINES)
+        if job.kind == "clip" and self._follow_about:
+            self._follow_left = tuning.FOLLOW_UP_LINES  # heard the record: do they still want the new value?
 
     async def _play_ack(self) -> float:
         started = await super()._play_ack()
