@@ -140,6 +140,15 @@ async def test_the_socket_still_feeds_the_tail(settings, capsys):
         await serving
 
 
+def test_a_second_phone_on_no_deal_sends_no_made_up_name(settings):
+    # The owner of a number on no deal is unnamed, so the call can fill in the name they say.
+    app = create_app(settings)
+    got = capture_webhook(app)
+    with TestClient(app) as client:
+        client.post("/dashboard/phone/send", json={"phone": "+91 90000 01001", "text": "Ramesh +919000001002"})
+    assert got[0][1]["ProfileName"] == ""
+
+
 def test_a_second_phone_message_reaches_the_webhook_in_the_provider_shape(settings, tmp_path, monkeypatch):
     monkeypatch.setattr(phone, "MEDIA_DIR", tmp_path / "media")
     app = create_app(settings)

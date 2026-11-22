@@ -257,7 +257,7 @@ async function deliver(body) {
   const response = await fetch("/dashboard/phone/send", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ phone: number(), profile_name: found?.[1].name || "Second phone", ...body }),
+    body: JSON.stringify({ phone: number(), profile_name: found?.[1].name || "", ...body }),
   });
   const result = await response.json();
   if (!response.ok) throw new Error(typeof result.detail === "string" ? result.detail : "the message was not accepted");
