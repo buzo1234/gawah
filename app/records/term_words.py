@@ -37,11 +37,12 @@ def rest_confirmed(person: Person, other: Person, both: bool, theirs: bool) -> s
     return f"Baaki sab {who(person)} ne maan liya hai. " if theirs else ""
 
 
-def choose(item: ItemKey, shown: str | None, numbered: bool) -> str:
+def choose(item: ItemKey, shown: str | None, numbered: bool, clip: bool = True) -> str:
     """To the person who said no, under the record: the two choices. numbered: no buttons, so
-    the choices are typed (Twilio)."""
-    line = (f"Aapne {term_name(item)}" + (f" {shown}" if shown else "") + ' par "nahi" kaha. Upar record mein woh pal '
-            "suniye. Kya recording sahi hai, ya kuch aur tay hua tha?")
+    the choices are typed (Twilio). clip: the record above has the moment to listen to."""
+    look = "Upar record mein woh pal suniye." if clip else "Upar record dekhiye."
+    line = (f"Aapne {term_name(item)}" + (f" {shown}" if shown else "") + f' par "nahi" kaha. {look} '
+            "Kya recording sahi hai, ya kuch aur tay hua tha?")
     if numbered:
         line += f"\n1 likhiye: {RECORDING_BUTTON}\n2 likhiye: {OTHER_BUTTON}"
     return line

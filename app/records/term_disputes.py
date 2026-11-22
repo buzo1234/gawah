@@ -150,17 +150,17 @@ class TermDisputes:
         for p in people.values():
             self.s.outbox.send(deal_id, p.phone, p.role, text, link=first_clip, link_label=words.CLIP_BUTTON)
         for d, (_, shown) in zip(untold, named):
-            self._offer(d, person, shown, term_words.choose)
+            self._offer(d, person, shown, first_clip is not None)
             self._publish(d, DisputeStep.OPENED)
             when = self.s.wall() + timedelta(seconds=tuning.DISPUTE_REMINDER_SECONDS)
             self.reminders.at(deal_id, d.item, when, d.id)
         self.s._note(deal_id, f"the {role.value} said no to {', '.join(d.item.value for d in untold)} on the call-back: "
                      "told both what the record holds, agreement held", facts=[])
 
-    def _offer(self, d: TermOpen, person: Person, shown: str | None, say) -> None:
+    def _offer(self, d: TermOpen, person: Person, shown: str | None, clip: bool) -> None:
         if not person.phone:
             return
-        text = say(d.item, shown, not self.s.outbox.rich)
+        text = term_words.choose(d.item, shown, not self.s.outbox.rich, clip)
         buttons = ((f"term-ok:{d.id}", term_words.RECORDING_BUTTON), (f"term-other:{d.id}", term_words.OTHER_BUTTON))
         self.s.outbox.send(d.deal_id, person.phone, person.role, text, buttons=buttons)
 
@@ -250,10 +250,11 @@ class TermDisputes:
             return False
         people = await self._people(deal_id)
         person = people.get(d.person) or Person(role=d.person)
-        shown = _shown(await self.on_record(deal_id, item), d.value)
+        fact = await self.on_record(deal_id, item)
+        shown = _shown(fact, d.value)
         for p in people.values():
             self.s.outbox.send(deal_id, p.phone, p.role, term_words.remind(person, item, shown))
-        self._offer(d, person, shown, term_words.choose)
+        self._offer(d, person, shown, await self.s._clip(fact) is not None)
         self._publish(d, DisputeStep.REMINDED)
         self.s._note(deal_id, f"the {item.value} is still in dispute: reminded both, once")
         return True

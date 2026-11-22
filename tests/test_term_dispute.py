@@ -18,7 +18,7 @@ from app.contracts import (
     Direction, DisputeStep, Event, FactChanged, FactStatus, ItemKey, ItemState, Person, Role, TermDispute,
     TermsConfirmed, TermsDisputed, TranscriptLine, WhatsAppMessage, call_path, clip_path,
 )
-from app.records import tuning
+from app.records import term_words, tuning
 from app.whatsapp.inbound import Inbound
 from fakes.replayer import load
 from tests.offline import offline_app
@@ -366,3 +366,8 @@ async def test_a_call_back_cut_short_says_nothing_of_the_rest_and_a_withdrawal_c
     await deal.send(Role.WORKER, "Recording sahi hai", button=deal.button("amount", "ok"))
     assert deal.of(TermsConfirmed, person=Role.WORKER)[-1].item is ItemKey.AMOUNT
     assert not deal.of(ContractReady)  # the rest was never read to them
+
+
+def test_with_no_clip_the_choices_do_not_ask_to_listen():
+    line = term_words.choose(ItemKey.AMOUNT, "₹13,000", False, clip=False)
+    assert "Upar record dekhiye." in line and "suniye" not in line
