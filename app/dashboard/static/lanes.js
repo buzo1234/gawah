@@ -17,7 +17,7 @@ const norm = (s) => s.toLowerCase().replace(/[\s.,;:]+/g, " ").trim();
 
 export function laneFacts(state, key) {
   return state.factOrder.map((id) => state.facts[id]).filter((f) =>
-    itemOfFact(state, f) === key && (IN_LANE.has(f.kind) ? f.kind !== "term" || f.value : f.value));
+    itemOfFact(state, f) === key && (IN_LANE.has(f.kind) || f.value));
 }
 
 function chipStatus(f, claimed) {

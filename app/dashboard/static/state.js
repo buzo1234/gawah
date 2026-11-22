@@ -51,7 +51,7 @@ function people(state, list) {
 }
 
 // Returns what the page has to redraw: { panels, moved, fact, conflict, changed }.
-// moved: the checklist terms whose state or value just changed.
+// moved: the checklist terms whose state, value or contradiction just changed.
 export function apply(state, e) {
   const change = { panels: [], moved: [] };
   const before = Object.fromEntries(ITEMS.map(([key]) => [key, termView(state, key)]));
@@ -59,7 +59,7 @@ export function apply(state, e) {
   if (change.panels.includes("checklist")) {
     change.moved = ITEMS.map(([key]) => key).filter((key) => {
       const [a, b] = [before[key], termView(state, key)];
-      return a.state !== b.state || a.value !== b.value;
+      return a.state !== b.state || a.value !== b.value || a.contradicted !== b.contradicted;
     });
   }
   return change;

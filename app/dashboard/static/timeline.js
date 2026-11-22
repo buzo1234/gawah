@@ -28,7 +28,7 @@ function entry(e, fresh, before) {
   const text = fit(e.text, TEXT_W, 2, measure, "400 18px");
   const el = h("li", {
     class: ["entry", e.claim && "claim", e.replaced && "replaced", e.follow && "follow", fresh && (before ? "landed" : "enter")].filter(Boolean).join(" "),
-    "data-fact": e.factId, "data-item": e.item, tabindex: 0, title: e.text,
+    "data-fact": e.factId, "data-item": e.item, "data-status": e.status, tabindex: 0, title: e.text,
   },
     h("span", { class: "time" }, e.time),
     h("div", { class: "main" },
@@ -53,23 +53,23 @@ export function renderTimeline(state, fresh = {}) {
   const away = scroller.scrollTop > 4;
   const anchor = away ? [...box.children].find((el) => el.offsetTop + el.offsetHeight > scroller.scrollTop) : null;
   const anchorTop = anchor ? anchor.offsetTop - scroller.scrollTop : 0;
-  const before = box.children.length;
+  const before = box.querySelectorAll(".entry").length;
   if (!items.length) {
     box.replaceChildren(h("li", { class: "empty", "data-key": "empty" }, state.dealId ? "Facts appear here the moment they are said." : "Nothing said yet."));
     return;
   }
   box.querySelector(".empty")?.remove();
-  sync(box, items, (i) => i.key, (i) => (i.group ? `${i.moment}|${i.count}` : JSON.stringify([i.text, i.word, i.tone, i.people, i.time, i.latency, i.replaced, i.claim])),
+  sync(box, items, (i) => i.key, (i) => (i.group ? `${i.moment}|${i.count}` : JSON.stringify([i.text, i.word, i.tone, i.people, i.time, i.latency, i.replaced, i.claim, i.status])),
     (i, prev) => (i.group
       ? h("li", { class: "moment" }, h("span", { class: "label" }, i.moment), h("span", { class: "label count" }, plural(i.count, "fact")))
       : entry(i, fresh.fact === i.factId, prev)));
   if (anchor && anchor.isConnected) {
     scroller.scrollTop = anchor.offsetTop - anchorTop;
-    unseen += Math.max(0, box.children.length - before);
+    unseen += Math.max(0, box.querySelectorAll(".entry").length - before);
   } else unseen = 0;
   const pill = $("newer");
   pill.hidden = !unseen;
-  pill.textContent = unseen ? `↑ ${plural(unseen, "newer entry").replace("entrys", "entries")}` : "";
+  pill.textContent = unseen ? `↑ ${unseen} newer ${unseen === 1 ? "entry" : "entries"}` : "";
 }
 
 export function watchTimeline() {

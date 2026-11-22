@@ -19,16 +19,29 @@ export function person(state, role) {
   return { role, name: name || nameOf(state, role), named: !!name };
 }
 
-// "22,000 rupees" reads as ₹ 22,000; "24,000 rupees (22,000 agreed + 2,000 extra)" as
-// ₹ 24,000 with the rest beside it; anything else stays as said.
-export function valueParts(f) {
-  if (!f) return { main: "", rest: "", money: false };
-  if (f.kind === "payment") return { main: `Paid ${f.value_rupees != null ? rupees(f.value_rupees) : f.value || ""}`.trim(), rest: "", money: true };
-  if (f.kind === "work") return { main: "Work done", rest: f.value || "", money: false };
-  const v = (f.value || "").trim();
+// "22,000 rupees" reads as ₹ 22,000; "500 rupees per day" as ₹ 500 per day (a few words
+// after the figure stay with it, they are part of the term); "24,000 rupees (22,000 agreed
+// + 2,000 extra)" as ₹ 24,000 with the rest beside it; anything else stays as said. `n` is
+// the figure memory read, when there is one: the words must say the same.
+export function splitMoney(value, n = null) {
+  const v = (value || "").trim();
   const m = /^([\d,]+) rupees\b[\s,;:]*(.*)$/i.exec(v);
-  if (m && f.value_rupees != null && Number(m[1].replace(/,/g, "")) === f.value_rupees) return { main: rupees(f.value_rupees), rest: m[2], money: true };
-  return { main: v || f.text || "", rest: "", money: false };
+  const figure = m && Number(m[1].replace(/,/g, ""));
+  if (!m || (n != null && figure !== n)) return { main: v, rest: "", money: false, bare: false };
+  const rest = m[2].trim();
+  const short = rest && rest.split(/\s+/).length <= 3 && !/[()]/.test(rest);
+  return { main: short ? `${rupees(figure)} ${rest}` : rupees(figure), rest: short ? "" : rest, money: true, bare: !rest };
+}
+
+export function valueParts(f) {
+  if (!f) return { main: "", rest: "", money: false, bare: false };
+  if (f.kind === "payment") return { main: `Paid ${f.value_rupees != null ? rupees(f.value_rupees) : f.value || ""}`.trim(), rest: "", money: true, bare: true };
+  if (f.kind === "work") return { main: "Work done", rest: f.value || "", money: false, bare: false };
+  if (f.value_rupees != null) {
+    const parts = splitMoney(f.value, f.value_rupees);
+    if (parts.money) return parts;
+  }
+  return { main: (f.value || "").trim() || f.text || "", rest: "", money: false, bare: false };
 }
 export const valueOf = (f) => { const p = valueParts(f); return p.rest ? `${p.main} ${p.rest}` : p.main; };
 
@@ -89,7 +102,7 @@ export function statusWord(state, f, claimed = claims(state)) {
   if (claimed.has(f.id)) return { word: "Contradicted", tone: "bad" };
   if (f.status === "superseded") return { word: "Replaced", tone: "" };
   if (f.status === "disputed") return { word: "Disputed", tone: "bad" };
-  if (f.kind === "payment") return { word: f.status === "said" ? "Paid, not yet confirmed" : "Paid", tone: f.status === "said" ? "" : "ok" };
+  if (f.kind === "payment") return { word: f.status === "said" ? "Paid, unconfirmed" : "Paid", tone: f.status === "said" ? "" : "ok" };
   if (f.status === "confirmed") {
     const by = [...new Set(f.confirmed_by || [])];
     return { word: by.length === 1 ? `Confirmed by ${person(state, by[0]).name}` : "Confirmed by both", tone: "ok" };

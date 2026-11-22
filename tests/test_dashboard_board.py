@@ -1,10 +1,12 @@
-"""The board's view (app/dashboard/static/board.js, run in Node) on what the real memory
-sends for call_two_amounts, then an advance and a payment on WhatsApp: every fact is in
-the feed once, newest first; while the contradiction is open the fact layer shows the
-amount, with the agreed 13,000 on its card, the 14,000 Ramesh said as the claim, and the
-version before it dashed; the chain row is those versions; each fact knows how long after
-its line it came; long values are cut at a word; and the same state always gives the same
-view. Skipped where Node is not installed."""
+"""The board's view (lanes.js, moments.js and board.js in app/dashboard/static, run in Node)
+on what the real memory sends for call_two_amounts, then an advance and a payment on
+WhatsApp: every fact is in the timeline, newest first, a payment under the term it counts
+towards; the open contradiction is the amount, with the agreed 13,000 and the 14,000 Ramesh
+said as the claim; in the amount's lane the claim is its own chip with a red edge back to
+the version the term stands on, and what both said with one value is one chip carrying
+both; each fact knows how long after its line it came; long text is cut at a word in at
+most two lines; and the same state always gives the same view. Skipped where Node is not
+installed."""
 
 import json
 import shutil
@@ -25,34 +27,27 @@ from fakes.replayer import replay
 STATIC = Path(__file__).parent.parent / "app" / "dashboard" / "static"
 VIEW = """
 import { readFileSync } from "node:fs";
-import { apply, emptyState, ITEMS } from "%s";
+import { apply, emptyState } from "%s";
 import { standing } from "%s";
-import { cut, factLayer, feed, focusItem, openConflict, tracks } from "%s";
+import { cut, fit, openConflict } from "%s";
+import { graph } from "%s";
+import { moments } from "%s";
 const events = JSON.parse(readFileSync(process.argv[2], "utf8"));
-const fold = (upTo) => {
-  const state = emptyState(process.argv[3]);
-  for (const e of events.slice(0, upTo)) apply(state, e);
-  return state;
-};
-const at = (state) => {
-  const focus = focusItem(state);
-  return { focus, layer: factLayer(state, focus), open: openConflict(state), feed: feed(state), tracks: tracks(state) };
-};
-const state = fold(events.length);
+const state = emptyState(process.argv[3]);
+for (const e of events) apply(state, e);
+const at = (state) => ({ graph: graph(state), moments: moments(state), open: openConflict(state) });
 const view = at(state);
-const short = (f) => f && { id: f.id, value: f.value, status: f.status, said_by: f.said_by, line_no: f.line_no };
+const amount = view.graph.find((r) => r.key === "amount");
 console.log(JSON.stringify({
-  focus: view.focus, again: JSON.stringify(at(state)) === JSON.stringify(view),
-  current: short(view.layer.current), version: view.layer.version, pill: view.layer.pill,
-  previous: view.layer.previous && { ...short(view.layer.previous.fact), version: view.layer.previous.version },
-  claim: view.layer.claim && { fact: short(view.layer.claim.fact), who: view.layer.claim.who },
-  chain: view.layer.chain.map((l) => [l.label, l.fact.id]), latency: view.layer.latency,
-  open: view.open && { item: view.open.item, agreed: view.open.agreed.id, claim: view.open.claim?.id },
-  feed: view.feed.map((r) => ({ id: r.fact.id, latency: r.latency, item: r.item })),
-  tracks: { lines: view.tracks.lines.length, end: view.tracks.end, callNo: view.tracks.callNo },
+  again: JSON.stringify(at(state)) === JSON.stringify(view),
+  open: view.open && { item: view.open.item, agreed: view.open.agreed.id, claim: view.open.claim && { id: view.open.claim.id, line_no: view.open.claim.line_no, said_by: view.open.claim.said_by, value: view.open.claim.value } },
+  lane: amount.chips.map((c) => ({ key: c.key, ids: c.ids, status: c.status, people: c.people, stands: c.stands, value: c.value })),
+  edges: amount.edges,
+  moments: view.moments.map((m) => ({ fact: m.factId, item: m.item, latency: m.latency, moment: m.moment, people: m.people.map((p) => p.role) })),
   facts: state.factOrder, standing: standing(state, "amount")?.id,
   towards: Object.fromEntries(state.factOrder.map((id) => [id, state.facts[state.facts[id].counts_towards]?.item ?? null])),
   cuts: ["paint the flat; Sunita says the job also includes the doors and the balcony railing", "a", "supercalifragilistic"].map((t) => cut(t, 130)),
+  fits: [fit("paint the flat; Sunita says the job also includes the doors and the balcony railing", 130, 2), fit("Ramesh says ₹\\u202f22,000 is final", 160, 2), fit("Ramesh says ₹\\u202f22,000 is final, no more", 100, 2)],
 }));
 """
 
@@ -61,14 +56,14 @@ def run_view(events, deal: str, tmp_path: Path) -> dict:
     data = tmp_path / "events.json"
     data.write_text(json.dumps([e.model_dump(mode="json") for e in events]))
     script = tmp_path / "view.mjs"
-    script.write_text(VIEW % tuple((STATIC / name).as_uri() for name in ("state.js", "crew-state.js", "board.js")))
+    script.write_text(VIEW % tuple((STATIC / name).as_uri() for name in ("state.js", "crew-state.js", "board.js", "lanes.js", "moments.js")))
     run = subprocess.run(["node", script, data, deal], capture_output=True, text=True, timeout=30)
     assert run.returncode == 0, run.stderr
     return json.loads(run.stdout)
 
 
 @pytest.mark.skipif(not shutil.which("node"), reason="needs Node to run the page's own view")
-async def test_the_fact_layer_holds_the_contradiction_and_the_feed_holds_every_fact(bus, tmp_path):
+async def test_the_graph_holds_the_contradiction_and_the_timeline_holds_every_fact(bus, tmp_path):
     memory = Memory(bus, Routed(None, RecordedExtractor()), WordHashEmbedder(), root=tmp_path, embed_model="hash")
     memory.attach(bus)
     seen = []
@@ -90,31 +85,39 @@ async def test_the_fact_layer_holds_the_contradiction_and_the_feed_holds_every_f
     got = run_view(seen, deal, tmp_path)
     assert got["again"]  # the same state, the same view: nothing jitters on a redraw
 
-    # Every fact once in the feed, newest first; a payment listed under the term it counts towards.
-    ids = [r["id"] for r in got["feed"]]
-    assert sorted(ids) == sorted(got["facts"]) and ids == list(reversed(got["facts"]))
-    for r in got["feed"]:
-        if got["towards"][r["id"]]:
-            assert r["item"] == got["towards"][r["id"]]
+    # Every fact memory wrote is in the timeline, newest first; a payment under the term it counts towards.
+    shown = [m["fact"] for m in got["moments"]]
+    assert set(shown) == set(got["facts"])
+    first_seen = list(dict.fromkeys(reversed(shown)))
+    assert first_seen == got["facts"]
+    for m in got["moments"]:
+        if got["towards"][m["fact"]]:
+            assert m["item"] == got["towards"][m["fact"]]
+    assert {m["moment"] for m in got["moments"]} <= {"Call 1", "WhatsApp · day 1"}
     # Each fact from a line knows how long after the line it came, by the events' own times.
-    timed = [r["latency"] for r in got["feed"] if r["latency"] is not None]
+    timed = [m["latency"] for m in got["moments"] if m["latency"] is not None]
     assert timed and all(0 <= t < 60 for t in timed)
 
-    # The contradiction on line 19 is still open after the call, and the fact layer stays on
-    # it: the agreed 13,000 on the card, Ramesh's 14,000 as the claim, the offer before dashed.
-    assert got["focus"] == "amount"
-    assert got["current"]["id"] == got["standing"] and got["current"]["value"] == "13,000 rupees" and got["pill"] == "Agreed"
-    assert got["claim"]["fact"]["line_no"] == 19 and got["claim"]["fact"]["said_by"] == "worker" and got["claim"]["who"] == "Ramesh"
-    assert got["open"] == {"item": "amount", "agreed": got["standing"], "claim": got["claim"]["fact"]["id"]}
-    assert got["previous"] and got["previous"]["version"] < got["version"]
-    assert got["chain"] == [[f"v{got['previous']['version']}", got["previous"]["id"]], [f"v{got['version']}", got["current"]["id"]], ["Claim", got["claim"]["fact"]["id"]]]
+    # The contradiction on line 19 is still open after the call: the agreed 13,000, and Ramesh's 14,000 as the claim.
+    assert got["open"]["item"] == "amount" and got["open"]["agreed"] == got["standing"]
+    claim = got["open"]["claim"]
+    assert claim["line_no"] == 19 and claim["said_by"] == "worker" and claim["value"] == "14,000 rupees"
 
-    # The tracks: every line of the call, on a scale that reaches the last one.
-    lines = json.loads(Path("fixtures/call_two_amounts.json").read_text())["lines"]
-    assert got["tracks"]["callNo"] == 1 and got["tracks"]["lines"] == len(lines) and got["tracks"]["end"] >= lines[-1]["end"]
+    # The amount's lane: the claim its own red chip, with the edge back to the chip the term stands on,
+    # which both people's agreement made one chip carrying both.
+    lane = {c["key"]: c for c in got["lane"]}
+    stands = next(c for c in got["lane"] if got["standing"] in c["ids"])
+    assert stands["stands"] and stands["status"] == "agreed" and set(stands["people"]) == {"hirer", "worker"}
+    claimed = next(c for c in got["lane"] if claim["id"] in c["ids"])
+    assert claimed["status"] == "claim" and claimed["ids"] == [claim["id"]]
+    assert got["edges"] == [{"id": got["edges"][0]["id"], "from": claimed["key"], "to": stands["key"]}]
+    assert all(lane[k]["value"] for k in lane) and len({c["value"] for c in got["lane"] if c["status"] != "claim"}) == len([c for c in got["lane"] if c["status"] != "claim"])
 
-    # Long values are cut at a word, never inside one; a first word too long is cut where it must be.
+    # Long text is cut at a word, never inside one; a first word too long is cut where it must be;
+    # in two lines a figure with its rupee sign stays whole.
     assert got["cuts"][0] == "paint the flat…" and got["cuts"][1] == "a" and got["cuts"][2].endswith("…")
+    assert got["fits"][0].endswith("…") and got["fits"][0].removesuffix("…") in "paint the flat; Sunita says the job also"
+    assert got["fits"][1] == "Ramesh says ₹\u202f22,000 is final" and "₹\u202f22,000" in got["fits"][2]
 
 
 CARD = """

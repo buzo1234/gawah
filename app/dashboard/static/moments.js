@@ -55,7 +55,7 @@ export function moments(state) {
       people: roles.filter((r) => r === "hirer" || r === "worker").map((r) => person(state, r)).concat(roles.some((r) => r === "hirer" || r === "worker") ? [] : [person(state, null)]),
       time: onCall ? clock(f.start) : hhmm(e.ts),
       latency: follow ? null : factLatency(state, f),
-      clip: hasClip(f), voice: f.source === "voice_note", replaced: f.status === "superseded", claim: claimed.has(f.id),
+      status: f.status, clip: hasClip(f), voice: f.source === "voice_note", replaced: f.status === "superseded", claim: claimed.has(f.id),
     };
   });
 }

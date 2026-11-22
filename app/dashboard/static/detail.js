@@ -40,7 +40,8 @@ function factCard(state, f) {
   const { word, tone } = stands && view?.state === "changed" ? { word: "Changed", tone: "ok" } : statusWord(state, f);
   const latency = factLatency(state, f);
   const agreed = [...new Set([...(f.agreed_by || []), ...(f.confirmed_by || [])])].filter((r) => r !== f.said_by && (r === "hirer" || r === "worker"));
-  const sub = [parts.rest, f.quote && f.quote.trim() !== parts.rest.trim() && `“${f.quote}”`].filter(Boolean).join(" · ");
+  const quoted = f.quote && `“${f.quote}”`;
+  const sub = parts.rest && !(f.quote || "").includes(parts.rest) ? [parts.rest, quoted].filter(Boolean).join(" · ") : quoted || "";
   const voice = f.source === "voice_note";
   return h("div", { class: "fact-card", "data-fact": f.id },
     h("div", { class: "head" },
@@ -49,8 +50,8 @@ function factCard(state, f) {
       h("span", { class: "label took" }, latency != null ? `Written ${took(latency)} after it was said` : voice ? "From a WhatsApp voice note" : f.source === "call" || f.source === "callback" ? "" : "From WhatsApp")),
     h("div", { class: "body" },
       h("div", { class: "what" },
-        h("div", { class: `hero${parts.money ? " money" : ""}`, title: parts.main }, parts.money ? parts.main : fit(parts.main, 420, 2, measure, "600 24px")),
-        sub && h("p", { class: "quote", title: sub }, fit(sub, 420, parts.money ? 2 : 1, measure, "400 16px"))),
+        h("div", { class: `hero${parts.bare ? " money" : ""}`, title: parts.main }, parts.bare ? parts.main : fit(parts.main, 400, 2, measure, "600 24px")),
+        sub && h("p", { class: "quote", title: sub }, fit(sub, 400, parts.bare ? 2 : 1, measure, "400 16px"))),
       h("dl", {},
         h("dt", {}, "Said by"), h("dd", {}, f.said_by ? tag(person(state, f.said_by)) : tag(person(state, null)),
           agreed.length ? [h("span", { class: "and" }, "agreed by"), ...agreed.map((r) => tag(person(state, r)))] : null),
@@ -78,7 +79,7 @@ function conflictCard(state, open) {
       h("div", { class: "now" }, h("span", { class: "who" }, tag(who), "now"), h("s", { class: "value" }, claimed)),
       h("div", { class: "then" }, h("span", { class: "who" }, `${both} · ${whereOf(agreed)}`), h("span", { class: "value" }, valueParts(agreed).main)),
       h("div", { class: "proof" },
-        h("p", { class: "said", title: said }, fit(said, 268, 2, measure, "400 16px")),
+        h("p", { class: "said", title: said }, fit(said, 248, 2, measure, "400 16px")),
         h("div", { class: "moment" },
           hasClip(agreed) ? clipButton(agreed.id) : h("span", { class: "mark-off" }),
           wave(agreed.id, 120, 24, "wave ok"),

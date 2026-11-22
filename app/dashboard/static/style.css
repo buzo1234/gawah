@@ -85,8 +85,8 @@ svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overf
 .chip.superseded .v { text-decoration: line-through; text-decoration-color: var(--rule-strong); }
 .chip.disputed, .chip.claim, .chip.broken { --chip-bg: var(--bad-wash); border-color: var(--bad); color: var(--bad); font-weight: 600; }
 .chip.stub { --chip-bg: var(--surface); min-height: 34px; padding: 0 var(--s3); color: var(--ink-3); font: 400 var(--t-label) / var(--lh-label) var(--mono); letter-spacing: var(--track); }
-.chip.lit, .node-slot.lit { outline-color: var(--ink); }
-.node-slot.lit { outline: 2px solid var(--ink); outline-offset: -2px; }
+.chip.lit { outline-color: var(--ink); }
+.node-slot.lit, .node-slot:hover { background: var(--sunk); }
 
 /* who said or agreed it: one dot per person, in their colour, ringed in the chip's own colour */
 .chip .who { display: inline-flex; flex: none; }
@@ -146,7 +146,7 @@ svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overf
 .conflict-card .now .value { color: var(--bad); text-decoration-thickness: 3px; }
 .conflict-card .then .value { color: var(--ok); }
 .conflict-card .proof { display: flex; flex-direction: column; gap: var(--s3); min-width: 0; }
-.conflict-card .said { margin: 0; height: 44px; color: var(--ink-2); }
+.conflict-card .said { margin: 0; height: 44px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--ink-2); }
 .conflict-card .moment { display: flex; align-items: center; gap: var(--s3); height: 48px; padding: 0 var(--s3); border-radius: var(--r-card); background: var(--sunk); border: var(--hair); }
 .conflict-card .moment-label { margin-left: auto; color: var(--ink-2); white-space: nowrap; }
 .conflict-card .mark-off { width: 32px; }
@@ -171,7 +171,7 @@ svg.arcs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overf
 .entry .time { display: flex; align-items: center; height: 24px; font: 400 var(--t-meta) / var(--lh-meta) var(--mono); color: var(--ink-3); }
 .entry .main { min-width: 0; }
 .entry .people { display: flex; align-items: center; gap: var(--s2); height: 24px; }
-.entry .text { margin: var(--s1) 0 0; font: 400 var(--t-body) / var(--lh-body) var(--font); }
+.entry .text { margin: var(--s1) 0 0; font: 400 var(--t-body) / var(--lh-body) var(--font); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .entry .meta { margin-top: var(--s1); }
 .entry .meta .took { margin: 0; }
 .entry .play { align-self: center; }

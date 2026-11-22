@@ -6,7 +6,7 @@
 // it came, and its connector draws in; the node updates last.
 
 import { graph, visible } from "./lanes.js";
-import { TERM_TONE, TERM_WORD, factLatency, rupees, took } from "./board.js";
+import { TERM_TONE, TERM_WORD, factLatency, rupees, splitMoney, took } from "./board.js";
 import { h, measure, pointable, sync } from "./dom.js";
 
 const $ = (id) => document.getElementById(id);
@@ -16,7 +16,7 @@ const NODE_TEXT = 248;
 const NODE_AFTER = 780; // ms: after the timeline entry (240), the chip (240) and its connector (300)
 const WORD = { said: "Said", agreed: "Agreed", confirmed: "Confirmed by both", superseded: "Replaced", disputed: "Disputed", claim: "Contradicted", paid: "Paid" };
 
-const chipFont = (c) => (c.status === "claim" || /^₹|^Paid/.test(c.value) ? "600 16px" : "500 16px");
+const chipFont = (c) => (["claim", "confirmed", "paid", "disputed"].includes(c.status) ? "600 16px" : "500 16px");
 const chipText = (c) => fitLines(c.value, CHIP_TEXT, chipFont(c));
 
 // Words laid in two lines as the browser will, cut at a word; "\n" only marks the measure.
@@ -59,9 +59,11 @@ function owedLine(r) {
 
 function node(row) {
   const v = row.view;
-  const money = v.value && /^[\d,]+ rupees$/i.test(v.value.trim());
-  const shown = !v.value ? (row.chips.length ? "Not agreed yet" : "Not said yet") : money ? rupees(Number(v.value.replace(/[^\d]/g, ""))) : oneLine(v.value, NODE_TEXT, "500 18px");
-  return h("div", { class: "node", title: [v.value, v.note, v.when && `Agreed ${v.when}`].filter(Boolean).join("\n") },
+  const parts = splitMoney(v.value);
+  const money = parts.bare;
+  const shown = !v.value ? (row.chips.length ? "Not agreed yet" : "Not said yet") : money ? parts.main : oneLine(parts.main, NODE_TEXT, "500 18px");
+  const changed = v.state === "changed" && (row.chips.find((c) => c.stands)?.voice ? "Changed by voice note, both said yes" : "Changed by voice, both said yes");
+  return h("div", { class: "node", title: [v.value, changed, v.note, v.when && `Settled: ${v.when}`].filter(Boolean).join("\n") },
     h("div", { class: "l1" }, h("span", { class: "name label" }, row.label), owedLine(row.owed)),
     h("div", { class: `value${money ? " money" : ""}${v.value ? "" : " none"}` }, shown),
     h("div", { class: "l3" },
