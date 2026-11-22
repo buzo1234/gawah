@@ -133,10 +133,11 @@ class Memory:
         item = current.item.value.replace("_", " ") if current.item else "term"
         claimed = format_rupees(rupees) if rupees is not None else day.strftime("%d %B") if day else value or "something else"
         stands = format_rupees(current.value_rupees) if current.value_rupees is not None else current.value or current.text
-        both = " by both" if current.said_by and (current.agreed_by or current.confirmed_by) else ""
+        yes = [r for r in [*current.agreed_by, *current.confirmed_by] if r != current.said_by]
+        who = f", said by {deal.name(current.said_by)}" + (f" and agreed by {deal.name(yes[0])}" if yes else "") if current.said_by else ""
         when = f" on {(current.valid_from + IST).strftime('%-d %B')}" if current.valid_from else ""
         where = f" (call {current.call_no}, line {current.line_no})" if current.line_no else ""
-        text = f"Says {claimed}; the {item} was {current.status.value} at {stands}{both}{when}{where}."
+        text = f"Says {claimed}; the {item} was {current.status.value} at {stands}{who}{when}{where}."
         offer = next((
             f for f in deal.standing()
             if f.item == current.item and f.status == FactStatus.SAID and rupees is not None and f.call_no is not None

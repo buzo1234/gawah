@@ -11,6 +11,12 @@ IST = timedelta(hours=5, minutes=30)
 # A term's value is held by these kinds; payments and work count towards a term.
 TERM_KINDS = {FactKind.TERM}
 LIVE = {FactStatus.SAID, FactStatus.AGREED, FactStatus.CONFIRMED}
+OPEN = {FactStatus.SAID, FactStatus.AGREED}  # a change said, or agreed on the call, and not yet confirmed through Gawah
+
+
+def valued(fact: Fact) -> bool:
+    """The fact holds a value for its term: a figure, a day, or words for one."""
+    return fact.value_rupees is not None or fact.value_date is not None or bool((fact.value or "").strip())
 
 
 @dataclass
@@ -64,15 +70,33 @@ class DealBook:
         return [f for f in self.versions if f.item == item and f.kind not in (FactKind.PAYMENT, FactKind.WORK)]
 
     def current(self, item: ItemKey | None) -> Fact | None:
-        """The confirmed value of the term if any, else the agreed one."""
+        """The confirmed value of the term if any, else the agreed one. A fact with no value ("he
+        agrees with the advance terms") never stands in for one that has a value."""
         if item is None:
             return None
         standing = [f for f in self.standing() if f.item == item and f.kind in TERM_KINDS]
+        standing = [f for f in standing if valued(f)] or standing
         for status in (FactStatus.CONFIRMED, FactStatus.AGREED):
             matches = [f for f in standing if f.status == status]
             if matches:
                 return max(matches, key=lambda f: self._last_index(f.id))
         return None
+
+    def record(self, item: ItemKey | None) -> Fact | None:
+        """The value on record for the term: the current one, or failing that the last one in
+        dispute. A disputed term still has a value on record; a new one is not agreed over it."""
+        current = self.current(item)
+        if current is not None or item is None:
+            return current
+        disputed = [
+            f for f in self.standing() if f.item == item and f.kind in TERM_KINDS and f.status == FactStatus.DISPUTED and valued(f)
+        ]
+        return max(disputed, key=lambda f: self._last_index(f.id)) if disputed else None
+
+    def open_changes(self, item: ItemKey | None) -> list[Fact]:
+        """Changes to the term said on a call, or agreed there, that have not been confirmed
+        through Gawah or closed: oldest first."""
+        return [f for f in self.standing() if f.item == item and f.kind == FactKind.CHANGE and f.status in OPEN]
 
     def latest_term(self, item: ItemKey) -> Fact | None:
         """The term as it stands, or failing that the last thing said about it."""

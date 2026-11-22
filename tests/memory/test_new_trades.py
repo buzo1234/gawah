@@ -69,11 +69,15 @@ async def test_terrace_a_rate_a_schedule_and_an_extra_bargained_into_the_last_pa
     assert conflicts == []
     assert not [f for f in facts if f.item == ItemKey.AMOUNT and f.value_rupees == 28]
     amount, balance = terms[ItemKey.AMOUNT], terms[ItemKey.BALANCE]
-    assert (amount.value_rupees, amount.status) == (29500, FactStatus.AGREED), "26,000 agreed + 3,500 extra"
-    assert amount.replaces is not None
+    # The extra is agreed on the call and waits for both to confirm it through Gawah: the terms stand till then.
+    assert (amount.value_rupees, amount.status) == (26000, FactStatus.AGREED)
     assert figure(terms[ItemKey.ADVANCE]) == 10000
-    assert (balance.value_rupees, balance.status) == (19500, FactStatus.AGREED)
-    assert "9,500" in balance.value and "10,000" in balance.value
+    assert (balance.value_rupees, balance.status) == (16000, FactStatus.AGREED)
+    latest = {f.id: f for f in facts}
+    open_changes = {f.item: f for f in latest.values() if f.kind == FactKind.CHANGE and f.status == FactStatus.AGREED}
+    assert open_changes[ItemKey.AMOUNT].value_rupees == 29500, "26,000 agreed + 3,500 extra"
+    carried = open_changes[ItemKey.BALANCE]
+    assert carried.value_rupees == 19500 and "9,500" in carried.value and "10,000" in carried.value
 
 
 async def test_gate_a_hedge_before_a_counter_is_not_acceptance():

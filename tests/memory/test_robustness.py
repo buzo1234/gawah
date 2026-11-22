@@ -10,7 +10,7 @@ line as the model might, mistakes included, so what is tested is the code behind
 from datetime import timedelta
 
 from app.contracts import FactKind, FactStatus, ItemKey, Role
-from tests.memory.world import DAY1, DEAL, World, claim
+from tests.memory.world import AGREED_CHANGE, DAY1, DEAL, World, claim
 
 H, W = Role.HIRER, Role.WORKER
 
@@ -142,9 +142,18 @@ async def test_an_extra_bargained_and_agreed_is_added_to_the_total(bus, tmp_path
     first = await amount(world)
     await world.call(later, call_no=2, at=DAY1 + timedelta(days=2))
     assert world.conflicts == []
+    # Both said it, and it is still only an agreed change: the term holds until both confirm it through Gawah.
+    assert (await amount(world)).id == first.id
+    [raised] = world.open_changes(ItemKey.AMOUNT)
+    assert ((raised.kind, raised.status), raised.value_rupees, raised.agreed_by) == (AGREED_CHANGE, 45000, [H])
+    [carried] = world.open_changes(ItemKey.BALANCE)
+    assert (carried.kind, carried.status) == AGREED_CHANGE and carried.value_rupees == 30000 and "10,000 at the end" in carried.value
+    await world.confirm_through_gawah(raised, W)
+    await world.confirm_through_gawah(carried, W)
     total = await amount(world)
-    assert (total.value_rupees, total.status, total.replaces, total.agreed_by) == (45000, FactStatus.AGREED, first.id, [H])
+    assert (total.value_rupees, total.status, total.replaces) == (45000, FactStatus.CONFIRMED, first.id)
     assert world.memory.book.fact(first.id).status == FactStatus.SUPERSEDED
+    assert world.open_changes(ItemKey.AMOUNT) == [] and world.open_changes(ItemKey.BALANCE) == []
     balance = (await world.memory.get_term(DEAL, ItemKey.BALANCE)).current
     assert balance.value_rupees == 30000 and "10,000 at the end" in balance.value
     owed = {r.item: r.agreed_rupees for r in await world.memory.owed(DEAL)}
@@ -223,7 +232,9 @@ async def test_an_extra_asked_for_and_given_as_a_plain_figure_is_still_an_extra(
         lines[7][1]: [claim("amount", "accept", 7500, "saadhe saat pakka", kind="change", accepts_line=7)],
     })
     await world.call(lines)
-    assert (await amount(world)).value_rupees == 67500
+    assert (await amount(world)).value_rupees == 60000, "agreed on the call, it waits for both to confirm it through Gawah"
+    [extra] = world.open_changes(ItemKey.AMOUNT)
+    assert (extra.kind, extra.status, extra.value_rupees) == (*AGREED_CHANGE, 67500)
     assert world.conflicts == []
 
 
