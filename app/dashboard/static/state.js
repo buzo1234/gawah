@@ -32,7 +32,6 @@ export function emptyState(dealId) {
     dealId,
     people: {}, // role -> { name, phone }
     lines: {}, // "call:line" -> the deal-call line, for "when was it said"
-    voice: [], // what Gawah said on a deal call: { callNo, start, end, text }, for its track
     calls: [], // the deal calls seen, by call_no
     live: null, // the call going on now, if any: { kind, callNo }, for where a chain link was sealed
     currentCall: 1,
@@ -89,21 +88,12 @@ function applyDeal(state, e, change) {
 
     case "call.ended":
       state.live = null;
+      change.panels = ["header"];
       break;
 
     case "transcript.line":
       if (e.kind !== "callback" && e.line_no != null) {
         state.lines[`${e.call_no ?? 1}:${e.line_no}`] = e;
-        change.panels = ["tracks"];
-        change.line = `${e.call_no ?? 1}:${e.line_no}`;
-      }
-      break;
-
-    case "judge.spoke":
-      if (state.live?.kind === "deal" && e.start != null) {
-        state.voice.push({ callNo: state.live.callNo, start: e.start, end: e.end ?? e.start + 3, text: e.text });
-        change.panels = ["tracks"];
-        change.spoke = state.voice.length - 1;
       }
       break;
 

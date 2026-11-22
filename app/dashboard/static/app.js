@@ -5,6 +5,7 @@
 import { NO_DEAL, apply, emptyState } from "./state.js";
 import { h, renderAll, renderChange, renderChecked } from "./render.js";
 import { checkChain } from "./chain.js";
+import { watchTimeline } from "./timeline.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -27,9 +28,13 @@ async function fetchState() {
 // still shows the deal it was asked for.
 const chainChecked = (checked) => checked === state && renderChecked(state);
 
+// Long text is cut where the page's own font says it no longer fits, so the fonts come first.
+const fonts = Promise.all(["400 18px", "500 16px", "600 16px", "600 24px", "400 14px"].map((f) =>
+  document.fonts.load(`${f} "Public Sans"`))).then(() => document.fonts.load('400 14px "IBM Plex Mono"')).catch(() => {});
+
 async function load() {
   ready = false;
-  const data = await fetchState();
+  const [data] = await Promise.all([fetchState(), fonts]);
   deals = data.deals;
   seen = new Set();
   state = emptyState(data.deal_id);
@@ -133,13 +138,16 @@ function connect() {
   };
 }
 
-// The board is laid out for 1920 by 1080 and scaled to whatever window shows it.
+// The board is laid out for 1920 by 1080 and scaled to whatever window shows it, centred,
+// so a 1440 by 900 laptop or a 1280 by 720 projector shows the same board.
 function fit() {
   const scale = Math.min(innerWidth / 1920, innerHeight / 1080);
-  $("stage").style.transform = `scale(${scale})`;
+  const x = (innerWidth - 1920 * scale) / 2, y = (innerHeight - 1080 * scale) / 2;
+  $("stage").style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
 }
 addEventListener("resize", fit);
 fit();
 
+watchTimeline();
 renderAll(state);
 connect();

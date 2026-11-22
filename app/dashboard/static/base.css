@@ -1,10 +1,16 @@
 /* Shared by the board and the second phone, in the look of the pitch deck: a warm
-   off-white ground, near-black ink, white cards with a hairline border and no shadow.
-   Colour carries meaning only: --ok (deep green) agreed or confirmed, --bad (red) a
-   contradiction or a dispute; grey for anything neutral. Public Sans for words and big
-   numbers, IBM Plex Mono for small uppercase labels. The fonts are served from fonts/
-   (SIL Open Font License, the licences beside them); nothing loads from outside.
-   Nothing is set under 16px. */
+   off-white ground, near-black ink, white cards with one hairline border and no shadow.
+   Every size, space, radius and colour on either page comes from the tokens below; the
+   page sheets use nothing else.
+
+   Colour carries meaning only: green agreed or confirmed, red a contradiction or a
+   dispute, slate blue the hirer, ochre the worker, grey Gawah or a record. Every text
+   colour on its tint passes WCAG AA (checked: 4.7:1 and up). The tertiary ink is darker
+   than a 40% grey on purpose: a 40% grey fails AA for the 14px labels.
+
+   Public Sans for words and numbers, IBM Plex Mono for labels and times, Noto Sans
+   Devanagari for Hindi, scaled to sit at the Latin text's size. The fonts are served from
+   fonts/ (SIL Open Font License, the licences beside them); nothing loads from outside. */
 
 @font-face { font-family: "Public Sans"; font-weight: 400; font-display: swap; src: url(fonts/public-sans-latin-400-normal.woff2) format("woff2"); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
 @font-face { font-family: "Public Sans"; font-weight: 400; font-display: swap; src: url(fonts/public-sans-latin-ext-400-normal.woff2) format("woff2"); unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
@@ -16,11 +22,26 @@
 @font-face { font-family: "Public Sans"; font-weight: 700; font-display: swap; src: url(fonts/public-sans-latin-ext-700-normal.woff2) format("woff2"); unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
 @font-face { font-family: "IBM Plex Mono"; font-weight: 400; font-display: swap; src: url(fonts/ibm-plex-mono-latin-400-normal.woff2) format("woff2"); }
 @font-face { font-family: "IBM Plex Mono"; font-weight: 500; font-display: swap; src: url(fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2"); }
-@font-face { font-family: "Noto Sans Devanagari"; font-weight: 400 700; font-display: swap; src: url(fonts/noto-sans-devanagari-devanagari-500-normal.woff2) format("woff2"); unicode-range: U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+25CC,U+A830-A839,U+A8E0-A8FF; }
+@font-face { font-family: "Noto Sans Devanagari"; font-weight: 400 700; font-display: swap; size-adjust: 92%; src: url(fonts/noto-sans-devanagari-devanagari-500-normal.woff2) format("woff2"); unicode-range: U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+25CC,U+A830-A839,U+A8E0-A8FF; }
 
 :root {
+  /* space: a 4px base */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+  /* radius: cards, small inline chips, pills and buttons; the phone's device frame once */
+  --r-card: 10px; --r-chip: 6px; --r-pill: 999px; --r-device: 44px;
+  --hair: 1px solid var(--rule);
+
+  /* type: five sizes, one line height each */
+  --t-label: 14px; --lh-label: 20px;
+  --t-meta: 16px; --lh-meta: 22px;
+  --t-body: 18px; --lh-body: 24px;
+  --t-value: 24px; --lh-value: 30px;
+  --t-hero: 48px; --lh-hero: 52px;
+  --track: 0.08em;
+
   --bg: #f4f4ef;
   --surface: #ffffff;
+  --sunk: #f8f8f4;
   --ink: #111111;
   --ink-2: #4f5156;
   --ink-3: #6b6d72;
@@ -29,11 +50,19 @@
   --wash: #ebebe5;
   --ok: #1e5b3e;
   --ok-wash: #e2ede5;
+  --ok-line: #a9c9b5;
   --bad: #b3261e;
   --bad-wash: #f7e2df;
-  --mint: #9fd9b9;
+  --bad-faint: #fcf3f1;
+  --hirer: #3b5b85;
+  --hirer-wash: #e6ecf3;
+  --worker: #8a5a1c;
+  --worker-wash: #f4ecdf;
+  --none: #5e6066;
+  --none-wash: #ebebe5;
+
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --font: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Devanagari", sans-serif;
+  --font: "Public Sans", "Noto Sans Devanagari", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
   color-scheme: light;
 }
@@ -46,7 +75,8 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 400 16px/1.4 var(--font);
+  font: 400 var(--t-meta) / var(--lh-meta) var(--font);
+  font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -56,7 +86,8 @@ button, input { font: inherit; color: inherit; }
 
 a { color: inherit; text-decoration: underline; text-decoration-color: var(--rule-strong); text-underline-offset: 0.2em; overflow-wrap: anywhere; }
 
-.meta { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
 .sep { color: var(--rule-strong); }
 
 button.quiet {
@@ -64,72 +95,93 @@ button.quiet {
   border: 0;
   background: none;
   color: var(--ink-2);
-  font-size: 16px;
   cursor: pointer;
   text-decoration: underline;
   text-decoration-color: var(--rule-strong);
   text-underline-offset: 0.2em;
 }
 
-/* A small uppercase label with numbers, as the deck's "07 · RECEIPTS MID-ARGUMENT". */
+/* A small uppercase label, as the deck's "07 · RECEIPTS MID-ARGUMENT". */
 .label {
-  font: 400 16px/1.2 var(--mono);
-  letter-spacing: 0.12em;
+  margin: 0;
+  font: 400 var(--t-label) / var(--lh-label) var(--mono);
+  letter-spacing: var(--track);
   text-transform: uppercase;
   color: var(--ink-3);
 }
 
-/* A tinted pill: green for agreed or confirmed, red for a contradiction or a dispute,
-   grey for anything neutral. */
+/* A tinted pill: green agreed or confirmed, red a contradiction or a dispute, grey
+   anything neutral. */
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--s2);
   flex: none;
-  padding: 2px 8px;
-  border-radius: 4px;
+  height: 24px;
+  padding: 0 var(--s3);
+  border-radius: var(--r-pill);
   background: var(--wash);
-  color: var(--ink-2);
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.35;
+  color: var(--none);
+  font: 600 var(--t-label) / var(--lh-label) var(--font);
   white-space: nowrap;
 }
 .pill.ok { background: var(--ok-wash); color: var(--ok); }
 .pill.bad { background: var(--bad-wash); color: var(--bad); }
-.pill .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill .dot { width: 8px; height: 8px; border-radius: var(--r-pill); background: currentColor; }
 
-/* A clip: a round black button with a white triangle, a square while it plays. */
+/* Who is responsible for something: their name on their colour. */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  flex: none;
+  height: 24px;
+  padding: 0 var(--s2);
+  border-radius: var(--r-chip);
+  background: var(--none-wash);
+  color: var(--none);
+  font: 600 var(--t-label) / var(--lh-label) var(--font);
+  white-space: nowrap;
+}
+.tag::before { content: ""; width: 8px; height: 8px; border-radius: var(--r-pill); background: currentColor; }
+.tag.hirer { background: var(--hirer-wash); color: var(--hirer); }
+.tag.worker { background: var(--worker-wash); color: var(--worker); }
+
+/* A clip: one round black button everywhere, a triangle, a square while it plays. */
 button.play {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--s3);
   flex: none;
   padding: 0;
   border: 0;
+  border-radius: var(--r-pill);
   background: none;
   color: var(--ink-2);
-  font-size: 16px;
   cursor: pointer;
 }
 button.play .mark {
   position: relative;
   flex: none;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-pill);
   background: var(--ink);
   transition: transform 160ms var(--ease);
 }
 button.play .mark::after {
   content: "";
   position: absolute;
-  left: 11px;
-  top: 8.5px;
+  left: 13px;
+  top: 10px;
   border-style: solid;
-  border-width: 5.5px 0 5.5px 9px;
+  border-width: 6px 0 6px 10px;
   border-color: transparent transparent transparent #fff;
 }
-button.play:hover .mark { transform: scale(1.08); }
-button.play.playing .mark::after { left: 10px; top: 10px; width: 8px; height: 8px; border: 0; background: #fff; }
+button.play:hover .mark { transform: scale(1.06); }
+button.play.playing .mark { background: var(--ok); }
+button.play.playing .mark::after { left: 11px; top: 11px; width: 10px; height: 10px; border: 0; background: #fff; }
 button.play.missing { opacity: 0.4; }
+
+.wave rect { fill: var(--rule-strong); }
+.wave.ok rect { fill: var(--ok); }

@@ -1,4 +1,6 @@
-/* The second phone: a narrow column on its own page, the whole frame on the board. */
+/* The second phone: a narrow column on its own page, the whole frame on the board. The
+   same tokens as the board (base.css): bubbles are cards, the tail corner a chip, the
+   composer and its button pills. */
 
 body.phone-page { background: var(--bg); }
 body.phone-page.embed { background: var(--surface); }
@@ -10,65 +12,65 @@ body.phone-page.embed { background: var(--surface); }
   max-width: 440px;
   margin: 0 auto;
   background: var(--surface);
-  border-left: 1px solid var(--rule);
-  border-right: 1px solid var(--rule);
+  border-left: var(--hair);
+  border-right: var(--hair);
 }
 .embed .phone { max-width: none; border: 0; }
 
-.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 28px 20px 14px; border-bottom: 1px solid var(--rule); }
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s3); padding: var(--s6) var(--s5) var(--s3); border-bottom: var(--hair); }
 .who { min-width: 0; }
-.top h1 { font-size: 22px; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.top h1 { font: 600 var(--t-value) / var(--lh-value) var(--font); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .number input {
   width: 100%;
-  margin-top: 2px;
+  margin-top: var(--s1);
   padding: 0;
   border: 0;
   border-bottom: 1px solid transparent;
   background: none;
   color: var(--ink-3);
-  font-size: 16px;
-  font-variant-numeric: tabular-nums;
+  font: 400 var(--t-meta) / var(--lh-meta) var(--mono);
 }
 .number input:focus { outline: none; border-bottom-color: var(--ink); color: var(--ink); }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 
 /* "AI plays this person": a small switch. */
-.actor { display: flex; align-items: center; gap: 8px; flex: none; max-width: 150px; font-size: 16px; line-height: 1.2; color: var(--ink-2); cursor: pointer; }
+.actor { display: flex; align-items: center; gap: var(--s2); flex: none; max-width: 150px; font: 400 var(--t-label) / var(--lh-label) var(--font); color: var(--ink-2); cursor: pointer; }
 .actor[hidden] { display: none; }
 .actor input { position: absolute; opacity: 0; pointer-events: none; }
-.actor .switch { position: relative; flex: none; width: 34px; height: 20px; border-radius: 10px; background: var(--rule-strong); transition: background-color 200ms var(--ease); }
-.actor .switch::after { content: ""; position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--surface); transition: transform 200ms var(--ease); }
+.actor .switch { position: relative; flex: none; width: 36px; height: 20px; border-radius: var(--r-pill); background: var(--rule-strong); transition: background-color 200ms var(--ease); }
+.actor .switch::after { content: ""; position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; border-radius: var(--r-pill); background: var(--surface); transition: transform 200ms var(--ease); }
 .actor input:checked + .switch { background: var(--ink); }
-.actor input:checked + .switch::after { transform: translateX(14px); }
+.actor input:checked + .switch::after { transform: translateX(16px); }
 .actor input:focus-visible + .switch { outline: 2px solid var(--ink); outline-offset: 2px; }
 
-.call-state { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--rule); font-size: 16px; color: var(--ink-2); animation: fade 240ms var(--ease); }
+.call-state { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); padding: var(--s3) var(--s5); border-bottom: var(--hair); color: var(--ink-2); animation: fade 240ms var(--ease); }
 .call-state[hidden] { display: none; }
 .call-state.on { color: var(--ok); font-weight: 500; }
 .call-state.failed { color: var(--bad); }
 
-.chat { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 18px 16px; scrollbar-width: none; }
+.chat { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: var(--s2); padding: var(--s4); scrollbar-width: none; }
 .chat::-webkit-scrollbar { display: none; }
 .chat .empty { margin: auto; color: var(--ink-3); }
 
-.bubble { max-width: 86%; padding: 10px 14px; border-radius: 16px; font-size: 16px; line-height: 1.4; overflow-wrap: anywhere; animation: fade 240ms var(--ease); }
-.bubble.out { align-self: flex-start; background: var(--wash); border-bottom-left-radius: 4px; }
-.bubble.in { align-self: flex-end; background: var(--ink); color: var(--surface); border-bottom-right-radius: 4px; }
+.bubble { max-width: 86%; padding: var(--s2) var(--s3); border-radius: var(--r-card); overflow-wrap: anywhere; animation: fade 240ms var(--ease); }
+.bubble.out { align-self: flex-start; background: var(--wash); border-bottom-left-radius: var(--r-chip); }
+.bubble.in { align-self: flex-end; background: var(--ink); color: var(--surface); border-bottom-right-radius: var(--r-chip); }
 .bubble .text { white-space: pre-wrap; }
-.bubble .meta { margin-top: 4px; font-size: 16px; color: var(--ink-3); }
+.bubble .meta { margin-top: var(--s1); font: 400 var(--t-label) / var(--lh-label) var(--mono); color: var(--ink-3); }
 .bubble.in .meta { color: #b9bbc0; }
-.bubble img { display: block; max-width: 100%; border-radius: 10px; margin-bottom: 6px; }
+.bubble img { display: block; max-width: 100%; border-radius: var(--r-chip); margin-bottom: var(--s2); }
+.bubble audio { display: block; max-width: 100%; margin-bottom: var(--s1); }
 .bubble a.call-link { font-weight: 600; text-decoration-color: currentColor; }
 
-#composer { padding: 12px 16px 18px; border-top: 1px solid var(--rule); }
-#composer .row { display: flex; align-items: center; gap: 10px; }
-#composer input[type="text"] { flex: 1; min-width: 0; padding: 10px 14px; border: 1px solid var(--rule-strong); border-radius: 20px; background: var(--surface); font-size: 16px; }
+#composer { padding: var(--s3) var(--s4) var(--s4); border-top: var(--hair); }
+#composer .row { display: flex; align-items: center; gap: var(--s2); }
+#composer input[type="text"] { flex: 1; min-width: 0; height: 40px; padding: 0 var(--s4); border: var(--hair); border-color: var(--rule-strong); border-radius: var(--r-pill); background: var(--surface); }
 #composer input[type="text"]:focus { outline: none; border-color: var(--ink); }
-#composer button[type="submit"] { padding: 10px 16px; border: 0; border-radius: 20px; background: var(--ink); color: var(--surface); font-size: 16px; font-weight: 500; cursor: pointer; }
-.attach { color: var(--ink-2); font-size: 16px; cursor: pointer; text-decoration: underline; text-decoration-color: var(--rule-strong); text-underline-offset: 0.2em; }
-.attached { margin-bottom: 8px; font-size: 16px; color: var(--ink-2); }
+#composer button[type="submit"] { height: 40px; padding: 0 var(--s4); border: 0; border-radius: var(--r-pill); background: var(--ink); color: var(--surface); font-weight: 600; cursor: pointer; }
+.attach { flex: none; color: var(--ink-2); cursor: pointer; text-decoration: underline; text-decoration-color: var(--rule-strong); text-underline-offset: 0.2em; }
+.attached { margin-bottom: var(--s2); color: var(--ink-2); }
 .attached[hidden] { display: none; }
-.send-status { min-height: 22px; margin-top: 6px; font-size: 16px; color: var(--ink-3); }
+.send-status { min-height: 22px; margin-top: var(--s1); color: var(--ink-3); }
 .send-status.failed { color: var(--bad); }
 
 @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }

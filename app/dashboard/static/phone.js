@@ -8,7 +8,7 @@
 // that arrives starts the actor (/actor/start) instead, and the call's state is shown.
 
 import { NO_DEAL } from "./state.js";
-import { h, isWebLink } from "./render.js";
+import { h, isWebLink } from "./dom.js";
 
 const $ = (id) => document.getElementById(id);
 const DEFAULT_NUMBER = "+910000000002"; // not a real number: the worker in the practice calls

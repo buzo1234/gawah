@@ -1,0 +1,42 @@
+<!doctype html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/app/dashboard/static/base.css">
+<style>
+body { margin: 0; width: 1920px; height: 1080px; background: var(--bg); font-family: var(--font); }
+.cap { position: absolute; left: 48px; top: 40px; font: 500 24px var(--font); }
+.cap small { display: block; font: 400 16px var(--font); color: var(--ink-3); margin-top: 4px; }
+#g { position: absolute; left: 48px; top: 140px; width: 960px; height: 700px; background: #fff; border: 1px solid var(--rule); border-radius: 10px; }
+</style>
+<div class="cap">C · The score: terms over time<small>A row per term, time running right through the call; each fact a mark where it was said; agreed marks fill green; a red arc back in time for a contradiction.</small></div>
+<svg id="g" viewBox="0 0 960 700"></svg>
+<script type="module">
+import { folded, ITEMS, laneFacts, money, COLORS, standing } from "./common.js";
+const s = await folded();
+const g = document.getElementById("g");
+const L = 220, R = 930, rowH = 100, top = 60;
+const all = s.factOrder.map((i) => s.facts[i]);
+const n = all.length || 1;
+const xOf = (f) => L + ((f.seq - 1) / Math.max(1, s.seq)) * (R - L);
+let out = `<text x="${L}" y="34" font-family="IBM Plex Mono" font-size="14" fill="#6b6d72">CALL 1</text>`;
+const pos = {};
+ITEMS.forEach(([key, label], i) => {
+  const y = top + i * rowH + rowH / 2;
+  const st = standing(s, key);
+  out += `<line x1="${L}" x2="${R}" y1="${y}" y2="${y}" stroke="#e2e2dc" stroke-dasharray="2 4"/>`;
+  out += `<text x="20" y="${y - 6}" font-family="IBM Plex Mono" font-size="14" fill="#6b6d72">${label.toUpperCase().slice(0, 18)}</text><text x="20" y="${y + 18}" font-size="18" font-weight="600" fill="${st ? "#1e5b3e" : "#6b6d72"}">${st ? money(st).slice(0, 18) : "Waiting"}</text>`;
+  laneFacts(s, key).forEach((f) => {
+    const x = xOf(f); pos[f.id] = [x, y];
+    out += `<circle cx="${x}" cy="${y}" r="8" fill="${f.status === "agreed" || f.status === "confirmed" ? "#1e5b3e" : "#fff"}" stroke="${COLORS[f.said_by] || COLORS.none}" stroke-width="3"/>`;
+  });
+  const last = laneFacts(s, key).at(-1);
+  if (last) out += `<text x="${Math.min(R - 120, xOf(last) + 14)}" y="${y - 14}" font-size="16" fill="#4f5156">${money(last).slice(0, 16)}</text>`;
+});
+for (const c of s.conflicts) {
+  const claim = all.findLast((f) => f.line_no === c.lineNo && f.call_no === c.callNo && f.item);
+  const t = c.factIds.find((id) => pos[id]);
+  if (claim && t) { const [x1, y1] = pos[claim.id], [x2] = pos[t]; out += `<path d="M${x1} ${y1 - 10} C ${x1} ${y1 - 70}, ${x2} ${y1 - 70}, ${x2} ${y1 - 10}" fill="none" stroke="#b3261e" stroke-width="2.5"/>`; }
+}
+const nowX = s.seq ? R : L;
+out += `<line x1="${nowX}" x2="${nowX}" y1="44" y2="${top + 6 * rowH}" stroke="#111" stroke-width="1.5"/><text x="${nowX - 6}" y="34" text-anchor="end" font-family="IBM Plex Mono" font-size="14">NOW</text>`;
+g.innerHTML = out;
+</script>
