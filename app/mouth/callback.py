@@ -55,6 +55,10 @@ class Callback:
         self._item_from_ms = 0.0
         self._fed_ms = 0.0
         self._cut: set[str] = set()  # replies the person talked over: ignore what is left of them
+        self._responding: str | None = None  # the reply the model is still making, if any
+        self._hearing = False  # the model has heard the person start and not yet stop
+        self._over: asyncio.Task | None = None  # started speaking over Gawah: waiting to see if it lasts
+        self._ignore: set[str] = set()  # sounds too short to have talked over Gawah: taken out of the conversation
         self._tasks: set[asyncio.Task] = set()
 
     async def start(self, room_name: str) -> None:
@@ -96,10 +100,11 @@ class Callback:
         self.log.info("call-back with %s over: %s", self.identity, reason)
         self.on_over(self)
 
-    def _spawn(self, work) -> None:
+    def _spawn(self, work) -> asyncio.Task:
         task = asyncio.get_running_loop().create_task(work)
         self._tasks.add(task)
         task.add_done_callback(self._tasks.discard)
+        return task
 
     # ---- the person ----
 
@@ -170,10 +175,22 @@ class Callback:
         elif kind == "response.output_audio.done":
             if event.get("response_id") not in self._cut:
                 self.player.finish()
+        elif kind == "response.created":
+            self._responding = event["response"]["id"]
         elif kind == "input_audio_buffer.speech_started":
             self._active = time.monotonic()
-            await self._talked_over()
+            self._hearing = True
+            if self.player.active and self._over is None:
+                self._over = self._spawn(self._maybe_talked_over())
+        elif kind == "input_audio_buffer.speech_stopped":
+            await self._turn_ended(event.get("item_id"))
+        elif kind == "input_audio_buffer.committed":
+            if event.get("item_id") in self._ignore:
+                self._ignore.discard(event["item_id"])
+                await self.link.send({"type": "conversation.item.delete", "item_id": event["item_id"]})
         elif kind == "response.done":
+            if self._responding == event["response"].get("id"):
+                self._responding = None
             await self._reply_done(event["response"])
         elif kind == "conversation.item.input_audio_transcription.completed":
             self.log.info("%s said: %s", self.identity, " ".join(str(event.get("transcript", "")).split())[:300])
@@ -184,14 +201,41 @@ class Callback:
         elif kind == "closed":
             self.end("the voice model connection closed")
 
+    async def _maybe_talked_over(self) -> None:
+        """The person started speaking while Gawah was. Only if they are still at it a moment later."""
+        await asyncio.sleep(tuning.CALLBACK_TALKED_OVER_MS / 1000)
+        self._over = None
+        if self._hearing:
+            await self._talked_over()
+
+    async def _turn_ended(self, item_id: str | None) -> None:
+        """The person stopped speaking. A sound too short to stop Gawah gets no reply; anything else does."""
+        self._hearing = False
+        if self._over is not None and self.player.active:
+            self._over.cancel()
+            self._over = None
+            self.log.info("a short sound over Gawah, ignored")
+            if item_id:
+                self._ignore.add(item_id)
+            return
+        if self._over is not None:
+            self._over.cancel()
+            self._over = None
+        await self._talked_over()  # their answer came as Gawah began its next words
+        if self._responding and self._responding not in self._cut:
+            await self.link.send({"type": "response.cancel", "response_id": self._responding})
+        await self.link.send({"type": "response.create"})
+
     async def _talked_over(self) -> None:
-        """The person started speaking: go quiet, and tell the model how much of its reply was heard."""
+        """The person is talking over Gawah: go quiet, and tell the model how much of its reply was heard."""
         if not self.player.active:
             return
         heard = self.player.heard_so_far()
         self.player.stop()
         self.log.info("%s talked over Gawah %d ms into what it was saying", self.identity, heard)
         self._cut.add(self._reply)  # the model may still be sending the rest of it
+        if self._responding == self._reply:
+            await self.link.send({"type": "response.cancel", "response_id": self._reply})
         if self._item:
             await self.link.send({
                 "type": "conversation.item.truncate", "item_id": self._item, "content_index": 0,

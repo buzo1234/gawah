@@ -12,7 +12,7 @@ import time
 from collections.abc import Callable
 
 from app.actor import persona
-from app.actor.realtime import VOICES, Realtime, session
+from app.actor.realtime import STOPS_WHEN_TALKED_OVER, VOICES, Realtime, session
 from app.actor.room import Seat
 from app.contracts import Role
 from app.log import deal_log
@@ -147,7 +147,7 @@ class Actor:
 
     async def _talked_over(self) -> None:
         """Someone started speaking: a person stops when talked over, so go quiet and tell the model."""
-        if not self.seat.speaking():
+        if not STOPS_WHEN_TALKED_OVER or not self.seat.speaking():
             return
         heard = self.seat.heard_ms()
         self.seat.clear()

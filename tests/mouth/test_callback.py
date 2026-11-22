@@ -122,7 +122,7 @@ async def test_all_terms_confirmed(desk):
     assert (started.kind, started.room, started.people) == (CallKind.CALLBACK, seat.room, [RAMESH])
     opening = link.of("conversation.item.create")[0]["item"]["content"][0]["text"]
     assert "the work: painting the 2BHK flat, two coats" in opening and "22,000" not in opening  # one term at a time
-    assert link.config["audio"]["input"]["turn_detection"]["create_response"]  # here the model does reply by itself
+    assert link.config["audio"]["input"]["turn_detection"]  # here the model hears the person (callback.py asks for each reply)
     assert {t["name"] for t in link.config["tools"]} == {"record_answer", "term_answer"}
 
     then = await link.calls("term_answer", item="work", agrees=True, said="haan theek hai")
@@ -244,7 +244,8 @@ async def test_a_second_tap_joins_the_same_room(desk):
     assert again.json()["token"] == f"token:{seat.room}:worker" and len(desk.rooms.made) == 1
 
 
-async def test_the_person_talking_over_gawah_stops_it(desk):
+async def test_the_person_talking_over_gawah_stops_it(desk, monkeypatch):
+    monkeypatch.setattr(tuning, "CALLBACK_TALKED_OVER_MS", 200)
     await desk.deal()
     seat, link = await desk.join()
     await until(lambda: link.sent and not desk.app.state.callbacks[("d1", Role.WORKER)].player.active)
@@ -252,12 +253,57 @@ async def test_the_person_talking_over_gawah_stops_it(desk):
     call = desk.app.state.callbacks[("d1", Role.WORKER)]
     await until(lambda: call.player.given_ms >= 200)
     await link.on_event({"type": "input_audio_buffer.speech_started"})
-    assert not call.player.active and seat.cleared
+    assert call.player.active  # not yet: it might be a cough
+    await until(lambda: not call.player.active)
+    assert seat.cleared
     cut = link.of("conversation.item.truncate")[0]
     assert cut["item_id"] == item and 200 <= cut["audio_end_ms"] < 3000  # the model is told how much was heard
+    assert not link.of("response.create")[1:]  # no reply while they are still talking ...
+    await link.on_event({"type": "input_audio_buffer.speech_stopped", "item_id": "their-answer"})
+    await link.on_event({"type": "input_audio_buffer.committed", "item_id": "their-answer"})
+    assert len(link.of("response.create")) == 2 and not link.of("conversation.item.delete")  # ... and one once they stop
     # The person's audio reaches the model, which is how it hears the answer.
     seat.says("worker", 100)
     await until(lambda: link.of("input_audio_buffer.append"))
+
+
+async def test_a_short_sound_over_gawah_neither_stops_it_nor_gets_a_reply(desk):
+    await desk.deal()
+    seat, link = await desk.join()
+    call = desk.app.state.callbacks[("d1", Role.WORKER)]
+    await until(lambda: link.sent and not call.player.active)
+    await link.says("Pehli shart: poore flat ki painting, do coat ...", ms=3000)
+    await until(lambda: call.player.given_ms >= 200)
+    asked = len(link.of("response.create"))
+    await link.on_event({"type": "input_audio_buffer.speech_started"})  # a cough, a door, the TV
+    await asyncio.sleep(0.3)
+    await link.on_event({"type": "input_audio_buffer.speech_stopped", "item_id": "a-cough"})
+    await link.on_event({"type": "input_audio_buffer.committed", "item_id": "a-cough"})
+    await asyncio.sleep(tuning.CALLBACK_TALKED_OVER_MS / 1000)
+    assert call.player.active and not seat.cleared and not link.of("conversation.item.truncate")
+    assert len(link.of("response.create")) == asked  # the model is not asked to answer a cough
+    assert link.of("conversation.item.delete") == [{"type": "conversation.item.delete", "item_id": "a-cough"}]
+
+
+async def test_an_answer_after_gawah_has_finished_gets_a_reply(desk):
+    await desk.deal()
+    seat, link = await desk.join()
+    call = desk.app.state.callbacks[("d1", Role.WORKER)]
+    await until(lambda: link.sent and not call.player.active)
+    asked = len(link.of("response.create"))
+    await link.on_event({"type": "input_audio_buffer.speech_started"})
+    await link.on_event({"type": "input_audio_buffer.speech_stopped", "item_id": "haan"})
+    assert len(link.of("response.create")) == asked + 1 and not link.of("conversation.item.delete")
+
+
+async def test_the_session_hears_speech_slowly_and_in_hindi_and_english(desk):
+    await desk.deal()
+    seat, link = await desk.join()
+    heard = link.config["audio"]["input"]
+    turns = heard["turn_detection"]
+    assert turns["type"] == "server_vad" and turns["threshold"] >= 0.8 and turns["prefix_padding_ms"] >= 500
+    assert not turns["interrupt_response"] and not turns["create_response"]  # callback.py decides both
+    assert heard["transcription"]["languages"] == ["hi", "en"] and "Hinglish" in heard["transcription"]["prompt"]
 
 
 async def test_two_call_backs_at_once(desk):

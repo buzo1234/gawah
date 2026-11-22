@@ -199,24 +199,32 @@ def test_a_call_back_with_nothing_to_confirm_is_refused(world):
     assert refused.status_code == 409
 
 
-def test_it_speaks_stops_when_talked_over_and_answers_wait_with_silence(world):
+def test_it_finishes_its_line_when_talked_over_and_answers_wait_with_silence(world):
     client, app, livekit, seats, links, _ = world
     client.post("/actor/start", json={"deal_id": "d1", "role": "worker", "kind": "deal"})
     link, seat = links[0], seats[0]
     on = lambda event: client.portal.call(link.on_event, event)  # noqa: E731
     on({"type": "response.output_audio.delta", "response_id": "r1", "item_id": "i1", "delta": "AAAA"})
     assert bytes(seat.spoken) == b"\0\0\0"
+    # A sound in the room, or Gawah, or the other person: someone reading their part carries on.
     on({"type": "input_audio_buffer.speech_started"})
-    assert not seat.spoken and link.sent[-1] == {
-        "type": "conversation.item.truncate", "item_id": "i1", "content_index": 0, "audio_end_ms": 120,
-    }
     on({"type": "response.output_audio.delta", "response_id": "r1", "item_id": "i1", "delta": "AAAA"})
-    assert not seat.spoken  # the rest of the reply that was talked over is dropped
+    assert bytes(seat.spoken) == b"\0\0\0" * 2 and not any(e["type"] == "conversation.item.truncate" for e in link.sent)
     on({"type": "response.done", "response": {"output": [{"type": "function_call", "status": "completed", "call_id": "c1", "name": "wait"}]}})
     assert link.sent[-1]["item"] == {"type": "function_call_output", "call_id": "c1", "output": '{"ok": true}'}
     assert not any(e["type"] == "response.create" for e in link.sent)
     on({"type": "response.output_audio_transcript.done", "transcript": "Haan  theek hai."})
     assert app.state.actor.said == ["Haan theek hai."]
+
+
+def test_its_session_is_slow_to_hear_speech_and_never_cut_off_by_it(world):
+    client, app, livekit, seats, links, _ = world
+    client.post("/actor/start", json={"deal_id": "d1", "role": "worker", "kind": "deal"})
+    heard = links[0].config["audio"]["input"]
+    turns = heard["turn_detection"]
+    assert turns["type"] == "server_vad" and turns["threshold"] >= 0.8 and turns["prefix_padding_ms"] >= 500
+    assert turns["create_response"] and not turns["interrupt_response"]
+    assert heard["transcription"]["languages"] == ["hi", "en"] and "Hinglish" in heard["transcription"]["prompt"]
 
 
 def test_what_it_hears_goes_to_the_model_in_100_ms_pieces(world):

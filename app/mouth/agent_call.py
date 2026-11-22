@@ -78,6 +78,7 @@ class AgentCall(DealCall):
     async def on_line(self, event: TranscriptLine) -> None:
         if event.call_no != self.call_no:
             return
+        self._stop_if_told(event)
         if event.line_no is None:
             event = event.model_copy(update={"line_no": len(self.lines) + 1})
         self.lines.append(event)
