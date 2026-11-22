@@ -35,6 +35,9 @@ owed, /memory/chain; every fact in the timeline, at memory's status; the chip ma
 standing memory's current term; a payment in the lane of the term it counts towards), the
 checklist against the brain's, and a reload must rebuild exactly the same page.
 4. One past fact is altered inside memory, and the chain must name the link that broke.
+4b. Two, then three claims contradicting the same confirmed amount, which was then changed
+   (the facts and conflicts published as memory would send them): one bracket with one
+   label and a tick per claim, every figure whole, at 1920 by 1080 and 1280 by 720.
 5. The second phone on its own page, at phone size: a message typed and sent goes through
    the webhook and comes back in the chat. The actor's endpoints are stood in for here
    (they belong to another stream): answering 404, the "AI plays this person" toggle is
@@ -67,7 +70,8 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from app.contracts import (
-    WHATSAPP_WEBHOOK_PATH, CallEnded, CallKind, CallStarted, ChangeStatus, Direction, FactChanged, ItemKey, Person, Record,
+    WHATSAPP_WEBHOOK_PATH, CallEnded, CallKind, CallStarted, ChangeStatus, Direction, Fact, FactChanged, FactConflict, FactKind,
+    FactRecorded, FactStatus, ItemKey, Person, Record,
     RecordKind, RecordReceived, Role, TermsConfirmed, TranscriptLine, WhatsAppMessage, new_id,
 )
 from fakes.replayer import load
@@ -113,6 +117,22 @@ OVERLAPS = """(() => {
     chips.forEach((a, i) => chips.slice(i + 1).forEach((b) => { if (hit(a, b)) out.push('chips in ' + lane.closest('.term').dataset.item); }));
     const lr = box(lane.closest('.lane'));
     chips.forEach((c) => { if (c.right > lr.right + 0.5) out.push('chip past its lane in ' + lane.closest('.term').dataset.item); });
+  }
+  for (const lane of document.querySelectorAll('.lane')) {
+    const item = lane.closest('.term').dataset.item, lb = box(lane);
+    const chips = [...lane.querySelectorAll('.chip')].filter((c) => !c.hidden).map(box);
+    const labels = [...lane.querySelectorAll('.arc rect.tag-bg')].map(box);
+    labels.forEach((a, i) => {
+      labels.slice(i + 1).forEach((b) => { if (hit(a, b)) out.push('bracket labels on each other in ' + item); });
+      chips.forEach((c) => { if (hit(a, c)) out.push('a bracket label on a chip in ' + item); });
+      if (a.top < lb.top - 0.5 || a.left < lb.left - 0.5 || a.right > lb.right + 0.5) out.push('a bracket label out of its lane in ' + item);
+    });
+    for (const c of lane.querySelectorAll('.chip:not(.stub)')) {
+      const v = c.querySelector('.v');
+      if (c.hidden || !v) continue;
+      if (/^₹[\\d,\u202f ]+$/.test(c.dataset.value) && v.textContent.replace(/\\n/g, ' ') !== c.dataset.value) out.push('a figure not whole in ' + item + ': ' + v.textContent);
+      if (v.scrollWidth > v.clientWidth + 1) out.push('chip text cut in ' + item + ': ' + v.textContent.slice(0, 30));
+    }
   }
   const stage = document.getElementById('stage');
   const scale = stage.getBoundingClientRect().width / stage.offsetWidth;
@@ -820,6 +840,63 @@ async def main(port: int, out: Path) -> None:
             links = (await http.get(f"/memory/chain/{deal}")).json()["links"]
             check(broken[0] == broken[1] - max(0, 4 - (links - broken[1])) and broken[2] >= 1, f"the ticks from link 5 on are red, and the chip of link 5 is marked: {broken}")
             await chrome.shot(out / "4-chain-broken.png")
+
+            # ---------- 4b. two, then three claims against one version ----------
+            print("4b. two and three claims contradicting the same confirmed amount")
+            claimed = f"live-claims-{new_id()[:4]}"
+            names = [Person(role=Role.HIRER, name="Sunita"), Person(role=Role.WORKER, name="Ramesh")]
+            both_roles = [Role.HIRER, Role.WORKER]
+
+            def amount_said(value: int, by: Role, call_no: int, line_no: int, **more) -> Fact:
+                words = f"{value:,} rupees"
+                return Fact(deal_id=claimed, text=f"{by.value.title()} says the amount is {words}.", item=ItemKey.AMOUNT, kind=FactKind.TERM,
+                            value=words, value_rupees=value, said_by=by, call_no=call_no, line_no=line_no, start=line_no * 5.0, quote=words, **more)
+
+            agreed = amount_said(22000, Role.WORKER, 1, 5, agreed_by=[Role.HIRER], confirmed_by=both_roles, status=FactStatus.CONFIRMED)
+            against = [amount_said(25000, Role.WORKER, 2, 3), amount_said(24000, Role.HIRER, 2, 6), amount_said(26000, Role.WORKER, 2, 9)]
+            conflict = lambda f: FactConflict(deal_id=claimed, fact_ids=[agreed.id], explanation=f"Says {f.value}; both confirmed 22,000.",
+                                              said=f.value, speaker=f.said_by, call_no=2, line_no=f.line_no)
+            changed = amount_said(24000, Role.HIRER, 2, 8, confirmed_by=both_roles, status=FactStatus.CONFIRMED, replaces=agreed.id)
+            await publish(CallStarted(deal_id=claimed, people=names, room=f"replay-{claimed}", call_no=1),
+                          FactRecorded(deal_id=claimed, fact=amount_said(20000, Role.WORKER, 1, 2)),
+                          FactRecorded(deal_id=claimed, fact=amount_said(21000, Role.HIRER, 1, 3)),
+                          FactRecorded(deal_id=claimed, fact=agreed),
+                          CallStarted(deal_id=claimed, people=names, room=f"replay-{claimed}-2", call_no=2),
+                          FactRecorded(deal_id=claimed, fact=against[0]), conflict(against[0]),
+                          FactRecorded(deal_id=claimed, fact=against[1]), conflict(against[1]),
+                          FactRecorded(deal_id=claimed, fact=changed),
+                          FactRecorded(deal_id=claimed, fact=agreed.model_copy(update={"status": FactStatus.SUPERSEDED})))
+            await chrome.goto(f"{url}/dashboard?deal={claimed}")
+            await chrome.wait_for(LOADED)
+            lane_of = "#rows .term[data-item='amount']"
+            for n in (2, 3):
+                if n == 3:
+                    await publish(FactRecorded(deal_id=claimed, fact=against[2]), conflict(against[2]))
+                await asyncio.sleep(1.5)
+                brackets = json.loads(await chrome.js(f"""JSON.stringify([...document.querySelectorAll("{lane_of} .arc")].map((g) => [+g.dataset.claims, g.textContent]))"""))
+                tip = await chrome.js(f"""Number(document.querySelector("{lane_of} .arc path.head").getAttribute('d').match(/-?[\\d.]+/g)[2])""")
+                # The replaced 22,000's chip (memory also writes the brain's "agreed" amount into it: the same value, one chip).
+                target = await chrome.js(f"""(() => {{ const c = document.querySelector({json.dumps(f'{lane_of} .chip[data-facts~="{agreed.id}"]')}); return c ? c.parentElement.offsetLeft + c.offsetLeft + c.offsetWidth / 2 : null; }})()""")
+                shown = json.loads(await chrome.js(f"""JSON.stringify([...document.querySelectorAll("{lane_of} .chip")].filter((c) => !c.hidden).map((c) => c.textContent.replace(/\\n/g, ' ')))"""))
+                home = [b for b in brackets if b[1] == "contradicts"]
+                check(sum(b[0] for b in brackets) == n and len(home) == 1 and all(b[1] == "contradicts ₹\u202f22,000" for b in brackets if b not in home)
+                      and target is not None and abs(tip - target) < 1,
+                      f"{n} claims: one bracket with one label on the 22,000's line, a tick per claim, the arrow on the 22,000; a claim on a second line labelled with it ({brackets}; chips {shown})")
+                for width, height in ((1920, 1080), (1280, 720)):
+                    await chrome.send("Emulation.setDeviceMetricsOverride", width=width, height=height, deviceScaleFactor=1, mobile=False)
+                    await asyncio.sleep(0.5)
+                    overlaps = json.loads(await chrome.js(OVERLAPS))
+                    check(not overlaps, f"{n} claims at {width}x{height}: nothing overlaps or is cut, bracket labels and figures included: {overlaps}")
+                    await chrome.shot(out / f"4b-{n}-claims{'' if width == 1920 else f'-{width}x{height}'}.png")
+                    await chrome.send("Emulation.setDeviceMetricsOverride", width=width, height=height, deviceScaleFactor=2, mobile=False)
+                    await asyncio.sleep(0.4)
+                    rect = json.loads(await chrome.js(f"""(() => {{ const b = document.querySelector("{lane_of}").getBoundingClientRect(); return JSON.stringify([b.x, b.y, b.width, b.height]); }})()"""))
+                    data = (await chrome.send("Page.captureScreenshot", format="png", clip={"x": rect[0] - 8, "y": rect[1] - 8, "width": rect[2] + 16, "height": rect[3] + 16, "scale": 1}))["data"]
+                    (out / "review").mkdir(parents=True, exist_ok=True)
+                    (out / "review" / f"claims-{n}-amount-row-{width}.png").write_bytes(base64.b64decode(data))
+                await chrome.send("Emulation.setDeviceMetricsOverride", width=1920, height=1080, deviceScaleFactor=1, mobile=False)
+                await asyncio.sleep(0.3)
+                print(f"  review claims-{n}: {json.dumps(json.loads(await chrome.js(MEASURE))['chips'])}")
 
             # ---------- 5. the second phone on its own page ----------
             print("5. /dashboard/phone at phone size")

@@ -106,28 +106,65 @@ function brokenFact(state) {
   return check && !check.error && !check.verified ? check.first_broken?.fact_id : null;
 }
 
-// The red edge: from the claim's chip, up and back along the lane to the version it
-// contradicts, labelled. Drawn after the chips are laid out, from where they sit.
+// The red edge: one bracket per version contradicted, over the lane, with one
+// "contradicts" label, an arrow down to that version and a tick down to each claim against
+// it. A second version contradicted in the same lane gets its bracket one level higher
+// (the lane makes room: --levels), so labels never sit on each other. When the lane takes
+// a second line, a claim there gets its own bracket in the gap above its line, labelled
+// with the version it contradicts, so no line ever crosses a chip. Drawn after the chips
+// are laid out, from where they sit.
+const LEVEL = 28; // px between bracket levels: a label's 24 and 4 apart (the lane's padding above, per level)
+const LABEL_FONT = "600 16px";
+
+const contradicted = (row) => [...new Set(row.edges.map((e) => e.to))];
+
 function arcs(laneEl, row, fresh) {
   const chips = laneEl.querySelector(".chips");
   const svg = laneEl.querySelector("svg.arcs");
-  const at = (key) => [...chips.children].find((el) => el.dataset.key === key);
-  const paths = row.edges.map((e) => {
-    const a = at(e.from), b = at(e.to);
-    if (!a || !b) return null;
-    const x1 = chips.offsetLeft + a.offsetLeft + a.offsetWidth / 2, x2 = chips.offsetLeft + b.offsetLeft + b.offsetWidth / 2;
-    // The bracket's ends sit on the two chips' top edges exactly.
-    const y = chips.offsetTop + a.offsetTop, tip = chips.offsetTop + b.offsetTop, top = 14, r = 6, dir = x2 < x1 ? -1 : 1;
-    const mid = (x1 + x2) / 2;
-    const d = `M ${x1} ${y} V ${top + r} Q ${x1} ${top} ${x1 + dir * r} ${top} H ${x2 - dir * r} Q ${x2} ${top} ${x2} ${top + r} V ${tip}`;
-    const drawing = fresh.conflict === e.id;
-    return h("g", { svg: true, class: `arc${drawing ? " draw" : ""}` },
-      h("path", { svg: true, d, pathLength: 100 }),
-      h("path", { svg: true, class: "head", d: `M ${x2 - 5} ${tip - 7} L ${x2} ${tip} L ${x2 + 5} ${tip - 7}` }),
-      h("rect", { svg: true, class: "tag-bg", x: mid - 60, y: top - 12, width: 120, height: 24, rx: 6 }),
-      h("text", { svg: true, x: mid, y: top + 6, "text-anchor": "middle" }, "contradicts"));
+  const shown = [...chips.children].filter((el) => !el.hidden);
+  const at = (key) => shown.find((el) => el.dataset.key === key);
+  const lineOf = new Map();
+  let lines = -1, lastTop = -Infinity;
+  for (const el of shown) {
+    if (el.offsetTop > lastTop + 1) { lines++; lastTop = el.offsetTop; }
+    lineOf.set(el, lines);
+  }
+  const x = (el) => chips.offsetLeft + el.offsetLeft + el.offsetWidth / 2;
+  const top = (el) => chips.offsetTop + el.offsetTop; // every line ends on a chip's top edge exactly
+  const lineTop = (i) => Math.min(...shown.filter((el) => lineOf.get(el) === i).map(top));
+  const r = 6;
+  const drawn = [];
+  contradicted(row).forEach((to, level) => {
+    const edges = row.edges.filter((e) => e.to === to);
+    const target = at(to), claims = edges.map((e) => at(e.from)).filter(Boolean);
+    if (!target || !claims.length) return;
+    const drawing = edges.some((e) => e.id === fresh.conflict);
+    for (const line of new Set(claims.map((el) => lineOf.get(el)))) {
+      const ends = [target, ...claims].filter((el) => lineOf.get(el) === line).sort((a, b) => x(a) - x(b));
+      const home = ends.includes(target);
+      const word = home ? "contradicts" : `contradicts ${target.dataset.value}`;
+      const w = Math.ceil(measure(word, LABEL_FONT)) + 24;
+      const y = lineTop(line) - 16 - (line === 0 ? level * LEVEL : 0);
+      const left = ends[0], right = ends.at(-1);
+      let d, mid;
+      if (ends.length > 1) {
+        d = [`M ${x(left)} ${top(left)} V ${y + r} Q ${x(left)} ${y} ${x(left) + r} ${y} H ${x(right) - r} Q ${x(right)} ${y} ${x(right)} ${y + r} V ${top(right)}`,
+          ...ends.slice(1, -1).map((el) => `M ${x(el)} ${y} V ${top(el)}`)].join(" ");
+        mid = (x(left) + x(right)) / 2;
+      } else {
+        mid = x(left) + r + w / 2;
+        d = `M ${x(left)} ${top(left)} V ${y + r} Q ${x(left)} ${y} ${x(left) + r} ${y}`;
+      }
+      mid = Math.min(Math.max(mid, w / 2), laneEl.clientWidth - w / 2);
+      const tx = x(target), tip = top(target);
+      drawn.push(h("g", { svg: true, class: `arc${drawing ? " draw" : ""}`, "data-claims": ends.length - (home ? 1 : 0) },
+        h("path", { svg: true, d, pathLength: 100 }),
+        home && h("path", { svg: true, class: "head", d: `M ${tx - 5} ${tip - 7} L ${tx} ${tip} L ${tx + 5} ${tip - 7}` }),
+        h("rect", { svg: true, class: "tag-bg", x: mid - w / 2, y: y - 12, width: w, height: 24, rx: 6 }),
+        h("text", { svg: true, x: mid, y: y + 6, "text-anchor": "middle" }, word)));
+    }
   });
-  svg.replaceChildren(...paths.filter(Boolean));
+  svg.replaceChildren(...drawn);
 }
 
 // Every chip is laid out at its own size; if the lane is too short for them all, the
@@ -143,11 +180,11 @@ function lane(state, row, laneEl, fresh) {
   for (const el of els) el.hidden = false;
   stub.hidden = false;
   stub.textContent = "00 earlier";
-  // Measured at full size; a chip that must stay (the standing one, a claim, the newest)
-  // may then shrink and wrap if the lane is still too short for them.
-  chips.classList.add("measuring");
+  laneEl.style.setProperty("--levels", Math.max(1, contradicted(row).length));
+  // A chip is never narrower than its content, so a figure always shows whole. If the
+  // chips that must stay (the standing one, a claim and what it contradicts, the newest)
+  // still do not fit, the lane takes a second line.
   const width = new Map(els.map((el) => [el.dataset.key, el.offsetWidth]));
-  chips.classList.remove("measuring");
   const broken = brokenFact(state);
   for (const c of row.chips) c.broken = c.ids.includes(broken);
   const { hidden } = visible(row.chips, row.edges, chips.clientWidth, (c) => width.get(c.key), GAP, stub.offsetWidth + GAP);
@@ -158,6 +195,12 @@ function lane(state, row, laneEl, fresh) {
   stub.title = hidden.map((c) => c.value).join("\n");
   stub.dataset.facts = hidden.flatMap((c) => c.ids).join(" ");
   laneEl.classList.toggle("empty", !row.chips.length);
+  let prev = null;
+  for (const el of chips.children) {
+    if (el.hidden) continue;
+    el.classList.toggle("line-start", !!prev && el.offsetTop > prev.offsetTop + 1);
+    prev = el;
+  }
   arcs(laneEl, row, fresh);
 }
 
