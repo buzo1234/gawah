@@ -141,6 +141,7 @@ class Judge:
     asked_mid_call: set[str] = field(default_factory=set)
     asked_at_wrapup: set[str] = field(default_factory=set)
     read_back_done: bool = False
+    read_back_with: set[str] = field(default_factory=set)  # the questions a read-back went out with
     waiting_since: float | None = None  # a judge.speak is out and judge.spoke has not come
     waiting_on_question: bool = False  # False when it is an answer to someone who spoke to it
     last_question_end: float | None = None
@@ -208,6 +209,8 @@ class Judge:
                 self.reasked[None] = self.reasked.get(None, 0) + 1
                 self.read_back_done = False
             return
+        if set(topics) & self.read_back_with:
+            self.read_back_done, self.read_back_with = False, set()  # the read-back went with them, unsaid
         for topic in topics:
             if self.reasked.get(topic, 0) >= tuning.MAX_REASKS:
                 continue  # past the limit it counts as asked; wrap-up still has its own ask
@@ -305,17 +308,27 @@ class Judge:
             if item.value not in self.asked_at_wrapup and self._may_ask(item, view):
                 parts.append(_ask(item, view, SpeakReason.WRAPPING_UP))
         if parts:
-            return _together(parts, view)
+            speak = _together(parts, view)
+            if self._may_read_back(view) and view.closing and takes_leave(view.text) and not view.bargaining:
+                # Asked on the goodbye itself: the read-back goes in the same turn, so the call
+                # neither ends without one nor gets a second turn for it.
+                speak.instruction += " Then, in the same turn, " + _read_back(view).instruction.removeprefix(WRAPPING_UP)
+                self.read_back_done, self.read_back_with = True, set(speak.topics)
+            return speak
         if self.read_back_done or (view.conflicts and not view.closing) or (pending and not (view.closing and takes_leave(view.text) and not view.bargaining)):
             # With a dispute still standing, or a term still open, the read-back waits for the goodbye
             # itself (a line that takes leave: "bye bye", "chalo phir baat karte hain"); then it comes,
             # with what is still open, so no call ends without one.
             return None
+        return _read_back(view) if self._may_read_back(view) else None
+
+    def _may_read_back(self, view: View) -> bool:
+        if self.read_back_done:
+            return False
         if self.read_back_terms is not None and self.read_back_terms == _terms(view):
-            return None  # read back on request, and nothing agreed since
-        if view.follow_up and not view.changed:
-            return None  # the deal was read back on the call that agreed it; nothing changed since
-        return _read_back(view)
+            return False  # read back on request, and nothing agreed since
+        # On a later call, the deal was read back on the call that agreed it: only a change is read back.
+        return not (view.follow_up and not view.changed)
 
 
 def _who(to: Audience, names: dict[Role, str]) -> str:

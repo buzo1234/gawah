@@ -58,15 +58,18 @@ async def test_the_goodbye_reads_back_naming_what_is_still_in_dispute(bus):
     await call.say(takes=20.0)
     call.conflict(ItemKey.BALANCE, "Says 12,000 rupees; the balance was agreed at 9,000 rupees by both (call 1, line 1).")
     await call.say(takes=20.0)
-    await call.say("Theek hai, ab rakhta hoon.", takes=20.0)  # the dispute is raised once more at wrap-up
-    await call.say("Haan, namaste.", takes=20.0)  # the goodbye itself: read back, naming it
-    assert call.spoken == [(1, "contradicts_record", "balance"), (3, "wrapping_up", "balance"), (4, "wrapping_up", None)]
-    read_back = call.speaks[2].instruction
-    assert read_back.startswith("They are about to hang up. Read back the agreed terms")
+    # The goodbye: the dispute is raised once more at wrap-up, and the read-back, naming it, goes in the same turn.
+    await call.say("Theek hai, ab rakhta hoon.", takes=20.0)
+    await call.say("Haan, namaste.", takes=20.0)
+    assert call.spoken == [(1, "contradicts_record", "balance"), (3, "wrapping_up", "balance")]
+    turn = call.speaks[1].instruction
+    raised, read_back = turn.split(" Then, in the same turn, ")
+    assert raised.startswith("They are about to hang up.") and "12,000" in raised
+    assert read_back.startswith("Read back the agreed terms")
     assert "the total amount: the amount" in read_back and "the balance: the balance" not in read_back
     assert "Still in dispute" in read_back and "Says 12,000 rupees; the balance was agreed at 9,000" in read_back
     await call.say("Bye.", takes=20.0)
-    assert len(call.speaks) == 3, "read back once"
+    assert len(call.speaks) == 2, "read back once"
 
 
 async def test_closing_soon_through_small_talk_is_not_wrap_up(bus):
