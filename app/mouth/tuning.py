@@ -284,6 +284,7 @@ WAIT_S = {
     "read_back": 8.0,
     "open_terms": 5.0,
     "contradicts_record": 8.0,
+    "dispute_open": 8.0,
     "change_proposed": 8.0,
     "follow_up": 6.0,
     "clip": 6.0,  # the recording they said yes to
@@ -353,6 +354,7 @@ MOMENT_WHY = {
     "wrapping_up": "they are about to hang up",
     "ambiguous": "an agreement that can mean two things",
     "contradicts_record": "something just said does not match the record",
+    "dispute_open": "one of them said no to an agreed term on the call-back, and it is still to be settled",
     "change_proposed": "someone wants to change an agreed term, and both should agree to it",
     "addressed_directly": "someone spoke to you",
     "follow_up": "checking a line for an answer you are waiting for",
@@ -415,6 +417,21 @@ FOLLOW_UP = (
     "hain? Dono haan kahiye.' (with this call's own term and values). "
     "A claim or a question about what was agreed or paid is not a change. A line about another term is not an "
     "answer. In those cases, and whenever you are not sure, call stay_silent."
+)
+MOMENT_DISPUTE = (
+    "The Judge's note: {instruction} On record: {facts} Say, in at most three short sentences: that this term is "
+    "still to be settled; what the record holds, who said it and who agreed, and on which call; what the other person "
+    "says instead, only if the note gives it; then ask if they want to hear that recording. The shape, with this "
+    "call's own values and names: \"Amount par baat baaki hai. Pehli call par baees hazaar tay hua tha: Karan ji ne "
+    "kaha tha aur Ramesh ji ne maana tha. Ramesh ji ke hisaab se pachees hazaar. Kya main woh recording sunaun?\" "
+    "Do not play it now, do not judge either value, do not suggest one, and ask nothing else."
+)
+# After a dispute is raised, its answer can take a few lines: hearing the recording, then saying what they agree.
+DISPUTE_FOLLOW_UP_LINES = 4
+FOLLOW_UP_DISPUTE = (
+    "{item}, in dispute (the record: fact {fact}). Settled only through you: when both say which value they now agree "
+    "on, whether the one on record or another, call propose_change on fact {fact} with that value, then ask both to "
+    "say haan. Only a value they both say; never one you choose"
 )
 FOLLOW_UP_CONTRADICTION = (
     "the record ({facts}) against a different value just said: you told them what the record holds. Only if someone "

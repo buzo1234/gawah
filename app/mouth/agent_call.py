@@ -7,7 +7,9 @@
 - A line that names Gawah is a moment of its own: "Haan ji, ek second" at the next pause,
   then the answer. The brain's own addressed judge.speak for that line joins the same turn.
 - A contradiction is answered with the record (its value, who said it and who agreed, which
-  call) and an offer to play the recording. A yes to that offer (or asking for it) in the
+  call) and an offer to play the recording. So is a term still in dispute from a call-back
+  (dispute_open, raised as the call opens); after it, the lines are checked for a value both
+  agree on, which goes through the change tools, so settling it takes both their yes. A yes to that offer (or asking for it) in the
   next CLIP_OFFER_LINES lines plays it, after a short lead-in; a no or anything else does not.
 - After a contradiction is put to them, or a change is proposed, the next lines are each
   checked for an answer (a change wanted, or a yes or no to one), usually silently.
@@ -29,7 +31,9 @@ from app.mouth.tools import Tools
 
 
 # Moments about one agreed term, released while a change to that term waits for both to say yes.
-_ABOUT_A_TERM = (SpeakReason.CONTRADICTS_RECORD, SpeakReason.CHANGE_PROPOSED, SpeakReason.WRAPPING_UP)
+_ABOUT_A_TERM = (SpeakReason.CONTRADICTS_RECORD, SpeakReason.CHANGE_PROPOSED, SpeakReason.WRAPPING_UP, SpeakReason.DISPUTE_OPEN)
+# The record is told and its recording offered; a yes plays it.
+_THE_RECORD = (SpeakReason.CONTRADICTS_RECORD.value, SpeakReason.DISPUTE_OPEN.value)
 # The brain's answers to a line: they join a turn already under way for that line.
 _ANSWERS = (SpeakReason.ADDRESSED_DIRECTLY, SpeakReason.UNANSWERED_QUESTION, SpeakReason.READ_BACK)
 # Moments that only make sense right after the line they follow: dropped once someone has spoken since.
@@ -131,6 +135,20 @@ class AgentCall(DealCall):
         else:
             await self.agent.note(moments.conflict(event))
 
+    async def _know(self, speak: JudgeSpeak) -> None:
+        """Its term's facts from memory, so the record can be quoted and a change proposed on it."""
+        memory = self._memory()
+        if memory is None or speak.item is None or all(i in self.facts for i in speak.fact_ids):
+            return
+        try:
+            view = await memory.get_term(self.deal_id, speak.item)
+        except Exception:
+            self.log.exception("could not look up the %s in dispute", speak.item.value)
+            return
+        latest = {f.id: f for f in view.history}  # oldest first: the last version of each wins
+        for f in latest.values():
+            self.facts.setdefault(f.id, f)
+
     def _recent_offer(self) -> str | None:
         """The recording last offered, while it can still be asked for."""
         if self._offered is None:
@@ -221,7 +239,10 @@ class AgentCall(DealCall):
             if about is None:
                 return None
             job.instruction = moments.follow_up(about, self.names)
-        if job.kind == SpeakReason.CONTRADICTS_RECORD.value:
+        if job.kind == SpeakReason.DISPUTE_OPEN.value and job.speak:
+            await self._know(job.speak)  # disputed after an earlier call: its record is not among this call's facts
+            job.instruction = moments.moment(job.speak, self.names, self.facts, None, self.checklist)
+        if job.kind in _THE_RECORD:
             # The record and the offer of its recording; the recording plays only on a yes (on_line).
             return await self.agent.turn(job.instruction, use_tools=False)
         if job.kind == "clip":
@@ -280,9 +301,14 @@ class AgentCall(DealCall):
             self._carry_out(event)
         if job.kind != "clip":
             self._clip_offer = None  # Gawah has moved on: a "haan" now answers what it says next
-        if job.kind == SpeakReason.CONTRADICTS_RECORD.value and not self.tools.open_changes():
-            self._follow_left = tuning.FOLLOW_UP_LINES
-            self._follow_about = tuning.FOLLOW_UP_CONTRADICTION.format(facts=", ".join(job.speak.fact_ids))
+        if job.kind in _THE_RECORD and not self.tools.open_changes():
+            if job.kind == SpeakReason.DISPUTE_OPEN.value and job.speak.fact_ids:
+                self._follow_left = tuning.DISPUTE_FOLLOW_UP_LINES
+                item = tuning.LABEL[job.speak.item] if job.speak.item else "The term"
+                self._follow_about = tuning.FOLLOW_UP_DISPUTE.format(item=item, fact=job.speak.fact_ids[0])
+            else:
+                self._follow_left = tuning.FOLLOW_UP_LINES
+                self._follow_about = tuning.FOLLOW_UP_CONTRADICTION.format(facts=", ".join(job.speak.fact_ids))
             if job.speak.fact_ids:
                 self._clip_offer = (job.speak.fact_ids[0], tuning.CLIP_OFFER_LINES)
                 last = self.lines[-1].line_no if self.lines else 0
