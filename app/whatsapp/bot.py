@@ -18,6 +18,7 @@ from app.contracts import (
 )
 from app.log import deal_log, mask_phone
 from app.records import words as record_words
+from app.records.dispute import reference
 from app.records.intake import Intake, read_button
 from app.records.sentinel import Sentinel
 from app.store import Store
@@ -117,7 +118,9 @@ class Bot:
         if message.kind == "other":
             reply(words.HELP if deal else words.HELP_NO_DEAL)
             return
-        numbers = [] if message.media_url else phone.find_numbers(message.text)
+        # A reference sent to a proof ask is proof, never a phone number for a new deal.
+        proof_ref = bool(deal and self.sentinel and self.sentinel.disputes.waiting(deal.id, role) and reference(message.text))
+        numbers = [] if message.media_url or proof_ref else phone.find_numbers(message.text)
         if numbers == [message.phone]:
             reply(words.OWN_NUMBER)
         elif len(numbers) > 1:

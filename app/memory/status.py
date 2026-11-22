@@ -4,7 +4,7 @@ checklist.updated   a term the brain heard agreed: a said fact becomes agreed
 terms.confirmed     confirmed on the call-back
 terms.disputed      disputed on the call-back
 record.received     a payment or work record from WhatsApp, linked to the term it counts towards
-record.confirmed    the other person's yes or no to that record
+record.confirmed    the other person's yes or no to that record (a screenshot sent as proof after a no is kept)
 fact.changed        an amendment both confirmed: a new fact that replaces the old one
 """
 
@@ -155,6 +155,8 @@ class Status:
             {"status": FactStatus.CONFIRMED, "confirmed_by": sorted({*fact.confirmed_by, event.confirmed_by})}
             if event.confirmed else {"status": FactStatus.DISPUTED}
         )
+        if event.record and event.record.media_url and not fact.media_url:  # proof sent after a no
+            update["media_url"] = event.record.media_url
         fact = self.m.record(fact.model_copy(update=update))
         self.m.note("memory", f"record {'confirmed' if event.confirmed else 'denied'} by {deal.name(event.confirmed_by)}", fact)
 

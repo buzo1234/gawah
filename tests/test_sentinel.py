@@ -86,11 +86,20 @@ async def test_a_larger_advance_than_agreed_gets_what_was_agreed_and_the_clip_th
     assert watched.texts_to(SUNITA)[-2:] == [agreed, "Likh liya. Kaam karne wale se confirm kar raha hoon."]
     [asked] = watched.named("record.confirm_requested")
     assert asked.deal_id == deal_id and asked.confirm_by is Role.WORKER
-    [note] = [e for e in watched.named("agent.note") if e.agent == "sentinel"]
+    note, claim = [e for e in watched.named("agent.note") if e.agent == "sentinel"]
     assert note.fact_ids == ["f-advance"] and "worker asked to confirm" in note.text
+    assert claim.text == "claim from the hirer: ₹5,000 advance, one person's word: the worker is asked to confirm"
 
     await watched.say(RAMESH, "nahi")
-    assert watched.texts_to(SUNITA)[-1].startswith("Kaam karne wale ne nahi kaha")
+    denied = ("Kaam karne wale ne mana kiya. Yeh ₹5,000 hisaab mein nahi juda. Record ke hisaab se ab tak koi payment "
+              "nahi mila. Advance ke ₹3,000 baaki, kul baaki ₹13,000.")
+    quoted = ("Is advance ke baare mein record mein yeh hai:\n1. 21 Nov ki call mein: advance ₹3,000 tay hua tha. "
+              'Kaam dene wale ne kaha: "Theek hai, 3 hazaar kal subah de dungi, cash mein", Kaam karne wale ne maana. '
+              f"Suniye: {BASE}{clip_path('f-advance')}")
+    assert watched.texts_to(RAMESH)[-2:] == [denied, quoted]
+    assert watched.texts_to(SUNITA)[-3:] == [
+        denied, quoted, "₹5,000 ke payment ka screenshot ya UPI reference bhejiye. Milne par Kaam karne wale se ek baar phir poochunga.",
+    ]
     assert not any("mil gaya" in t for t in watched.texts_to(SUNITA) + watched.texts_to(RAMESH))
 
 

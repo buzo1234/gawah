@@ -129,7 +129,7 @@ class ContractStream:
             deal_id=deal_id, people=people, names=draft.names, place=draft.place, terms=terms, bodies=draft.terms,
             confirmed_at=confirmed_at, confirmed_said=confirmed_said, calls=calls, fingerprints=fingerprints,
             now=datetime.now(UTC), version=version, changes=changes, change_texts=draft.changes, also=also,
-            also_texts=draft.also, chain=head,
+            also_texts=draft.also, chain=head, facts=latest,
         )
         pdf_key, voice_key = f"contracts/{deal_id}-v{version}.pdf", f"contracts/{deal_id}-v{version}.ogg"
         with tempfile.TemporaryDirectory() as tmp:
