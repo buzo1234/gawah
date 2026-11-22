@@ -23,7 +23,7 @@ async def heard(bus, settings):
     """The brain registered on the bus with no keys, the memory beside it on its saved
     replies, as the server has them; returns what the brain publishes."""
     memory = memory_on(bus)
-    brain.register(SimpleNamespace(state=SimpleNamespace(settings=settings, on_shutdown=[], memory=memory)), bus)
+    brain.register(SimpleNamespace(state=SimpleNamespace(settings=settings, on_startup=[], on_shutdown=[], memory=memory)), bus)
     events: list = []
     events_memory[id(bus)] = memory
 

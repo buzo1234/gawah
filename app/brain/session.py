@@ -22,6 +22,7 @@ from app.bus import Bus
 from app.contracts import (
     CallKind,
     CallStarted,
+    DisputeStep,
     ChecklistUpdated,
     Fact,
     FactConflict,
@@ -34,6 +35,7 @@ from app.contracts import (
     Person,
     Role,
     SpeakReason,
+    TermDispute,
     TranscriptLine,
 )
 from app.log import deal_log
@@ -105,12 +107,50 @@ class Session:
 
     # ---- events ----
 
-    async def start(self) -> None:
+    async def start(self, disputes: list[TermDispute] | None = None) -> None:
         self.answers = await self.decisions.open(sage.preamble(self.who.all)) or {}
         agreed = [key.value for key, item in self.items.items() if item.state is ItemState.AGREED]
         if self.call_no > 1:
             self.log.info("call %s starts with %s agreed: %s", self.call_no, len(agreed), ", ".join(agreed) or "nothing")
+        for dispute in disputes or []:
+            self._agenda(dispute)
         self._publish_checklist([])
+
+    def _agenda(self, dispute: TermDispute) -> None:
+        """A term disputed on a call-back and still open: raised first, as a contradiction of the
+        record would be. Both settle it through Gawah as a change (the mouth's follow-up)."""
+        record = self.terms.latest.get(dispute.fact_id or "") or self.terms.record(dispute.item)
+        if record is None:
+            return
+        who = self.who.names[dispute.person]
+        agreed = [self.who.names[r] for r in (*record.agreed_by, *record.confirmed_by) if r is not record.said_by]
+        said = f"{self.who.names[record.said_by]} said it" if record.said_by else "said"
+        explanation = (
+            f"on record as {record.value or record.text} (call {record.call_no or '?'}, {said}"
+            + (f", {agreed[0]} agreed" if agreed else "") + f"); {who} said no to it on the call-back."
+        )
+        self.conflicts.append(Conflict(
+            id=f"dispute:{dispute.dispute_id}", item=dispute.item, fact_ids=[record.id], explanation=explanation,
+            said=dispute.version, speaker=dispute.person, line_no=None, dispute=True,
+        ))
+        current = self.terms.current(dispute.item)
+        self.conflict_against[f"dispute:{dispute.dispute_id}"] = current.id if current else None
+        self.log.info("the %s is in dispute from the call-back: on the agenda", dispute.item.value)
+        self._refresh(dispute.item)
+
+    def on_dispute(self, event: TermDispute) -> None:
+        """A step of a dispute while the call is on: settled, it is off the agenda; a version given, it is said."""
+        cid = f"dispute:{event.dispute_id}"
+        if event.step is DisputeStep.SETTLED:
+            if any(c.id == cid for c in self.conflicts):
+                self.conflicts = [c for c in self.conflicts if c.id != cid]
+                self.log.info("the dispute on the %s is settled: off the agenda", event.item.value)
+                self._refresh(event.item)
+                self._decide()
+        elif event.version:
+            for c in self.conflicts:
+                if c.id == cid:
+                    c.said = event.version
 
     async def on_line(self, event: TranscriptLine) -> None:
         line = _Line(event.line_no or len(self.lines) + 1, event.speaker, event.text, event.end)
@@ -286,6 +326,7 @@ class Session:
 
     def _refresh(self, key: ItemKey) -> None:
         note = next((
+            f"in dispute, {c.explanation}" if c.dispute else
             f"{'change said' if c.change else 'contradicted'} at line {c.line_no}: {c.explanation}"
             for c in self.conflicts if c.item == key
         ), None)

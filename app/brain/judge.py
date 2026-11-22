@@ -75,7 +75,8 @@ class Proposal:
 class Conflict:
     """Something said on this call that does not match the record: a fact.conflict from the
     memory, or (change=True) a change to an agreed term that one person said and the other
-    has not confirmed (the memory files that as a said change fact, not a conflict)."""
+    has not confirmed (the memory files that as a said change fact, not a conflict), or
+    (dispute=True) a term one person said no to on a call-back, still open when the call began."""
 
     id: str
     item: ItemKey | None
@@ -85,6 +86,7 @@ class Conflict:
     speaker: Role | None
     line_no: int | None
     change: bool = False
+    dispute: bool = False
 
     @property
     def topic(self) -> str:
@@ -187,7 +189,7 @@ class Judge:
             self.read_back_done = True
         if at_wrapup:
             self.wrapup_until = view.now + tuning.WRAPUP_HOLD_S
-        elif speak.reason in (SpeakReason.CONTRADICTS_RECORD, SpeakReason.CHANGE_PROPOSED):
+        elif speak.reason in (SpeakReason.CONTRADICTS_RECORD, SpeakReason.CHANGE_PROPOSED, SpeakReason.DISPUTE_OPEN):
             self.raised.add((speak.item, speak.reason is SpeakReason.CHANGE_PROPOSED))
         return speak
 
@@ -379,7 +381,15 @@ def _contradiction(conflict: Conflict, view: View, reason: SpeakReason) -> Speak
     said = f' said: "{_quoted(conflict.said)}". {DATA}' if conflict.said else " said something different."
     what = LABEL[conflict.item] if conflict.item else "a term"
     both = _who(Audience.BOTH, view.names)
-    if conflict.change:
+    if conflict.dispute:
+        theirs = f' {who} says it was: "{_quoted(conflict.said)}". {DATA}' if conflict.said else ""
+        text = (
+            f"{what.capitalize()} is still in dispute: {_quoted(conflict.explanation)}{theirs} Tell {both}, before "
+            f"anything else, that {what} is still to be settled: what the record holds (the value, who said it and who "
+            f"agreed, on which call){f', and what {who} says instead' if conflict.said else ''}. Then offer to play the "
+            "recording of that moment. Do not say which is right."
+        )
+    elif conflict.change:
         text = (
             f"{who}{said} That would change {what}: {_quoted(conflict.explanation)} "
             f"Tell {both} what the record holds and what was said now, and ask whether they both agree to this change: "
@@ -394,6 +404,8 @@ def _contradiction(conflict: Conflict, view: View, reason: SpeakReason) -> Speak
     wrap = WRAPPING_UP if reason is SpeakReason.WRAPPING_UP else ""
     if conflict.change:
         reason = SpeakReason.CHANGE_PROPOSED  # not a contradiction: both are asked to agree, and Gawah records it
+    elif conflict.dispute and reason is SpeakReason.CONTRADICTS_RECORD:
+        reason = SpeakReason.DISPUTE_OPEN
     return Speak(wrap + text, Audience.BOTH, reason, conflict.item, [conflict.topic], list(conflict.fact_ids))
 
 
