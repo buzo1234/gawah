@@ -20,7 +20,7 @@ This file is for people reviewing and running Gawah. The rules for this reposito
 |---|---|---|
 | WhatsApp | Both people: start a deal, get call links, the agreement, payment checks, voice notes | Real WhatsApp only for numbers Karan Dua has added (below); otherwise the simulated phones at `/dashboard/phone` |
 | The call page | Both people, in a phone's browser, from the link Gawah sends | `/call/<deal id>/hirer` and `/call/<deal id>/worker` (no key needed) |
-| The board | Anyone with the access key | `/dashboard`: every term, fact, contradiction and the witness chain, live; a second phone on the right |
+| The board | Anyone with the access key | `/dashboard`: every term, fact, contradiction and the witness chain, live; a simulated second phone in a drawer on the right (its tab or the P key shows and hides it) |
 | The agreement | Both people, on WhatsApp | A PDF in Hindi and English, and a spoken summary (audio), sent once both have agreed |
 
 **Real WhatsApp numbers.** Gawah's WhatsApp runs on Meta's Cloud API test number. Meta lets that number message only phones on its allowed list, so a real WhatsApp number works only after the code owner, Karan Dua, adds it to his Meta WhatsApp account (the test number's allowed recipients) and to `VERIFIED_NUMBERS` on the server. Without that, use the simulated phones on the board. They go through the same WhatsApp code path: a simulated phone posts to the same webhook in the provider's message format, and Gawah's replies to it are shown in its chat instead of being sent.
