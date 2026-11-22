@@ -20,8 +20,9 @@ KEEP = 50  # judge.speaks held while waiting for the mouth to say them
 
 @dataclass
 class Reply:
-    after_line: int  # the line Gawah spoke after: only what the other person said since can be accepted
-    agreed: set[ItemKey] = field(default_factory=set)
+    after_line: int  # the line Gawah spoke after
+    asked: set[ItemKey]  # the terms Gawah's question named
+    agreed: set[ItemKey] = field(default_factory=set)  # the terms the yes agreed
 
 
 class Gawah:
@@ -58,21 +59,22 @@ class Gawah:
                 if t.call_no == line.call_no and since <= t.after_line < line.line_no]
 
     def answer(self, deal: DealBook, line: TranscriptLine, received: float) -> Reply | None:
-        """The line is the speaker's answer to Gawah's last turn: what its yes agreed, if the
-        turn asked both to confirm values said on the call. None when it answers no turn."""
+        """The line is the speaker's answer to Gawah's last turn, a question naming values said on
+        the call: the terms it named, and those its yes agreed. None when it answers no such turn:
+        a turn that named no value changes nothing about how the line is read."""
         turn = next((t for t in reversed(deal.turns) if t.call_no == line.call_no and t.after_line < line.line_no), None)
-        if turn is None or line.speaker in turn.answered or line.line_no - turn.after_line > ANSWER_LINES:
+        if turn is None or not turn.fact_ids or line.speaker in turn.answered or line.line_no - turn.after_line > ANSWER_LINES:
             return None
+        facts = [f for i in turn.fact_ids if (f := deal.latest.get(i)) and f.kind == FactKind.TERM and f.item]
         names = {n.lower() for n in deal.names.values()}
-        if filler_kind(line.text, names) == "greeting":
+        if not facts or filler_kind(line.text, names) == "greeting":
             return None  # "dhanyavaad": not an answer yet
         turn.answered.add(line.speaker)
-        reply = Reply(turn.after_line)
-        if not turn.fact_ids or not answers_yes(line.text, names) or echo.doubts(line.text):
-            return reply  # a question that named no value, or a no, a hedge or a question back: nothing agreed
-        for fact_id in turn.fact_ids:
-            fact = deal.latest.get(fact_id)
-            if fact is None or fact.kind != FactKind.TERM or fact.item is None or fact.status != FactStatus.SAID:
+        reply = Reply(turn.after_line, {f.item for f in facts})
+        if not answers_yes(line.text, names) or echo.doubts(line.text):
+            return reply  # a no, a hedge or a question back: nothing agreed
+        for fact in facts:
+            if fact.status != FactStatus.SAID:
                 continue
             reply.agreed.add(fact.item)
             if fact.said_by is None or line.speaker in (fact.said_by, *fact.agreed_by):

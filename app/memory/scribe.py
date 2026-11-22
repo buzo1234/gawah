@@ -65,11 +65,11 @@ class Scribe:
                     log.warning("deal=%s line %s applied before line %s finished", line.deal_id, line.line_no, line.line_no - 1)
             reply = self.m.gawah.answer(deal, line, received)
             if reply is not None:
-                # It answers Gawah: a yes in it accepts nothing said before Gawah spoke. What the
-                # model read as accepting the terms Gawah asked about is that same yes.
-                claims = [c for c in claims if c.stance != "accept" or (
-                    (c.accepts_line or 0) > reply.after_line and c.item not in reply.agreed)]
-            if (kind == "yes" or opening) and (reply is None or (not reply.agreed and line.line_no - 1 > reply.after_line)):
+                # It answers Gawah's question about these terms: what the model read as accepting
+                # them is that answer, not an acceptance of anything said before Gawah spoke.
+                claims = [c for c in claims if c.stance != "accept" or c.item not in reply.asked
+                          or (c.accepts_line or 0) > reply.after_line]
+            if (kind == "yes" or opening) and not (reply and reply.agreed):
                 self._plain_yes(deal, line, received, claims)
             for claim in self._with_total(deal, line, claims):
                 self._apply(deal, line, claim, received)

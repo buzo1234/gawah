@@ -147,14 +147,20 @@ async def test_a_yes_to_a_question_that_names_no_value_agrees_nothing(bus, tmp_p
 
 
 @pytest.mark.asyncio
-async def test_the_live_scribes_replies_with_gawahs_words_end_with_the_balance_agreed(bus, tmp_path):
+@pytest.mark.parametrize("leading_yes", [True, False], ids=["both-ways", "gawahs-question-only"])
+async def test_the_live_scribes_replies_with_gawahs_words_end_with_the_balance_agreed(bus, tmp_path, monkeypatch, leading_yes):
+    if not leading_yes:
+        monkeypatch.setattr(scribe, "opens_with_yes", lambda text, names=frozenset(): False)
     call = Call(bus, RecordedExtractor(), tmp_path)
     await call.start()
+    agreed_after = None
     for n in LINES:
         await call.line(n)
+        if agreed_after is None and call.checklist(ItemKey.BALANCE).state is ItemState.AGREED:
+            agreed_after = n
+    assert agreed_after == (13 if leading_yes else 23)
     held = [f for f in call.balance() if f.status in (FactStatus.AGREED, FactStatus.CONFIRMED)]
-    assert held and all({f.said_by, *f.agreed_by} == set(Role) for f in held)
-    assert call.checklist(ItemKey.BALANCE).state is ItemState.AGREED
+    assert held and all(f.said_by is Role.HIRER and Role.WORKER in f.agreed_by for f in held)
     changes = [f for f in call.memory.book.deal(DEAL).standing() if f.kind == FactKind.CHANGE]
     assert not changes, [(f.line_no, f.item, f.status, f.value) for f in changes]
 
