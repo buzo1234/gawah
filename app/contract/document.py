@@ -22,7 +22,7 @@ from app.contract.wording import (
     ALL_AGREED, ALSO_AGREED, AS_STATED, CLAUSES, LEAD, NOT_AGREED, OPEN_CLAUSE, OPEN_POINTS, PARTIES,
     PAYMENT_CLAUSE, PAYMENTS, ROLES, SUBTITLE, THE_REST, VOICES, WITNESS,
 )
-from app.contracts import ItemKey, Person, Role
+from app.contracts import Fact, FactKind, FactStatus, ItemKey, Person, Role
 
 __all__ = ["Bi", "Document", "build", "both"]
 
@@ -147,11 +147,13 @@ def build(
     also: list[AlsoAgreed] = (),
     also_texts: dict[str, Bi] | None = None,
     chain: tuple[str, int] | None = None,
+    facts: dict[str, Fact] | None = None,
 ) -> Document:
     """names and place are what was said on the calls (None if never said); bodies is the
     model's text, {item key: {"hi": ..., "en": ...}}, and change_texts and also_texts its
     text for each change (before, now) and each other thing agreed; fingerprints is the
-    SHA-256 of each person's recording of each call, for those that could be read."""
+    SHA-256 of each person's recording of each call, for those that could be read; facts is
+    each fact as it stands, for the payment and work claims still in dispute."""
     agreed = {t.item.key: t for t in terms if t.item.value}
     many = len(calls) > 1
     say = (lambda text: _plural(text)) if many else (lambda text: text)  # noqa: E731
@@ -177,6 +179,7 @@ def build(
         clause(ItemKey.WORK),
         clause(ItemKey.AMOUNT),
         Clause(PAYMENT_CLAUSE, None if payments else say(NOT_AGREED), payments=payments,
+               notes=disputed(facts or {}, names),
                changed=any(agreed[k].changed for k in (ItemKey.ADVANCE, ItemKey.BALANCE) if k in agreed)),
         clause(ItemKey.DATES),
         clause(ItemKey.LATE_OR_UNFINISHED),
@@ -215,6 +218,31 @@ def build(
         ],
         chain=chain,
     )
+
+
+def disputed(facts: dict[str, Fact], names: dict[Role, Bi | None]) -> list[Note]:
+    """A payment or the work, reported by one person on WhatsApp and denied by the other, and
+    not confirmed since: listed as disputed, not counted. Who said what, never who is right."""
+    notes = []
+    for fact in facts.values():
+        if fact.status is not FactStatus.DISPUTED or not fact.record_id or fact.said_by is None:
+            continue
+        who, other = (names.get(r) or ROLES[r] for r in (fact.said_by, fact.said_by.other))
+        on = _day(fact.valid_from) if fact.valid_from else Bi("", "")
+        if fact.kind is FactKind.PAYMENT and fact.value_rupees:
+            figure = _amount(f"{fact.value_rupees} rupees", AS_STATED)
+            hi, en = f"{figure.hi} का भुगतान बताया", f"reported a payment of {figure.en}"
+            end = Bi("यह हिसाब में नहीं जुड़ा।", "It is not counted.")
+        elif fact.kind is FactKind.WORK:
+            hi, en = "काम पूरा होना बताया", "reported the work done"
+            end = Bi("रिकॉर्ड में काम पूरा नहीं माना गया।", "It is not on record as done.")
+        else:
+            continue
+        notes.append(Note(Bi(
+            f"विवादित: {who.hi} ने {hi}" + (f" ({on.hi})" if on.hi else "") + f"; {other.hi} ने मना किया। {end.hi}",
+            f"Disputed: {who.en} {en}" + (f" ({on.en})" if on.en else "") + f"; {other.en} said no. {end.en}",
+        ), fact.quote, None))
+    return notes
 
 
 def both(text: Bi, joiner: str | None = None) -> str:
