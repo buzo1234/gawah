@@ -4,7 +4,7 @@
 
 > India's economy runs on zubaan. We give that word a witness.
 
-[![Watch Gawah witness a deal (6 min)](docs/media/video-preview.jpg)](https://www.loom.com/share/19cb9741f201449b8a5937ae54ed3195)
+[![Watch Gawah witness a deal (6 min)](docs/media/video-preview.gif)](https://www.loom.com/share/19cb9741f201449b8a5937ae54ed3195)
 
 A household hires a painter, a cook or a mechanic on a phone call. Nothing is written down. Gawah sits on that call as a third, neutral person. It keeps every term both people say, asks about the ones they skip, sends both a written agreement, and stays with the deal on WhatsApp until the last rupee is paid. There is no new app to install: a call link and WhatsApp.
 
