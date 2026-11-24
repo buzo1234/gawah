@@ -4,6 +4,8 @@
 
 > India's economy runs on zubaan. We give that word a witness.
 
+[![Watch Gawah witness a deal (6 min)](docs/media/video-preview.jpg)](https://www.loom.com/share/19cb9741f201449b8a5937ae54ed3195)
+
 A household hires a painter, a cook or a mechanic on a phone call. Nothing is written down. Gawah sits on that call as a third, neutral person. It keeps every term both people say, asks about the ones they skip, sends both a written agreement, and stays with the deal on WhatsApp until the last rupee is paid. There is no new app to install: a call link and WhatsApp.
 
 ## Why
@@ -33,14 +35,6 @@ In the order a deal goes:
 8. **Payments are checked against what was agreed.** A UPI screenshot with a transaction id is logged as it is. A message like "2000 cash diya", or a voice note, is one person's word, so the other person is asked yes or no. A claim larger than what is owed is answered with what was agreed, when, and a link to the clip.
 9. **A later call keeps the record.** On a second call, if someone says "aapne 25 hazaar bola tha" and 22,000 was agreed, Gawah says so and plays the original clip into the call, in their own voices. A change both people agree to by voice becomes a new version of the agreement, with its history.
 10. **Reminders.** When the work is done and money is still owed, or a payment date has passed, the hirer gets one reminder and the worker is told.
-
-The board, during a call: the six terms on the left, every fact as it arrives, a term's versions and the witness chain in the middle, and a contradiction with the original moment to play.
-
-![The board during a call, with a contradiction](fixtures/dashboard-shots/visual/2-contradiction.png)
-
-The call page each person opens from WhatsApp:
-
-<img src="fixtures/call-page-shots/ios/390x844/deal-3-on-gawah-speaking.png" alt="The call page while Gawah speaks" width="260">
 
 ## How it works
 
